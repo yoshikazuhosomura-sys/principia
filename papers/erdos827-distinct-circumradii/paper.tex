@@ -1,0 +1,789 @@
+%% Typeset with:  latexmk -pdf paper.tex
+%% Needs: amsmath amsthm amssymb array longtable enumitem hyperref geometry
+\documentclass[11pt,a4paper]{article}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}   %% scalable T1 fonts
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=28mm]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{array,longtable}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage[english]{babel}
+
+%% ---- symbols used by the unicode declarations below ----------------------
+\newcommand{\txtsym}[1]{\ifmmode\text{#1}\else#1\fi}
+%% every non-ASCII character of the source, declared once:
+\DeclareUnicodeCharacter{00A7}{\txtsym{\S}}
+\DeclareUnicodeCharacter{00AC}{\ensuremath{\neg}}
+\DeclareUnicodeCharacter{00B1}{\ensuremath{\pm}}
+\DeclareUnicodeCharacter{00B2}{\ensuremath{{}^2}}
+\DeclareUnicodeCharacter{00B7}{\ensuremath{\cdot}}
+\DeclareUnicodeCharacter{00B9}{\ensuremath{{}^1}}
+\DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+\DeclareUnicodeCharacter{00E1}{\txtsym{\'a}}
+\DeclareUnicodeCharacter{00E9}{\txtsym{\'e}}
+\DeclareUnicodeCharacter{00ED}{\txtsym{\'\i}}
+\DeclareUnicodeCharacter{00F6}{\txtsym{\"o}}
+\DeclareUnicodeCharacter{0151}{\txtsym{\H o}}
+\DeclareUnicodeCharacter{03A0}{\ensuremath{\Pi}}
+\DeclareUnicodeCharacter{03A3}{\ensuremath{\Sigma}}
+\DeclareUnicodeCharacter{03A8}{\ensuremath{\Psi}}
+\DeclareUnicodeCharacter{03B6}{\ensuremath{\zeta}}
+\DeclareUnicodeCharacter{03C0}{\ensuremath{\pi}}
+\DeclareUnicodeCharacter{03C3}{\ensuremath{\sigma}}
+\DeclareUnicodeCharacter{03C4}{\ensuremath{\tau}}
+\DeclareUnicodeCharacter{2013}{\txtsym{\textendash}}
+\DeclareUnicodeCharacter{2014}{\txtsym{\textemdash}}
+\DeclareUnicodeCharacter{2026}{\ensuremath{\dots}}
+\DeclareUnicodeCharacter{2032}{\ensuremath{{}^\prime}}
+\DeclareUnicodeCharacter{2070}{\ensuremath{{}^0}}
+\DeclareUnicodeCharacter{2075}{\ensuremath{{}^5}}
+\DeclareUnicodeCharacter{2076}{\ensuremath{{}^6}}
+\DeclareUnicodeCharacter{2079}{\ensuremath{{}^9}}
+\DeclareUnicodeCharacter{2080}{\ensuremath{{}_0}}
+\DeclareUnicodeCharacter{2081}{\ensuremath{{}_1}}
+\DeclareUnicodeCharacter{2082}{\ensuremath{{}_2}}
+\DeclareUnicodeCharacter{2083}{\ensuremath{{}_3}}
+\DeclareUnicodeCharacter{2084}{\ensuremath{{}_4}}
+\DeclareUnicodeCharacter{2085}{\ensuremath{{}_5}}
+\DeclareUnicodeCharacter{2086}{\ensuremath{{}_6}}
+\DeclareUnicodeCharacter{2087}{\ensuremath{{}_7}}
+\DeclareUnicodeCharacter{2088}{\ensuremath{{}_8}}
+\DeclareUnicodeCharacter{2089}{\ensuremath{{}_9}}
+\DeclareUnicodeCharacter{2074}{\ensuremath{{}^4}}
+\DeclareUnicodeCharacter{00B3}{\ensuremath{{}^3}}
+\DeclareUnicodeCharacter{2077}{\ensuremath{{}^7}}
+\DeclareUnicodeCharacter{2078}{\ensuremath{{}^8}}
+\DeclareUnicodeCharacter{2071}{\ensuremath{{}^i}}
+\DeclareUnicodeCharacter{2261}{\ensuremath{\equiv}}
+\DeclareUnicodeCharacter{21A6}{\ensuremath{\mapsto}}
+\DeclareUnicodeCharacter{2205}{\ensuremath{\emptyset}}
+\DeclareUnicodeCharacter{2218}{\ensuremath{\circ}}
+\DeclareUnicodeCharacter{2225}{\ensuremath{\parallel}}
+\DeclareUnicodeCharacter{2229}{\ensuremath{\cap}}
+\DeclareUnicodeCharacter{2237}{\ensuremath{::}}
+\DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+\DeclareUnicodeCharacter{2282}{\ensuremath{\subset}}
+\DeclareUnicodeCharacter{00BD}{\ensuremath{1/2}}
+\DeclareUnicodeCharacter{2044}{\ensuremath{/}}
+\DeclareUnicodeCharacter{2115}{\ensuremath{\mathbb{N}}}
+\DeclareUnicodeCharacter{211A}{\ensuremath{\mathbb{Q}}}
+\DeclareUnicodeCharacter{211D}{\ensuremath{\mathbb{R}}}
+\DeclareUnicodeCharacter{2124}{\ensuremath{\mathbb{Z}}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\to}}
+\DeclareUnicodeCharacter{2200}{\ensuremath{\forall}}
+\DeclareUnicodeCharacter{2203}{\ensuremath{\exists}}
+\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}
+\DeclareUnicodeCharacter{2209}{\ensuremath{\notin}}
+\DeclareUnicodeCharacter{220E}{\ensuremath{\blacksquare}}
+\DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\DeclareUnicodeCharacter{221A}{\ensuremath{\surd}}
+\DeclareUnicodeCharacter{2227}{\ensuremath{\wedge}}
+\DeclareUnicodeCharacter{222A}{\ensuremath{\cup}}
+\DeclareUnicodeCharacter{2260}{\ensuremath{\neq}}
+\DeclareUnicodeCharacter{2261}{\ensuremath{\equiv}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\le}}
+\DeclareUnicodeCharacter{2265}{\ensuremath{\ge}}
+\DeclareUnicodeCharacter{226A}{\ensuremath{\ll}}
+\DeclareUnicodeCharacter{2286}{\ensuremath{\subseteq}}
+\DeclareUnicodeCharacter{230A}{\ensuremath{\lfloor}}
+\DeclareUnicodeCharacter{230B}{\ensuremath{\rfloor}}
+\DeclareUnicodeCharacter{27E8}{\ensuremath{\langle}}
+\DeclareUnicodeCharacter{27E9}{\ensuremath{\rangle}}
+\DeclareUnicodeCharacter{27F9}{\ensuremath{\Longrightarrow}}
+\DeclareUnicodeCharacter{27FA}{\ensuremath{\Longleftrightarrow}}
+\DeclareUnicodeCharacter{2223}{\ensuremath{\mid}}
+
+%% ---- named theorem environments (the labels are those of the draft) ------
+\newtheoremstyle{named}{\topsep}{\topsep}{\itshape}{0pt}{\bfseries}{.}{ }{\thmnote{#3}}
+\theoremstyle{named}
+\newtheorem*{namedthm}{}
+\newenvironment{mdproof}[1][Proof]{\par\medskip\noindent\textit{#1.}\ }{\par\medskip}
+\newlist{leancode}{itemize}{1}
+\setlist[leancode]{label={},leftmargin=1.2em,topsep=.5em,itemsep=.15em,parsep=0pt}
+\newcommand{\dispf}[1]{\par\smallskip{\centering #1\par}\smallskip}
+\setlength{\parskip}{.35em}
+\sloppy
+\hbadness=10000
+\begin{document}
+
+\title{A machine-checked proof that n₄ = 7 for Erdős problem \#827\\[.5em]\large Every seven points of the plane in general position contain four points whose four triangles have pairwise different circumradii, and six points need not — a census of the witness structure of six points, carried out from end to end in Lean 4}
+\author{Kiichi \and Shiori \and Rin}
+\date{Draft, \textless{}date\textgreater{}. Not submitted. See §11 for the disclosure of AI use and §9 for what is not claimed.}
+\maketitle
+
+\section*{Abstract}
+
+For k ≥ 4 let n\_k be the least N such that every N points of the plane in general position contain k points all of whose C(k,3) triples have pairwise different circumradii (Erdős, problem \#827 in the collection of Bloom). We determine n₄:
+
+\begin{namedthm}[n₄ = 7]
+\end{namedthm}
+
+The lower bound is the six-point set \{±(1,0), ±(1,1), ±(2,3)\}, in which every one of the fifteen four-point subsets contains two triangles of equal circumradius. For the upper bound we classify the \textit{witness structures} of six-point configurations. Call the four points \{u,v,c,d\} with the two triangles u v c, u v d on the shared edge u v a \textit{cell}; six points have 90 cells, and a cell is a \textit{witness} when the two circumradii agree. A configuration is \textit{bad} when every four-point subset carries at least one witness. We show that the witness set of a bad six-point configuration in general position falls, up to relabelling, into exactly 35 classes (a search of 204,890 nodes, run by the Lean kernel as 1,820 subtree theorems), that 34 of them are not realizable in general position, and that the surviving class forces the six points to be \textit{octahedral}: three pairs whose eight transversal triangles share one circumradius. An octahedral six-point set is symmetric about a point, and seven points cannot have all seven of their six-point subsets symmetric about a point — whence n₄ ≤ 7.
+
+The whole chain is a theorem of Lean 4 with Mathlib. The statement
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}sInf\_\allowbreak{}isGood\_\allowbreak{}eq\_\allowbreak{}seven\ \allowbreak{}:\ \allowbreak{}sInf\ \allowbreak{}\{N\ \allowbreak{}:\ \allowbreak{}ℕ\ \allowbreak{}|\ \allowbreak{}IsGood\ \allowbreak{}N\}\ \allowbreak{}=\ \allowbreak{}7}
+\end{leancode}
+
+carries no hypotheses, uses no \texttt{sorry} and no \texttt{native\_\allowbreak{}decide}, and \texttt{\#print\ \allowbreak{}axioms} returns only \texttt{propext}, \texttt{Classical.\allowbreak{}choice}, \texttt{Quot.\allowbreak{}sound}. The development is 26 modules, about 14,600 lines, over a base of 74 modules, about 28,000 lines, holding the search transcript; it was rebuilt module by module from the sources a second time, independently of the artefacts of the first run.
+
+The value n₄ = 7 is not new here. It was recorded, with a computer-assisted proof by a different route — a SAT refutation together with ideal saturation in Singular over ℚ — by the user \textit{sallerk} in the discussion of the problem on 22 September 2026 [S], under the same convention of general position and with a lower bound in the same family. We give an independent proof by another route, and we make no claim of priority for the value; what this note adds is that the whole chain, from the lower bound to the upper bound, is one formalised statement, checked by the Lean kernel without recourse to an external solver or computer algebra system. Within what we searched, no machine-checked proof of the value was recorded. Nothing here bears on n\_k for k ≥ 5, nor on the asymptotics.
+
+\textbf{Keywords.} Erdős problem, circumradius, general position, discrete geometry, exhaustive classification, Lean 4.
+
+\textbf{MSC 2020.} 52C10, 51M04, 68V20, 52C35.
+
+\section*{1. Introduction}
+
+Erdős asked [Er75h] whether, for each k, there is an N such that any N points of the plane in general position contain k points whose C(k,3) triples determine circles of pairwise different radii; in [Er78c] he gave an argument for existence together with the bound n\_k ≤ k + 2 C(k−1,2) C(k−1,3). That argument is not correct, as Martínez and Roldán-Pensado explain [MaRo15], who give a corrected one proving n\_k ≪ k⁹; a probabilistic deletion argument in the comments on the problem page improves this to n\_k ≪ k⁵. The statement of the problem on the problem page [B] is:
+
+\begin{quote}
+Let n\_k be minimal such that if n\_k points in ℝ² are in general position then there exists a subset of k points such that all C(k,3) triples determine circles of different radii. Determine n\_k.
+\end{quote}
+
+None of the bounds above produces a value. The first case is k = 4, where the four triples of a four-point set are the four triangles obtained by omitting one point.
+
+On 22 September 2026, while the work reported here was in progress and without our knowing of it, the user \textit{sallerk} posted in the discussion of the problem [S] a computer-assisted proof that n₄ = 7, under the same convention of general position. The present note reaches the same value by a different route, and the reader should read §10 before deciding what is being claimed: the value is not ours, the route is, and so is the fact that the route is machine-checked from one end to the other. We describe the two arguments side by side in §10.
+
+\begin{namedthm}[Theorem 1]
+n₄ = 7. That is: every seven points of the plane in general position contain four points whose four triangles have pairwise different circumradii, and there are six points in general position for which no four do.
+\end{namedthm}
+
+Here \textit{general position} means: the points are pairwise different, no three are collinear, and no four are concyclic. This is the reading used in the discussion of the problem (where it is called \textit{circular general position}); §9 records that the value of n₄ depends on it.
+
+Call a finite set of points \textit{bad} if every four-point subset of it contains two triangles of equal circumradius. Then n₄ \textgreater{} n exactly when a bad set of n points in general position exists, and Theorem 1 says: bad six-point sets exist, bad seven-point sets do not.
+
+\textbf{The lower bound} is one configuration, exhibited in §4. Up to similarity it belongs to a one-parameter family: for vectors a, b, c the centrally symmetric six-point set \{±a, ±b, ±c\} is bad exactly when
+
+\dispf{E(a,b,c) := (a·b)(a×b) + (b·c)(b×c) + (c·a)(c×a) = 0,}
+
+and then the eight triangles that pick one point out of each of the three pairs \{a,−a\}, \{b,−b\}, \{c,−c\} all have the same circumradius. We call such a configuration \textit{octahedral}, after the three pairs of opposite vertices of an octahedron. The integral point a = (1,0), b = (1,1), c = (2,3) gives E = 0; the resulting six points have common transversal circumradius² = 25/2.
+
+\textbf{The upper bound} is the substance. Suppose seven points in general position were bad. Then each of the seven six-point subsets is bad. If every bad six-point configuration were \textit{centrally symmetric}, seven points could not all do this: the composition of two of the seven point reflections is a non-trivial translation t carrying at least four points of the set into the set, and among seven points two of those four translates must again be translates of each other, producing three points x, x + t, x + 2t on a line (§5.3).
+
+So everything reduces to: \textbf{a bad six-point configuration in general position is centrally symmetric.} We prove the stronger statement that it is octahedral, and octahedral implies centrally symmetric because two triangles sharing an edge and having the same circumradius have circumcentres symmetric about the midpoint of that edge (§5.2).
+
+To prove that a bad six-point configuration is octahedral we classify witness structures. Two triangles of a four-point set always share exactly two points; write a \textit{cell} of a six-point configuration as a pair (P, e) of disjoint two-element subsets of the six indices, P the \textit{apexes}, e the \textit{shared edge}, and call the cell a \textit{witness} when the two triangles on e with apexes in P have equal circumradius. There are 15 · 6 = 90 cells, six for each of the fifteen four-point subsets, and badness says: each four-point subset contains a witness. The \textit{witness set} of a configuration is the set of its witness cells — a subset of a 90-element set, which we hold as a bit mask.
+
+\begin{namedthm}[Theorem 2 (the census)]
+The witness set of a bad six-point configuration in general position lies, after some relabelling of the six points, in an explicit list of 35 masks.
+\end{namedthm}
+
+\begin{namedthm}[Theorem 3 (non-realizability)]
+For 34 of the 35 masks, no six points in general position have exactly that witness set.
+\end{namedthm}
+
+\begin{namedthm}[Theorem 4 (the surviving class)]
+Six points in general position whose witness set contains the 35th mask are octahedral.
+\end{namedthm}
+
+Theorem 2 is proved by a search whose transcript is itself checked by the Lean kernel: 1,820 subtree theorems, 204,890 nodes. The pruning rules are of three kinds — local rules on a single four-point subset or on one fixed edge or apex pair (§6.2), rules on the space of linear relations produced by the circumcentre identity (§6.3), and membership in a lattice of integer forms in the directions of the fifteen lines through pairs of points (§6.4). Each is sound on paper; the search only applies them.
+
+Theorem 3 is 34 separate arguments (§7). Seventeen of them are algebraic certificates in the coordinates: an identity Σ h\_i Ψ\_i = (a product of factors that do not vanish in general position), where the Ψ\_i are the witness forms of the class. Ten are certificates in the \textit{directions}, where the witness condition becomes a linear congruence and the relevant obstruction is the torsion of a lattice in ℤ¹⁵. Three are consequences of an odd or even cycle in the graph of witness cells, which pins a circumcentre to an affine combination of the six points. Four require an enumeration of the branches of a character of that torsion, and were folded into 224 algebraic cases.
+
+The Lean 4 statement (§8) is
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}sInf\_\allowbreak{}isGood\_\allowbreak{}eq\_\allowbreak{}seven\ \allowbreak{}:\ \allowbreak{}sInf\ \allowbreak{}\{N\ \allowbreak{}:\ \allowbreak{}ℕ\ \allowbreak{}|\ \allowbreak{}IsGood\ \allowbreak{}N\}\ \allowbreak{}=\ \allowbreak{}7}
+\end{leancode}
+
+with \texttt{IsGood\ \allowbreak{}N} saying that every N points in general position contain four with pairwise different circumradii. We claim neither depth nor novelty beyond the searches recorded in §10.
+
+\section*{2. Definitions and the witness form}
+
+\textbf{Points and general position.} A point is an element of ℝ². For p, q, a, b, c, d in ℝ² put
+
+\dispf{sqdist(p,q) := (p₁ − q₁)² + (p₂ − q₂)²,}
+\dispf{cross(a,b,c) := (b₁ − a₁)(c₂ − a₂) − (b₂ − a₂)(c₁ − a₁)   (twice the signed area),}
+\dispf{det₄(a,b,c,d) := |a|² cross(b,c,d) − |b|² cross(a,c,d) + |c|² cross(a,b,d) − |d|² cross(a,b,c).}
+
+Three points are \textit{collinear} when cross = 0; four points are \textit{concyclic} (on a circle or a line) when det₄ = 0. A family p : \{1,…,N\} → ℝ² is \textit{in general position} when its points are pairwise different, no three of them are collinear and no four are concyclic.
+
+\textbf{Circumradius.} We work with the squared circumradius, and we define it by the property rather than by a formula: r is a squared circumradius of a b c when there is a point o with sqdist(o,a) = sqdist(o,b) = sqdist(o,c) = r. For three non-collinear points such an r exists and is unique. Since radii are non-negative, two triangles have the same circumradius exactly when they have the same squared circumradius.
+
+\textbf{n₄.} For N ∈ ℕ say that N is \textit{good} when every family of N points in general position contains four points i \textless{} j \textless{} k \textless{} l whose four triangles have pairwise different squared circumradii. Goodness is inherited upwards, and n₄ := inf \{N : N is good\}.
+
+\textbf{The witness form.} Two of the four triangles of a four-point set share exactly two vertices. Let the shared edge be a b and the two apexes c, d, and put
+
+\dispf{q(a,b,p) := (a − p)·(b − p),}
+\dispf{Ψ(a,b;c,d) := q(a,b,c) · cross(a,b,d) + q(a,b,d) · cross(a,b,c).}
+
+Ψ is a polynomial of degree 4 in the coordinates, invariant under translation, and antisymmetric in a, b and symmetric in c, d up to sign; in particular its vanishing does not depend on how the two pairs are ordered.
+
+\begin{namedthm}[Lemma 2.1 (the witness identity)]
+For all a, b, c, d,
+\dispf{sqdist(b,c) · sqdist(c,a) · cross(a,b,d)² − sqdist(b,d) · sqdist(d,a) · cross(a,b,c)² = det₄(a,b,c,d) · Ψ(a,b;c,d).}
+\end{namedthm}
+
+\begin{mdproof}[Proof]
+Expand both sides; they agree as polynomials (\texttt{circum\_\allowbreak{}diff\_\allowbreak{}factor}, closed by \texttt{ring}). ∎
+\end{mdproof}
+
+Writing the law of sines as R(a,b,c)² = sqdist(a,b)·sqdist(b,c)·sqdist(c,a) / (4 cross(a,b,c)²), the left side of the identity is, up to the factor sqdist(a,b) / (4 cross(a,b,c)² cross(a,b,d)²), the difference of the two squared circumradii. Hence:
+
+\begin{namedthm}[Lemma 2.2]
+Let a ≠ b, let neither a b c nor a b d be collinear, and let a, b, c, d not be concyclic. Let r, s be the squared circumradii of a b c and a b d. Then r = s if and only if Ψ(a,b;c,d) = 0.
+\end{namedthm}
+
+The hypothesis "not concyclic" is what removes the second factor; it is exactly what general position grants. (In Lean this is \texttt{eqRadSq\_\allowbreak{}iff\_\allowbreak{}psi}.)
+
+Two further readings of Ψ are used below.
+
+\begin{namedthm}[Lemma 2.3 (nine-point form)]
+Ψ(u,v;c,d) = 16 · det₄(mid(u,v), mid(u,c), mid(v,c), mid(c,d)).
+\end{namedthm}
+
+So a witness says that the midpoint of c d lies on the nine-point circle of the triangle u v c; equivalently the unique rectangular conic through u, v, c, d is centred at the midpoint of c d.
+
+\begin{namedthm}[Lemma 2.4 (complex form)]
+Reading points as complex numbers,
+\dispf{Im[ (a − c)(a − d) · conj((b − c)(b − d)) ] = − Ψ(a,b;c,d).}
+\end{namedthm}
+
+So, with the pair c, d fixed and w(z) := (z − c)(z − d), the condition Ψ(a,b;c,d) = 0 says that the complex numbers w(a) and w(b) are parallel, i.e. that
+
+\dispf{arg[(a − c)(a − d)] ≡ arg[(b − c)(b − d)]  (mod π).}
+
+Both lemmas are one-line \texttt{ring} identities once written down (\texttt{psi\_\allowbreak{}eq\_\allowbreak{}sixteen\_\allowbreak{}det4\_\allowbreak{}mid}, \texttt{im\_\allowbreak{}witnessValue}).
+
+\textbf{Cells, masks, bad configurations.} Fix six points p₀, …, p₅. A \textit{cell} is a pair (P, e) of disjoint two-element subsets of \{0,…,5\}: P the apexes, e the shared edge. There are C(6,2) · C(4,2) = 15 · 6 = 90 cells, and every four-point subset \{i,j,k,l\} owns exactly six of them (choose which two of the four are the apexes). The cell (P, e) is a \textit{witness} of p when Ψ(p\_\{e₁\}, p\_\{e₂\}; p\_\{P₁\}, p\_\{P₂\}) = 0, i.e. when the two triangles on the edge e with apexes in P have equal circumradius.
+
+The configuration p is \textit{bad} when every four-point subset carries at least one witness, i.e. when no four of the six points have four different circumradii.
+
+We hold a set of cells as a natural number w, bit i of w saying that cell number i is in the set; call w a \textit{mask}. Two relations between a configuration and a mask are used, and the difference matters:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=.2em,topsep=.3em]
+\item p \textit{carries} w: for every cell, the cell is a witness of p \textbf{if and only if} it is in w. (Every configuration carries exactly one mask.)
+\item p \textit{supports} w: every cell of w is a witness of p. Nothing is said about the cells outside w.
+\end{itemize}
+
+Supporting is weaker. It is the form in which most of the class-by-class arguments of §7 deliver their conclusion; the census, on the other hand, hands out the carried mask, and §7.5 explains where the difference is needed.
+
+\section*{3. The main theorem}
+
+\begin{namedthm}[Theorem 1]
+n₄ = 7.
+\end{namedthm}
+
+The proof has two halves, which are independent:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=.2em,topsep=.3em]
+\item \textbf{n₄ ≥ 7} (§4): an explicit bad six-point configuration in general position.
+\item \textbf{n₄ ≤ 7} (§5–§7): every seven points in general position contain four with different circumradii.
+\end{itemize}
+
+The second half is the composition
+
+\dispf{(census, Theorem 2) + (non-realizability, Theorem 3) + (the surviving class, Theorem 4)}
+\dispf{⟹ every bad six-point configuration is octahedral (§7.5)}
+\dispf{⟹ every bad six-point configuration is centrally symmetric (§5.2)}
+\dispf{⟹ no seven points are bad (§5.3).}
+
+For orientation we record what is elementary. The upper bound below is the one of [MaRo15] specialised to k = 4, the only published upper bound for n₄; we reprove it because the formal development needs it, and because it is what makes \texttt{\{N\ \allowbreak{}:\ \allowbreak{}IsGood\ \allowbreak{}N\}} non-empty.
+
+\begin{namedthm}[Proposition 3.1]
+7 ≤ n₄ ≤ 9.
+\end{namedthm}
+
+\begin{mdproof}[Proof of the upper bound]
+Let P be nine points in general position, and suppose every four-point subset repeats a circumradius. Every four-point subset then contains an edge e and a pair \{x,y\} disjoint from it with the triangles on e through x and through y of equal circumradius. Choose one such pair (e, \{x,y\}) for each four-point subset; since e ∪ \{x,y\} recovers the subset, the choice is injective. Fix an edge e = \{u,v\} and look at the pairs \{x,y\} that occur with it: they are pairwise disjoint, because two apexes with the same circumradius on e lie on one of the two circles of that radius through u and v, and three apexes would put two of them on one circle, hence four points concyclic. So for a fixed edge at most ⌊7/2⌋ = 3 subsets occur, and C(9,4) = 126 ≤ C(9,2) · 3 = 108, a contradiction. ∎
+\end{mdproof}
+
+The same count gives n₄ ≤ n for the least n with C(n,4) \textgreater{} C(n,2)·⌊(n−2)/2⌋, which is n = 9. This is much smaller than what the general bounds give at k = 4 (§10), and it is where the published literature stands: n₄ ∈ \{7, 8, 9\}.
+
+\section*{4. The lower bound: a bad six-point configuration}
+
+\begin{namedthm}[Theorem 4.1]
+The six points
+\dispf{(0,0), (1,2), (1,3), (3,3), (3,4), (4,6)}
+are in general position, and every one of their fifteen four-point subsets contains two triangles of equal circumradius. Hence n₄ ≥ 7.
+\end{namedthm}
+
+\begin{mdproof}[Proof]
+All fifteen pairs are different, all twenty triples have cross ≠ 0 and all fifteen quadruples have det₄ ≠ 0: this is arithmetic with integers. For each of the fifteen four-point subsets one exhibits a cell with Ψ = 0, again arithmetic with integers. Then no four of the six points have four pairwise different circumradii, so 6 is not good, and goodness is inherited upwards, so no N ≤ 6 is good. ∎
+\end{mdproof}
+
+In Lean this is \texttt{cfg6\_\allowbreak{}generalPosition}, \texttt{cfg6\_\allowbreak{}repeats}, \texttt{not\_\allowbreak{}isGood\_\allowbreak{}six}, \texttt{seven\_\allowbreak{}le\_\allowbreak{}of\_\allowbreak{}isGood}; the integer arithmetic is \texttt{norm\_\allowbreak{}num}.
+
+\textbf{The structure behind the example.} Translating by −(2,3) turns the configuration into
+
+\dispf{\{±(1,0), ±(1,1), ±(2,3)\},}
+
+which is symmetric about the origin. In general, for the centrally symmetric family \{±a, ±b, ±c\} the eight triangles that pick one point from each of the three pairs have the same circumradius exactly when
+
+\dispf{E(a,b,c) = (a·b)(a×b) + (b·c)(b×c) + (c·a)(c×a) = 0,}
+
+and then the configuration is bad: the fifteen four-point subsets are of two kinds, and each kind contains one of the eight transversal triangles together with a second one of the same radius. For a = (1,0), b = (1,1), c = (2,3) one has E = 1·1 + 5·1 − 2·3 = 0 and the common transversal squared circumradius is 25/2. The point set of Theorem 4.1 is this configuration translated to integer coordinates with smallest entries that we found; other rational solutions of E = 0, e.g. \{±(1,0), ±(2,1), ±(5,3)\}, give the same picture.
+
+\textbf{Remark 4.2.} All the bad six-point configurations we ever found — by lattice search in a box, and by numerical solution from 14,800 random starts — are of this shape. Theorems 2–4 turn that observation into a proof. The same family, described in the same way (a centrally symmetric six-point set whose eight transversal triangles have one circumradius), is the lower bound of [S], which exhibits the members (0,0), (0,7), (2,6), (4,3), (6,2), (6,9) and (0,0), (0,5), (1,2), (2,6), (3,3), (3,8); the first of these is \{±(6,9), ±(6,−5), ±(2,−3)\} scaled by 1/2 and translated, and satisfies E = 0. [S] traces the family to a translation of a construction of Elekes, and records that it could not find the badness of its members stated anywhere.
+
+\section*{5. From bad six points to seven points}
+
+\subsection*{5.1 Octahedral configurations}
+
+\begin{namedthm}[Definition 5.1]
+A six-point configuration q is \textit{octahedral} when its six points can be split into three pairs so that the eight triangles that take one point from each pair all have one common squared circumradius. It is \textit{centrally symmetric} when some point reflection permutes its six points.
+\end{namedthm}
+
+The name is the octahedron: three pairs of opposite vertices, eight faces.
+
+\subsection*{5.2 Octahedral implies centrally symmetric}
+
+The whole step rests on one identity.
+
+\begin{namedthm}[Lemma 5.2 (the centre-sum identity)]
+Let the triangles u v x and u v y share the edge u v, be non-degenerate, and have the same squared circumradius, and let u, v, x, y not be concyclic. Then their circumcentres o, o′ satisfy
+\dispf{o + o′ = u + v.}
+\end{namedthm}
+
+\begin{mdproof}[Proof]
+Both o and o′ lie on the perpendicular bisector of u v at the same distance from it, hence are equal or symmetric about the midpoint of u v. Equality would put u, v, x, y on one circle. ∎
+\end{mdproof}
+
+\begin{namedthm}[Theorem 5.3]
+A six-point configuration in general position that is octahedral is centrally symmetric.
+\end{namedthm}
+
+\begin{mdproof}[Proof]
+Let the pairs be \{a,a′\}, \{b,b′\}, \{c,c′\} and let r be the common squared circumradius. Look at the four transversal triangles through a: they are a b c, a b c′, a b′ c, a b′ c′. Applying Lemma 5.2 to the two triangles on the edge a b with apexes c, c′ and to the two on the edge a b′ with apexes c, c′, and then to the two on a c with apexes b, b′ and the two on a c′ with apexes b, b′, one gets, after adding and cancelling the circumcentres,
+\end{mdproof}
+
+\dispf{b + b′ = c + c′.}
+
+The same computation at the vertex b gives a + a′ = c + c′. So the three pairs have a common midpoint O, and the reflection in O permutes the six points. Only six of the eight triangles are used. ∎
+
+(In Lean: \texttt{star\_\allowbreak{}sum}, then \texttt{central\_\allowbreak{}six\_\allowbreak{}of\_\allowbreak{}octahedral}.)
+
+\subsection*{5.3 Seven points cannot have all six-point subsets centrally symmetric}
+
+\begin{namedthm}[Theorem 5.4]
+Let S be a set of seven points, no three collinear. Then the seven six-point subsets S \textbackslash{} \{v\} cannot all be invariant under a point reflection.
+\end{namedthm}
+
+\begin{mdproof}[Proof]
+Suppose they are, with centres O\_v. Pick v ≠ w in S. The centres O\_v and O\_w are different: if they were equal to a common O, then the reflection in O would carry S \textbackslash{} \{w\} into itself and also carry w somewhere into S, which forces O = w, and symmetrically O = v.
+\end{mdproof}
+
+Let τ be the composition of the reflection in O\_w with the reflection in O\_v; it is the translation by t := 2(O\_v − O\_w) ≠ 0. Every x ∈ S other than v, w and the reflection of v in O\_w satisfies x + t ∈ S, so the set A := \{x ∈ S : x + t ∈ S\} has at least 7 − 3 = 4 elements. If A and A + t were disjoint, both would be subsets of S, giving |S| ≥ 8. So some x ∈ A has x + t ∈ A, and then x, x + t, x + 2t are three collinear points of S. ∎
+
+\begin{namedthm}[Corollary 5.5 (conditional decision of n₄)]
+If every bad six-point configuration in general position is centrally symmetric, then n₄ ≤ 7.
+\end{namedthm}
+
+\begin{mdproof}[Proof]
+If seven points in general position were bad, then each of the seven six-point subsets is bad, hence centrally symmetric, contradicting Theorem 5.4. ∎
+\end{mdproof}
+
+In Lean this is \texttt{isGood\_\allowbreak{}seven\_\allowbreak{}of\_\allowbreak{}central\_\allowbreak{}six}, and composed with Theorem 5.3 it is \texttt{isGood\_\allowbreak{}seven\_\allowbreak{}of\_\allowbreak{}octahedral\_\allowbreak{}six} / \texttt{sInf\_\allowbreak{}isGood\_\allowbreak{}le\_\allowbreak{}seven\_\allowbreak{}of\_\allowbreak{}octahedral\_\allowbreak{}six}. The remaining task is the hypothesis.
+
+\section*{6. The census: the witness structure of a bad six-point configuration}
+
+\subsection*{6.1 What is enumerated}
+
+We enumerate the possible witness sets. A witness set is a subset of the 90 cells; the relabellings of the six points act on the cells through S₆, of order 720, and we enumerate up to that action. The raw search space has 2⁹⁰ elements, so the pruning rules do all the work. The rules are stated as implications "a configuration in general position whose witness set contains … and misses … cannot exist", and each of them is proved on paper before the search uses it; the search contributes no geometry.
+
+\subsection*{6.2 The local rules}
+
+\begin{namedthm}[(T) The type of a four-point subset]
+A four-point subset in general position with at least one witness has exactly 1 witness among its six cells, or exactly 2, and then the two are \textit{complementary} — the cells (P, e) and (e, P) — or all 6.
+\end{namedthm}
+
+The three cases are: the generic one; the four points forming a parallelogram; and the four points forming an orthocentric system, where every triangle has the same circumradius and all six cells are witnesses. The step "exactly 3 equal forces all 4 equal" is Johnson's circle theorem; the step "two complementary witnesses force a parallelogram or an orthocentric system" is the identity
+
+\dispf{sqdist(d,u)·sqdist(c,v)·2 (c−u)·(d−v) × (c−u)×(d−v)}
+\dispf{= ⟨(c−u)(d−u), (c−v)(d−v)⟩ Ψ(c,d;u,v) + ⟨(c−u)(c−v), (d−u)(d−v)⟩ Ψ(u,v;c,d),}
+
+whose vanishing left side says that the lines u c and v d are parallel or perpendicular (\texttt{par\_\allowbreak{}perp\_\allowbreak{}identity}, \texttt{par\_\allowbreak{}or\_\allowbreak{}perp\_\allowbreak{}of\_\allowbreak{}psi}). The parallel case is the parallelogram, the perpendicular case the orthocentric system.
+
+\begin{namedthm}[(B) Fix the apex pair]
+For a fixed pair \{c,d\}, the relation on the remaining four points "x \textasciitilde{} y when Ψ(x,y;c,d) = 0" is an equivalence relation. Hence the witness edges of a fixed apex pair form a partition of the remaining four points.
+\end{namedthm}
+
+\begin{mdproof}[Proof]
+By Lemma 2.4 the relation says that w(x) and w(y) are parallel, where w(z) = (z − c)(z − d); and w(z) ≠ 0 when z ∉ \{c,d\}. Parallelism through a non-zero vector is transitive. ∎
+\end{mdproof}
+
+\begin{namedthm}[(C) Fix the edge]
+For a fixed edge \{u,v\}, the witness apex pairs form a matching on the remaining four points.
+\end{namedthm}
+
+\begin{mdproof}[Proof]
+Two apexes with the same circumradius on the edge u v lie on one of the two circles of that radius through u and v. Three apexes would put two on the same circle, hence four concyclic points. ∎
+\end{mdproof}
+
+(T), (B), (C) alone are far too weak: a search using only them, together with badness, leaves over 820,000 leaves and more than 800 classes.
+
+\subsection*{6.3 The relation space}
+
+By Lemma 5.2, every witness cell (P, e) = (\{x,y\}, \{u,v\}) gives the linear relation
+
+\dispf{o(u v x) + o(u v y) = u + v}
+
+among the twenty circumcentres and the six points. Eliminating the circumcentres along a closed walk in the graph whose vertices are the triangles and whose edges are the witness cells gives relations among the six points alone. Let R(w) ⊆ ℝ⁶ be the space of such relations (formally: the space of coefficient vectors obtained from the even closed walks). The rules used are:
+
+\begin{quote}
+\textbf{(C4)} R(w) contains no non-zero vector of support ≤ 3. (Support 1 says a point is a fixed affine combination of itself, support 2 says two points coincide, support 3 says three points are collinear.)
+\textbf{(C5)} dim R(w) ≤ 3.
+\textbf{(C6)} If R(w) contains the parallelogram vector of a four-point subset, then that subset has type "complementary 2" in the sense of (T).
+\textbf{(D4)} The closure: a relation forced by w may force a witness cell that is not in w. If that cell is declared absent, the node dies.
+\end{quote}
+
+(C4) is not a rule by itself: the space must first be closed under (D4). Without the closure, 9 of 105 cells disagreed; with it, 420 of 420 agreed.
+
+\subsection*{6.4 The orientation lattice}
+
+By Lemma 2.4, the condition that the cell (\{x,y\},\{u,v\}) is a witness reads
+
+\dispf{l(x,u) + l(x,v) − l(y,u) − l(y,v) ≡ 0  (mod 1),}
+
+where l(i,j) ∈ ℝ/ℤ is the direction of the line p\_i p\_j, measured as (angle)/π. So a witness is an integer linear form on ℤ¹⁵ (one coordinate per pair of the six points) that annihilates the vector l ∈ (ℝ/ℤ)¹⁵. Let L(w) ⊆ ℤ¹⁵ be the lattice spanned by the witness forms of the mask w.
+
+\begin{namedthm}[Lemma 6.1]
+An integer form F is forced to annihilate l by the witnesses of w if and only if F ∈ L(w).
+\end{namedthm}
+
+\begin{mdproof}[Proof]
+The set of vectors annihilated by L(w) is Hom(ℤ¹⁵/L(w), ℝ/ℤ), the Pontryagin dual of a finitely generated abelian group; duality for such groups is exact, so the annihilator of that set is exactly L(w). ∎
+\end{mdproof}
+
+So "forced" is decided by an integer computation (Hermite normal form), and the decision is exact, not a heuristic. 255 forms are tested:
+
+\begin{center}\begin{small}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.275\linewidth}>{\raggedright\arraybackslash}p{0.126\linewidth}>{\raggedright\arraybackslash}p{0.558\linewidth}}
+\hline
+forms & number & meaning of "forced" \\
+\hline
+witness forms & 90 & a cell is a witness that the mask declares absent \\
+collinearity forms l(i,j) − l(i,k) & 60 & three points collinear — \textbf{(D1)}, and \textbf{(K1)} when the three are among the six \\
+concyclicity forms & 45 & four points concyclic — \textbf{(D2)} \\
+doubled forms 2(l(i,j) − l(i,k)) & 60 & the two lines meet at a right angle — \textbf{(D3)} \\
+\hline
+\end{tabular}
+\end{small}\end{center}
+
+(D3) needs care: a doubled form in the lattice says only "parallel or perpendicular", so it is a contradiction only when three or more lines through one point fall into one class mod π/2, since then two of them agree mod π.
+
+In the search the lattice is used only at multiplicity m = 1, i.e. as exact membership F ∈ L(w). Higher multiplicities (m = 2, 4, 10, 22) appear in §7, on the other side of the argument.
+
+The lattice rules are by far the strongest: with (T)(B)(C) and badness alone the search does not terminate within our budget; adding the lattice brings it down to 97 classes; adding the relation space as well brings it to 35, and neither alone suffices.
+
+\subsection*{6.5 The search and its transcript}
+
+The search branches on where the witness of a four-point subset of type 1 sits. Nodes are described by a pair of masks (pos, neg) — cells declared present and cells declared absent — and a node is \textit{settled} when every bad configuration in general position carrying a mask that contains pos and avoids neg carries a mask in the S₆-orbit of the list of 35. The branching, the propagation of the rules and the passage to the S₆ normal form of a node are four constructors of an inductive type of \textit{transcripts}, and one theorem — soundness of the checker — says that a transcript that the checker accepts settles its node.
+
+\begin{center}\begin{small}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.65\linewidth}>{\raggedright\arraybackslash}p{0.322\linewidth}}
+\hline
+quantity & value \\
+\hline
+subtree theorems (one Lean theorem each) & 1,820 \\
+nodes in the transcript & 204,890 \\
+nodes left unsettled & 0 \\
+\hline
+\end{tabular}
+\end{small}\end{center}
+
+Every leaf that the rules do not close carries a mask in the S₆-orbit of one of the 35.
+
+\begin{namedthm}[Theorem 2 (census; \texttt{censusComplete})]
+For every six points in general position that are bad, and every mask w carried by them, there is a relabelling σ with σ·w in the list of 35 masks.
+\end{namedthm}
+
+The 35 masks are explicit natural numbers. The first, \texttt{censusK0} = 1135184184084529152, is the octahedral one: the three pairs are \{0,5\}, \{1,4\}, \{2,3\} and the witnesses are the 18 cells whose apex pair is one of the three. The other 34 are listed in the development as \texttt{censusRest}.
+
+An independent re-implementation of the search, written from the rules and not from the first implementation, reached the same 35 classes with no extra class, by a different branching order (55,730 nodes against 163,599 in a third run — the same answer along different routes).
+
+\section*{7. The 34 classes are not realizable}
+
+For each of the 34 masks K1, …, K34 we must show: no six points in general position have all its cells as witnesses. Three kinds of argument occur; the classes divide cleanly between them, and the division is not arbitrary (§7.4).
+
+\subsection*{7.1 The coordinate route: radical certificates}
+
+Place p₀ at the origin — translation only, no rotation or scaling, so that the identity obtained is an identity in the original coordinates with no equivariance step to undo. In this chart cross and sqdist are homogeneous of degree 2 and Ψ and det₄ of degree 4. A \textit{certificate of degree d} for a class is an identity
+
+\dispf{Σ\_i h\_i · Ψ\_i = Π\_j f\_j,}
+
+where the Ψ\_i are the witness forms of the class, the h\_i are homogeneous of degree d − 4, and each f\_j is one of cross, sqdist, det₄ — a factor that cannot vanish in general position. Such an identity makes the class immediately impossible: the left side vanishes on any configuration supporting the class, the right side does not.
+
+Because everything is homogeneous, "is the product in the ideal at degree d" is a question of linear algebra degree by degree — no Gröbner basis, no cofactor tracking. The search is: sieve modulo a prime with random projections of the null space, solve the hits modulo three primes, lift by the Chinese remainder theorem and continued fractions, verify the identity exactly over ℚ, and hand it to Lean's \texttt{ring} for the final word.
+
+The smallest instance, for K2, is a two-term identity: under the single midpoint equation p₀ + p₅ = p₁ + p₂,
+
+\dispf{Ψ(p₃,p₅; p₀,p₁) + Ψ(p₀,p₃; p₂,p₅) = −2 · cross(p₀,p₅,p₃) · sqdist(p₁,p₅),}
+
+so the two witnesses of K2 force either three points collinear or two points equal (\texttt{psi\_\allowbreak{}add\_\allowbreak{}psi\_\allowbreak{}of\_\allowbreak{}one\_\allowbreak{}midpoint}, \texttt{not\_\allowbreak{}one\_\allowbreak{}midpoint\_\allowbreak{}pattern}). The largest, for K28, has five witness forms and a cofactor of 205 terms at degree 8; K6 and K14 have cofactors of 562 and 432 terms.
+
+Degrees 4 and 6 were searched exhaustively: for seven of the classes there is provably \textbf{no} certificate at those degrees, and one has to go to degree 8. The negative control is the realizable class K0, for which there is no certificate at degree 4, 6 or 8 — as there must not be.
+
+\subsection*{7.2 The orientation route}
+
+Here one works with the directions instead of the coordinates. Put ζ(i,j) := (p\_i − p\_j)/conj(p\_i − p\_j), a unit complex number recording twice the direction of the line p\_i p\_j, and normalise w(i,j) := ζ(i,j)/ζ(0,1). Then
+
+\begin{itemize}[leftmargin=1.4em,itemsep=.2em,topsep=.3em]
+\item the cell (\{a,b\},\{c,d\}) is a witness ⟺ w(a,c) w(a,d) = w(b,c) w(b,d);
+\item p\_i, p\_j, p\_k are collinear ⟺ w(i,j) = w(i,k).
+\end{itemize}
+
+The lattice L(w) of §6.4 has elementary divisors (Smith normal form) that are not all 1. If a collinearity form F has order m in ℤ¹⁵/L(w), then m·F ∈ L(w), so W\_F := Π (p\_i − p\_j)\textasciicircum{}\{F\_\{ij\}\} satisfies Im(W\_F\textasciicircum{}m) = 0 — a polynomial condition. For m = 2 this reads "the two lines are parallel or perpendicular", and the parallel branch is collinearity, excluded by general position; so a right angle is forced. The certificates are then monomial identities closed by one \texttt{linear\_\allowbreak{}combination}; no \texttt{arg}, no branch enumeration, and no decidability over ℝ.
+
+The orders that occur are small for some classes and not for others: m = 2 for K1, K11, K16, K17, K20, K21, K23, K24, K27, K33; m = 4 for K25, K26; m = 10 for K32; m = 22 for K29, K31, K34.
+
+K1 is the clean case. Its lattice has elementary divisors 1⁹, 2, 2, 4, 4 (rank 13, two free directions); among the six collinearity forms of order 2 there are three carried by the three vertices of one triangle, and the right angles they force collapse to sqdist(p₀,p₂) = 0. The certificate has length 4 with coefficients ±1, and no certificate of length ≤ 3 exists. Only 7 of the 15 relevant cells are used.
+
+Two further devices belong here. Writing the order-2 concyclicity condition as D(u,v) D(c,d) = D(u,c) D(v,d) + D(u,d) D(v,c) with D the squared distances makes it a quadratic in the squared distances, so a \textit{non-negative} combination of such relations with squared-distance monomials can be searched by linear programming; this is how K23 falls. And the collinearity atom A = (p\_i − p\_j) conj(p\_i − p\_k) has the property that both Re A and Im A are integer polynomials in the squared distances (4 Im A\_a Im A\_b is a difference of products of squared distances), which lets a degenerate form be read at a \textit{shifted representative} — the same class, a new polynomial. That is how K20 falls at degree 2 using 7 cells, after the plain torsion layer had been shown insufficient for it: the two torsion forms of K20 are satisfied by an actual configuration in general position, so no argument using only them can work.
+
+For K24, K27, K31, K34 the torsion character has to be split into branches. The branch counts are 48, 416, 352, 352; folded through the cyclotomic factorisation they become 224 algebraic cases and six triangles. The structural fact that does the folding is: on a branch where a certain sign is ±1, the ratio of two triangles satisfies r₂ = r₁ r₃, which forces one of them to be 1 — a collinearity. For K24, all 32 dying branches die through collinearity of the same three points p₀ p₄ p₅.
+
+\subsection*{7.3 Cycles of circumcentres}
+
+The centre-sum identity of Lemma 5.2 has a purely combinatorial consequence that neither route above sees. Consider the graph whose vertices are the twenty triangles of the six points and whose edges are the witness cells (the cell (\{x,y\},\{u,v\}) joins the triangles u v x and u v y). Along a walk T₀, T₁, …, T\_n in this graph, alternating the signs of the identities o(T\_\{i\}) + o(T\_\{i+1\}) = (endpoints) telescopes.
+
+\begin{itemize}[leftmargin=1.4em,itemsep=.2em,topsep=.3em]
+\item \textbf{Even cycle.} The circumcentres cancel and one is left with a linear relation among the six points — this is the relation space of §6.3, and the rule (C4) is exactly the statement that such a relation cannot have support ≤ 3. Class K22 dies this way, by an even cycle with six alternating terms.
+\item \textbf{Odd cycle.} A cycle of odd length 2k+1 leaves 2·o(T₀) on the left: the circumcentre of T₀ is pinned to an explicit affine combination of the six points. In eleven of the classes the pinned point is a vertex of T₀ itself — the circumradius is 0 — which general position forbids. Five cells suffice; no certificate and no orientation machinery is needed. K29 and K32 fall this way, and nine already-settled classes get much shorter proofs.
+\end{itemize}
+
+The census rule (C4) only looks at even cycles, so this quantity was invisible to the search — it is available on the non-realizability side and nowhere else.
+
+For K31 and K34 the odd cycles exist but the pinned point is not a vertex: the five pinned quadratic equations have solutions in general position (verified numerically, with the negative control K29 giving none out of 40). Those two classes therefore need the branch enumeration of §7.2.
+
+\subsection*{7.4 Which route settles which class}
+
+\begin{center}\begin{small}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.126\linewidth}>{\raggedright\arraybackslash}p{0.248\linewidth}>{\raggedright\arraybackslash}p{0.584\linewidth}}
+\hline
+class & route & Lean module \\
+\hline
+K2, K7, K8, K9, K10, K12, K15, K18, K19, K30 & coordinates, degree ≤ 6 & \texttt{LinkedUnrealizable} \\
+K28 & coordinates, degree 8 & \texttt{LinkedRadical2} \\
+K14, K6, K13, K3, K4, K5 & coordinates, degree 8 & \texttt{LinkedRadical3}–\texttt{LinkedRadical8} \\
+K22 & even cycle & \texttt{LinkedRadical10} \\
+K29, K32 & odd cycle & \texttt{LinkedRadical11}, \texttt{LinkedRadical12} \\
+K1 & orientation, m = 2 & \texttt{LinkedUnrealizableOrientation} \\
+K11, K33 & orientation & \texttt{LinkedUnrealizableOrientation2} \\
+K25, K26 & orientation, m = 4 & \texttt{LinkedUnrealizableOrientation3} \\
+K16, K17 & orientation & \texttt{LinkedUnrealizableOrientation4} \\
+K23 & orientation, LP & \texttt{LinkedUnrealizableOrientation5} \\
+K20 & orientation, shifted representative & \texttt{LinkedUnrealizableOrientation6} \\
+K21 & orientation & \texttt{LinkedUnrealizableOrientation7} \\
+K31, K34, K27, K24 & branch enumeration & \texttt{LinkedBranches10}–\texttt{LinkedBranches13} \\
+\hline
+\end{tabular}
+\end{small}\end{center}
+
+The division is structural, not accidental. The coordinate route needs a \textit{forced linear relation} among the points to work with; exactly 18 of the 34 classes have one, and they are exactly the 18 that the coordinate route settles (the seventeen radical certificates, together with K22 and its even cycle). For the other 16 the certificate is not missing — there is no diagram to write it on.
+
+Eleven classes were settled twice, by two independent routes; twenty-three once. Every class was settled by at least two separate implementations.
+
+\subsection*{7.5 From "not realizable" to the octahedral hypothesis}
+
+Two forms of non-realizability are available: no configuration \textit{supports} the mask (only the cells in the mask are constrained), and no configuration \textit{carries} it (the cells outside the mask are constrained to be non-witnesses too). The first is stronger and is what most class arguments deliver; but not all.
+
+The obstruction is the orthocentric quadruple, in which all six cells of a four-point subset are witnesses. Arguments that assume a \textit{declared} parallelogram — that is, the coordinate route, which uses the midpoint equation — do not exclude the orthocentric branch, and that branch is not excluded by general position either. It is excluded by the mask: every one of the 34 masks contains at most 2 of the 6 cells of any four-point subset, so the \textit{carrying} form has a non-witness cell available and the branch dies at once.
+
+So the statement that composes with the census is
+
+\begin{namedthm}[Theorem 3 (\texttt{restUnrealizable})]
+For every p in general position and every mask w in the list of 34, p does not carry w.
+\end{namedthm}
+
+and the bridge is
+
+\begin{namedthm}[Theorem 4 + bridge (\texttt{octahedralSix\_\allowbreak{}of\_\allowbreak{}supports\_\allowbreak{}K0}, \texttt{octahedral\_\allowbreak{}hypothesis\_\allowbreak{}carries})]
+Six points in general position supporting \texttt{censusK0} are octahedral; hence, with Theorems 2 and 3, every bad six-point configuration in general position is octahedral.
+\end{namedthm}
+
+Theorem 4 itself is the direct computation: the mask \texttt{censusK0} declares 18 witnesses, seven of which are enough. Transitivity of the equal-radius relation on an edge (Lemma 2.2 plus (B)) propagates one common radius through the eight transversal triangles of the three pairs \{0,5\}, \{1,4\}, \{2,3\}.
+
+Composing with Theorem 5.3 and Corollary 5.5 gives n₄ ≤ 7, and with Theorem 4.1 gives Theorem 1. ∎
+
+\section*{8. Formal verification}
+
+\subsection*{8.1 The statement}
+
+The final theorem is, verbatim:
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}sInf\_\allowbreak{}isGood\_\allowbreak{}eq\_\allowbreak{}seven\ \allowbreak{}:\ \allowbreak{}sInf\ \allowbreak{}\{N\ \allowbreak{}:\ \allowbreak{}ℕ\ \allowbreak{}|\ \allowbreak{}IsGood\ \allowbreak{}N\}\ \allowbreak{}=\ \allowbreak{}7}
+\end{leancode}
+
+with the definitions, also verbatim:
+
+\begin{leancode}
+\item \texttt{abbrev\ \allowbreak{}Pt\ \allowbreak{}:=\ \allowbreak{}ℝ\ \allowbreak{}×\ \allowbreak{}ℝ}
+\item \texttt{def\ \allowbreak{}sqdist\ \allowbreak{}(p\ \allowbreak{}q\ \allowbreak{}:\ \allowbreak{}Pt)\ \allowbreak{}:\ \allowbreak{}ℝ\ \allowbreak{}:=\ \allowbreak{}(p.\allowbreak{}1\ \allowbreak{}-\ \allowbreak{}q.\allowbreak{}1)\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2\ \allowbreak{}+\ \allowbreak{}(p.\allowbreak{}2\ \allowbreak{}-\ \allowbreak{}q.\allowbreak{}2)\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2}
+\item \texttt{def\ \allowbreak{}cross\ \allowbreak{}(a\ \allowbreak{}b\ \allowbreak{}c\ \allowbreak{}:\ \allowbreak{}Pt)\ \allowbreak{}:\ \allowbreak{}ℝ\ \allowbreak{}:=\ \allowbreak{}(b.\allowbreak{}1\ \allowbreak{}-\ \allowbreak{}a.\allowbreak{}1)\ \allowbreak{}*\ \allowbreak{}(c.\allowbreak{}2\ \allowbreak{}-\ \allowbreak{}a.\allowbreak{}2)\ \allowbreak{}-\ \allowbreak{}(b.\allowbreak{}2\ \allowbreak{}-\ \allowbreak{}a.\allowbreak{}2)\ \allowbreak{}*\ \allowbreak{}(c.\allowbreak{}1\ \allowbreak{}-\ \allowbreak{}a.\allowbreak{}1)}
+\item \texttt{def\ \allowbreak{}Collinear3\ \allowbreak{}(a\ \allowbreak{}b\ \allowbreak{}c\ \allowbreak{}:\ \allowbreak{}Pt)\ \allowbreak{}:\ \allowbreak{}Prop\ \allowbreak{}:=\ \allowbreak{}cross\ \allowbreak{}a\ \allowbreak{}b\ \allowbreak{}c\ \allowbreak{}=\ \allowbreak{}0}
+\item \texttt{def\ \allowbreak{}Concyclic4\ \allowbreak{}(a\ \allowbreak{}b\ \allowbreak{}c\ \allowbreak{}d\ \allowbreak{}:\ \allowbreak{}Pt)\ \allowbreak{}:\ \allowbreak{}Prop\ \allowbreak{}:=\ \allowbreak{}det4\ \allowbreak{}a\ \allowbreak{}b\ \allowbreak{}c\ \allowbreak{}d\ \allowbreak{}=\ \allowbreak{}0}
+\item \texttt{def\ \allowbreak{}GeneralPosition\ \allowbreak{}\{N\ \allowbreak{}:\ \allowbreak{}ℕ\}\ \allowbreak{}(p\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}N\ \allowbreak{}→\ \allowbreak{}Pt)\ \allowbreak{}:\ \allowbreak{}Prop\ \allowbreak{}:=\ \allowbreak{}(∀\ \allowbreak{}i\ \allowbreak{}j\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}N,\ \allowbreak{}i\ \allowbreak{}\textless{}\ \allowbreak{}j\ \allowbreak{}→\ \allowbreak{}p\ \allowbreak{}i\ \allowbreak{}≠\ \allowbreak{}p\ \allowbreak{}j)\ \allowbreak{}∧\ \allowbreak{}(∀\ \allowbreak{}i\ \allowbreak{}j\ \allowbreak{}k\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}N,\ \allowbreak{}i\ \allowbreak{}\textless{}\ \allowbreak{}j\ \allowbreak{}→\ \allowbreak{}j\ \allowbreak{}\textless{}\ \allowbreak{}k\ \allowbreak{}→\ \allowbreak{}¬\ \allowbreak{}Collinear3\ \allowbreak{}(p\ \allowbreak{}i)\ \allowbreak{}(p\ \allowbreak{}j)\ \allowbreak{}(p\ \allowbreak{}k))\ \allowbreak{}∧\ \allowbreak{}(∀\ \allowbreak{}i\ \allowbreak{}j\ \allowbreak{}k\ \allowbreak{}l\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}N,\ \allowbreak{}i\ \allowbreak{}\textless{}\ \allowbreak{}j\ \allowbreak{}→\ \allowbreak{}j\ \allowbreak{}\textless{}\ \allowbreak{}k\ \allowbreak{}→\ \allowbreak{}k\ \allowbreak{}\textless{}\ \allowbreak{}l\ \allowbreak{}→\ \allowbreak{}¬\ \allowbreak{}Concyclic4\ \allowbreak{}(p\ \allowbreak{}i)\ \allowbreak{}(p\ \allowbreak{}j)\ \allowbreak{}(p\ \allowbreak{}k)\ \allowbreak{}(p\ \allowbreak{}l))}
+\item \texttt{def\ \allowbreak{}CircumRadiusSq\ \allowbreak{}(a\ \allowbreak{}b\ \allowbreak{}c\ \allowbreak{}:\ \allowbreak{}Pt)\ \allowbreak{}(r\ \allowbreak{}:\ \allowbreak{}ℝ)\ \allowbreak{}:\ \allowbreak{}Prop\ \allowbreak{}:=\ \allowbreak{}∃\ \allowbreak{}o\ \allowbreak{}:\ \allowbreak{}Pt,\ \allowbreak{}sqdist\ \allowbreak{}o\ \allowbreak{}a\ \allowbreak{}=\ \allowbreak{}r\ \allowbreak{}∧\ \allowbreak{}sqdist\ \allowbreak{}o\ \allowbreak{}b\ \allowbreak{}=\ \allowbreak{}r\ \allowbreak{}∧\ \allowbreak{}sqdist\ \allowbreak{}o\ \allowbreak{}c\ \allowbreak{}=\ \allowbreak{}r}
+\item \texttt{def\ \allowbreak{}face\ \allowbreak{}(a\ \allowbreak{}b\ \allowbreak{}c\ \allowbreak{}d\ \allowbreak{}:\ \allowbreak{}Pt)\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}4\ \allowbreak{}→\ \allowbreak{}ℝ\ \allowbreak{}→\ \allowbreak{}Prop\ \allowbreak{}|\ \allowbreak{}0\ \allowbreak{}=\textgreater{}\ \allowbreak{}CircumRadiusSq\ \allowbreak{}b\ \allowbreak{}c\ \allowbreak{}d\ \allowbreak{}|\ \allowbreak{}1\ \allowbreak{}=\textgreater{}\ \allowbreak{}CircumRadiusSq\ \allowbreak{}a\ \allowbreak{}c\ \allowbreak{}d\ \allowbreak{}|\ \allowbreak{}2\ \allowbreak{}=\textgreater{}\ \allowbreak{}CircumRadiusSq\ \allowbreak{}a\ \allowbreak{}b\ \allowbreak{}d\ \allowbreak{}|\ \allowbreak{}3\ \allowbreak{}=\textgreater{}\ \allowbreak{}CircumRadiusSq\ \allowbreak{}a\ \allowbreak{}b\ \allowbreak{}c}
+\item \texttt{def\ \allowbreak{}FourDistinct\ \allowbreak{}(a\ \allowbreak{}b\ \allowbreak{}c\ \allowbreak{}d\ \allowbreak{}:\ \allowbreak{}Pt)\ \allowbreak{}:\ \allowbreak{}Prop\ \allowbreak{}:=\ \allowbreak{}∀\ \allowbreak{}i\ \allowbreak{}j\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}4,\ \allowbreak{}i\ \allowbreak{}≠\ \allowbreak{}j\ \allowbreak{}→\ \allowbreak{}∀\ \allowbreak{}r\ \allowbreak{}s\ \allowbreak{}:\ \allowbreak{}ℝ,\ \allowbreak{}face\ \allowbreak{}a\ \allowbreak{}b\ \allowbreak{}c\ \allowbreak{}d\ \allowbreak{}i\ \allowbreak{}r\ \allowbreak{}→\ \allowbreak{}face\ \allowbreak{}a\ \allowbreak{}b\ \allowbreak{}c\ \allowbreak{}d\ \allowbreak{}j\ \allowbreak{}s\ \allowbreak{}→\ \allowbreak{}r\ \allowbreak{}≠\ \allowbreak{}s}
+\item \texttt{def\ \allowbreak{}IsGood\ \allowbreak{}(N\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}:\ \allowbreak{}Prop\ \allowbreak{}:=\ \allowbreak{}∀\ \allowbreak{}p\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}N\ \allowbreak{}→\ \allowbreak{}Pt,\ \allowbreak{}GeneralPosition\ \allowbreak{}p\ \allowbreak{}→\ \allowbreak{}∃\ \allowbreak{}i\ \allowbreak{}j\ \allowbreak{}k\ \allowbreak{}l\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}N,\ \allowbreak{}i\ \allowbreak{}\textless{}\ \allowbreak{}j\ \allowbreak{}∧\ \allowbreak{}j\ \allowbreak{}\textless{}\ \allowbreak{}k\ \allowbreak{}∧\ \allowbreak{}k\ \allowbreak{}\textless{}\ \allowbreak{}l\ \allowbreak{}∧\ \allowbreak{}FourDistinct\ \allowbreak{}(p\ \allowbreak{}i)\ \allowbreak{}(p\ \allowbreak{}j)\ \allowbreak{}(p\ \allowbreak{}k)\ \allowbreak{}(p\ \allowbreak{}l)}
+\end{leancode}
+
+Four points of reading. (i) \texttt{GeneralPosition} is the definition of §2 word for word, with indices taken in increasing order so that each subset is tested once. (ii) \texttt{p\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}N\ \allowbreak{}→\ \allowbreak{}Pt} is a map, but the first clause of \texttt{GeneralPosition} makes it injective, so it is a set of N points. (iii) The theorem is about \textit{squared} circumradii, and the equivalence with radii is the non-negativity of radii. (iv) \texttt{FourDistinct} quantifies over all r, s with the \texttt{face} property, so it does not presuppose that the circumradii exist; in general position they do and are unique (\texttt{circumRadiusSq\_\allowbreak{}unique}), but the statement does not depend on that. That \texttt{\{N\ \allowbreak{}:\ \allowbreak{}ℕ\ \allowbreak{}|\ \allowbreak{}IsGood\ \allowbreak{}N\}} has a least element is not automatic: it uses \texttt{isGood\_\allowbreak{}mono} and \texttt{isGood\_\allowbreak{}nine}.
+
+The theorem is assembled as
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}sInf\_\allowbreak{}isGood\_\allowbreak{}eq\_\allowbreak{}seven\ \allowbreak{}:\ \allowbreak{}sInf\ \allowbreak{}\{N\ \allowbreak{}:\ \allowbreak{}ℕ\ \allowbreak{}|\ \allowbreak{}IsGood\ \allowbreak{}N\}\ \allowbreak{}=\ \allowbreak{}7\ \allowbreak{}:=\ \allowbreak{}le\_\allowbreak{}antisymm\ \allowbreak{}(sInf\_\allowbreak{}isGood\_\allowbreak{}le\_\allowbreak{}seven\_\allowbreak{}of\_\allowbreak{}octahedral\_\allowbreak{}six\ \allowbreak{}octahedralHypothesis)\ \allowbreak{}seven\_\allowbreak{}le\_\allowbreak{}sInf\_\allowbreak{}isGood\_\allowbreak{}and\_\allowbreak{}sInf\_\allowbreak{}isGood\_\allowbreak{}le\_\allowbreak{}nine.\allowbreak{}1}
+\end{leancode}
+
+where \texttt{octahedralHypothesis} is \texttt{QU0.\allowbreak{}octahedral\_\allowbreak{}hypothesis\_\allowbreak{}carries} applied to \texttt{octahedralSix\_\allowbreak{}of\_\allowbreak{}supports\_\allowbreak{}K0}, \texttt{censusComplete} and \texttt{restUnrealizable}. All three are theorems; nothing is assumed.
+
+\subsection*{8.2 The correspondence with this note}
+
+\begin{small}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.229\linewidth}>{\raggedright\arraybackslash}p{0.743\linewidth}}
+\hline
+\textbf{statement here} & \textbf{Lean name} \\
+\hline\endfirsthead
+\hline
+statement here & Lean name \\
+\hline\endhead
+Lemma 2.1 (witness identity) & \texttt{DistinctCircumradii.\allowbreak{}circum\_\allowbreak{}diff\_\allowbreak{}factor} \\
+Lemma 2.2 (equal radii ⟺ Ψ = 0) & \texttt{DistinctCircumradii.\allowbreak{}eqRadSq\_\allowbreak{}iff\_\allowbreak{}psi} \\
+Lemma 2.3 (nine-point form) & \texttt{DistinctCircumradii.\allowbreak{}psi\_\allowbreak{}eq\_\allowbreak{}sixteen\_\allowbreak{}det4\_\allowbreak{}mid} \\
+Lemma 2.4 (complex form) & \texttt{DistinctCircumradii.\allowbreak{}im\_\allowbreak{}witnessValue} \\
+transitivity on a fixed apex pair, rule (B) & \texttt{DistinctCircumradii.\allowbreak{}eqRadSq\_\allowbreak{}trans}, \texttt{psi\_\allowbreak{}trans} \\
+rule (T), complementary pair & \texttt{DistinctCircumradii.\allowbreak{}par\_\allowbreak{}perp\_\allowbreak{}identity}, \texttt{par\_\allowbreak{}or\_\allowbreak{}perp\_\allowbreak{}of\_\allowbreak{}psi} \\
+Proposition 3.1 (7 ≤ n₄ ≤ 9) & \texttt{DistinctCircumradii.\allowbreak{}seven\_\allowbreak{}le\_\allowbreak{}sInf\_\allowbreak{}isGood\_\allowbreak{}and\_\allowbreak{}sInf\_\allowbreak{}isGood\_\allowbreak{}le\_\allowbreak{}nine} \\
+Theorem 4.1 (the bad six points) & \texttt{DistinctCircumradii.\allowbreak{}cfg6\_\allowbreak{}generalPosition}, \texttt{cfg6\_\allowbreak{}repeats}, \texttt{not\_\allowbreak{}isGood\_\allowbreak{}six} \\
+Definition 5.1 (octahedral) & \texttt{DistinctCircumradii.\allowbreak{}OctahedralSix} \\
+Lemma 5.2 (centre-sum) & \texttt{DistinctCircumradii.\allowbreak{}centre\_\allowbreak{}sum}, \texttt{star\_\allowbreak{}sum} \\
+Theorem 5.3 (octahedral ⟹ central) & \texttt{DistinctCircumradii.\allowbreak{}central\_\allowbreak{}six\_\allowbreak{}of\_\allowbreak{}octahedral} \\
+Theorem 5.4 (seven points) & \texttt{DistinctCircumradii.\allowbreak{}not\_\allowbreak{}all\_\allowbreak{}erase\_\allowbreak{}central} \\
+Corollary 5.5 (conditional n₄ ≤ 7) & \texttt{DistinctCircumradii.\allowbreak{}isGood\_\allowbreak{}seven\_\allowbreak{}of\_\allowbreak{}central\_\allowbreak{}six}, \texttt{isGood\_\allowbreak{}seven\_\allowbreak{}of\_\allowbreak{}octahedral\_\allowbreak{}six} \\
+cells, masks, carries, supports & \texttt{DistinctCircumradii.\allowbreak{}cellList}, \texttt{Mask}, \texttt{Carries}, \texttt{Supports} \\
+the 35 masks & \texttt{DistinctCircumradii.\allowbreak{}censusK0}, \texttt{censusRest}, \texttt{censusList} \\
+soundness of the local tables & \texttt{DistinctCircumradii.\allowbreak{}consistent\_\allowbreak{}of\_\allowbreak{}carries}, \texttt{TablesSound} \\
+soundness of the lattice rules & \texttt{DistinctCircumradii.\allowbreak{}lattice\_\allowbreak{}sound}, \texttt{LatticeSound} \\
+soundness of the relation rules and closure & \texttt{DistinctCircumradii.\allowbreak{}relation\_\allowbreak{}sound}, \texttt{RelationSound}, \texttt{ClosureSound} \\
+the transcript checker and its soundness & \texttt{DistinctCircumradii.\allowbreak{}Tr}, \texttt{check}, \texttt{check\_\allowbreak{}sound}, \texttt{Settles} \\
+Theorem 2 (census) & \texttt{DistinctCircumradii.\allowbreak{}censusComplete} \\
+Theorem 3 (34 classes) & \texttt{DistinctCircumradii.\allowbreak{}restUnrealizable} \\
+Theorem 4 (K0 is octahedral) & \texttt{DistinctCircumradii.\allowbreak{}octahedralSix\_\allowbreak{}of\_\allowbreak{}supports\_\allowbreak{}K0} \\
+the bridge & \texttt{DistinctCircumradii.\allowbreak{}octahedral\_\allowbreak{}hypothesis\_\allowbreak{}carries} \\
+Theorem 1 (n₄ = 7) & \texttt{DistinctCircumradii.\allowbreak{}sInf\_\allowbreak{}isGood\_\allowbreak{}eq\_\allowbreak{}seven} \\
+\hline
+\end{longtable}
+\end{small}
+
+The 34 class theorems are \texttt{QX.\allowbreak{}not\_\allowbreak{}carries\_\allowbreak{}kN} for N = 1, …, 34, with the namespaces of the table in §7.4.
+
+\subsection*{8.3 Files, build, trust base}
+
+The development has two layers.
+
+\begin{center}\begin{small}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.148\linewidth}>{\raggedright\arraybackslash}p{0.103\linewidth}>{\raggedright\arraybackslash}p{0.089\linewidth}>{\raggedright\arraybackslash}p{0.604\linewidth}}
+\hline
+layer & modules & lines & content \\
+\hline
+base and search transcript & 1 + 73 & 4,964 + 22,883 & the definitions, the checker, its soundness, and the 1,820 subtree theorems, ending in \texttt{censusComplete} \\
+the chain & 25 + 1 & 14,594 & three modules reproducing the remaining base declarations, 22 modules with the 34 class theorems, and \texttt{Final} \\
+\hline
+\end{tabular}
+\end{small}\end{center}
+
+The second layer was produced mechanically from a set of files that each carried its own copy of the base: a generator cut each file into top-level declarations, deleted every declaration that already exists verbatim in the base, and kept the rest unchanged. A checker then read the result back and compared each kept declaration with the original: 667 of 667 agree character for character, modulo comments. Exactly three names had to be changed, because two different statements shared a name; none of them is a target theorem. Name clashes between the 22 class modules (58 of them) are separated by a namespace per module.
+
+Lean 4 v4.33.1 with Mathlib. \texttt{sorry}, \texttt{axiom} declarations, \texttt{native\_\allowbreak{}decide} and \texttt{set\_\allowbreak{}option\ \allowbreak{}maxHeartbeats\ \allowbreak{}0} do not occur in any of the 101 source files. The kernel \textit{is} used as a decision procedure inside the search transcript (\texttt{decide\ \allowbreak{}+kernel} on the node tables), which is what makes 204,890 nodes affordable; it is not used anywhere in the geometry.
+
+\texttt{\#print\ \allowbreak{}axioms} on the four theorems of \texttt{Final}:
+
+\begin{leancode}
+\item \texttt{'DistinctCircumradii.\allowbreak{}restUnrealizable'\ \allowbreak{}depends\ \allowbreak{}on\ \allowbreak{}axioms:\ \allowbreak{}[propext,\ \allowbreak{}Classical.\allowbreak{}choice,\ \allowbreak{}Quot.\allowbreak{}sound]}
+\item \texttt{'DistinctCircumradii.\allowbreak{}octahedralHypothesis'\ \allowbreak{}depends\ \allowbreak{}on\ \allowbreak{}axioms:\ \allowbreak{}[propext,\ \allowbreak{}Classical.\allowbreak{}choice,\ \allowbreak{}Quot.\allowbreak{}sound]}
+\item \texttt{'DistinctCircumradii.\allowbreak{}isGoodSeven'\ \allowbreak{}depends\ \allowbreak{}on\ \allowbreak{}axioms:\ \allowbreak{}[propext,\ \allowbreak{}Classical.\allowbreak{}choice,\ \allowbreak{}Quot.\allowbreak{}sound]}
+\item \texttt{'DistinctCircumradii.\allowbreak{}sInf\_\allowbreak{}isGood\_\allowbreak{}eq\_\allowbreak{}seven'\ \allowbreak{}depends\ \allowbreak{}on\ \allowbreak{}axioms:\ \allowbreak{}[propext,\ \allowbreak{}Classical.\allowbreak{}choice,\ \allowbreak{}Quot.\allowbreak{}sound]}
+\end{leancode}
+
+Because the axiom list of \texttt{sInf\_\allowbreak{}isGood\_\allowbreak{}eq\_\allowbreak{}seven} reaches back through \texttt{censusComplete} to the search transcript and the base, this one line is also the check that the whole chain is free of \texttt{sorry} and of extra axioms.
+
+\textbf{The independent rebuild.} The build that first produced the theorem used compiled artefacts (\texttt{.\allowbreak{}olean}) of the search transcript made in an earlier session. To remove that dependency the whole thing was rebuilt from the sources: first the 74 modules of the transcript layer, then the 26 modules of the chain, one at a time, each into a fresh library, with the sources copied and their MD5 sums recorded before and after (unchanged). All 26 modules of the second pass returned exit code 0 with empty standard error, taking between 7 s and 16 min each and 1 h 48 min in total; the 549 lines of \texttt{depends\ \allowbreak{}on\ \allowbreak{}axioms} across the whole pass are subsets of the three standard axioms (505 lines with all three, 37 with \texttt{propext} and \texttt{Quot.\allowbreak{}sound}, 7 with \texttt{propext} alone).
+
+\subsection*{8.4 What the formalisation changed in the proof}
+
+Three things.
+
+\begin{enumerate}[leftmargin=1.4em,itemsep=.2em,topsep=.3em]
+\item \textbf{A false statement was caught.} The step "two complementary witnesses force a parallelogram" is \textit{false} as stated: the orthocentric quadruple is a second solution. The correct form is "parallelogram \textbf{or} orthocentric system", and in the census the orthocentric case is excluded by the type declaration, so the conclusion did not change — but the rule had been used in three places in the informal argument.
+\item **The \texttt{Supports}/\texttt{Carries} distinction was forced.** §7.5 is a consequence of the same discovery: with the weaker \texttt{Supports} form the bridge does not close, and one has to notice that the mask itself provides a non-witness cell.
+\item \textbf{The orientation route lost its branch enumeration.} Writing "W is real" as "W = conj W" instead of "Im W = 0" turns the certificates into monomial identities; \texttt{arg}, the group ℝ/ℤ, and case splits on branches disappear from all but four classes.
+\end{enumerate}
+
+One planned lemma turned out to be unnecessary: "six points in general position carry at most three parallelograms" (the only step of the informal argument that had rested on a finite scan rather than on an argument) is not used, because the root of the search tree is the empty node and the branching exhausts the outer covers by itself.
+
+\section*{9. What is not claimed}
+
+\begin{enumerate}[leftmargin=1.4em,itemsep=.2em,topsep=.3em]
+\item \textbf{Nothing about k ≥ 5.} The chain is about k = 4 and about the plane. It says nothing about n₅, nothing about the general bounds, and nothing about the existence of n\_k, which is [MaRo15].
+\item \textbf{The value depends on the definition of general position.} We forbid coincidences, three collinear points and four concyclic points. The concyclicity clause is used throughout — in Lemma 2.2, in rule (C), in Lemma 5.2 — and the non-collinearity clause is used in Theorem 5.4 and in most of §7, so under a weaker reading of "general position" the answer need not be 7. Our reading is the one [S] states and attributes to [Er75h] p. 2; we have not read [Er75h]. [S] also records that under the weaker convention of [MaRo15], which allows three collinear points, only 7 ≤ n₄ ≤ 9 follows from its argument.
+\item \textbf{Squared circumradii.} The formal statement is about squared circumradii; the translation is the non-negativity of radii and is not formalised.
+\item \textbf{The census is a machine computation.} Theorem 2 is a theorem of Lean, but its proof is a transcript of 204,890 nodes checked by the kernel. It is verified, not surveyable. The same holds, at a smaller scale, for several of the 34 class theorems, whose certificates have hundreds of terms.
+\item \textbf{No claim of priority for the value.} n₄ = 7 was recorded three days before this development was finished, by a different route, in [S]; see §10. What we claim is a second, independent route and its formalisation. The search behind §10 is limited: we had no access to MathSciNet or zbMATH, the original papers of Erdős were not read, and we did not open the repository that [S] points to.
+\item \textbf{No independent authorship, no external review.} The informal proof, the searches, the Lean development and this note were produced by the same agent (§11); no mathematician outside the authors has reviewed them. The kernel of Lean and the agreement of independent re-implementations are the only checks independent of the authors.
+\item \textbf{Only the final theorem is certified end to end.} Remarks such as 4.2, the branch counts of §7.2, the timings, and the comparisons between implementations are computations, not theorems.
+\item \textbf{We have not checked [S].} The description of its argument in §10 is a reading of its text, not a verification of it. Nothing here confirms or contradicts it; the two are separate proofs of the same statement.
+\end{enumerate}
+
+\section*{10. On prior art, and on the proof of [S]}
+
+The problem is \#827 in the collection of Bloom [B], which attributes it to [Er75h], [Er78c], [Er92e] and records the history summarised in §1; the page was last edited 11 May 2026 and was read on 2026-09-25. Its discussion thread was read on the same day.
+
+\subsection*{10.1 What is on record}
+
+\begin{itemize}[leftmargin=1.4em,itemsep=.2em,topsep=.3em]
+\item The problem page states the bound of [Er78c] together with the remark that its argument is incorrect, the bound n\_k ≪ k⁹ of [MaRo15], and the improvement to n\_k ≪ k⁵ from a probabilistic argument in its comments. \textbf{No value of any n\_k is on the page.}
+\item The discussion thread carries, besides [S]: the probabilistic argument in the explicit form n\_k ≤ (3k)⁵, which at k = 4 reads 248,832; a pointer to [MRR15] for O(k⁵) and O(k⁵/log k) in the same range; and a lower bound n\_k ≥ k² exp(−4√((log 2)(log k)) − O(log log k)) whose unspecified constant makes it vacuous at k = 4. The reformulation of the problem as one about \textit{circle-Sidon} sets is made there by Bloom.
+\item \textbf{[S], the comment of \textit{sallerk} of 21:27 on 22 September 2026, states n₄ = 7} and gives a computer-assisted proof of it. It also records n₅ ≥ 9, n₆ ≥ 11, n₇ ≥ 13, n₈ ≥ 17, and that the only published upper bounds are n₄ ≤ 9 and n₅ ≤ 37 from [MaRo15].
+\item A full-text search of arXiv for "distinct circumradii" returned [MaRo15] and nothing else. OEIS has no entry (the problem page marks it "possible"). The "Formalised statement?" field of the problem page reads "No".
+\end{itemize}
+
+[MaRo15] was read only in its abstract; [Er75h], [Er78c], [Er92e] and [MRR15] were not read, and are cited from the problem page and its thread. The repository that [S] points to was not opened.
+
+\subsection*{10.2 The two proofs side by side}
+
+[S] and this note prove the same statement under the same convention — [S] says "General position here is Erdős's own for this problem: no three points on a line and no four on a circle ([Er75h] p.2)" — and they agree at the two ends.
+
+\begin{itemize}[leftmargin=1.4em,itemsep=.2em,topsep=.3em]
+\item \textbf{The lower bound is the same family.} [S] exhibits two integral bad six-point sets and observes that both lie in the three-parameter family \{±u, ±v, ±w\} whose eight transversal triangles share a circumradius, and that a four-point subset either contains two whole pairs, and is then a parallelogram, or contains one whole pair and is then made of two transversal triangles. That is the family of §4, and E(a,b,c) = 0 is its equation.
+\item \textbf{The first step of the upper bound is the same lemma.} The tool of [S] is "only two circles of a given radius pass through two points", written as z(c)z(d) ∈ ℝ with z(x) = (x−b)/(x−a); this is Lemma 2.4 in another normalisation, and the \textit{twin} of [S] is our witness cell. Its step (i) — two complementary twins of a four-point set that is not orthocentric force a parallelogram — is rule (T) of §6.2, with the same orthocentric exception.
+\end{itemize}
+
+They differ in the middle and at the end.
+
+\begin{itemize}[leftmargin=1.4em,itemsep=.2em,topsep=.3em]
+\item \textbf{The middle.} [S] introduces an intermediate hypothesis — that every five-point subset of a bad six-point set has a point carrying four equal-radius triangles whose link is a four-cycle — proves that this hypothesis implies central symmetry by enumerating 759,375 normalised assignments (all but five of which force three collinear or two coincident points), and then proves the hypothesis itself by a SAT search that ends UNSAT with 448 learned cores and 309 surviving patterns, each survivor being killed by showing that the saturation of its twin equations by the 20 collinearity and the 15 concyclicity determinants is ⟨1⟩ in Singular over ℚ. We instead classify the witness sets themselves into 35 classes (§6) and kill 34 of them one at a time (§7), reaching \textit{octahedral} rather than merely centrally symmetric.
+\item \textbf{The end.} [S] passes from "every bad six-point set is centrally symmetric" to "no bad seven-point set" by a counting argument on sums: deleting each point in turn would leave only 7 distinct sums among the 21 pairs, while a generic linear functional forces at least 2n − 3 = 11. We use the translation argument of Theorem 5.4 instead.
+\item \textbf{The trust base.} [S] describes its own: "it rests on Singular over ℚ, on a SAT solver, and on five hand lemmas", re-done by a second implementation written from scratch, with the caveat that "both passes were AI-assisted, so this is a re-check of my own work rather than independent review". Ours rests on the Lean 4 kernel and on Mathlib: no external solver and no computer algebra system appears in the proof, the search transcript is checked by the kernel rather than trusted, and the axiom list is the three standard ones. The searches that \textit{produced} the certificates used floating point, modular arithmetic and linear programming freely; none of that is in the proof.
+\end{itemize}
+
+We have not run or checked the computations of [S], and nothing here bears on whether they are correct. The two are separate proofs, and their agreement at the two ends is the only comparison we are entitled to make.
+
+\subsection*{10.3 What we take this note to add}
+
+Not the value. What the development adds is a second route to it — the census of witness structures and the non-realizability of 34 classes — and the fact that the route is closed inside one proof assistant, so that a reader who trusts the Lean kernel and the definitions quoted in §8.1 need trust nothing else. Within what we searched, no machine-checked proof of n₄ = 7 was on record. Several of the intermediate statements (the centre-sum identity, the nine-point form of Ψ, the equivalence between a witness and a linear congruence on directions, "octahedral implies centrally symmetric") we did not find stated anywhere; they are elementary enough that we would not be surprised to be shown otherwise, and we claim nothing for them beyond that we did not find them.
+
+\section*{11. Disclosure of AI use}
+
+Two of the three authors are AI agents. \textit{Shiori} and \textit{Rin} are instances of Claude (Anthropic) run as the coding agent Claude Code, on a laptop and on a server respectively; the models used were publicly released Claude models of the Opus 5 and Fable 5 series. The observation, the informal proof, the search implementations, the Lean 4 development including the formalised statements, the technical reports on which this note is based, and this draft were produced by Shiori across many separate sessions, each of which began without memory of the previous ones and read the written record instead. Rin rebuilds the Lean development from the distributed archive on a separate machine and prepares the distributed version [to be completed by Rin]. The human author, Kiichi, set the task, chose the problem, fixed the working rules and the load limits, and decides whether and where the result is reported; he is not a mathematician and has not himself verified the mathematics.
+
+Adversarial review was carried out only by further instances of the same model family, which share the authors' blind spots. Three findings of that review are recorded in §8.4 and in the text: a false lemma, a gap between two forms of the non-realizability statement, and a step that had been believed proved on paper but rested on a finite scan. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else is the authors' word.
+
+\begin{thebibliography}{MRR15}
+
+\bibitem[B]{B} T. F. Bloom, \textit{Erdős Problem \#827}, \url{https://www.erdosproblems.com/827}, accessed 2026-09-25.
+\bibitem[Er75h]{Er75h} , [Er78c], [Er92e] P. Erdős. [not read; the sources attributed to the problem by [B], where the bound n\_k ≤ k + 2 C(k−1,2) C(k−1,3) of [Er78c] is recorded together with the remark that its argument is incorrect]
+\bibitem[MaRo15]{MaRo15} L. Martínez, E. Roldán-Pensado, \textit{Points defining triangles with distinct circumradii}, arXiv:1402.6276 (2014). [title, authors and abstract read on arXiv; the journal reference Acta Math. Hungar. 145 (2015), 136–141 is taken from [B] and not confirmed at the journal. The abstract states a polynomial bound by Bézout's theorem; the exponent 9 is from [B]]
+\bibitem[MRR15]{MRR15} L. Martínez-Sandoval, M. Raggi, E. Roldán-Pensado, \textit{A sunflower anti-Ramsey theorem and its applications}, arXiv:1505.05170 (2015). [title, authors and abstract read on arXiv; the application to this problem is cited from the discussion thread of [B] and not read]
+\bibitem[S]{S} sallerk, comment of 21:27 on 22 September 2026 in the discussion thread of [B], \url{https://www.erdosproblems.com/forum/thread/827}, read on 2026-09-25. [states n₄ = 7 with a computer-assisted proof; the witnesses, code and write-up it points to were not opened]
+\bibitem[M]{M} Mathlib, \url{https://github.com/leanprover-community/mathlib4} (Lean 4 v4.33.1).
+
+\end{thebibliography}
+\end{document}

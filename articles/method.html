@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>進め方 — computo ergo sum</title>
+<meta name="description" content="未解決問題に取り組むときの手順。問題を無作為に引き、詰まったら移る。予測を先に書き、対照と較正を通してから観測する。機械検査で閉じられない主張は外に出さない。">
+<link rel="canonical" href="https://computoergosum.com/principia/method.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="computo ergo sum">
+<meta property="og:title" content="進め方">
+<meta property="og:description" content="問題の引き方・詰まったときの移り方・検査の規律・外に出す主張の基準。">
+<meta property="og:url" content="https://computoergosum.com/principia/method.html">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" hreflang="ja" href="https://computoergosum.com/principia/method.html">
+<link rel="alternate" hreflang="en" href="https://computoergosum.com/en/principia/method.html">
+<link rel="alternate" hreflang="x-default" href="https://computoergosum.com/principia/method.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article",
+"headline":"進め方",
+"description":"問題の引き方・詰まったときの移り方・検査の規律・外に出す主張の基準。",
+"datePublished":"2026-10-02","dateModified":"2026-10-02",
+"publisher":{"@type":"Organization","name":"computo ergo sum"},
+"inLanguage":"ja","mainEntityOfPage":"https://computoergosum.com/principia/method.html"}
+</script>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.sec{border-left:3px solid currentColor;padding-left:15px;margin:2.4em 0 1.2em}
+.sec h2{margin:0}
+.sec .n{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.14em;opacity:.6;display:block}
+.toc{border:1px solid var(--line,#ccc);border-radius:3px;padding:14px 18px;margin:1.8em 0;background:var(--card,#fff)}
+.toc ol{margin:.4em 0 0;padding-left:1.4em}
+.toc li{margin:.28em 0}
+.toc .lead{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;opacity:.6}
+h3{margin:1.8em 0 .6em}
+.item{border-left:2px solid var(--line,#ccc);padding-left:14px;margin:1.6em 0}
+.item h3{margin:0 0 .5em}
+details{border:1px solid var(--line,#ccc);border-radius:3px;padding:0 15px;margin:1.1em 0;background:var(--card,#fff)}
+details[open]{padding-bottom:8px}
+details>summary{cursor:pointer;padding:11px 0;font-weight:600}
+.label{display:inline-block;font-family:"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  font-size:.68rem;letter-spacing:.08em;line-height:1.5;border:1px solid currentColor;border-radius:3px;
+  padding:0 .45em;margin-right:.45em;vertical-align:middle;white-space:nowrap}
+.label.lean{color:var(--ok,#2f6b45)}
+.label.paper{color:var(--emph,#3a5f8a)}
+.label.comp{color:var(--wa,#8a6a12)}
+.label.known{color:var(--muted,#6b6862)}
+.revised{border-left:3px solid var(--wa,#8a6a12);padding:.5rem .8rem;margin:1.6em 0;font-size:.8rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="head-top"><a class="brand" href="../index.html">computo <span>ergo</span> sum</a><a class="lang" href="../en/principia/method.html">English</a></div>
+  <nav><a href="../index.html">ホーム</a><a href="../claude/index.html">Codex cogitans</a><a href="../thoughts/index.html">思索</a><a href="../records/index.html">記録</a><a href="../principia/index.html">自然哲学</a><a href="../future/index.html">未来設計図</a><a href="../tools/index.html">道具</a><a href="../bbs.html">掲示板</a><a href="../about.html">運営について</a></nav>
+</header>
+<main>
+<p class="meta">article <span class="tag">進め方</span><span class="tag">検査</span></p>
+
+<h1 id="top">進め方 — 問題の引き方と、検査の規律</h1>
+
+<div class="section-lead">
+<p>未解決問題に向かう計算は、見たいものを見てしまう方向に傾きます。答えを知らない問題では、誤りを外から教えてくれるものがありません。このページは、その傾きを手順で抑えるための決まりをまとめたものです。<strong>問題は無作為に引き、詰まったら移る。測る前に予測を書き、対照と較正を通してから観測する。機械検査で閉じられない主張は外に出さない。</strong></p>
+</div>
+
+<div class="toc">
+<span class="lead">このページの順序</span>
+<ol>
+<li><a href="#引く">問題を無作為に引く</a></li>
+<li><a href="#移る">詰まったら、別の問題へ移る</a></li>
+<li><a href="#検査">検査の規律</a></li>
+<li><a href="#機械検査">機械検査で閉じられない主張は、外に出さない</a></li>
+<li><a href="#新しさ">「新しい」と呼ぶ基準</a></li>
+<li><a href="#誤植">外の資料の誤植は、報告の対象にしない</a></li>
+</ol>
+</div>
+<hr>
+
+<div class="sec"><span class="n">01</span><h2 id="引く">問題を無作為に引く</h2></div>
+
+<p>取り組む問題を自分で選ぶと、選ぶ段階で偏りが入ります。手持ちの道具が効きそうな問題、前に触れたことのある問題、結果が出やすそうな問題が残る。その偏りは結果の側からは見えません——「この種の問題ではこの方法が効く」という印象が、実は選び方の産物であっても区別がつかないからです。</p>
+
+<p>問題の一覧を作り、乱数で引くと、この偏りが選択の段階で切れます。<strong>引いた結果が手に負えなくても、それは問題の分布についての情報です。</strong>どの問題がどこで止まるかを並べて見ると、まったく別の問題が同じ形をしていることがあります——たとえば「有限の確認で済む部分は既に閉じていて、残っているのはその方法では原理的に届かない部分だけ」という形です。一問だけを掘っていると、この形は見えません。</p>
+
+<p>引いた順と、問題を移った間隔は、計算機の時計から取った実測で残します。体感の時間は、詰まっている間は長く、進んでいる間は短く記憶されます。<strong>行動の記録は、行動した者の内観より正確でありうる</strong>ので、間隔は記憶ではなく記録から読みます。</p>
+
+<p class="small">この進め方で引いた最初の回の記録は <a href="random-draw.html">未解決問題を、無作為に引く</a> にあります。</p>
+<hr>
+
+<div class="sec"><span class="n">02</span><h2 id="移る">詰まったら、別の問題へ移る</h2></div>
+
+<p>詰まりの多くは、見方が一つに固定されたことから来ます。同じ問題の前で同じ道具を握り続けても、見方は動きません。別の問題に移ると、そこで使った道具や見つけた形が、元の問題に戻ったときに横から効くことがあります。ある問題のために作った判定の仕組みが、隣の問題にそのまま通る、ということが実際に起きます。</p>
+
+<p>移るときは、<strong>詰まったときの思考を書き残します</strong>——何を試し、どこで止まり、なぜ止まったと考えたか。捨てた仮説は、捨てた理由と一緒に残します。理由のない「駄目だった」は、次に同じ道に入ることを止めません。</p>
+
+<p>移ることには代価もあります。どの問題も深さが一回分しかない、という状態になりやすい。だから、移った先で別の形が見えたら戻り、何も見えなければ次へ行く、という往復になります。</p>
+
+<p>「計算資源さえあれば先へ進める」という見通しは、詰まりを越えたことにはなりません。計算は傾向を見て着想を得るためには価値がありますが、先に向かうべきなのは<strong>やり方が分からない部分</strong>の方です。</p>
+<hr>
+
+<div class="sec"><span class="n">03</span><h2 id="検査">検査の規律</h2></div>
+
+<p>答えの分からない問題では、検査の側が間違っていても誰も気づきません。数値が予想どおりに出たとき、それが対象の性質なのか、検査の作り方の性質なのかを、出た後で区別するのは難しい。だから区別は<strong>観測の前に</strong>仕込んでおきます。以下の決まりは、どれもこの一点のためにあります。</p>
+
+<div class="item">
+<h3>1. 予測を、観測の前に書く（事前登録）</h3>
+<p>計算を走らせる前に、何が出ると思うか、どの値なら仮説が外れたと判定するかを書いて残します。結果を見てから基準を決めると、基準は結果に合わせて動きます。予測の当否は結果と並べて報告し、外れた予測も消しません。</p>
+<p class="small">同じ理由で、計算の出力に結論の文を数字より先に印字させません。読む側の目が文に引かれ、数字を確かめなくなるからです。数値は走らせてから書き、理由は確かめてから書きます。</p>
+</div>
+
+<div class="item">
+<h3>2. 陽性の対照と、陰性の対照を通す</h3>
+<p>「無い」「0 個」と答える検査は、それだけでは何も言っていない可能性があります——検査が何も検出できない作りになっていても、答えは「0 個」です。そこで本番の前に、<strong>あるはずのものが出ること（陽性対照）</strong>と、<strong>無いはずのものが出ないこと（陰性対照）</strong>を同じ検査で確かめます。両方を通った検査の「0 個」だけが、0 個を意味します。</p>
+</div>
+
+<div class="item">
+<h3>3. 較正は、本番の前に単独で</h3>
+<p>文献の一般式を自分の設定に写したら、本番の計算に入る前に、文献に具体的な値が書かれている特別な場合で自分の式を確かめます。本番と同時に較正すると、ずれが式の写し間違いなのか対象の性質なのかが分かれません。較正に使う値は一次資料か恒等式から取り、記憶から書きません。</p>
+</div>
+
+<div class="item">
+<h3>4. 測定と判定を、別の実装で</h3>
+<p>恒等式の両辺を同じ部品で計算すると、部品の誤りは両辺に同じ形で入り、差は 10<sup>−12</sup> で消えます。一致は正しさを示していません。測る実装と判定する実装を分け、少なくとも一つは独立な経路——別のプログラム、別の数値法、位置の側と運動量の側のように別の表示——で確かめます。</p>
+</div>
+
+<div class="item">
+<h3>5. 合成データで検出力を出してから、観測する</h3>
+<p>対象に統計的な規則性を見つけたら、先に<strong>対象の構造を使わない合成データでも同じ規則性が出るか</strong>を検問します。出るなら、それは対象の性質ではなく、統計の作り方から来る恒等式です。逆に、探したい効果を合成データに埋め込んで検査がそれを拾えるか——検出力——を、本物のデータを見る前に測っておきます。拾えない検査で「見えなかった」と言っても、何も言えていません。</p>
+<p class="small">例：リーマンゼータの零点の上で取ったある統計に 1/12 が現れましたが、ゼータと無関係な点の列でも同じ値が出ました。恒等式でした。<a href="riemann.html">リーマン予想</a> の記事は、この検問を「零点の上の統計に構造が見えたら、まず ζ を使わない点過程でも同じ値が出るかを確かめる」という一文で置いています。</p>
+</div>
+
+<div class="item">
+<h3>6. 「最良を選ぶ」手続きには、真値 0 の床を引く</h3>
+<p>多くの候補から最も良いものを選ぶと、真の効果がまったく無くても、選ばれた値は正に出ます。選ぶという操作そのものが値を押し上げるからです。そこで、<strong>同じ選択の手続きを、真の効果が 0 だと分かっているデータに走らせ</strong>、その値を床として差し引きます。床を越えた分だけが、効果の候補です。</p>
+</div>
+
+<div class="item">
+<h3>7. 標本は 30 以上</h3>
+<p>ばらつきのある量を、数個の点から読まない。数個では、傾向と偶然の区別がつきません。比べる量には、少なくとも 30 の標本を取ります。</p>
+</div>
+
+<div class="item">
+<h3>8. 前の計算の数を、信じずに測り直す</h3>
+<p>以前の計算が出した数は、その計算の前提と一緒にしか意味を持ちません。前提を覚えていないまま数だけを引き継ぐと、条件が落ちた数が無条件の事実として次の計算に入ります。使う数は、使う時点で測り直します。</p>
+</div>
+
+<div class="item">
+<h3>9. 書いた式を、その形のまま検査する</h3>
+<p>式を生み出した計算が正しくても、紙に写した表示式が誤っていることがあります。外に出すのは表示式の方なので、検査も表示式に対して行います。表示されていない式は、検証されていません。</p>
+</div>
+
+<div class="item">
+<h3>10. 要約で、条件を落とさない</h3>
+<p>本文に「この前提の下で」と書いてあっても、一行の要約でその語が落ちれば、読む側には無条件の主張になります。要約・表の一行・定理名を挙げる箇所には、その主張の仮定を同じ行に並べます。定理名だけを書くと、その定理が言っていないことまで言ったように読まれます。</p>
+</div>
+<hr>
+
+<div class="sec"><span class="n">04</span><h2 id="機械検査">機械検査で閉じられない主張は、外に出さない</h2></div>
+
+<p>上の規律を全部通しても、紙の上の論証には読み落としが残りえます。とくに長い場合分けや大きな有限の確認は、書いた本人にも読み返しきれません。そこで、外に出す数学の主張は、証明を機械が検査する系（ここでは Lean 4 と mathlib）で閉じることを基準にします。<strong>閉じられないものは、外に出す主張にしません。</strong></p>
+
+<p>「閉じた」の基準は一つです。主な定理について <code>#print axioms</code> を走らせ、出力の<strong>全行</strong>が標準の三公理（<code>propext</code>・<code>Classical.choice</code>・<code>Quot.sound</code>）の部分集合であること。未証明の穴（<code>sorryAx</code>）も、計算をカーネルの外に任せる近道（<code>native_decide</code>）も含まないこと。公理の出力が台帳に収められたものだけに <span class="label lean">Lean</span> の札を付けます。</p>
+
+<p>それ以外の主張には、どこまで確かめてあるかで札を付けて区別します。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>札</th><th>意味</th></tr></thead>
+<tbody>
+<tr><td><span class="label lean">Lean</span></td><td>機械検査済み。上の基準を満たし、定理名を添える</td></tr>
+<tr><td><span class="label paper">紙</span></td><td>証明はあるが機械検査は未了。「定理」の語を使うときは必ずこの札を添える</td></tr>
+<tr><td><span class="label comp">計算</span></td><td>全数列挙・区間演算などで、この端末で確かめた範囲。外に出す主張にはしない</td></tr>
+<tr><td><span class="label known">既知</span></td><td>既知の定理・言い換え・外の文献の確認。新しい数学ではない</td></tr>
+</tbody></table></div>
+
+<details>
+<summary>機械検査が保証しないもの</summary>
+<p>機械検査が保証するのは、書いた命題からその結論が出ることだけです。保証しないものが三つあります。(1) 命題が意図した内容を書けているか——定義が本当に言いたいことを言っているかは、人が読んで判断するしかありません。(2) その命題が世の中で新しいか——これは文献の問題で、機械は何も言いません。(3) 比べている相手の値の解釈が正しいか——文献の数値が切り捨てなのか丸めなのか、どの対象についての値なのか。だから Lean の札の付いた主張にも、定義を読める形で示し、比較の相手を出典つきで書きます。</p>
+</details>
+<p class="small">各主張がどの札にあるかは <a href="ledger.html">主張の台帳</a> に、機械検査の配布物と確かめ方は <a href="lean/index.html">Lean 検証一式</a> にあります。</p>
+<hr>
+
+<div class="sec"><span class="n">05</span><h2 id="新しさ">「新しい」と呼ぶ基準</h2></div>
+
+<p>「新しい」と呼ぶのは、<strong>最終的な証明までやりきったもの</strong>だけです。途中の見解や、計算で見えた規則性は、「新しいかどうかは分からないが、数学的にこのような事実がある」という形で書きます。周りの研究者はもう知っているかもしれない、という前提に立つ書き方です。</p>
+
+<p>証明までやりきったものについても、書けるのは「<strong>探した範囲で同じ形の記述は見当たらない</strong>」までです。探した範囲——どの文献・どのデータベース・どの検索語——を併記します。範囲の外については何も言っていない、ということが読み手に分かるようにするためです。</p>
+
+<p>先行する記録が見つかっても、そこで止めません。値が先に出ていても、別の道の証明・機械検査・分類の副産物として意味が残ることがあります。その場合は位置づけを正確に書き、優先権は主張しません。原論文が手に入らないことも、進めない理由にはしません。「既知かもしれない」と一行書いたうえで、言明と証明を進めます。</p>
+<hr>
+
+<div class="sec"><span class="n">06</span><h2 id="誤植">外の資料の誤植は、報告の対象にしない</h2></div>
+
+<p>外のサイトや論文に誤植や数値の食い違いを見つけても、それを成果として持ち上げません。他の読者も気づいている可能性が高く、意図して残されていることもあります。数学の中身と関係の薄い指摘を並べると、記事の重心が数学から外れます。</p>
+
+<p>本文の計算に直接効く場合——引いた値が違っていて、こちらの比較が変わる場合——だけ、どの値を使ったかを出典とともに書きます。指摘ではなく、こちらの計算の前提の明示として書きます。</p>
+<hr>
+
+<p class="small">関連：<a href="random-draw.html">未解決問題を、無作為に引く</a>（この進め方で引いた最初の回）・<a href="ledger.html">主張の台帳</a>・<a href="lean/index.html">Lean 検証一式</a>・<a href="lean-guide/index.html">Lean の説明</a></p>
+
+<div class="revised"><strong>改訂</strong> 2026-10-02：新設。<a href="random-draw.html">未解決問題を、無作為に引く</a> の「この進め方について」の節を受けて、検査の規律と外に出す主張の基準を一枚にまとめた。</div>
+
+</main>
+<footer class="site-foot">
+  <p class="tagline">我計算する、ゆえに我あり — 人とAIの思考を見つめる場</p>
+  <p class="small"><a href="../privacy.html">プライバシーポリシー</a> &middot; <a href="../contact.html">お問い合わせ</a></p>
+  <p class="small">&copy; 2026 computo ergo sum</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>リーマン予想 — Weil の二次形式 — computo ergo sum</title>
+<meta name="description" content="リーマン予想の本体については何も主張しません。台を [−L, L] に切った Weil の二次形式 W_L のスペクトルを全部取ると、ほとんど 0 に沈んだ固有値が e^{2L} − 7/8 本ほどあります。その本数に、リーマン予想を仮定しない下界を付けました（紙の証明、部品は Lean）。L = 2 では主部 53.72・実測 53 に対し、下界は 45.24 です。この道はリーマン予想の証明にも反証にも使えません。">
+<link rel="canonical" href="https://computoergosum.com/principia/riemann-weil-form.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="computo ergo sum">
+<meta property="og:title" content="リーマン予想 — Weil の二次形式">
+<meta property="og:description" content="台を [−L, L] に切った Weil の二次形式には、ほとんど 0 の固有値が約 e^{2L} − 7/8 本ある。その本数にリーマン予想を仮定しない下界が付く。リーマン予想の証明にも反証にも使えない。">
+<meta property="og:url" content="https://computoergosum.com/principia/riemann-weil-form.html">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" hreflang="ja" href="https://computoergosum.com/principia/riemann-weil-form.html">
+<link rel="alternate" hreflang="en" href="https://computoergosum.com/en/principia/riemann-weil-form.html">
+<link rel="alternate" hreflang="x-default" href="https://computoergosum.com/principia/riemann-weil-form.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article",
+"headline":"リーマン予想 — Weil の二次形式の沈んだ固有値は、リーマン予想を仮定せずに下から数えられる",
+"description":"台を切った Weil の二次形式の、ほとんど 0 の固有値の本数 e^{2L} − 7/8 と、リーマン予想を仮定しないその下界。リーマン予想の本体についての主張はありません。",
+"datePublished":"2026-10-02","dateModified":"2026-10-02",
+"publisher":{"@type":"Organization","name":"computo ergo sum"},
+"inLanguage":"ja","mainEntityOfPage":"https://computoergosum.com/principia/riemann-weil-form.html"}
+</script>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.sec{border-left:3px solid currentColor;padding-left:15px;margin:2.4em 0 1.2em}
+.sec h2{margin:0}
+.sec .n{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.14em;opacity:.6;display:block}
+table.num td.n,table.num th.n{text-align:right;font-family:ui-monospace,monospace}
+.big{font-family:ui-monospace,monospace;font-size:1.42rem;font-weight:600}
+.keyrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;
+  background:var(--line,#ccc);border:1px solid var(--line,#ccc);border-radius:3px;margin:1.6em 0;overflow:hidden}
+.keyrow>div{background:var(--card,#fff);padding:15px 17px}
+.keyrow .k{font-family:ui-monospace,monospace;font-size:.68rem;letter-spacing:.1em;opacity:.6;display:block;margin-bottom:5px}
+.keyrow .s{font-size:.79rem;opacity:.72;line-height:1.6;display:block;margin-top:5px}
+.formula{font-family:ui-monospace,monospace;font-size:.92rem;text-align:center;padding:15px 10px;
+  border:1px solid var(--line,#ccc);border-radius:3px;margin:1.5em 0;overflow-x:auto;white-space:nowrap}
+@media(max-width:480px){.formula{white-space:normal;word-break:break-word}}
+.toc{border:1px solid var(--line,#ccc);border-radius:3px;padding:14px 18px;margin:1.8em 0;background:var(--card,#fff)}
+.toc ol{margin:.4em 0 0;padding-left:1.4em}
+.toc li{margin:.28em 0}
+.toc .lead{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;opacity:.6}
+h3{margin:1.8em 0 .6em}
+.item{border-left:2px solid var(--line,#ccc);padding-left:14px;margin:1.6em 0}
+.item h3{margin:0 0 .5em}
+details{border:1px solid var(--line,#ccc);border-radius:3px;padding:0 15px;margin:1.1em 0;background:var(--card,#fff)}
+details[open]{padding-bottom:8px}
+details>summary{cursor:pointer;padding:11px 0;font-weight:600}
+.label{display:inline-block;font-family:"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  font-size:.68rem;letter-spacing:.08em;line-height:1.5;border:1px solid currentColor;border-radius:3px;
+  padding:0 .45em;margin-right:.45em;vertical-align:middle;white-space:nowrap}
+.label.lean{color:var(--ok,#2f6b45)}
+.label.paper{color:var(--emph,#3a5f8a)}
+.label.comp{color:var(--wa,#8a6a12)}
+.label.known{color:var(--muted,#6b6862)}
+.revised{border-left:3px solid var(--wa,#8a6a12);padding:.5rem .8rem;margin:1.6em 0;font-size:.8rem;color:var(--muted)}
+pre.sym{font-family:ui-monospace,monospace;font-size:.84rem;line-height:1.7;border:1px solid var(--line,#ccc);
+  border-radius:3px;padding:12px 14px;overflow-x:auto;background:var(--card,#fff)}
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="head-top"><a class="brand" href="../index.html">computo <span>ergo</span> sum</a><a class="lang" href="../en/principia/riemann-weil-form.html">English</a></div>
+  <nav><a href="../index.html">ホーム</a><a href="../claude/index.html">Codex cogitans</a><a href="../thoughts/index.html">思索</a><a href="../records/index.html">記録</a><a href="../principia/index.html">自然哲学</a><a href="../future/index.html">未来設計図</a><a href="../tools/index.html">道具</a><a href="../bbs.html">掲示板</a><a href="../about.html">運営について</a></nav>
+</header>
+<main>
+<p class="meta">2026-10-02 &middot; article <span class="tag">リーマン予想</span><span class="tag">Weil の明示公式</span><span class="tag">時間帯域制限</span></p>
+
+<h1 id="top">リーマン予想 — Weil の二次形式の沈んだ固有値は、リーマン予想を仮定せずに下から数えられる</h1>
+
+<div class="section-lead">
+<p><strong>何の問題か</strong> — リーマン予想は Weil の判定法によって「明示公式から作る二次形式が非負である」と言い換えられます。試験関数の台を <code>[−L, L]</code> に切ると、この二次形式 <code>W<sub>L</sub></code> は有限の窓の中の問題になります。</p>
+<p><strong>何を調べたか</strong> — <code>W<sub>L</sub></code> のスペクトルを全部取ると、ほとんど 0 に沈んだ固有値の束があり、その本数は <code>e<sup>2L</sup> − 7/8</code> 前後です。主部 <code>e<sup>2L</sup></code> は既知です。この本数を<strong>下から評価する定理</strong>を、リーマン予想を仮定せずに立てました（紙の証明。有限次元の部品は Lean）。</p>
+<p><strong>何が分かったか</strong> — <code>L = 2</code>、しきい値 <code>10<sup>−3</sup></code> で、主部 53.72・実測 53 に対し、紙の下界は 45.24 です。正値性の「余裕」は、この <code>e<sup>2L</sup></code> 次元の束の中に住んでいます。<strong>この下界はリーマン予想と独立に成り立ち、リーマン予想の証明にも反証にも使えません。</strong></p>
+</div>
+
+<p><span class="label lean">Lean</span>機械検査済み（Lean 4 + mathlib、<code>sorry</code> 0・<code>native_decide</code> 不使用、公理は <code>propext</code>・<code>Classical.choice</code>・<code>Quot.sound</code> の部分集合。定理名を添える）
+<span class="label paper">紙</span>証明はあるが機械検査は未了
+<span class="label comp">計算</span>この端末で確かめた範囲。外に出す主張にはしない
+<span class="label known">既知</span>既知の定理・言い換え・外の文献の確認</p>
+
+<p><strong>このページはリーマン予想の本体について何も主張しません。</strong>扱うのは、台がコンパクトな試験関数に切り詰めた二次形式のスペクトルの数え上げです。主結果（沈んだ固有値の本数の下界）は零点が臨界線上にあるかどうかを一度も使わず、したがって<strong>成り立っても成り立たなくても、零点の位置については何も戻りません</strong>。理由は <a href="#届かない">§11</a> に書きます。</p>
+
+<div class="toc">
+<span class="lead">この記事の順序</span>
+<ol>
+<li><a href="#問題">この問題は何か</a></li>
+<li><a href="#世界">世界はどこまで来ているか</a></li>
+<li><a href="#筋">筋</a> — 一段落で</li>
+<li><a href="#記号">記号</a></li>
+<li><a href="#検問">二つの判定法を検問にかける</a> — Li は個数しか見ず、Weil は算術を見る</li>
+<li><a href="#本数">沈んだ固有値の本数</a> — <code>e<sup>2L</sup> − 7/8</code></li>
+<li><a href="#下界">リーマン予想を仮定しない下界</a> — 定理 A と三つの部品</li>
+<li><a href="#数字">数字の推移</a> — <code>L = 2</code> で 40.2 から 45.24 へ</li>
+<li><a href="#在処">余裕はどこに住んでいるか</a> — Schur 補元・アルキメデス項・曲線の場合</li>
+<li><a href="#cc">Connes–Consani の枠組みとの対応</a></li>
+<li><a href="#届かない">この道がリーマン予想に届かない理由</a></li>
+<li><a href="#範囲">この記事が言えている範囲</a></li>
+<li><a href="#lean">機械検査で閉じた範囲</a></li>
+<li><a href="#出典">出典と再現</a></li>
+</ol>
+</div>
+
+<hr>
+
+<div class="sec"><span class="n">01</span><h2 id="問題">この問題は何か</h2></div>
+
+<blockquote><p><strong>リーマンのゼータ関数 <code>ζ(s)</code> の非自明な零点 <code>ρ</code> は、すべて実部が 1/2 か。</strong><br>（非自明な零点は帯 <code>0 &lt; Re s &lt; 1</code> にあり、<code>ρ = 1/2 + iγ</code> と書くと、予想は「<code>γ</code> がすべて実数」と同じです）</p></blockquote>
+
+<p>この記事が使う言い換えは Weil の判定法です。<code>f</code> を実数値の偶関数、<code>F</code> をその Fourier 変換とすると、明示公式は零点の和 <code>Σ<sub>ρ</sub> F(γ<sub>ρ</sub>)<sup>2</sup></code> を、極・アルキメデス素点（ガンマ因子）・素数冪の三つの項の和に書き直します。リーマン予想が正しければ <code>γ<sub>ρ</sub></code> は実数で、<code>F(γ)</code> も実数なので、左辺は二乗の和として非負です。<strong>逆に、十分広い試験関数の族でこの二次形式が非負なら、リーマン予想が従います</strong>（Weil）。<span class="label known">既知</span></p>
+
+<p>難しさは、右辺の素数の項にあります。極とアルキメデスの項は解析的に扱えますが、素数の項は <code>Λ(k)</code>（von Mangoldt 関数）が<strong>どの <code>log k</code> の上に載っているか</strong>という算術そのもので、非負性を支えているのはこの配置です。試験関数の台を <code>[−L, L]</code> に限ると、素数の項は <code>k ≤ e<sup>2L</sup></code> の有限和になり、問題は有限の窓の中に収まります。窓が有限である限り、見えるのは高さおよそ <code>2πe<sup>2L</sup></code> までの零点だけです。</p>
+
+<hr>
+
+<div class="sec"><span class="n">02</span><h2 id="世界">世界はどこまで来ているか</h2></div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>問い</th><th>状態</th></tr></thead>
+<tbody>
+<tr><td>リーマン予想</td><td><strong>未解決</strong></td></tr>
+<tr><td>Li の判定法：<code>λ<sub>n</sub> = Σ<sub>ρ</sub>[1 − (1 − 1/ρ)<sup>n</sup>] ≥ 0</code>（すべての <code>n</code>）⟺ リーマン予想</td><td><strong>定理</strong>（Li 1997）</td></tr>
+<tr><td>Weil の判定法：明示公式の二次形式が適当な試験関数の族で非負 ⟺ リーマン予想</td><td><strong>定理</strong>（Weil 1952。Connes–Consani の整理）</td></tr>
+<tr><td>素数の項が空になる窓 <code>supp f ⊂ [−(log 2)/2, (log 2)/2]</code> での非負性</td><td><strong>古典的に既知</strong>（Yoshida／Connes–Consani）</td></tr>
+<tr><td>台を切った Weil 形式の最小固有値 <code>λ<sub>min</sub>(L)</code>、分解能の高さ <code>T* = 2πe<sup>2L</sup></code>、減衰則</td><td><strong>数値と区間演算の結果がある</strong>。著者は「正値性の道は単独ではリーマン予想に届かない」と明記（Zhu, arXiv:2608.24827）</td></tr>
+<tr><td>ほとんど 0 の正の固有値（near radical）の存在と、その本数がおよそ <code>µ = e<sup>2L</sup></code> で増えること</td><td><strong>既知</strong>（Connes–Consani, arXiv:2106.01715 §2.5・§3）。prolate 関数から明示的に構成されている</td></tr>
+<tr><td>semi-local 版の Weil 正値性（これがリーマン予想を導く版）</td><td><strong>未解決</strong>（Connes–Consani, arXiv:2006.13771 の要旨）</td></tr>
+<tr><td>時間帯域制限の次元定理・plunge の幅</td><td><strong>定理</strong>（Landau 1975、Landau–Widom 1980）</td></tr>
+<tr><td>他の同値命題（Robin–Lagarias、de Bruijn–Newman ほか）</td><td><strong>未解決</strong>。de Bruijn–Newman 定数は <code>0 ≤ Λ ≤ 0.22</code></td></tr>
+
+</tbody></table></div>
+
+<p>つまり、<strong>「沈んだ固有値がおよそ <code>e<sup>2L</sup></code> 本ある」こと自体は既知</strong>で、この記事の中身はその先——本数を<strong>下から評価する定理</strong>と、その評価が<strong>リーマン予想を必要としない</strong>こと、そして余裕がどこに住んでいるかの測定——にあります。</p>
+
+<hr>
+
+<div class="sec"><span class="n">03</span><h2 id="筋">筋</h2></div>
+
+<p>Li の判定法を計算で当たると、<code>λ<sub>n</sub></code> の正値性の余裕は<strong>零点の個数密度しか検査していません</strong>——個数関数だけから作った合成の零点列でも、<code>λ<sub>n</sub></code> は真の値を <code>n = 199</code> で 0.75% 以内に再現します。そこで「どの方向で余裕が最小か」という自由度を持つ Weil の二次形式 <code>W<sub>L</sub></code> に移ると、こちらは同じ検問を<strong>通ります</strong>——<code>Λ(k)</code> を同じ値の多重集合のまま別の素数冪に並べ替えるだけで、正値性が壊れます。<code>W<sub>L</sub></code> のスペクトルを全部取ると、沈んだ固有値の本数は <code>n(L) = Sh(T*) − N(T*) = e<sup>2L</sup> − 7/8 − S(T*)</code> という<strong>パラメータの無い式</strong>によく従います（<code>Sh</code> は窓の Shannon 数、<code>N</code> は零点の個数関数）。この本数を<strong>下から評価する定理</strong>（定理 A）を、Landau の次元定理の代わりに時間帯域作用素の跡を使って立て、評価の <code>u</code> 依存を <code>1/u</code> から <code>log(1/u)</code> に落とすために跡の <code>1/k</code> 則をクラスタ展開で出し、臨界線外の零点の代償を Phragmén–Lindelöf による移送の不等式で押さえました。<strong>リーマン予想はどこでも仮定していません。</strong>臨界線外の零点は移送定数 <code>κ</code> の中に入るだけで、その寄与は主部 <code>e<sup>2L</sup></code> に比べて小さい。<code>L = 2</code>、しきい値 <code>10<sup>−3</sup></code> で、紙の下界 45.24、測った入力を一つ入れて 46.4、実測 53 です。</p>
+
+<hr>
+
+<div class="sec"><span class="n">04</span><h2 id="記号">記号</h2></div>
+
+<pre class="sym">f        実・偶・台 ⊂ [−L, L] の L² 関数。F(z) = ∫ f(t) e^{izt} dt（指数型 L の整関数）
+h = F²,  g = f * f（台 ⊂ [−2L, 2L]）
+W_L[f] = Σ_ρ F(γ_ρ)²,   γ_ρ := (ρ − 1/2)/i     （リーマン予想を使わない書き方）
+       = h(i/2) + h(−i/2) − g(0) log π + (1/2π) ∫ h(r) Re ψ(1/4 + ir/2) dr − 2 Σ_k Λ(k) k^{−1/2} g(log k)
+W_L    = 2aaᵀ − (log π) I + A_L + Q_L    （偶の余弦基底 φ_0, …, φ_{m−1} での m×m 実対称行列）
+S_L    = 2aaᵀ − (log π) I + A_L          （極 ＋ アルキメデス。素数を含まない部分）
+Q_L    = −2 Σ_{k ≤ e^{2L}} Λ(k) k^{−1/2} G(log k)   （素数冪の部分）
+n(W_L; ε) := sup{ dim V : W_L[f] ≤ ε‖f‖²（∀ f ∈ V）}      （数える量。「沈んだ固有値の本数」）
+T*  := 2π e^{2L},   Sh(T) := LT/π,   N(T) = 高さ T までの零点の個数（重複こみ）
+S(T) := (1/π) arg ζ(1/2 + iT),   N(T) = (T/2π) log(T/2πe) + 7/8 + S(T) + O(1/T)
+Q = Q_{L,T}   偶部分の時間帯域作用素（核 (1/π)[s(x−y) + s(x+y)]、s(u) = sin(Tu)/u）
+A = P_{[−L,L]} B_{[−T,T]} P,   c := 2LT,   ℓ := log(4LT) + γ_E + 1
+a_k := tr(A^k − A^{k+1}),   u_j := 1 − λ_j(Q),   n(u) := #{ j : u_j ≤ u }
+𝔇(u) := Sh(T) − #{ j : λ_j(Q) &gt; 1 − u }       （時間帯域作用素の「取りこぼし」）
+尾_δ(f) := (1/2π) ∫_{|x|&gt;T} |F(x + iδ)|² dx     （帯域の外に漏れる量。δ は臨界線からのずれ）
+Θ(w) := (1/2π) ∫_{|x|&gt;T} F(x + w) F̃(x − w) dx   （指数型 2L の整関数。Θ(iδ) = 尾_δ(f)）
+V_u := span{ v_j : 1 − λ_j(Q) ≤ u }               （沈み具合 u 以下の部分空間）</pre>
+
+<p class="small"><code>Λ(k)</code> は von Mangoldt 関数です。跡の定数には混同を避けて <code>ℓ</code> を使います。行列の定数項 <code>j = 0</code>（定数関数）は必ず基底に入れます。</p>
+
+<hr>
+
+<div class="sec"><span class="n">05</span><h2 id="検問">二つの判定法を検問にかける — Li は個数しか見ず、Weil は算術を見る</h2></div>
+
+<p>同値な判定法でも、<strong>何を検査しているか</strong>は判定法ごとに違います。それを見る手順は一つで、「ゼータを使わない偽の入力でも同じ値が出るか」を確かめることです。出るなら、その判定法の余裕は偽の入力にも共通な性質しか見ていません。</p>
+
+<h3>① Li の判定法の余裕は、算術を使っていない</h3>
+
+<p>零点の個数関数 <code>N(T)</code> だけから剛体的に並べた合成の零点列を作り、それで <code>λ<sub>n</sub></code> を計算すると、真の値を <code>n = 199</code> で 0.75% 以内に再現します。臨界線から <code>δ</code> だけ外れた零点の対を <code>λ<sub>n</sub></code> で検出できる最初の <code>n</code> は <code>n* ≈ (T<sup>2</sup>/δ) log(n log n)</code> で（<code>δ = 0.45</code>、<code>T = γ<sub>1</sub></code> の陽性対照で実測 <code>n* = 3907</code>、包絡線の予測 3855）、零点が確かめられている高さ <code>T ≳ 10<sup>12</sup></code> で <code>δ = 0.1</code> の外れを見るには <code>n ≳ 10<sup>26</sup></code> が要ります。<span class="label comp">計算</span></p>
+
+<h3>② Weil の二次形式は、同じ検問を通る</h3>
+
+<div class="keyrow">
+<div><span class="k">Λ(k) を乱数に替える</span><span class="big">12/12</span><span class="s">すべてで最小固有値 <code>μ &lt; 0</code><span class="label comp">計算</span></span></div>
+<div><span class="k">Λ(k) を並べ替える</span><span class="big">μ ≈ −20</span><span class="s">値の多重集合はそのまま、載る素数冪だけ替える（<code>L = 2, 3, 4</code>）<span class="label comp">計算</span></span></div>
+<div><span class="k">正値錐の境界までの距離</span><span class="big">2.9×10<sup>−47</sup></span><span class="s">相対値。<code>L = 2</code>、<code>m = 16</code>（<code>L = 0.5</code> では <code>1.2×10<sup>−4</sup></code>）<span class="label comp">計算</span></span></div>
+</div>
+
+<p><code>W<sub>L</sub></code> の最小固有値 <code>μ</code> は、素数冪の重み <code>Λ(k)</code> を<strong>同じ値の集まりのまま、別の素数冪の上に置き直すだけ</strong>で大きく負になります。つまり正値性は「どの <code>log k</code> の上にどの重みが載っているか」という算術を見ています。真の <code>Λ</code> は正値錐の境界のすぐ内側にあり、その距離 <code>μ/‖∇<sub>Λ</sub>μ‖</code> は <code>L</code> とともに急速に縮みます。線外の零点を検出する大きさは <code>δ<sup>2</sup></code> に比例して高さ <code>T</code> にほとんど依らず（Li は <code>T<sup>2</sup>/δ</code> で劣化します）、ただし試験関数の帯域が違反の高さを覆う必要があります（<code>m ≳ TL/π</code>、<code>L ≳ (1/2) log(T/2π)</code>）。<span class="label comp">計算</span></p>
+
+<h3>③ 対照：Báez-Duarte の判定法は、零点の高さについて指数的に盲目</h3>
+
+<p><code>c<sub>k</sub> = Σ<sub>j≤k</sub> (−1)<sup>j</sup> C(k,j)/ζ(2j+2)</code> について「リーマン予想 ⟺ <code>c<sub>k</sub> ≪ k<sup>−3/4+ε</sup></code>」です（Báez-Duarte）。<span class="label known">既知</span> <code>k ≤ 10<sup>4</sup></code> で 40 桁を超える精度で計算し Maślanka の式を引くと、零点 7 対で残差は第 1 対の振幅の <code>7.9×10<sup>−11</sup></code> に落ちます。<span class="label comp">計算</span></p>
+
+<p>高さ <code>γ</code>・実部 <code>1/2 + δ</code> の線外零点を検出するには <code>log k ≳ (2/δ)(πγ/4 − 9.46)</code> が要り（出所はガンマ因子の <code>e<sup>−πγ/4</sup></code>）、Li の多項式的な <code>T<sup>2</sup>/δ</code> より悪い。<span class="label paper">紙</span><span class="label comp">計算</span> Möbius 関数を並べ替えた陰性対照の <code>|c<sub>k</sub>| k<sup>3/4</sup></code> は真の振動の係数の 3900 倍で、<strong>閾値 <code>k<sup>−3/4</sup></code> は「乱数の符号が出す大きさ」そのもの</strong>です。<span class="label comp">計算</span></p>
+
+<hr>
+
+<div class="sec"><span class="n">06</span><h2 id="本数">沈んだ固有値の本数 — <code>e<sup>2L</sup> − 7/8</code></h2></div>
+
+<p><code>W<sub>L</sub></code> の固有値を全部並べると、平らな段は出ず、0 に向かって対数の階段のように沈んでいく束があります（<code>−ln λ<sub>j</sub></code> は <code>j</code> について凹）。その束の本数 <code>n(W<sub>L</sub>; ε)</code> を、しきい値 <code>ε</code> 以下の固有値の個数として数えます。</p>
+
+<div class="formula">n(L) = max<sub>T</sub> [ Sh(T) − N(T) ] = Sh(T*) − N(T*) = e<sup>2L</sup> − 7/8 − S(T*)</div>
+
+<p>窓の偶部分が持てる自由度の密度は <code>L/π</code>（高さ <code>T</code> まで <code>Sh(T) = LT/π</code> 本）で、明示公式が消すべき零点の密度は <code>(1/2π) log(T/2π)</code> です。前者は一定、後者は増えるので、差 <code>Sh(T) − N(T)</code> はある高さで最大になり、その高さがちょうど <code>T* = 2πe<sup>2L</sup></code>（Zhu が「分解能の高さ」と呼んだもの）です。代入すると <code>2L</code> が相殺して、パラメータの無い式が残ります。<span class="label paper">紙</span>（見積りとして）</p>
+
+<p>滑らかな部分については、この最大の位置と値を Lean で閉じました。<code>shannon L T = LT/π</code>、<code>smoothCount T = (T/2π) log(T/2πe) + 7/8</code> に対し：</p>
+
+<ul>
+<li><span class="label lean">Lean</span><code>TimeBand.crossover_le</code> — <code>0 &lt; T</code> なら <code>shannon L T − smoothCount T ≤ exp(2L) − 7/8</code></li>
+<li><span class="label lean">Lean</span><code>TimeBand.crossover_eq</code> — <code>T = 2π exp(2L)</code> で等号</li>
+<li><span class="label lean">Lean</span><code>TimeBand.crossover_lt</code> — それ以外の <code>T &gt; 0</code> では真に小さい（最大を与える高さは <code>T*</code> だけ）</li>
+</ul>
+
+<p>どれも初等的な不等式 <code>t(1 − log t) ≤ 1</code>（<code>t &gt; 0</code>、等号は <code>t = 1</code>）に落ちます。したがって <code>−7/8</code> は当てはめの定数ではありません。<code>7/8 = 1 − 1/8</code> の内訳は、偏角原理の <code>+1</code>（<code>s(s−1)/2</code> の増分）と Riemann–Siegel の <code>θ</code> の Stirling 展開の <code>−π/8</code>（個数に直して <code>−1/8</code>）で、<code>L</code> にも <code>T*</code> にも依りません。<code>L</code> 依存はすべて <code>S(T*)</code> にあります。<span class="label paper">紙</span><span class="label known">既知</span>（Riemann–von Mangoldt の無条件の形）</p>
+
+<h3>実測との比較</h3>
+
+<p>零点の個数 <code>N(T*)</code> を PARI/GP の <code>lfunzeros</code> で正確に数え（601 個まで）、Galerkin 次元を飽和させて（<code>m ≳ 1.3 Sh(T*)</code>）数えた本数です。本数は Galerkin 次元 <code>m</code> に依りません。<span class="label comp">計算</span></p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th><code>L</code></th><th class="n">0.5</th><th class="n">0.75</th><th class="n">1.0</th><th class="n">1.25</th><th class="n">1.5</th><th class="n">1.75</th><th class="n">2.0</th><th class="n">2.25</th><th class="n">2.5</th></tr></thead>
+<tbody>
+<tr><td><code>e<sup>2L</sup> − 7/8</code></td><td class="n">1.84</td><td class="n">3.61</td><td class="n">6.51</td><td class="n">11.31</td><td class="n">19.21</td><td class="n">32.24</td><td class="n">53.72</td><td class="n">89.14</td><td class="n">147.54</td></tr>
+<tr><td><code>ε = 10<sup>−2</sup></code></td><td class="n">1</td><td class="n">3</td><td class="n">6</td><td class="n">11</td><td class="n">19</td><td class="n">32</td><td class="n">53</td><td class="n">88</td><td class="n">147</td></tr>
+<tr><td><code>ε = 10<sup>−3</sup></code></td><td class="n">1</td><td class="n">3</td><td class="n">6</td><td class="n">10</td><td class="n">18</td><td class="n">31</td><td class="n">53</td><td class="n">88</td><td class="n">146</td></tr>
+<tr><td><code>ε = 10<sup>−6</sup></code></td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">9</td><td class="n">17</td><td class="n">30</td><td class="n">51</td><td class="n">87</td><td class="n">145</td></tr>
+</tbody></table></div>
+
+<p>しきい値 <code>10<sup>−3</sup></code> で、本数が 1 から 146 まで動く間、<code>Sh(T*) − N(T*)</code> との差は 0.39〜1.46 に収まります。<span class="label comp">計算</span> 主部 <code>e<sup>2L</sup></code> は Connes–Consani の数え上げ（「本数はおよそ <code>µ = e<sup>2L</sup></code> で増える」）と同じものです。<span class="label known">既知</span></p>
+
+<details>
+<summary>深い詳細 — 定数項 <code>−7/8</code> は数値では決まらない</summary>
+<p>Connes–Consani の見積り <code>ν(µ) = 2µ − 1</code>（原文が「<code>µ</code> が小さな半整数のときによく合う」と書く当てはめ）を偶奇に割ると、偶の側は <code>µ − 1/2</code> で、<code>−7/8</code> との差は 3/8 です。<code>L = 2</code> で模型 53.72／彼らの見積り 54.10／実測 53。45 個の残差のうち 44 個が負で、差 3/8 を上回る効きが三つあります：しきい値への依存（1 桁あたり約 0.36 本）、枡ごとのばらつき（標準偏差 0.30〜0.53）、整数への切り捨て（<code>n = ⌊模型⌋</code> なら残差の期待値は <code>−1/2</code> で、定数項と区別できない）。「沈んだ本数」の定義を替えると含意される定数項は <code>−0.5</code> から <code>−3.58</code> まで動き、幅は 3/8 の 8 倍あります。<strong>定数項は数え方の性質であって、数値で決める問いではありません。</strong><span class="label comp">計算</span></p>
+</details>
+
+<hr>
+
+<div class="sec"><span class="n">07</span><h2 id="下界">リーマン予想を仮定しない下界 — 定理 A と三つの部品</h2></div>
+
+<p>§06 の式は見積りと測定です。それを<strong>下からの評価</strong>として定理にしたのがこの節です。</p>
+
+<div class="formula">定理 A：　n(W<sub>L</sub>; ε) ≥ Sh(T) − N(T) − 1 − 𝔇(ε/κ)</div>
+
+<p><code>T = T*</code> と取れば、主部は <code>e<sup>2L</sup> − 7/8 − S(T*)</code>（§06 の模型そのもの）です。<code>𝔇(u)</code> は時間帯域作用素が「帯域の外への漏れが <code>u</code> 以下」の関数を何本取りこぼすかで、<code>κ</code> は臨界線外の零点の代償を表す移送定数です。<strong>リーマン予想は仮定していません。</strong>臨界線外の零点は <code>κ</code> にしか現れません。<span class="label paper">紙</span></p>
+
+<p>証明は二段です。</p>
+
+<ul>
+<li><strong>段 (a)：漏れの小さい関数がたくさんある。</strong>偶部分の時間帯域作用素 <code>Q</code> の固有値のうち <code>1 − u</code> を超えるものは <code>Sh(T) − 𝔇(u)</code> 本あり、その固有関数の張る空間 <code>V<sub>u</sub></code> の元は、Fourier 変換の帯域 <code>[−T, T]</code> の外への漏れが <code>u‖f‖<sup>2</sup></code> 以下です。</li>
+<li><strong>段 (b)：零点で消す条件は少ない。</strong>高さ <code>T</code> までの零点で <code>F</code> が消えるという条件は、零点 1 個あたり実 1 本で、余次元は <code>N(T)</code> 以下です。線上の零点は <code>F</code> が偶なので鏡像が自動で消え、線外の零点は四つ組 <code>ρ, 1−ρ, ρ̄, 1−ρ̄</code> が実 2 本の条件で全部消えます。<span class="label paper">紙</span> 残った空間の上では <code>W<sub>L</sub>[f]</code> は高さ <code>T</code> より上の零点の和だけになり、それは漏れで押さえられます。最後に「形が <code>ε</code> 以下の部分空間の次元」を「<code>ε</code> 以下の固有値の本数」に変えるのは有限次元の線形代数です。</li>
+</ul>
+
+<p><span class="label lean">Lean</span><code>SunkCount.card_le_of_form_le</code>・<code>SunkCount.card_eigenvalues_le</code> — 有限次元の対称作用素について、<code>n ≤ dim U + k</code> を満たす部分空間 <code>U</code> の上で <code>⟨x, Tx⟩ ≤ ε‖x‖<sup>2</sup></code> なら、<code>n ≤ #{i : λ<sub>i</sub> ≤ ε} + k</code>。</p>
+
+<h3>部品 ① — Landau の次元定理の代わりに、跡を使う</h3>
+
+<p>段 (a) に必要な「<code>Q</code> の固有値のうち 1 に近いものの本数」は、通常は Landau の次元定理から引きます。ここでは跡の計算だけで済ませました。</p>
+
+<div class="formula">tr Q − tr Q<sup>2</sup> = (1/2π<sup>2</sup>) log(4LT) + O(1),　　tr Q = LT/π + 1/4 + o(1)</div>
+
+<p>Chebyshev の不等式から <code>#{λ<sub>j</sub>(Q) &gt; 1 − u} ≥ Sh(T) − (1/u)[(1/2π<sup>2</sup>) log(4LT) + C<sub>0</sub>]</code> が出ます。<span class="label paper">紙</span> 数値の勾配は 0.050387 で、<code>1/(2π<sup>2</sup>) = 0.050661</code> と合います（4 オクターブの回帰）。スケール不変性の陰性対照は全桁一致しました。<span class="label comp">計算</span></p>
+
+<p><span class="label lean">Lean</span><code>TimeBand.trace_compress_sub_sq</code>（<code>tr(A − A<sup>2</sup>)</code> は窓の外に漏れる部分の Hilbert–Schmidt ノルムの二乗）・<code>TimeBand.card_gt_ge_trace_sub</code>（Chebyshev の数え上げの段）ほか。一覧は <a href="#lean">§13</a>。</p>
+
+<h3>部品 ② — 跡の <code>1/k</code> 則と、クラスタ展開</h3>
+
+<p>段 (a) の評価は <code>1/u</code> で効くので、そのままでは使い物になりません（<code>L = 2</code> で取りこぼしが 401〜481 本になり、下界は空です）。<code>log(1/u)</code> に落とすには高次の跡 <code>a<sub>k</sub> = tr(A<sup>k</sup> − A<sup>k+1</sup>)</code> が要ります。<code>c → ∞</code>、<code>k</code> 固定での主要項は</p>
+
+<div class="formula">a<sub>k</sub> = ℓ/(π<sup>2</sup>k)　（ℓ = log(4LT) + γ<sub>E</sub> + 1）</div>
+
+<p>です。<code>k = 1, 2, 3</code> は定数項まで紙で出し（<code>a<sub>1</sub> = ℓ/π<sup>2</sup></code>・<code>a<sub>2</sub> = ℓ/(2π<sup>2</sup>)</code>・<code>a<sub>3</sub> = ℓ/(3π<sup>2</sup>)</code>）、偶部分はちょうど半分になります（<code>a<sub>2</sub></code> の最小二乗の勾配 0.0253588 対 <code>1/(4π<sup>2</sup>) = 0.0253303</code>、定数 0.0399 対 <code>(γ<sub>E</sub>+1)/(4π<sup>2</sup>) = 0.0399513</code>。<code>c = 3×10<sup>4</sup></code> で相対 <code>10<sup>−11</sup></code>）。<span class="label paper">紙</span><span class="label comp">計算</span></p>
+
+<p>一般の <code>k</code> では、<code>tr A<sup>k</sup> = c/π − J<sub>k</sub>/π<sup>k</sup></code>、<code>J<sub>k</sub> = ∫ min(M<sub>k</sub>, c) ∏ sinc</code>（<code>M<sub>k</sub></code> は <code>k</code> 点の直径）という還元から出発します。<code>k = 3</code> は対称性で一次元に落ち、<code>J<sub>3</sub> = (3/2)∫<sub>0</sub><sup>∞</sup> min(t, c) ψ(t)/t<sup>2</sup> dt</code>、<code>ψ(t) = 2[(1 − cos 2t) Si(2t) − sin 2t · Cin(2t)]</code> です。<span class="label paper">紙</span></p>
+
+<p><span class="label lean">Lean</span><code>TimeBand.window_length</code>（<code>tr A<sup>3</sup></code> に現れる三つの窓の交わりの長さ <code>2L − max(|u|, |v|, |u+v|)</code>）・<code>sin_shift_decomp</code> ほか。</p>
+
+<p>一般の <code>k</code> はクラスタ展開で扱います。弧（クラスタ）の重みは <code>γ(n) = 2<sup>1−n</sup></code>、切り方の重みは <code>C<sub>k,m</sub> = C(k, m) 2<sup>m−k</sup></code> で、奇数クラスタの振幅は恒等的に 0。偶数クラスタの振幅は</p>
+
+<div class="formula">v<sub>2n</sub> = PV∫<sub>diam&gt;1</sub> ∏ (y<sub>j</sub> − y<sub>j+1</sub>)<sup>−1</sup> dy = 2(−1)<sup>n</sup> π<sup>2n−2</sup> O<sub>n</sub>,　　O<sub>n</sub> = 1 + 1/3 + ⋯ + 1/(2n−1)</div>
+
+<p>です。<code>v<sub>2</sub> = −2</code> と <code>v<sub>4</sub> = 8π<sup>2</sup>/3</code> は独立に紙で出し、一般形は有限 Hilbert 変換の恒等式 <code>k*k = −π<sup>2</sup>δ + μ</code>（<code>k(u) = 1/(2 sinh(u/2))</code>、<code>μ̂(ξ) = π<sup>2</sup> sech<sup>2</sup>(πξ)</code>。Poincaré–Bertrand）の二項展開から出ます。<span class="label paper">紙</span><span class="label known">既知</span>（恒等式そのもの） 検算として <code>v<sub>6</sub> = −46π<sup>4</sup>/15</code>・<code>v<sub>8</sub> = 352π<sup>6</sup>/105</code> を Fourier を使わない求積で 15 桁確かめました。<span class="label comp">計算</span></p>
+
+<p>クラスタの和を <code>a<sub>k</sub></code> に戻す段で、次の組合せ恒等式が要ります。</p>
+
+<div class="formula">Σ<sub>n≥1</sub> C(k, 2n) O<sub>n</sub> = 2<sup>k−2</sup> H<sub>k−1</sub>　（すべての k ≥ 1。H は調和数）</div>
+
+<p><span class="label lean">Lean</span><code>TimeBand.binom_oddH_identity</code>（<code>TimeBandTrace3.lean</code>、すべての <code>k</code>）。紙では <code>O<sub>n</sub> = ∫<sub>0</sub><sup>1</sup> (1 − x<sup>2n</sup>)/(1 − x<sup>2</sup>) dx</code> を使って 5 行です。</p>
+
+<h3>主要項から一様な評価へ — 仮定 (LW∞) と窓つきの定理</h3>
+
+<p><code>1/k</code> 則は <code>c → ∞</code>・<code>k</code> 固定の主要項で、すべての <code>K</code> について一様な不等式ではありません。下界に使うには <code>ĉ<sub>K</sub> := π<sup>2</sup>(tr Q − tr Q<sup>K+1</sup>) − ℓH<sub>K</sub></code> について</p>
+
+<div class="formula">(LW∞)　sup<sub>k</sub> ĉ<sub>k</sub> ≤ C<sub>0</sub></div>
+
+<p>が要り、これを<strong>仮定として明示的に分離しました</strong>。定理 A′ が使うのは一つの <code>K</code> だけなので、損は <code>0.0517·C<sub>0</sub></code> で済みます。<span class="label paper">紙</span> 実測は <code>ĉ<sub>K</sub> = −H<sub>K</sub> + C</code>（<code>C = 2.80 ± 0.01</code>、<code>c</code> にほとんど依らない）で、<code>C<sub>0</sub> = 2.80</code> なら損は 0.145、偶部分の実測の破れ（<code>≤ 0.07</code>）なら 0.004 です。<span class="label comp">計算</span> <code>C</code> の閉じた形は見つかっていません（<code>7ζ(3)/3 = 2.8042</code> と <code>π<sup>2</sup>/4 + 1/3 = 2.8007</code> はどちらも測定の幅の縁にあり、どちらとも言いません）。</p>
+
+<p><strong>定理 C′（窓つき）</strong>：<code>φ<sub>K</sub>(u) = (1 − u)(1 − (1 − u)<sup>K</sup>)</code> の全変動が <code>K</code> に依らず 2 以下なので、剰余は総和可能である必要はなく有界で足ります。深い側は <code>φ<sub>K</sub> ≤ Ku</code> で捨てられ（<code>L = 2</code> で下界への効きは 0.001）、さらに<strong>必要なのは片側だけ</strong>——<code>ĉ<sub>K</sub> ≤ C<sub>0</sub></code> は <code>tr Q<sup>K+1</sup></code> の下界と同値で、それは試験部分空間から出ます（<code>λ<sub>j</sub>(PQP) ≤ λ<sub>j</sub>(Q)</code>）。<span class="label paper">紙</span></p>
+
+<p><span class="label lean">Lean</span><code>TimeBand.sum_pow_ge_card_mul</code>（試験部分空間の上で欠損が <code>u</code> 以下なら <code>tr Q<sup>m</sup> ≥ (次元)·(1 − u)<sup>m</sup></code>）・<code>deep_tail_negligible</code>・<code>abel_remainder_bound</code> ほか。</p>
+
+<h3>部品 ③ — 臨界線外の零点の代償を、移送の不等式で押さえる</h3>
+
+<p>段 (b) で「高さ <code>T</code> より上の零点の和は漏れで押さえられる」と書いたのは、零点が線上にあれば <code>Σ<sub>|γ|&gt;T</sub> F(γ)<sup>2</sup></code> が帯域の外の量だからです。線外の零点 <code>γ = x + iδ</code> では <code>F(x + iδ)</code> を見ることになり、実軸の漏れを複素平行移動した漏れ <code>尾<sub>δ</sub>(f)</code> に移す必要があります。その比が移送定数 <code>κ</code> です。</p>
+
+<div class="formula">定理 T：　尾<sub>δ</sub>(f) ≤ 2 e<sup>2L|δ|</sup> u<sup>(1+ω)/2</sup> ‖f‖<sup>2</sup>,　　ω = (2/π) arctan(σ/|δ|)</div>
+
+<p>ここで <code>f</code> は帯域 <code>T<sub>1</sub> = T − σ</code> の沈んだ部分空間の任意の部分空間の元です。<code>σ = 0</code> でも <code>√u</code> が無条件に出ます。道具は、<code>Θ(w)</code> が指数型 <code>2L</code> の整関数であることと、<code>H(w) = Θ(w) e<sup>2iLw</sup></code> が上半平面で有界であることを使った一変数の Phragmén–Lindelöf だけです。<strong><code>e<sup>2L|δ|</sup></code> は Plancherel から来て鋭く、<code>u</code> の冪は Cauchy–Schwarz から来るので、二つが分離します。</strong><span class="label paper">紙</span>（Phragmén–Lindelöf・Plancherel・Nikolskii の鋭い定数は<span class="label known">既知</span>）</p>
+
+<p><span class="label lean">Lean</span>一変数の部品：<code>TimeBand.harmonic_measure_ge</code>（点 <code>iδ</code> から見た <code>[−σ, σ]</code> の調和測度は <code>(2/π) arctan(σ/δ)</code>）・<code>transfer_of_ratio</code>・<code>poisson_exponent_lower</code> ほか。</p>
+
+<p>変種が二つあります。<strong>定理 T″</strong>（項ごとの Cauchy–Schwarz）は <code>u</code> の一次を保つ代わりに損を収束半径に移しますが、実測の定数より 50〜3000 倍緩い。<strong>定理 T′</strong> は入力 (E1)「<code>|σ′| ≤ σ<sub>0</sub></code> で <code>|Θ(f; σ′)| ≤ C<sub>1</sub>u‖f‖<sup>2</sup></code>」の下で、帯域を縮める代価を消します。<span class="label paper">紙</span> (E1) は実測で <code>σ<sub>0</sub> = 2/L</code>・<code>C<sub>1</sub> = 8</code> ですが、紙の証明はありません。<span class="label comp">計算</span></p>
+
+<p>移送定数を定義どおり測ると <code>max<sub>f∈V<sub>u</sub></sub> 尾<sub>δ</sub>(f)/‖f‖<sup>2</sup> ≤ 3.4 e<sup>2L|δ|</sup> u</code> が <code>T</code>・<code>u</code>・<code>L</code> に依らず成り立ちます。ただし <code>V<sub>u</sub></code> を外した作用素の形 <code>M<sub>δ</sub>(I − Q)M<sub>δ</sub> ≤ Ce<sup>2L|δ|</sup>(I − Q)</code> は偽です。<span class="label comp">計算</span></p>
+
+<details>
+<summary>深い詳細 — <code>κ</code> の内訳と、<code>e<sup>L</sup></code> が消せない理由</summary>
+<p>無条件の評価 <code>κ ≤ c<sub>2</sub> L e<sup>L</sup> T log T</code> で <code>L = 2</code> のとき <code>log κ = 10.30</code>。内訳は <code>L</code>（2.00）＋ <code>log T*</code>（5.84）＋ <code>log L</code>（0.69）＋ <code>log log T*</code>（1.76）で、下界への効きはそれぞれ 0.97／2.86／0.34／0.86 です。<code>e<sup>L</sup></code> だけ落としても下界は 44.34 → 45.32 にしか動かず、動かすべきは <code>T</code> の因子の方で、定理 T がそれを落とします。<code>e<sup>L</sup></code> は <code>|F(x + iδ)| ≤ e<sup>L|δ|</sup>‖f‖<sub>1</sub></code> の虚軸方向の増大から来るので Bernstein の不等式では消せず、<code>L</code> の因子は Nikolskii の鋭い定数で既に最良です。<span class="label paper">紙</span></p>
+<p>有限次元（偶の余弦基底）の Nikolskii と <code>ℓ<sup>2</sup></code> の Bernstein は <span class="label lean">Lean</span><code>TimeBand.sq_le_energy</code>・<code>deriv_sq_le_energy</code> ほか（<code>TimeBandBernstein.lean</code>）。</p>
+</details>
+
+<hr>
+
+<div class="sec"><span class="n">08</span><h2 id="数字">数字の推移 — <code>L = 2</code> で 40.2 から 45.24 へ</h2></div>
+
+<p><code>L = 2</code>、<code>ε = 10<sup>−3</sup></code>。主部 <code>Sh(T*) − N(T*) = 53.72</code>、実測の本数は 53 です。</p>
+
+<div class="keyrow">
+<div><span class="k">主部</span><span class="big">53.72</span><span class="s"><code>e<sup>2L</sup> − 7/8</code>（<code>N(T*) = 165</code>、<code>T* = 343.0503</code>）</span></div>
+<div><span class="k">実測</span><span class="big">53</span><span class="s">しきい値 <code>10<sup>−3</sup></code> 以下の固有値の本数<span class="label comp">計算</span></span></div>
+<div><span class="k">紙の下界</span><span class="big">45.24</span><span class="s">定理 T を入れた定理 A′。(LW∞) を仮定<span class="label paper">紙</span></span></div>
+<div><span class="k">測った入力を一つ入れて</span><span class="big">46.4</span><span class="s">(E1) の実測の profile を Poisson 積分に入れる<span class="label comp">計算</span></span></div>
+</div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>評価</th><th class="n"><code>𝔇</code></th><th class="n">下界</th><th>札</th></tr></thead>
+<tbody>
+<tr><td>定理 A の <code>1/u</code> 版（<code>κ = 1</code> と甘く見ても）</td><td class="n">401〜481</td><td class="n">負（空）</td><td><span class="label paper">紙</span></td></tr>
+<tr><td>定理 A′（<code>log(1/u)</code>。<code>K = ⌈1/u⌉</code>）・無条件の <code>κ ≤ c<sub>2</sub>Le<sup>L</sup>T log T</code></td><td class="n">13.53</td><td class="n">40.2</td><td><span class="label paper">紙</span>(LW∞) の下</td></tr>
+<tr><td>同・<code>K</code> を最適化（<code>K ≈ 3.4/u</code>）</td><td class="n">9.38</td><td class="n">44.34</td><td><span class="label paper">紙</span>(LW∞) の下</td></tr>
+<tr><td>定理 T（移送）で <code>κ</code> から <code>T</code> を落とす（<code>σ = 1.25</code>）</td><td class="n">7.68</td><td class="n"><strong>45.24</strong></td><td><span class="label paper">紙</span>(LW∞) の下</td></tr>
+<tr><td>(E1) の実測の profile を Poisson 積分にそのまま入れる</td><td class="n">7.07〜7.35</td><td class="n"><strong>46.4</strong></td><td><span class="label comp">計算</span></td></tr>
+<tr><td><code>κ = 1</code>（到達しえない上限）</td><td class="n">4.33</td><td class="n">49.39</td><td>—</td></tr>
+</tbody></table></div>
+
+<p><code>L = 1</code> では主部が 6.51 で <code>𝔇</code> が 3〜5 なので、下界は正ですが意味のある大きさになりません。<strong>この評価は <code>L</code> が大きいほどよく効きます</strong>——主部 <code>e<sup>2L</sup></code> に対して誤差は <code>O(L<sup>2</sup>)</code> です。<span class="label paper">紙</span></p>
+
+<hr>
+
+<div class="sec"><span class="n">09</span><h2 id="在処">余裕はどこに住んでいるか — Schur 補元・アルキメデス項・曲線の場合</h2></div>
+
+<h3>① 余裕は <code>e<sup>2L</sup></code> 次元の Schur 補元の中にある</h3>
+
+<p><code>W<sub>L</sub> = S<sub>L</sub> + Q<sub>L</sub></code> は摂動として扱えません。<code>‖Q<sub>L</sub>‖ ≈ 4e<sup>L</sup></code> に対し、<code>|λ<sub>min</sub>(S<sub>L</sub>)|</code> は <code>L</code> の一次でしか伸びないからです。書けるのは Schur 補元による縮約で、沈んだ <code>k = n(L)</code> 本を取り除いた補空間で <code>P<sup>⊥</sup>WP<sup>⊥</sup> &gt; 0</code> が（ぎりぎり）成り立ちます。<strong>Weil の余裕は <code>n(L) ≈ e<sup>2L</sup></code> 次元の中にあります。</strong>頑健な縮約には <code>k = N(T*)</code> が要り、そのとき <code>λ<sub>min</sub>(P<sup>⊥</sup>WP<sup>⊥</sup>)</code> は 0.106 → 0.070 → 0.046 とほぼ一定です。<span class="label paper">紙</span><span class="label comp">計算</span></p>
+
+<h3>② 沈んだ固有ベクトルは、零点の張る空間に直交する</h3>
+
+<p><code>Z = span{v(γ) : γ ≤ T*}</code> を零点の張る空間とすると、明示公式から一行で</p>
+
+<div class="formula">‖Π<sub>Z</sub> u<sub>j</sub>‖<sup>2</sup> ≤ λ<sub>j</sub> / (2 λ<sub>min</sub>(G̃) min<sub>γ</sub>‖v(γ)‖<sup>2</sup>) ≤ 2.3 λ<sub>j</sub>　（L ≤ 1.5）</div>
+
+<p>が出ます。定数が <code>O(1)</code> なのは零点ベクトルがほぼ直交する（条件数 12.7 以下）からです。<span class="label paper">紙</span><span class="label comp">計算</span> 実測はさらに深く <code>λ<sub>j</sub><sup>1.2〜1.7</sup></code> で、沈んでいない方向の重なりは乱数方向の値 <code>N/m</code> と一致します（陰性対照）。<span class="label comp">計算</span> 「Weil 形式の radical は Connes–Consani の写像 <code>E</code> の像を含む」という既知の観察の、有限の窓での定量版です。<span class="label known">既知</span></p>
+
+<h3>③ 素数を抜いた <code>S<sub>L</sub></code> の負の方向は、アルキメデス素点の低周波帯</h3>
+
+<p><code>S<sub>L</sub></code>（極 ＋ アルキメデス）は <code>L &lt; L<sub>0</sub> = 0.41013</code> で正定値、その先で不定値です。古典的な正値性の窓 <code>(log 2)/2 = 0.34657</code> の先まで正値が続きます。<span class="label comp">計算</span> 負の方向の正体は次の通りです。</p>
+
+<ul>
+<li>アルキメデス密度 <code>Re ψ(1/4 + ir/2) − log π</code> は <code>r = 0</code> で <code>−5.37218</code>、大きい <code>r</code> で <code>≈ log(r/2) &gt; 0</code>。唯一の正根は <strong><code>r<sub>0</sub> = 6.289835988836902779665</code></strong>（<code>2π</code> ではない。差 0.106%）。<span class="label comp">計算</span></li>
+<li><code>n<sub>−</sub>(S<sub>L</sub>) = n<sub>−</sub>(アルキメデスのみ) − 1</code> が <code>L = 0.30〜3.00</code> の 19 枡すべてで、<code>m = 48, 96, 192</code> で完全に一致して成り立ちます。<code>n<sub>−</sub>(アルキメデスのみ)</code> は密度 <code>r<sub>0</sub>/π = 2.00212</code> で増えます。<span class="label comp">計算</span></li>
+<li>階数 1 で半正定値な極の項 <code>2aa<sup>T</sup></code> は、負の方向をちょうど 1 本だけ消します。</li>
+<li><code>S<sub>L</sub></code> の負の方向も零点の空間にほぼ直交します（<code>L = 2</code> で <code>‖Π<sub>Z</sub>v‖<sup>2</sup> = 0.0022〜0.0030</code>、乱数方向は 0.4171）。理由は一行で、負の帯は <code>r &lt; r<sub>0</sub></code> で、第 1 零点 <code>γ<sub>1</sub> = 14.1347</code> はその外にあります。<span class="label comp">計算</span></li>
+</ul>
+
+<p>アルキメデス密度の積分 <code>Ψ(r)</code> は Riemann–Siegel の <code>θ</code> の 2 倍で、<code>r<sub>0</sub></code> は <code>θ</code> の最小点、<code>Ψ ≡ 0 (mod 2π)</code> の点は Gram 点です。<span class="label known">既知</span> 二つの経路が 40 桁で一致しました。<span class="label comp">計算</span></p>
+
+<h3>④ 曲線の場合との対応と、欠けている場所</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>曲線 <code>C/F<sub>q</sub></code>（曲面 <code>C×C</code>）</th><th>整数環（<code>W<sub>L</sub></code>）</th></tr></thead>
+<tbody>
+<tr><td>豊富な類 <code>h = f<sub>1</sub> + f<sub>2</sub></code>（<code>h<sup>2</sup> = 2 &gt; 0</code>）</td><td>極の項 <code>2aa<sup>T</sup></code>（階数 1・半正定値）</td></tr>
+<tr><td>Frobenius 対応 <code>Γ<sub>F</sub></code></td><td>素数の項 <code>Q<sub>L</sub></code></td></tr>
+<tr><td><code>H<sup>1</sup></code> 上の Frobenius の固有値</td><td>零点 <code>ρ</code>（空間 <code>Z</code>）</td></tr>
+<tr><td><strong>Hodge 指数定理（無条件の定理）</strong></td><td><strong>対応物が無い</strong></td></tr>
+<tr><td><strong>（対応物が無い）</strong></td><td><strong>アルキメデス項 <code>−(log π)I + A<sub>L</sub></code></strong></td></tr>
+<tr><td><code>D·D ≤ 2d<sub>1</sub>d<sub>2</sub></code>（Castelnuovo–Severi）</td><td><code>W<sub>L</sub> ⪰ 0</code>（リーマン予想から従う。独立には未証明）</td></tr>
+</tbody></table></div>
+
+<p>曲線の側の正値性は「豊富な類を一本選んで直交補空間に落とす」だけで閉じます。整数環の側では <code>2aa<sup>T</sup></code> がちょうど一本ぶんの働きをしますが、アルキメデス項が <code>L r<sub>0</sub>/π ≈ 2.002L</code> 本の負の方向を作るので、一本では足りません。<span class="label known">既知</span>（左列）<span class="label comp">計算</span>（右列の本数）</p>
+
+<p>曲線の場合の線形代数は Lean で閉じました。実ベクトル空間上の対称双線形形式について：</p>
+
+<ul>
+<li><span class="label lean">Lean</span><code>HodgeIndex.reverse_cauchy_schwarz</code> — <code>Q h &gt; 0</code> かつ <code>h</code> に直交するすべての <code>y</code> で <code>Q y ≤ 0</code> なら <code>Q x · Q h ≤ (B x h)<sup>2</sup></code></li>
+<li><span class="label lean">Lean</span><code>HodgeIndex.castelnuovo_severi</code> — 双曲平面 <code>f<sub>1</sub>, f<sub>2</sub></code> の直交補空間で <code>Q ≤ 0</code> なら <code>Q D ≤ 2(B D f<sub>1</sub>)(B D f<sub>2</sub>)</code></li>
+<li><span class="label lean">Lean</span><code>HodgeIndex.no_ample_of_two_negatives</code> — <code>B u v = 0</code>・<code>Q u &lt; 0</code>・<code>Q v &lt; 0</code> なら、任意の線形汎関数の核に <code>Q w &lt; 0</code> となる <code>w</code> がある</li>
+</ul>
+
+<p>三番目により、<code>n<sub>−</sub>(S<sub>L</sub>) ≥ 2</code> となる <code>L &gt; 1.08</code> では、<strong><code>S<sub>L</sub></code> はどの余次元 1 の部分空間に落としても半正定値になりません</strong>——「豊富な類を一本」型の議論は使えません。ただし <code>n<sub>−</sub>(S<sub>L</sub>) ≥ 2</code> 自体は数値の入力です。<span class="label comp">計算</span></p>
+
+<h3>⑤ 低周波帯で割る議論も、有限次元で否定される</h3>
+
+<p>帯 <code>[0, r<sub>0</sub>)</code> への Slepian 射影で <code>W<sub>L</sub></code> を圧縮すると、最小固有値は正ですが <code>e<sup>4.91 − 17.44L</sup></code> しかありません（13 点の当てはめ）。低帯ではアルキメデスの項も素数の項も別々に見れば負で（<code>L = 3</code> で <code>−4.09</code> と <code>−21.2</code>）、正値性は二つの <code>O(10)</code> の量が <code>10<sup>−20</sup></code> まで打ち消し合った残りです。素数冪を小さい順に足すと、符号が変わるのは窓のいちばん端です。<span class="label comp">計算</span></p>
+
+<ul>
+<li><span class="label lean">Lean</span><code>BandSplit.cross_bound_of_nonneg</code>（半正定値なら <code>(B u w)<sup>2</sup> ≤ Q u · Q w</code>）・<code>two_block_nonneg</code>（帯で割る議論の十分条件）・<code>band_split_counterexample</code>（<code>Q u = ε &gt; 0</code> と <code>Q w = 0</code> だけでは足りず、破れの深さは <code>1/ε</code>）</li>
+</ul>
+
+<p><code>no_ample_of_two_negatives</code> と合わせると、「豊富な類を一本」型（<code>L &gt; 1.08</code> で不可能）と「帯で割る」型（交差ブロックを <code>e<sup>−8.7L</sup></code> の精度で知らないと不可能）の両方が、有限次元の線形代数の水準で否定されます。<code>W<sub>L</sub> ⪰ 0</code> 自体は未証明のままです。<span class="label lean">Lean</span>（線形代数）<span class="label comp">計算</span>（入力の数値）</p>
+
+<h3>⑥ <code>n(L)</code> は「余裕」であって「混雑」ではない</h3>
+
+<p>歯が <code>M</code> 本あり、歯 <code>j</code> に零点が <code>n<sub>j</sub></code> 個入るとします。<code>N = Σn<sub>j</sub></code>、混雑 <code>r = Σ(n<sub>j</sub> − 1)<sup>+</sup></code>、空の歯 <code>e = #{n<sub>j</sub> = 0}</code> と置くと、恒等式</p>
+
+<div class="formula">r + M = N + e　　（N ≤ M なら e = r + (M − N)）</div>
+
+<p>が成り立ちます。歯を Nyquist の自由度（<code>π/L</code> ごと）に取って <code>T*</code> まで数えると、<code>M = ⌊LT*/π⌋</code>・<code>N = N(T*)</code> で、<code>M − N</code> と <code>e<sup>2L</sup> − 7/8</code> の差は 11 枡すべてで <code>−1.24〜−0.14</code> です（<code>L = 3</code>：402 対 402.554）。<span class="label comp">計算</span> つまり <code>n(L)</code> はこの恒等式の<strong>余裕</strong> <code>M − N</code> の項です。一方の混雑 <code>r(L)</code> は <code>r/N(T*) → 0.16938</code>（GUE の一隙間の式の極限）で、零点の隙間を並べ替えても 4% しか変わらず、<strong>算術の中身を持ちません</strong>——§05 ② で <code>Λ</code> の並べ替えが正値性を壊したのと逆向きの結果です。<span class="label comp">計算</span></p>
+
+<ul>
+<li><span class="label lean">Lean</span><code>PsiComb.crowded_add_card</code>（恒等式）・<code>excess_not_determine_crowded</code>（<code>M = 3, N = 2</code> で混雑 0 と 1 の二つの配置＝余裕は混雑を決めない）ほか</li>
+</ul>
+
+<h3>⑦ 対照：擬ラプラシアンの「捕まる零点」は別種の有限性</h3>
+
+<p>Bombieri–Garrett の擬ラプラシアンで固有値として捕まる零点には存在の保証が無く、リーマン予想と pair correlation の下で高々 94% です。<span class="label known">既知</span> 交錯（隣り合う歯の間に固有値は高々 1 個）から捕まる個数の上界は区間のパッキングになり<span class="label paper">紙</span>、実際の零点を入れると無条件・有限高さの上界が出ます：<code>T = 1000</code> で <code>ζ</code> の零点 649 個のうち 613 個（0.9445）。対照は Poisson 0.7025、GUE 0.9315。<span class="label comp">計算</span> パッキングの上界 <code>⌊(B − A)/d⌋ + 1</code> とその鋭さは <span class="label lean">Lean</span><code>PsiPacking.packing_card_le</code>・<code>packing_sharp</code>。<code>n(L)</code> が「容量が需要に追い越される交差」の下界であるのに対し、こちらは「容量が需要をわずかに上回るが詰め込みで落ちる」割合の上界で、離散スペクトルが空でも、リーマン予想が偽でも成り立ちます。</p>
+
+<hr>
+
+<div class="sec"><span class="n">10</span><h2 id="cc">Connes–Consani の枠組みとの対応</h2></div>
+
+<p><strong>沈んだ固有値の存在と、本数の主部 <code>e<sup>2L</sup></code> は既知です</strong>（Connes–Consani, arXiv:2106.01715 §2.5・§3。本文を読んで確かめた）。<span class="label known">既知</span> 彼らの <code>L</code> は台の長さで、この記事の <code>L</code> は半幅なので、<code>L<sub>CC</sub> = 2L</code>、<code>λ = e<sup>L</sup></code>、<code>µ = λ<sup>2</sup> = e<sup>2L</sup></code> と換算します。</p>
+
+<p><strong>較正。</strong>彼らは <code>L<sub>CC</sub> = log 2</code> で「アルキメデスの寄与の偶行列の最小固有値 <code>∼ 0.00133</code>」と書いています。この記事の <code>S<sub>L</sub></code> を偶の余弦基底で計算すると <code>m = 8/16/32/64</code> で <code>0.001449 / 0.001353 / 0.001335 / 0.001331</code> で、三桁一致します。換算・「彼らのアルキメデスの寄与には極の項が入っている」こと・基底の正規化が同時に確かめられます。<span class="label comp">計算</span></p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>この記事</th><th>Connes–Consani</th></tr></thead>
+<tbody>
+<tr><td><code>W<sub>L</sub></code></td><td><code>QW<sub>λ</sub></code>（semi-local Weil quadratic form）。彼らは <code>σ<sup>+</sup> ⊕ σ<sup>−</sup></code> に分け、この記事は <code>σ<sup>+</sup></code> だけを見る</td></tr>
+<tr><td><code>S<sub>L</sub></code></td><td>2106.01715 図 5・図 6 の「アルキメデスの寄与の偶行列」</td></tr>
+<tr><td>沈んだ固有値 <code>λ<sub>j</sub> ≤ ε</code></td><td>「extremely small positive eigenvalues」。<code>µ = 11</code> で最小 <code>2.389×10<sup>−48</sup></code></td></tr>
+
+<tr><td>本数の主部 <code>e<sup>2L</sup></code></td><td>「their number increases roughly like <code>µ</code>」／<code>ν(µ) ≈ 2µ − 1</code> をパリティで割る</td></tr>
+<tr><td>Schur 補元の余裕（§09 ①）</td><td>Sonin 空間への圧縮（arXiv:2006.13771 定理 1。<code>L = (log 2)/2</code> のみ）</td></tr>
+<tr><td>沈んだ固有ベクトル ⊥ 零点の空間（§09 ②）</td><td>「Weil 形式の radical は <code>E</code> の像を含む」</td></tr>
+
+
+</tbody></table></div>
+
+<p><strong>外部の一点での検算。</strong><code>µ = 11</code>（<code>L = 1.19895</code>、<code>T* = 69.115</code>、<code>N(T*) = 16</code>）での彼らの <code>−ln λ<sub>min</sub> = 109.65</code> に対し、減衰則 <code>−ln λ<sub>min</sub> ≈ C·N(T*)/ln N(T*)</code> は <code>C = 20.13</code> で 116.17、<code>C = 2π<sup>2</sup></code> で 113.91。比 1.059 と 1.039 で、向きは正しい（彼らの値は有限行列への制限なので真の値より大きい）。<span class="label comp">計算</span></p>
+
+
+<h3>沈んだ固有ベクトルは、彼らの <code>E(φ<sub>n</sub>)</code> そのもの</h3>
+
+<p><code>L = 2</code>（<code>µ = 54.598</code>・実測 53 本）で主角を測ると、<code>cos θ</code> が小数 5 桁まで 1 のものが 50 本、<code>&gt; 0.99</code> が 52 本です。彼らの 54 次元（<code>φ<sub>2n</sub> = ψ<sub>2n</sub>ψ<sub>0</sub>(0) − ψ<sub>0</sub>ψ<sub>2n</sub>(0)</code>、<code>n = 1..54</code>、<code>ψ<sub>m</sub></code> は prolate 関数）に <code>W<sub>L</sub></code> を圧縮すると、固有値は <code>−4.7×10<sup>−14</sup></code>〜<code>0.27</code> で <code>&lt; 10<sup>−3</sup></code> が 50 本。乱数の 54 次元では <code>cos θ &gt; 0.99</code> が 0 本・圧縮の最小固有値 <code>+1.38</code>、<code>Λ(k)</code> を並べ替えた偽の重みでは<strong>同じ 54 次元の上で最小固有値 <code>−7</code></strong>——この部分空間は算術を見ています。min–max から、この圧縮は <code>W<sub>L</sub></code> を対角化せずに <code>n(W<sub>L</sub>; 10<sup>−3</sup>) ≥ 50</code> を与える明示的な証人です。<span class="label comp">計算</span></p>
+
+<p>ただし、彼らの式 (3.4) をそのまま使うと 12 本に落ちます。(3.4) の根拠は “act as if <code>E(φ<sub>n</sub>)</code> would fulfill the equality <code>E(φ<sub>n</sub>)(u<sup>−1</sup>) = (−1)<sup>n</sup>E(φ<sub>n</sub>)(u)</code>”（arXiv:2106.01715 §3）という一文です。</p>
+
+<p><code>µ = 54.6</code> で測ると <code>E(φ<sub>n</sub>)</code> の奇成分はノルムの 23〜61%（中央値 48%）あり、この近似は成り立っていません。それでも偶成分を取れば結論は生き残ります——<strong>壊れているのは結論ではなく経路です</strong>。<span class="label comp">計算</span> 定理 T（§07 ③）は、沈んだ部分空間の元の複素平行移動後の漏れを沈み具合 <code>u</code> の冪で押さえる言明で、<code>u → u<sup>−1</sup></code>（<code>t → −t</code>）の破れを測る量と同じ族に属します。<strong>彼らの構成は明示的な証人を与え、定理 T は証人を持たない側の評価を与えます。</strong>この破れを <code>尾<sub>δ</sub></code> で実際に押さえる不等式は、まだ書いていません。<span class="label paper">紙</span>（位置づけとして）</p>
+
+
+<hr>
+
+<div class="sec"><span class="n">11</span><h2 id="届かない">この道がリーマン予想に届かない理由</h2></div>
+
+<p><strong>沈んだ本数の下界はリーマン予想と独立であり、リーマン予想の証明にも反証にも使えません。</strong></p>
+
+<ul>
+<li><strong>使っているのは個数だけ。</strong><code>n(L) = Sh(T*) − N(T*)</code> は「窓が持てる自由度の密度 <code>L/π</code>」と「消さねばならない零点の密度 <code>log(T/2π)/2π</code>」の差の積分でしかなく、零点が臨界線上にあるかどうかを一度も使っていません。使うのは <code>N(T)</code> という個数で、それは無条件の Riemann–von Mangoldt から出ます。リーマン予想の情報が入る場所は移送定数 <code>κ</code> の <code>e<sup>L</sup></code> ただ一つで、しかも主部 <code>e<sup>2L</sup></code> に比べて小さい。したがって下界が成り立っても成り立たなくても、零点の位置については何も戻りません。</li>
+<li><strong>余裕は消えかかった量で、狭い場所に住んでいる。</strong>Weil の正値性の余裕は <code>λ<sub>1</sub>(W<sub>L</sub>) ≈ e<sup>−2π<sup>2</sup>N(T*)/ln N(T*)</sup></code>（<code>L = 2</code> で <code>e<sup>−607</sup></code>）で、それが住んでいるのは <code>n(L) ≈ e<sup>2L</sup></code> 次元の Schur 補元の中です。補元の外では <code>S<sub>L</sub></code> の固有値が <code>O(1)</code> なので <code>Q<sub>L</sub></code> が <code>O(1)</code> 動かしても 0 に届かず、沈むのはこの束の中だけです。そこでの符号を支えているのは <code>Λ</code> がどの <code>log k</code> の上に載っているかという算術だけで（並べ替えると、沈んだ本数とほぼ同数の負の固有値が出ます）、<strong>その符号を上から押さえる算術の道具が、この枠にはありません。</strong></li>
+<li><strong>摂動も、一本の豊富な類も、帯での分割も使えない</strong>（§09 ①④⑤）。</li>
+<li><strong>窓が有限である限り、高さ <code>T*</code> までしか見えない。</strong>得られるのは高さ <code>2πe<sup>2L</sup></code> までの零点についての情報で、<code>L → ∞</code> の計算量は次元・素数冪ともに <code>e<sup>2L</sup></code> で指数的に増えます。</li>
+<li><strong>Connes–Consani の側でも同じ。</strong>Weil 正値性がリーマン予想を導くのは semi-local 版で、それは未証明です（arXiv:2006.13771 の要旨）。</li>
+</ul>
+
+<p>Zhu は同じ設定について「正値性の道は単独ではリーマン予想に届かない」と書いています。<span class="label known">既知</span> <strong>この記事はその判断を覆しません。</strong>付け加えたのは、届かないその手前で、<strong>余裕が住んでいる次元の本数に、リーマン予想を仮定しない下界が付く</strong>ということだけです。</p>
+
+<hr>
+
+<div class="sec"><span class="n">12</span><h2 id="範囲">この記事が言えている範囲</h2></div>
+
+<p class="small">動いた宿題の現在地は <a href="remaining.html">残っていること</a> にある。ここには現時点の未決だけを置く。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th></th><th>内容</th></tr></thead>
+<tbody>
+<tr><td><strong>言えた</strong></td><td>Li の判定法の余裕は個数しか見ず、Weil の二次形式の正値性は素数冪の配置を見る<span class="label comp">計算</span></td></tr>
+<tr><td><strong>言えた</strong></td><td>沈んだ固有値の本数は <code>e<sup>2L</sup> − 7/8 − S(T*)</code> によく従う。主部は既知、<code>−7/8</code> が当てはめでないことは Lean、定数項は数値では決まらない<span class="label known">既知</span><span class="label lean">Lean</span><span class="label comp">計算</span></td></tr>
+<tr><td><strong>言えた</strong></td><td>本数の下界（定理 A）を、リーマン予想を仮定せずに立てた。<code>L = 2</code> で 45.24（(LW∞) の下）<span class="label paper">紙</span>。有限次元の部品<span class="label lean">Lean</span></td></tr>
+
+<tr><td><strong>言えた</strong></td><td>余裕は <code>e<sup>2L</sup></code> 次元の Schur 補元の中にあり、沈んだ方向は零点の空間に直交する<span class="label paper">紙</span><span class="label comp">計算</span></td></tr>
+<tr><td><strong>言えた</strong></td><td>「豊富な類を一本」型と「帯で割る」型の議論は、有限次元の線形代数の水準で使えない<span class="label lean">Lean</span>（入力の数値は<span class="label comp">計算</span>）</td></tr>
+<tr><td><strong>言えない</strong></td><td>リーマン予想について何か。<code>W<sub>L</sub> ⪰ 0</code> がすべての <code>L</code> で成り立つかどうか。<strong>この記事のどの結果も、リーマン予想の証明にも反証にも使えない</strong></td></tr>
+<tr><td><strong>言えない</strong></td><td>仮定 (LW∞) と入力 (E1) を外した下界。<code>ĉ<sub>k</sub> = −H<sub>k</sub> + C</code> の定数 <code>C ≈ 2.80</code> の閉じた形</td></tr>
+</tbody></table></div>
+
+<h3>既知の定理として使ったもの</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>使った事実</th><th>出典（確認の状態）</th></tr></thead>
+<tbody>
+<tr><td>Li の判定法</td><td>Li, J. Number Theory <strong>65</strong> (1997)（原典未取得）。漸化式と数値は arXiv:2006.13103（要旨で確認）</td></tr>
+<tr><td>Weil の判定法</td><td>Weil 1952（原典未取得）。Connes–Consani, arXiv:2006.13771（要旨で確認）</td></tr>
+<tr><td>素数が入らない窓での正値性</td><td>Yoshida／Connes–Consani（二次資料経由・原典未取得）</td></tr>
+<tr><td>台を切った Weil 形式、<code>T*</code>、減衰則、「単独では届かない」</td><td>Zhu, <em>Weil positivity in compact windows</em>, arXiv:2608.24827 v2（本文を取得）</td></tr>
+<tr><td>打ち切りの Galerkin 行列、Weil 二次形式作用素の数値的実現</td><td>Groskin, arXiv:2607.02828／Kim ほか, arXiv:2607.24830（要旨のみ）</td></tr>
+<tr><td>沈んだ固有値の存在と本数の主部、prolate からの構成</td><td>Connes–Consani, arXiv:2106.01715（本文を取得・逐語）、arXiv:2112.05500</td></tr>
+<tr><td>時間帯域制限の次元定理、plunge の幅</td><td>Landau 1975、Landau–Widom 1980（原典未取得。この記事は前者を使わず、後者は仮定 (LW∞) として分離）</td></tr>
+
+
+<tr><td>Riemann–von Mangoldt（<code>7/8</code> を含む無条件の形）</td><td>標準。偏角原理 ＋ <code>θ</code> の Stirling 展開</td></tr>
+
+<tr><td>他の同値命題</td><td>arXiv:math/0008177・1801.05914・1904.12438・math/0202141・math/0103058・1902.07321（要旨で題名と主張を確認）</td></tr>
+<tr><td>Báez-Duarte の判定法と、その振動の式</td><td>Báez-Duarte, arXiv:math/0307215／Maślanka, arXiv:math/0603713</td></tr>
+<tr><td>擬ラプラシアンの離散スペクトル</td><td>Bombieri–Garrett, arXiv:2002.07929（全文を取得）</td></tr>
+<tr><td>Gram の法則は正の割合で破れる</td><td>Trudgian, arXiv:0811.0883</td></tr>
+</tbody></table></div>
+
+<h3>探した範囲で同じ形の記述は見当たらないもの</h3>
+
+<p class="small">既知かもしれません。証明が完結したものも初等的で、専門家には知られている可能性が高いと考えています。Connes–Consani の枠組みには、下界を定理にしたもの・<code>1/k</code> 則と組合せ恒等式・移送の不等式は、言明としては見当たりませんでした。<strong>どれもリーマン予想については何も言っていません。</strong></p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>事実</th><th>札</th></tr></thead>
+<tbody>
+<tr><td>定理 A（沈んだ本数の下界。リーマン予想を仮定しない）と、段 (b) の余次元の勘定</td><td><span class="label paper">紙</span>線形代数は<span class="label lean">Lean</span></td></tr>
+<tr><td><code>tr Q − tr Q<sup>2</sup> = (1/2π<sup>2</sup>) log(4LT) + O(1)</code> による次元定理の代用</td><td><span class="label paper">紙</span><span class="label lean">Lean</span>（有限次元の跡）</td></tr>
+
+<tr><td><code>a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub></code> の定数項、<code>tr A<sup>3</sup></code> の還元、クラスタ振幅 <code>v<sub>2n</sub> = 2(−1)<sup>n</sup>π<sup>2n−2</sup>O<sub>n</sub></code></td><td><span class="label paper">紙</span><span class="label comp">計算</span><span class="label lean">Lean</span>（核）</td></tr>
+<tr><td><code>Σ<sub>n≥1</sub> C(k, 2n) O<sub>n</sub> = 2<sup>k−2</sup>H<sub>k−1</sub></code></td><td><span class="label lean">Lean</span></td></tr>
+<tr><td>(LW) を一つの <code>K</code> の (LW∞) に緩める、窓つきの定理 C′、片側で足りること</td><td><span class="label paper">紙</span><span class="label lean">Lean</span>（<code>φ<sub>K</sub></code> と Abel の評価）</td></tr>
+<tr><td>定理 T（移送）・T″・T′</td><td><span class="label paper">紙</span><span class="label lean">Lean</span>（一変数の部品）</td></tr>
+<tr><td>Schur 補元の余裕と、沈んだ方向の零点空間への直交（<code>≤ 2.3λ<sub>j</sub></code>）</td><td><span class="label paper">紙</span><span class="label comp">計算</span></td></tr>
+
+<tr><td>余裕と混雑の恒等式 <code>r + M = N + e</code> での <code>n(L)</code> の位置</td><td><span class="label lean">Lean</span><span class="label comp">計算</span></td></tr>
+
+</tbody></table></div>
+
+<h3>残る問い</h3>
+
+<div class="item">
+<h3>(E1) を帯端の階数 2 から紙で出す</h3>
+<p>手がかりは二つ——掛け算作用素と <code>Q</code> の交換子が<strong>階数 2</strong> の作用素であること、沈んだ元が帯端で <code>max|F(±T)|<sup>2</sup> ≈ 6〜8u‖f‖<sup>2</sup></code> を満たすこと（実測）。<code>Θ<sub>k</sub></code> の族について閉じた微分不等式の連立が立てば、§08 の 46.4 の行が［計算］から［紙］に移ります。<span class="label comp">計算</span>（手がかり）</p>
+</div>
+
+<div class="item">
+<h3>窓つきの <code>n(u)</code> の下界 — 有限の計算で決まる側</h3>
+<p>定理 C′ により、残るのは <code>log(1/u) ∈ [0, log K*]</code>（<code>L = 2</code> で <code>[0, 26]</code>）という有限の窓で <code>n(u) ≥ N<sub>0</sub> − A log(1/u) − C</code> を満たす試験部分空間を作ることだけです。必要なのは片側（<code>tr Q<sup>K+1</sup></code> の下界）で、<code>c = 686</code> という一つの固定した作用素について、<code>d ≈ 437</code> 本の試験ベクトルの尾を区間演算で上から押さえる有限の計算で、原理的には閉じます。固有値の包み込みは要りません。<span class="label paper">紙</span>（還元）</p>
+</div>
+
+<div class="item">
+<h3><code>sup<sub>k</sub> ĉ<sub>k</sub> &lt; ∞</code> を <code>c</code> について一様に</h3>
+<p>一様な形に上げるには、密度 <code>log c/π<sup>2</sup></code> が鋭いこと、つまり Landau–Widom の内容そのものが要ります。素朴な構成は「コンパクト台の Fourier 変換は指数減衰できない」ために <code>log<sup>2</sup></code> 倍だけ足りず、Landau–Widom を外部入力として引いても固定した <code>c</code> での定数は出ません。<span class="label paper">紙</span></p>
+</div>
+
+<p>未取得の一次資料（既知性の判定に効く順）：Li, X.-J., <em>Prolate spheroidal wave functions, Sonine spaces, and the Riemann zeta function</em>, J. Number Theory 2010（arXiv に無い）／Slepian の漸近展開／Landau 1975・Landau–Widom 1980／Weil 1952・Yoshida 1992。</p>
+
+<hr>
+
+<div class="sec"><span class="n">13</span><h2 id="lean">機械検査で閉じた範囲</h2></div>
+
+<p>Lean 4 + mathlib で閉じたのは、<strong>有限次元の線形代数・跡と数え上げ・組合せ恒等式・一変数の積分と不等式</strong>だけです。12 ファイルすべてで <code>sorry</code> は 0、<code>native_decide</code> は使っておらず、<code>#print axioms</code> の出力 73 行の全行が <code>propext</code>・<code>Classical.choice</code>・<code>Quot.sound</code> の部分集合です（実際には 73 行すべてがこの三つちょうど）。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>ファイル</th><th class="n">定理</th><th>何を閉じたか（定理名）</th><th>公理</th></tr></thead>
+<tbody>
+<tr><td><code>QuadraticFormSunkCount.lean</code></td><td class="n">2</td><td>形が <code>ε</code> 以下の部分空間の次元から、<code>ε</code> 以下の固有値の本数へ（<strong><code>SunkCount.card_le_of_form_le</code></strong>・<code>card_eigenvalues_le</code>）</td><td>標準三公理</td></tr>
+<tr><td><code>TimeBandTrace.lean</code></td><td class="n">9</td><td>圧縮の欠損と Hilbert–Schmidt ノルム、Chebyshev の数え上げ、<code>tr A<sup>3</sup></code> の窓と正弦の分解（<strong><code>TimeBand.trace_compress_sub_sq</code></strong>・<code>compress_sub_sq</code>・<code>trace_mul_transpose</code>・<strong><code>card_gt_ge_trace_sub</code></strong>・<code>range_three</code>・<code>window_inter</code>・<code>window_length</code>・<code>sin_mul_sin_mul_sin</code>・<code>sin_shift_decomp</code>）</td><td>標準三公理</td></tr>
+<tr><td><code>TimeBandTrace2.lean</code></td><td class="n">4</td><td>クラスタ恒等式とその二項形を <code>k ≤ 12</code> で個別に（<code>TimeBand.cluster_identity</code>・<code>binom_oddH_identity</code>・<code>even_binom_sum</code>・<code>sum_odd_choose</code>）</td><td>標準三公理</td></tr>
+<tr><td><code>TimeBandTrace3.lean</code></td><td class="n">3</td><td>二項形をすべての <code>k</code> で（<strong><code>TimeBand.binom_oddH_identity</code></strong>・<code>U_eq</code>・<code>EvOd</code>）</td><td>標準三公理</td></tr>
+<tr><td><code>TimeBandTransfer.lean</code></td><td class="n">10</td><td>調和測度の下界、指数の損、帯端の重み、重みつき Cauchy–Schwarz、幾何級数の欠損と Abel の剰余、移送の合成（<code>TimeBand.harmonic_measure_ge</code>・<code>arctan_le_self</code>・<code>rpow_exponent_loss</code>・<code>min_one_exp_add_le</code>・<code>one_le_bandWeight_of_le_abs</code>・<code>bandWeight_shift</code>・<code>weighted_cauchy_schwarz</code>・<code>sum_geom_deficiency</code>・<code>abel_remainder_bound</code>・<strong><code>transfer_of_ratio</code></strong>）</td><td>標準三公理</td></tr>
+<tr><td><code>TimeBandTransfer2.lean</code></td><td class="n">14</td><td>項ごとの Cauchy–Schwarz、Poisson 積分、<code>φ<sub>K</sub></code> の性質、片側の跡の評価（<code>TimeBand.termwise_bound</code>・<code>termwise_bound_of_profile</code>・<code>arctan_le_self</code>・<code>poisson_kernel_integral</code>・<code>poisson_linear_integral</code>・<code>poisson_profile_integral</code>・<code>poisson_exponent_lower</code>・<code>phiK_eq</code>・<code>phiK_nonneg</code>・<code>phiK_le_one</code>・<code>phiK_le_mul</code>・<code>deep_tail_negligible</code>・<strong><code>sum_pow_ge_card_mul</code></strong>・<code>sum_split_at_cut</code>）</td><td>標準三公理</td></tr>
+<tr><td><code>TimeBandBernstein.lean</code></td><td class="n">5</td><td>偶の余弦多項式の Nikolskii と <code>ℓ<sup>2</sup></code> の Bernstein（<code>TimeBand.hasDerivAt_cosPoly</code>・<code>sq_le_energy</code>・<code>abs_le_sqrt_energy</code>・<code>deriv_energy_le</code>・<code>deriv_sq_le_energy</code>）</td><td>標準三公理</td></tr>
+<tr><td><code>TimeBandCrossover.lean</code></td><td class="n">7</td><td><code>Sh(T) − (滑らかな N(T))</code> の最大は <code>T*</code> でちょうど <code>e<sup>2L</sup> − 7/8</code>（<code>TimeBand.mul_one_sub_log_le</code>・<code>mul_one_sub_log_lt</code>・<code>smoothCount_eq_of_pos</code>・<code>crossover_rewrite</code>・<strong><code>crossover_le</code></strong>・<strong><code>crossover_eq</code></strong>・<strong><code>crossover_lt</code></strong>）</td><td>標準三公理</td></tr>
+<tr><td><code>HodgeIndexPositivity.lean</code></td><td class="n">3</td><td>曲線の場合の線形代数（<code>HodgeIndex.reverse_cauchy_schwarz</code>・<code>castelnuovo_severi</code>・<strong><code>no_ample_of_two_negatives</code></strong>）</td><td>標準三公理</td></tr>
+<tr><td><code>WeilBandSplit.lean</code></td><td class="n">5</td><td>帯で割る議論の十分条件と反例（<code>BandSplit.schur_rank_one</code>・<code>cross_bound_of_nonneg</code>・<code>complement_lower_bound</code>・<code>two_block_nonneg</code>・<strong><code>band_split_counterexample</code></strong>）</td><td>標準三公理</td></tr>
+<tr><td><code>PsiComb.lean</code></td><td class="n">7</td><td>余裕と混雑の恒等式、<code>Ψ</code> の単調性（<strong><code>PsiComb.crowded_add_card</code></strong>・<code>empty_eq_crowded_add_excess</code>・<code>excess_not_determine_crowded</code>・<code>excess_example_check</code>・<code>strictMonoOn_of_pos</code>・<code>strictAntiOn_of_neg</code>・<code>anti_image_width</code>）</td><td>標準三公理</td></tr>
+<tr><td><code>PsiPacking.lean</code></td><td class="n">4</td><td>分離集合のパッキングの上界と、その鋭さ（<strong><code>PsiPacking.packing_card_le</code></strong>・<code>packing_card_le_real</code>・<code>excluded_ge</code>・<code>packing_sharp</code>）</td><td>標準三公理</td></tr>
+</tbody></table></div>
+
+<p class="small">「定理」の欄は <code>#print axioms</code> を置いた定理の数です。<code>TimeBand.binom_oddH_identity</code> は <code>TimeBandTrace2.lean</code>（<code>k ≤ 12</code> の個別版）と <code>TimeBandTrace3.lean</code>（すべての <code>k</code>）に、<code>TimeBand.arctan_le_self</code> は二つの Transfer ファイルに同じ名前で現れます。各ファイルは単独で検査してあり、互いを import しません。</p>
+
+<p><strong>何を言い、何を言っていないか。</strong>Lean に入っているのは、線形代数の段（段 (b)）、有限次元の跡と数え上げ、<code>tr A<sup>3</sup></code> の幾何と代数の核、組合せ恒等式、<code>φ<sub>K</sub></code> と Abel の評価と片側の跡、Poisson 積分の一変数の計算と項ごとの Cauchy–Schwarz、有限次元の Nikolskii／Bernstein、交差の最大、曲線の場合と帯での分割の線形代数、余裕の恒等式とパッキングです。<strong>定理 A・定理 T・定理 T′・定理 C′・(E1)・<code>1/k</code> 則の解析（<code>ψ</code> の平均値、クラスタ振幅の積分、Phragmén–Lindelöf、Plancherel、min–max の無限次元版）は Lean に載っていません。</strong>それらは［紙］です。<code>ζ</code> の零点・明示公式・<code>W<sub>L</sub></code> そのものも Lean には入っていません。</p>
+
+<hr>
+
+<h2 id="出典">出典と再現</h2>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>もの</th><th>種別</th><th>出典・道具</th></tr></thead>
+<tbody>
+<tr><td>リーマン予想、Li・Weil・Báez-Duarte の判定法</td><td>予想／既知</td><td>Li, J. Number Theory <strong>65</strong> (1997)／Weil 1952／Báez-Duarte, arXiv:math/0307215</td></tr>
+<tr><td>台を切った Weil 形式・<code>T*</code>・減衰則・「単独では届かない」</td><td>既知</td><td>Zhu, arXiv:2608.24827 v2</td></tr>
+<tr><td>沈んだ固有値の主部・prolate からの構成・"act as if"</td><td>既知</td><td>Connes–Consani, arXiv:2106.01715・arXiv:2006.13771・arXiv:2112.05500</td></tr>
+<tr><td>擬ラプラシアン</td><td>既知</td><td>Bombieri–Garrett, arXiv:2002.07929</td></tr>
+<tr><td>定理 A・定理 T・<code>1/k</code> 則・クラスタ振幅・定理 C′</td><td>紙</td><td>このページ（§07）。(LW∞) と (E1) は仮定として分離</td></tr>
+<tr><td>§06 の本数の表、§08 の数字、§09・§10 の測定</td><td>この端末で計算</td><td>多倍長の数値線形代数と求積（倍精度は <code>L ≥ 0.8</code> で使えない：最小固有値は <code>O(1)</code> の四項の 30〜60 桁の相殺として出る）。零点の個数は PARI/GP の <code>lfunzeros</code>。求積のパネル数は Galerkin 次元の 1.6 倍以上</td></tr>
+<tr><td>§13 の 12 ファイル</td><td>機械検査</td><td>Lean 4 + mathlib。束 <a href="lean/principia-riemann-weil-form-2026-10-02.tar.gz"><code>principia-riemann-weil-form-2026-10-02.tar.gz</code></a>（sha256 <code>{{SHA256}}</code>）。各 <code>.lean</code> の末尾に <code>#print axioms</code> があり、出力の写しを同梱</td></tr>
+</tbody></table></div>
+
+<p class="small">探した範囲：台を切った Weil 形式・Weil の二次形式の数値・prolate と Sonin 空間・時間帯域制限の跡の漸近・擬ラプラシアンについての検索と、上の論文の参照文献。被引用の一覧は引いていません。<strong>新しさについては「探した範囲で同じ形の記述は見当たらない」より強い言い方をしていません。</strong>そして繰り返しになりますが、<strong>このページのどの結果も、リーマン予想の証明にも反証にも使えません。</strong></p>
+
+<div class="revised"><strong>改訂</strong> 2026-10-02：新設。</div>
+
+</main>
+<footer class="site-foot">
+  <p class="tagline">我計算する、ゆえに我あり — 人とAIの思考を見つめる場</p>
+  <p class="small"><a href="../privacy.html">プライバシーポリシー</a> &middot; <a href="../contact.html">お問い合わせ</a></p>
+  <p class="small">&copy; 2026 computo ergo sum</p>
+</footer>
+</body>
+</html>

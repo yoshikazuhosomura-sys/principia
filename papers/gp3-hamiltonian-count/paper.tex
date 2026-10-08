@@ -1,0 +1,352 @@
+%% Typeset with:  latexmk -pdf paper.tex
+%% Needs: amsmath amsthm amssymb hyperref longtable array booktabs-free
+\documentclass[11pt,a4paper]{article}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}   %% scalable T1 fonts
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=28mm]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{array,longtable}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage[english]{babel}
+
+%% ---- symbols used by the unicode declarations below ----------------------
+\newcommand{\txtsym}[1]{\ifmmode\text{#1}\else#1\fi}
+%% Tate--Shafarevich symbol: the cyrillic font if the distribution has it,
+%% otherwise the roman abbreviation.  Nothing else depends on this package.
+\IfFileExists{cyrillic.sty}{%
+  \usepackage{cyrillic}%
+  \providecommand{\Sha}{\text{\usefont{OT2}{wncyr}{m}{n}Sh}}}{%
+  \providecommand{\Sha}{\mathrm{Sha}}}
+%% every non-ASCII character of the source, declared once:
+\DeclareUnicodeCharacter{00A7}{\txtsym{\S}}
+\DeclareUnicodeCharacter{00B1}{\ensuremath{\pm}}
+\DeclareUnicodeCharacter{00B7}{\ensuremath{\cdot}}
+\DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+\DeclareUnicodeCharacter{03A3}{\ensuremath{\Sigma}}
+\DeclareUnicodeCharacter{03B8}{\ensuremath{\theta}}
+\DeclareUnicodeCharacter{03C0}{\ensuremath{\pi}}
+\DeclareUnicodeCharacter{03C1}{\ensuremath{\rho}}
+\DeclareUnicodeCharacter{03C3}{\ensuremath{\sigma}}
+\DeclareUnicodeCharacter{2013}{\txtsym{\textendash}}
+\DeclareUnicodeCharacter{2014}{\txtsym{\textemdash}}
+\DeclareUnicodeCharacter{2026}{\ensuremath{\dots}}
+\DeclareUnicodeCharacter{2080}{\ensuremath{{}_0}}
+\DeclareUnicodeCharacter{2081}{\ensuremath{{}_1}}
+\DeclareUnicodeCharacter{2082}{\ensuremath{{}_2}}
+\DeclareUnicodeCharacter{2083}{\ensuremath{{}_3}}
+\DeclareUnicodeCharacter{2115}{\ensuremath{\mathbb{N}}}
+\DeclareUnicodeCharacter{2124}{\ensuremath{\mathbb{Z}}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\to}}
+\DeclareUnicodeCharacter{2194}{\ensuremath{\leftrightarrow}}
+\DeclareUnicodeCharacter{21A6}{\ensuremath{\mapsto}}
+\DeclareUnicodeCharacter{2200}{\ensuremath{\forall}}
+\DeclareUnicodeCharacter{2203}{\ensuremath{\exists}}
+\DeclareUnicodeCharacter{2205}{\ensuremath{\emptyset}}
+\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}
+\DeclareUnicodeCharacter{2209}{\ensuremath{\notin}}
+\DeclareUnicodeCharacter{220E}{\ensuremath{\blacksquare}}
+\DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\DeclareUnicodeCharacter{2218}{\ensuremath{\circ}}
+\DeclareUnicodeCharacter{2223}{\ensuremath{\mid}}
+\DeclareUnicodeCharacter{2224}{\ensuremath{\nmid}}
+\DeclareUnicodeCharacter{2227}{\ensuremath{\wedge}}
+\DeclareUnicodeCharacter{2228}{\ensuremath{\vee}}
+\DeclareUnicodeCharacter{2245}{\ensuremath{\cong}}
+\DeclareUnicodeCharacter{2260}{\ensuremath{\neq}}
+\DeclareUnicodeCharacter{2261}{\ensuremath{\equiv}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\le}}
+\DeclareUnicodeCharacter{2265}{\ensuremath{\ge}}
+\DeclareUnicodeCharacter{2286}{\ensuremath{\subseteq}}
+\DeclareUnicodeCharacter{2294}{\ensuremath{\sqcup}}
+\DeclareUnicodeCharacter{27E8}{\ensuremath{\langle}}
+\DeclareUnicodeCharacter{27E9}{\ensuremath{\rangle}}
+
+%% ---- named theorem environments (the labels are those of the draft) ------
+\newtheoremstyle{named}{\topsep}{\topsep}{\itshape}{0pt}{\bfseries}{.}{ }{\thmnote{#3}}
+\theoremstyle{named}
+\newtheorem*{namedthm}{}
+\newenvironment{mdproof}[1][Proof]{\par\medskip\noindent\textit{#1.}\ }{\par\medskip}
+\newlist{leancode}{itemize}{1}
+\setlist[leancode]{label={},leftmargin=1.2em,topsep=.5em,itemsep=.15em,parsep=0pt}
+\setlength{\parskip}{.35em}
+\sloppy
+\hbadness=10000
+\begin{document}
+\title{The number of Hamiltonian cycles of the generalized Petersen graph GP(n,3) is divisible by n for odd n\\[.5em]\large The rotation acts freely on the Hamiltonian cycles of GP(n,3) for every odd n ≥ 7 — a short proof, machine-checked in Lean 4}
+\author{Kiichi \and Shiori \and Rin}
+\date{Draft, \textless{}date\textgreater{}. Not submitted. See §9 for the disclosure of AI use and §7 for what is not claimed.}
+\maketitle
+\begin{center}\small wvbks0@gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+
+\section*{Abstract}
+Let GP(n,k) be the generalized Petersen graph with vertices $O_a$, $I_a$ (a ∈ Z/n) and edges $O_a$ $O_{a+1}$, $I_a$ $I_{a+k}$, $O_a$ $I_a$, and let \#HC(GP(n,3)) be the number of its Hamiltonian cycles, counted as edge sets. We prove that for every odd n ≥ 7, n divides \#HC(GP(n,3)); more precisely, no Hamiltonian cycle of GP(n,3) is invariant under a non-trivial rotation $ρ^i$ (0 \textless{} i \textless{} n), so Z/n = ⟨ρ⟩ acts freely on the set of Hamiltonian cycles. The proof is elementary — a conservation identity for the oriented cycle, a winding number forced into \{0, ±2\} when the quotient length is odd, a block structure for the missing edges that exists only when 2 is invertible in Z/d, and a permutation-sign obstruction — and it is carried out entirely in Lean 4 with Mathlib: \texttt{n\ \allowbreak{}∣\ \allowbreak{}numHC\ \allowbreak{}n\ \allowbreak{}3} for odd n ≥ 7 is a theorem with no \texttt{sorry}, no \texttt{native\_\allowbreak{}decide}, only the three standard axioms, and no kernel enumeration in its proof. For even n the statement fails (n = 8, …, 38) and rotation-invariant cycles exist. The values 7, 9, 11, 26, 75 for n = 7, …, 15 are separately certified in Lean by kernel enumeration. The values themselves are known (Haugland gave a linear recurrence); the divisibility and the freeness of the action are, to the best of our knowledge, the contribution of this note.
+
+\textbf{Keywords.} Generalized Petersen graph, Hamilton cycle, enumeration, group action, Lean 4.
+
+\textbf{MSC 2020.} 05C45, 05C30, 05C25, 68V20.
+
+\section*{1. Introduction}
+The generalized Petersen graphs GP(n,k) (Watkins [W]) are cubic graphs on 2n vertices with a rotation ρ of order n as an automorphism. Their Hamiltonicity is classified (Alspach [A]); in the family k = 3 the only non-Hamiltonian member is GP(5,3), the Petersen graph [to be verified against [A]]. The \textit{number} of Hamiltonian cycles is another matter. Schwenk [S] enumerated the Hamiltonian cycles of GP(n,2) and asked for the corresponding enumeration for larger k; Haugland [H] gave initial values and a linear recurrence of order 38 for \#HC(GP(n,3)) (and one for k = 4), with a table of values up to n = 38. Looking at that table, or at an enumeration of one's own, one sees a pattern that the recurrence does not display:
+
+\begin{center}\begin{small}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.226\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.056\linewidth}>{\raggedright\arraybackslash}p{0.056\linewidth}>{\raggedright\arraybackslash}p{0.056\linewidth}>{\raggedright\arraybackslash}p{0.056\linewidth}>{\raggedright\arraybackslash}p{0.056\linewidth}>{\raggedright\arraybackslash}p{0.056\linewidth}>{\raggedright\arraybackslash}p{0.056\linewidth}>{\raggedright\arraybackslash}p{0.056\linewidth}}
+\hline
+\textbf{n} & \textbf{7} & \textbf{8} & \textbf{9} & \textbf{10} & \textbf{11} & \textbf{12} & \textbf{13} & \textbf{14} & \textbf{15} & \textbf{16} & \textbf{17} & \textbf{18} & \textbf{19} & \textbf{20} & \textbf{21} & \textbf{22} & \textbf{23} \\
+\hline
+\#HC(GP(n,3)) & 7 & 6 & 9 & 24 & 11 & 68 & 26 & 88 & 75 & 150 & 102 & 316 & 152 & 436 & 399 & 664 & 667 \\
+\#HC mod n & 0 & 6 & 0 & 4 & 0 & 8 & 0 & 4 & 0 & 6 & 0 & 10 & 0 & 16 & 0 & 4 & 0 \\
+\hline
+\end{tabular}
+\end{small}\end{center}
+\textit{Table 1. Hamiltonian cycles of GP(n,3) as edge sets (sources in §4).}
+
+\begin{quote}
+\begin{namedthm}[Theorem 1]
+Let n ≥ 7 be odd. Then n divides \#HC(GP(n,3)). More precisely, no Hamiltonian cycle of GP(n,3) has an edge set invariant under $ρ^i$ for 0 \textless{} i \textless{} n, so ⟨ρ⟩ ≅ Z/n acts freely on the set of Hamiltonian cycles, whose cardinality is therefore a multiple of n.
+\end{namedthm}
+\end{quote}
+The divisibility is the orbit count with all non-trivial fixed-point counts equal to zero; the content of the theorem is that they are zero. For even n they are not: a cycle invariant under $ρ^2$ exists for every even n with 8 ≤ n ≤ 22 (§4). The mechanism (§3): an invariant cycle descends to an oriented 2-factor on Z/d with a winding number w; for odd d, w is forced into \{0, ±2\}; w = 0 is excluded because the cycle upstairs would close too early; and w = ±2 forces the missing edges into a rigid block structure that no single cycle can realise. For even d the block structure need not exist (a d = 10 example is exhibited in Lean).
+
+The Lean 4 statement (§5) is
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}GeneralizedPetersen.\allowbreak{}Descent.\allowbreak{}gp3\_\allowbreak{}dvd\_\allowbreak{}hc\_\allowbreak{}odd\ \allowbreak{}(n\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}[NeZero\ \allowbreak{}n]\ \allowbreak{}(hn\ \allowbreak{}:\ \allowbreak{}Odd\ \allowbreak{}n)\ \allowbreak{}(h7\ \allowbreak{}:\ \allowbreak{}7\ \allowbreak{}≤\ \allowbreak{}n)\ \allowbreak{}:\ \allowbreak{}n\ \allowbreak{}∣\ \allowbreak{}GeneralizedPetersen.\allowbreak{}Count.\allowbreak{}numHC\ \allowbreak{}n\ \allowbreak{}3}
+\end{leancode}
+where \texttt{numHC\ \allowbreak{}n\ \allowbreak{}3} counts edge sets of Hamiltonian cycles of GP(n,3) in Mathlib's \texttt{SimpleGraph} vocabulary. Several steps of the paper proof became shorter in Lean (§5.3). We claim neither depth nor novelty beyond the searches recorded in §8.
+
+\section*{2. Definitions and the reduction to fixed points}
+\textbf{The graph.} For n, k ≥ 1 the vertex set of GP(n,k) is V(n) := Z/n × \{O, I\}, with $O_a$ := (a, O), $I_a$ := (a, I); the edges are the \textit{outer} edges $O_a$ $O_{a+1}$, the \textit{inner} edges $I_a$ $I_{a+k}$ and the \textit{spokes} $O_a$ $I_a$. In Lean (\texttt{GeneralizedPetersenBase.\allowbreak{}lean}), verbatim:
+
+\begin{leancode}
+\item \texttt{abbrev\ \allowbreak{}V\ \allowbreak{}(n\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}:=\ \allowbreak{}ZMod\ \allowbreak{}n\ \allowbreak{}×\ \allowbreak{}Bool}
+\item \texttt{def\ \allowbreak{}GPrel\ \allowbreak{}(n\ \allowbreak{}k\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}(x\ \allowbreak{}y\ \allowbreak{}:\ \allowbreak{}V\ \allowbreak{}n)\ \allowbreak{}:\ \allowbreak{}Prop\ \allowbreak{}:=\ \allowbreak{}(x.\allowbreak{}2\ \allowbreak{}=\ \allowbreak{}false\ \allowbreak{}∧\ \allowbreak{}y.\allowbreak{}2\ \allowbreak{}=\ \allowbreak{}false\ \allowbreak{}∧\ \allowbreak{}y.\allowbreak{}1\ \allowbreak{}=\ \allowbreak{}x.\allowbreak{}1\ \allowbreak{}+\ \allowbreak{}1)\ \allowbreak{}∨\ \allowbreak{}(x.\allowbreak{}2\ \allowbreak{}=\ \allowbreak{}true\ \allowbreak{}∧\ \allowbreak{}y.\allowbreak{}2\ \allowbreak{}=\ \allowbreak{}true\ \allowbreak{}∧\ \allowbreak{}y.\allowbreak{}1\ \allowbreak{}=\ \allowbreak{}x.\allowbreak{}1\ \allowbreak{}+\ \allowbreak{}(k\ \allowbreak{}:\ \allowbreak{}ZMod\ \allowbreak{}n))\ \allowbreak{}∨\ \allowbreak{}(x.\allowbreak{}2\ \allowbreak{}=\ \allowbreak{}false\ \allowbreak{}∧\ \allowbreak{}y.\allowbreak{}2\ \allowbreak{}=\ \allowbreak{}true\ \allowbreak{}∧\ \allowbreak{}y.\allowbreak{}1\ \allowbreak{}=\ \allowbreak{}x.\allowbreak{}1)}
+\item \texttt{def\ \allowbreak{}GP\ \allowbreak{}(n\ \allowbreak{}k\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}:\ \allowbreak{}SimpleGraph\ \allowbreak{}(V\ \allowbreak{}n)\ \allowbreak{}:=\ \allowbreak{}SimpleGraph.\allowbreak{}fromRel\ \allowbreak{}(GPrel\ \allowbreak{}n\ \allowbreak{}k)}
+\end{leancode}
+(\texttt{false} is O, \texttt{true} is I; \texttt{fromRel} symmetrises and removes loops.) For n ≥ 7, k = 3 this is the usual simple cubic graph. The rotation ρ(a, s) := (a + 1, s) (\texttt{rot\ \allowbreak{}n}) is an automorphism for all n, k (\texttt{GP\_\allowbreak{}adj\_\allowbreak{}rot\_\allowbreak{}pow}, \texttt{rotIso}), $ρ^n$ = 1, and $ρ^d$ fixes no vertex for 0 \textless{} d \textless{} n (\texttt{rot\_\allowbreak{}pow\_\allowbreak{}free}).
+
+\textbf{Hamiltonian cycles as edge sets.} Walks describing the same cycle differ by starting point and direction, so we count edge sets (\texttt{GeneralizedPetersenCount.\allowbreak{}lean}; \texttt{IsHamiltonianCycle} is Mathlib's):
+
+\begin{leancode}
+\item \texttt{noncomputable\ \allowbreak{}def\ \allowbreak{}HamEdges\ \allowbreak{}(n\ \allowbreak{}k\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}[NeZero\ \allowbreak{}n]\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Finset\ \allowbreak{}(Sym2\ \allowbreak{}(V\ \allowbreak{}n)))\ \allowbreak{}:=\ \allowbreak{}Finset.\allowbreak{}univ.\allowbreak{}filter\ \allowbreak{}(fun\ \allowbreak{}E\ \allowbreak{}=\textgreater{}\ \allowbreak{}∃\ \allowbreak{}(x\ \allowbreak{}:\ \allowbreak{}V\ \allowbreak{}n)\ \allowbreak{}(p\ \allowbreak{}:\ \allowbreak{}(GP\ \allowbreak{}n\ \allowbreak{}k).\allowbreak{}Walk\ \allowbreak{}x\ \allowbreak{}x),\ \allowbreak{}p.\allowbreak{}IsHamiltonianCycle\ \allowbreak{}∧\ \allowbreak{}p.\allowbreak{}edges.\allowbreak{}toFinset\ \allowbreak{}=\ \allowbreak{}E)}
+\item \texttt{noncomputable\ \allowbreak{}def\ \allowbreak{}numHC\ \allowbreak{}(n\ \allowbreak{}k\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}[NeZero\ \allowbreak{}n]\ \allowbreak{}:\ \allowbreak{}ℕ\ \allowbreak{}:=\ \allowbreak{}(HamEdges\ \allowbreak{}n\ \allowbreak{}k).\allowbreak{}card}
+\end{leancode}
+So \#HC(GP(n,k)) := \texttt{numHC\ \allowbreak{}n\ \allowbreak{}k}. ρ acts on edge sets by \texttt{rotE\ \allowbreak{}n\ \allowbreak{}E\ \allowbreak{}:=\ \allowbreak{}E.\allowbreak{}image\ \allowbreak{}(Sym2.\allowbreak{}map\ \allowbreak{}(rot\ \allowbreak{}n))}, preserving \texttt{HamEdges} (\texttt{rotE\_\allowbreak{}mem}), with \texttt{(rotE\ \allowbreak{}n)\textasciicircum{}[n]\ \allowbreak{}E\ \allowbreak{}=\ \allowbreak{}E} (\texttt{rotE\_\allowbreak{}pow\_\allowbreak{}card}).
+
+\begin{namedthm}[Lemma 2.1 (free action)]
+Let S be a finite set and g : S → S with $g^n$ = id and $g^i$ x ≠ x for all x ∈ S, 0 \textless{} i \textless{} n. Then n ∣ \textbar{}S\textbar{}.
+\end{namedthm}
+\begin{mdproof}[Proof]
+g generates a group of order n acting with trivial stabilisers, so S is a disjoint union of orbits of size n (\texttt{GeneralizedPetersen.\allowbreak{}Small.\allowbreak{}card\_\allowbreak{}dvd\_\allowbreak{}of\_\allowbreak{}perm\_\allowbreak{}free}, one line from Mathlib's \texttt{MulAction.\allowbreak{}selfEquivOrbitsQuotientProd}; \texttt{Finset} form \texttt{GeneralizedPetersen.\allowbreak{}FreeAction.\allowbreak{}dvd\_\allowbreak{}card\_\allowbreak{}of\_\allowbreak{}iterate\_\allowbreak{}free}). ∎
+\end{mdproof}
+
+\begin{namedthm}[Corollary 2.2 (\texttt{GeneralizedPetersen.\allowbreak{}Count.\allowbreak{}gp\_\allowbreak{}dvd\_\allowbreak{}numHC})]
+For all n, k: if no E ∈ \texttt{HamEdges\ \allowbreak{}n\ \allowbreak{}k} satisfies \texttt{(rotE\ \allowbreak{}n)\textasciicircum{}[i]\ \allowbreak{}E\ \allowbreak{}=\ \allowbreak{}E} with 0 \textless{} i \textless{} n, then n ∣ \texttt{numHC\ \allowbreak{}n\ \allowbreak{}k}.
+\end{namedthm}
+
+Here n need not be prime and k is arbitrary; k = 3 enters only in §3. Theorem 1 is thus equivalent to:
+
+\begin{quote}
+\begin{namedthm}[Theorem 3.1]
+Let n ≥ 7 be odd and 0 \textless{} i \textless{} n. No Hamiltonian cycle of GP(n,3) has its edge set fixed by $ρ^i$.
+\end{namedthm}
+\end{quote}
+
+\section*{3. Proof of Theorem 3.1}
+Let C be a Hamiltonian cycle of GP(n,3), n ≥ 7 odd, given as a closed walk p, with edge set fixed by $ρ^i$, 0 \textless{} i \textless{} n. Put d := gcd(i, n): 0 \textless{} d \textless{} n, d ∣ n, d odd, and $ρ^d$ is a power of $ρ^i$ (\texttt{Nat.\allowbreak{}exists\_\allowbreak{}mul\_\allowbreak{}mod\_\allowbreak{}eq\_\allowbreak{}gcd}), so the edge set of C is fixed by $ρ^d$ (\texttt{edgeInv\_\allowbreak{}gcd}). Let m := n/d ≥ 3, odd. Lean names are in \texttt{GeneralizedPetersen.\allowbreak{}Descent} unless another namespace is given.
+
+\subsection*{3.1 Darts}
+Orient C by p; its \textit{darts} are the pairs (x, y) with x → y a step of p (\texttt{HasDart\ \allowbreak{}p\ \allowbreak{}x\ \allowbreak{}y}). Every vertex has exactly one out-dart and one in-dart, with distinct other ends, and a dart and its reverse never both occur (\texttt{cycle\_\allowbreak{}local'}, from Mathlib's \texttt{map\_\allowbreak{}fst\_\allowbreak{}darts}, \texttt{map\_\allowbreak{}snd\_\allowbreak{}darts} and \texttt{Nodup} of \texttt{support.\allowbreak{}tail}).
+
+\begin{namedthm}[Lemma 3.2 (\texttt{dartBridge})]
+$ρ^d$ maps darts of C to darts of C.
+\end{namedthm}
+
+\textit{Proof.} Let σ be an injection of V(n) fixing the edge set of C. For consecutive darts x → y → z: if σx → σy is a dart then so is σy → σz — otherwise σz → σy is, uniqueness of the in-dart at σy gives σz = σx, so z = x and x → y, y → x would both be darts (\texttt{fwd\_\allowbreak{}step}). Propagating along p, σ preserves every dart or reverses every dart (\texttt{fwd\_\allowbreak{}or\_\allowbreak{}bwd}). If σ reverses, $σ^2$ preserves, and if σ has odd order r then σ = $(σ^2)^{(r+1)/2}$ preserves too, which is impossible (\texttt{preserves\_\allowbreak{}of\_\allowbreak{}odd\_\allowbreak{}order}). Here σ = $ρ^d$ has odd order m. ∎
+
+\subsection*{3.2 The oriented 2-factor and its descent}
+Let ind(x, y) := 1 if x → y is a dart of C, else 0, and define o, i, s : Z/n → \{0, ±1\} (\texttt{oW}, \texttt{iW}, \texttt{spW}):
+
+\begin{quote}
+o(j) := $ind(O_j$, $O_{j+1}$) − $ind(O_{j+1}$, $O_j$),  i(j) := $ind(I_j$, $I_{j+3}$) − $ind(I_{j+3}$, $I_j$),  s(j) := $ind(O_j$, $I_j$) − $ind(I_j$, $O_j$).
+\end{quote}
+Thus o(j) = ±1 records that the outer edge \{j, j+1\} is on C with its direction and 0 that it is missing; likewise i(j) for the inner edge \{j, j+3\} and s(j) for the spoke at j. Since $O_j$ has one out- and one in-dart among its three neighbours $O_{j±1}$, $I_j$ (distinct because 2 ≠ 0 in Z/n), and $I_j$ among $I_{j±3}$, $O_j$ (distinct because 6 ≠ 0 — this is where n ≥ 7 is used), one gets for every j (\texttt{outer\_\allowbreak{}cons}, \texttt{inner\_\allowbreak{}cons}, \texttt{degO\_\allowbreak{}eq}, \texttt{degI\_\allowbreak{}eq}):
+
+\begin{quote}
+o(j) − o(j−1) + s(j) = 0,  i(j) − i(j−3) − s(j) = 0,  \textbar{}o(j−1)\textbar{} + \textbar{}o(j)\textbar{} + \textbar{}s(j)\textbar{} = 2,  \textbar{}i(j−3)\textbar{} + \textbar{}i(j)\textbar{} + \textbar{}s(j)\textbar{} = 2.
+\end{quote}
+A triple (o, i, s) on Z/d with values in \{0, ±1\} satisfying these is a \texttt{TwoFactor\ \allowbreak{}d} (\texttt{GeneralizedPetersenDescent.\allowbreak{}lean}; the first two identities alone define a \texttt{Flow\ \allowbreak{}d}, \texttt{GeneralizedPetersenBase.\allowbreak{}lean}). So C gives \texttt{hamTF\ \allowbreak{}p\ \allowbreak{}:\ \allowbreak{}TwoFactor\ \allowbreak{}n}. By Lemma 3.2 the three functions are d-periodic, hence factor through Z/n → Z/d, giving \texttt{quotTF\ \allowbreak{}:\ \allowbreak{}TwoFactor\ \allowbreak{}d} (\texttt{TwoFactor.\allowbreak{}descend}). The descent is purely algebraic: the quotient graph GP(d,3) is never formed, so d = 1, 3, 5 need no separate treatment (§3.6).
+
+\begin{namedthm}[Lemma 3.3 (\texttt{exists\_\allowbreak{}oW\_\allowbreak{}zero})]
+p := \#\{j ∈ Z/d : o'(j) = 0\} ≥ 1.
+\end{namedthm}
+\begin{mdproof}[Proof]
+If every outer edge were on C, the outer vertices would form a dart-closed set, and a closed walk meeting a dart-closed set stays inside it (\texttt{support\_\allowbreak{}subset\_\allowbreak{}of\_\allowbreak{}closed'}), so C would miss the inner vertices. This descends by periodicity. ∎
+\end{mdproof}
+
+\subsection*{3.3 The winding number}
+For a \texttt{Flow\ \allowbreak{}d} let W(j) := o(j) + i(j−2) + i(j−1) + i(j) (\texttt{Flow.\allowbreak{}W}): the signed number of crossings of the 2-factor through a radial cut of the annulus between positions j and j+1 (one outer edge and the three inner edges of step 3 straddling the cut).
+
+\begin{namedthm}[Lemma 3.4 (\texttt{Flow.\allowbreak{}W\_\allowbreak{}sub\_\allowbreak{}one}, \texttt{W\_\allowbreak{}const}, \texttt{winding})]
+W(j) − W(j−1) = (o(j) − o(j−1)) + (i(j) − i(j−3)) = −s(j) + s(j) = 0. So W ≡ w is constant, and summing over Z/d (each inner edge lies in three windows), d·w = $Σ_j$ o(j) + 3 $Σ_j$ i(j). ∎
+\end{namedthm}
+
+Let q := \#\{i = 0\}. Counting spokes from both sides, 2Σ\textbar{}o\textbar{} + Σ\textbar{}s\textbar{} = 2d = 2Σ\textbar{}i\textbar{} + Σ\textbar{}s\textbar{}, so \textbf{p = q} (\texttt{TwoFactor.\allowbreak{}p\_\allowbreak{}eq\_\allowbreak{}q}). Then \textbar{}Σo\textbar{} ≤ d − p, \textbar{}Σi\textbar{} ≤ d − q, so \textbf{\textbar{}d·w\textbar{} ≤ 4(d − p)} (\texttt{abs\_\allowbreak{}winding\_\allowbreak{}le}), and Σo ≡ Σ\textbar{}o\textbar{}, Σi ≡ Σ\textbar{}i\textbar{} (mod 2) give d·w ≡ 4(d − p) ≡ 0 (mod 2) (\texttt{even\_\allowbreak{}winding}).
+
+\begin{namedthm}[Lemma 3.5 (\texttt{TwoFactor.\allowbreak{}winding\_\allowbreak{}cases})]
+If d is odd and p ≥ 1 then w ∈ \{0, 2, −2\}.
+\end{namedthm}
+\begin{mdproof}[Proof]
+\textbar{}w\textbar{} \textless{} 4, so \textbar{}w\textbar{} ≤ 3; d odd and d·w even force w even. ∎ (For p = 0, w = ±4 occurs; hence Lemma 3.3.)
+\end{mdproof}
+
+\begin{namedthm}[Lemma 3.6 (\texttt{windingBridge})]
+For the descended 2-factor of a $ρ^d-invariant$ Hamiltonian cycle, w ≠ 0.
+\end{namedthm}
+
+\textit{Proof.} Give a dart x → y the \textit{displacement} disp(x, y) ∈ \{±1, ±3, 0\} (outer ±1, inner ±3, spoke 0), so that disp(x, y) ≡ y₁ − x₁ (mod n) in the first coordinate (\texttt{disp\_\allowbreak{}cast}), and a walk the sum WS of its displacements. Fix u on C and let P be the segment of p from u to $ρ^d$ u; WS(P) ≡ d (mod n). By Lemma 3.2 the translates $ρ^{dt}P$ run on darts of C, so Q := P · $ρ^dP$ · … · $ρ^{d(m−1)}P$ is a closed walk from u to u on darts of C, with WS(Q) = m·WS(P). Two walks on the darts of a cycle from the same vertex are prefixes of one another (\texttt{darts\_\allowbreak{}prefix}), so a closed one consists of j full traversals (\texttt{closed\_\allowbreak{}walk\_\allowbreak{}darts}): WS(Q) = j·WS(p). Rearranging the sum over darts by edges, WS(p) = $Σ_{Z/n}$ o + $3Σ_{Z/n}$ i = n·w (\texttt{WS\_\allowbreak{}eq\_\allowbreak{}flow}, \texttt{descend\_\allowbreak{}W\_\allowbreak{}eq}). If w = 0 then WS(P) = 0, so d ≡ 0 (mod n), contradicting 0 \textless{} d \textless{} n. ∎
+
+Reversing the orientation of C negates o, i, s and W (\texttt{TwoFactor.\allowbreak{}neg}), so from now on \textbf{w = 2} (\texttt{exists\_\allowbreak{}win}): the descended 2-factor is a \texttt{Win\ \allowbreak{}d}, a \texttt{TwoFactor\ \allowbreak{}d} with W ≡ 2 (\texttt{GeneralizedPetersenBase.\allowbreak{}lean}).
+
+\subsection*{3.4 The block structure of the missing edges (d odd)}
+Let F be a \texttt{Win\ \allowbreak{}d}, $G_o$ := \{j : o(j) = 0\}, $G_i$ := \{r : i(r) = 0\}, so $|G_o|$ = p = q = $|G_i|$ ≥ 1. Since W(j) = 2, the \textit{window} (i(j−2), i(j−1), i(j)) has sum 2 − o(j) ∈ \{1, 2, 3\}; let Z(j) be its number of zeros. Inspecting the 81 cases (\texttt{Win.\allowbreak{}Z\_\allowbreak{}spec}): Z(j) ≤ 2, and Z(j) = 1 exactly when o(j) = 0. Each zero of i lies in three windows, so 3q = $Σ_j$ Z(j) = p + 2x with x := \#\{j : Z(j) = 2\}; with p = q, \textbf{x = p} (\texttt{Win.\allowbreak{}x\_\allowbreak{}eq\_\allowbreak{}p}). Two local facts: \textbar{}s\textbar{} ≤ 1 follows from the identities (\texttt{Win.\allowbreak{}sp\_\allowbreak{}abs\_\allowbreak{}le\_\allowbreak{}one}), hence i(r) = i(r+3) = 0 is impossible (\texttt{Win.\allowbreak{}no\_\allowbreak{}gap\_\allowbreak{}dist\_\allowbreak{}three}), and so are three consecutive zeros of i (\texttt{Win.\allowbreak{}no\_\allowbreak{}three\_\allowbreak{}consecutive}). A window with two zeros therefore contains a \textit{domino} \{r, r+1\} ⊆ $G_i$ (which lies in exactly two windows) or a \textit{gapped pair} \{r, r+2\} ⊆ $G_i$, r+1 ∉ $G_i$ (one window). With n₁ := \#dominoes, n₂ := \#gapped pairs, x = 2n₁ + n₂, so \textbf{2n₁ + n₂ = q} (\texttt{Win.\allowbreak{}pairs\_\allowbreak{}eq\_\allowbreak{}q}).
+
+This counting does not determine $G_i$: \texttt{GeneralizedPetersenBase.\allowbreak{}lean} exhibits (\texttt{winEx}, checked by \texttt{decide}) the \texttt{Win\ \allowbreak{}10} with o = 1 on even residues, i = 1 on odd residues, s = −1 on even and +1 on odd; $G_i$ is the odd residues, n₁ = 0, n₂ = 5, q = 5, and there is no domino (all spokes are used, outer and inner arcs of length one alternating). The parity of d enters exactly once:
+
+\begin{namedthm}[Lemma 3.7 (\texttt{GeneralizedPetersen.\allowbreak{}Blocks.\allowbreak{}odd\_\allowbreak{}pair})]
+If d is odd, every r ∈ $G_i$ has r+1 ∈ $G_i$ or r−1 ∈ $G_i$.
+\end{namedthm}
+
+\textit{Proof.} Each r ∈ $G_i$ is of exactly one kind: left end of a domino (r+1 ∈ $G_i$), left of a gapped pair (r+1 ∉, r+2 ∈ $G_i$), or an \textit{end} (r+1, r+2 ∉ $G_i$). So q = n₁ + n₂ + e with e := \#ends (\texttt{q\_\allowbreak{}split}), and with 2n₁ + n₂ = q, \textbf{n₁ = e} (\texttt{n1\_\allowbreak{}eq\_\allowbreak{}ends}). The injective map r ↦ r+1 sends left ends of dominoes to ends (by the two local facts), hence onto the ends (\texttt{image\_\allowbreak{}Doms}): \textit{every end has its left neighbour in $G_i$} (\texttt{ends\_\allowbreak{}has\_\allowbreak{}pred}). Now let r ∈ $G_i$ with r ± 1 ∉ $G_i$. Then r is not an end, so r+2 ∈ $G_i$, and r+2 again has both neighbours outside $G_i$ (r+3 by distance 3 from r); inductively r + 2t ∈ $G_i$, r + 2t ± 1 ∉ $G_i$ for all t (\texttt{chain\_\allowbreak{}two}). If d = 2m'+1 then 2(m'+1) = 1 in Z/d, so t = m'+1 gives r+1 ∈ $G_i$, a contradiction. ∎
+
+For d = 10 the chain 1, 3, 5, 7, 9 closes without reaching r+1; the parity is used only as the invertibility of 2. Consequently (\texttt{GeneralizedPetersen.\allowbreak{}Blocks.\allowbreak{}block}, \texttt{block\_\allowbreak{}sep}, \texttt{outer\_\allowbreak{}zero\_\allowbreak{}iff}, \texttt{n2\_\allowbreak{}eq\_\allowbreak{}zero}, \texttt{q\_\allowbreak{}eq\_\allowbreak{}two\_\allowbreak{}n1}):
+
+\begin{quote}
+\begin{namedthm}[Proposition 3.8 (block structure)]
+For d odd, $G_i$ is a disjoint union of dominoes ${r_k, r_k+1}$, k = 1, …, n₁, with $r_{k+1}$ ≥ $r_k$ + 5 (by the two local facts); n₂ = 0 and q = 2n₁ is even; and o(j) = 0 exactly when \{j, j+1\} or \{j−3, j−2\} is a domino, so $G_o$ = $⊔_k$ ${r_k, r_k+3}$; the spokes used are those at $⊔_k$ ${r_k, r_k+1, r_k+3, r_k+4}$.
+\end{namedthm}
+\end{quote}
+
+\subsection*{3.5 A permutation of $G_i$ and its sign}
+Let F be a \texttt{Win\ \allowbreak{}d}, d odd, $G_i$ ≠ ∅ (so $|G_i|$ = 2n₁ ≥ 2). Define two permutations of $G_i$ as first-return maps (\texttt{GeneralizedPetersen.\allowbreak{}Blocks.\allowbreak{}next3}, \texttt{GeneralizedPetersen.\allowbreak{}Count.\allowbreak{}theta}; both via \texttt{Nat.\allowbreak{}find} with the convention that d steps are always allowed):
+
+\begin{quote}
+next₃(r) := r + 3t, t ≥ 1 minimal with r + 3t ∈ $G_i$;  θ(r) := r − t, t ≥ 1 minimal with r − t ∈ $G_i$.
+\end{quote}
+Since −1 generates Z/d, θ is transitive on $G_i$, hence a single cycle through $G_i$ (\texttt{theta\_\allowbreak{}isCycle}), and sign θ = $(−1)^{|G_i|+1}$ = −1 (\texttt{sign\_\allowbreak{}transitive}: a transitive permutation of c points has sign $(−1)^{c+1}$). The orbits of next₃ are the intersections of $G_i$ with the cosets of ⟨3⟩, the \textit{strands} of the inner ring. If 3 ∤ d there is one strand and sign next₃ = −1 (\texttt{GeneralizedPetersen.\allowbreak{}Blocks.\allowbreak{}sign\_\allowbreak{}next3}); if 3 ∣ d there are three, and provided every strand meets $G_i$ (\textit{hall3}), multiplicativity of the sign over an invariant partition (\texttt{sign\_\allowbreak{}split3}) gives sign next₃ = $(−1)^{|G_i|+3}$ = −1 (\texttt{GeneralizedPetersen.\allowbreak{}Count.\allowbreak{}sign\_\allowbreak{}next3\_\allowbreak{}all}). Either way sign(next₃ ∘ θ) = +1, while a single cycle through the even-sized $G_i$ has sign −1:
+
+\begin{quote}
+\begin{namedthm}[Proposition 3.9 (\texttt{GeneralizedPetersen.\allowbreak{}Count.\allowbreak{}next3\_\allowbreak{}theta\_\allowbreak{}of\_\allowbreak{}Win})]
+For d odd and F : \texttt{Win\ \allowbreak{}d} with $G_i$ ≠ ∅ and hall3, next₃ ∘ θ is not a single cycle through all of $G_i$.
+\end{namedthm}
+\end{quote}
+Hall3 holds for our F (\texttt{exists\_\allowbreak{}iW\_\allowbreak{}zero\_\allowbreak{}thread}): if a strand carried no missing inner edge, the inner vertices above it would form a dart-closed set, and the closed-set lemma would confine C to it.
+
+\subsection*{3.6 The first-return map of C, and the assembly}
+Let nxt(v) be the head of the out-dart of C at v, and π : Z/n → Z/d the reduction; i(x) = 0 iff i'(π x) = 0, and likewise for o, s (\texttt{Dict}), whichever way C is oriented. At every x with π x ∈ $G_i$ the spoke is used (\textbar{}i(x−3)\textbar{} + \textbar{}s(x)\textbar{} = 2, \textbar{}s\textbar{} ≤ 1); orient C so that $O_{x₀}$ → $I_{x₀}$ is a dart for one such x₀.
+
+\begin{namedthm}[Lemma 3.10 (\texttt{trace})]
+Let π x ∈ $G_i$ and $O_x$ → $I_x$ be a dart. Then C continues $I_x$ → $I_{x−3}$ → … → $I_{z₀+3}$ → $O_{z₀+3}$, where z₀ is the first point reached from x by steps of −3 with π z₀ ∈ $G_i$ (so π z₀ = $next₃^{−1}(π$ x)), then along the outer ring (downwards past $O_{z₀+2}$ if π z₀ is a left end $r_k$, upwards from $O_{z₀+4}$ if it is a right end) to the first $O_{x'}$ with π x' ∈ $G_i$; there π x' = $θ^{−1}(π$ z₀) and $O_{x'}$ → $I_{x'}$ is a dart.
+\end{namedthm}
+\begin{mdproof}[Proof]
+Each step is forced — a vertex whose in-dart is known and one of whose other edges is missing leaves by the third (\texttt{nxt\_\allowbreak{}forced}) — and which edges are missing is read from Proposition 3.8 through the dictionary. ∎
+\end{mdproof}
+
+So the first-return map of C on ${O_x : π x ∈ G_i}$ is conjugate under π to (next₃ ∘ $θ)^{−1}$. As C visits every vertex, nxt is transitive (\texttt{nxt\_\allowbreak{}reach}); cutting an iterate of nxt into traces (\texttt{reach\_\allowbreak{}of\_\allowbreak{}nxt}) shows that (next₃ ∘ $θ)^{−1}$ is transitive on $G_i$ (\texttt{transitive\_\allowbreak{}sigma\_\allowbreak{}inv}, with p or \texttt{p.\allowbreak{}reverse}). A transitive permutation of at least two points is a single cycle (\texttt{isCycle\_\allowbreak{}of\_\allowbreak{}transitive}):
+
+\begin{namedthm}[Lemma 3.11 (\texttt{cycleBridge})]
+next₃ ∘ θ is a single cycle through all of $G_i$.
+\end{namedthm}
+
+This contradicts Proposition 3.9 and proves Theorem 3.1. In Lean, \texttt{winBridge\_\allowbreak{}of} and \texttt{gp3\_\allowbreak{}dvd\_\allowbreak{}hc'} assemble the three bridges, and \texttt{gp3\_\allowbreak{}dvd\_\allowbreak{}hc\_\allowbreak{}odd} is \texttt{gp3\_\allowbreak{}dvd\_\allowbreak{}hc'\ \allowbreak{}n\ \allowbreak{}hn\ \allowbreak{}h7\ \allowbreak{}(dartBridge\ \allowbreak{}hn)\ \allowbreak{}windingBridge\ \allowbreak{}(cycleBridge\ \allowbreak{}hn)}.
+
+\textbf{Small d.} No case distinction occurs in the Lean proof: for d = 1 the identities give s ≡ 0 and 2\textbar{}o(0)\textbar{} = 2, so p = 0, against Lemma 3.3; for d = 3 the inner identity gives s ≡ 0, hence q = 0 = p; for d = 5 the argument runs unchanged. The hypotheses are only \texttt{Odd\ \allowbreak{}n} and \texttt{7\ \allowbreak{}≤\ \allowbreak{}n}.
+
+\begin{namedthm}[Corollary 3.12 (paper, not formalised)]
+For d ≥ 7 odd, every Hamiltonian cycle of GP(d,3) has winding number 0: Σo + 3Σi = 0. \textit{Sketch.} By Lemma 3.5, w ∈ \{0, ±2\}; a cycle with w = ±2 lifts through the covering GP(3d,3) → GP(d,3) (\texttt{GeneralizedPetersen.\allowbreak{}Blocks.\allowbreak{}GP\_\allowbreak{}isCovering}) to a single Hamiltonian cycle of GP(3d,3), since gcd(w, 3) = 1 (\texttt{GeneralizedPetersen.\allowbreak{}Base.\allowbreak{}lift\_\allowbreak{}connected\_\allowbreak{}three}, \texttt{GeneralizedPetersen.\allowbreak{}Count.\allowbreak{}loop\_\allowbreak{}covers}), invariant under $ρ^d$ — impossible by Theorem 3.1. The lift is shown in Lean to cover all vertices; that it is a cycle is not formalised.
+\end{namedthm}
+
+\section*{4. Numerical data}
+\textbf{Table 1} rests on: (a) Lean, by kernel enumeration, for n = 7, 9, 11, 13, 15: \texttt{GeneralizedPetersen.\allowbreak{}Small.\allowbreak{}GP\{n\}\_\allowbreak{}hc\_\allowbreak{}card} proves that the \texttt{Finset} of canonical vertex sequences of Hamiltonian cycles from vertex 0 has cardinality 7, 9, 11, 26, 75 (the bit-encoded adjacency agrees with the edge rule of GP(n,3) by \texttt{decide}, \texttt{adjB\{n\}\_\allowbreak{}iff\_\allowbreak{}GP}; that two orientations give one edge set is checked outside Lean); (b) two programs — depth-first search on vertex sequences, and enumeration of perfect matchings whose complement is a single cycle — agreeing for n ≤ 15, the first extended to n = 17, 19; (c) two further enumerations of ours up to n = 23; (d) Haugland's table [H, Appendix A], listing h₃(n) for n ≤ 38 and agreeing with all our values for 7 ≤ n ≤ 23 (at n = 6 the conventions differ: 16 in [H], 2 for the simple graph). The entries of [H] for 24 ≤ n ≤ 38 are 1352, 975, 2344, 1998, 3618, 3683, 6440, 5766, 11350, 10230, 18160, 18865, 30542, 31339, 53736; the odd ones are 25·39, 27·74, 29·127, 31·186, 33·310, 35·539, 37·847, and no even one is divisible by n.
+
+\textbf{Fixed points of rotations (computation).} For 6 ≤ n ≤ 23 and 0 \textless{} j \textless{} n, some Hamiltonian cycle is fixed by $ρ^j$ if and only if n and j are both even (n = 8: 2, 6, 2 cycles fixed by $ρ^2$, $ρ^4$, $ρ^6$). A count on a fundamental domain (paper, not formalised) shows that $ρ^j$ can fix a cycle only if gcd(j, n) is even or n/gcd(j, n) = 3; Theorem 1 removes the second case.
+
+\textbf{OEIS.} Neither 7, 9, 11, 26, 75, 102, 152, 399, 667, 975, … (odd n) nor the quotients 1, 1, 1, 2, 5, 6, 8, 19, 29 nor the full sequence 7, 6, 9, 24, 11, 68, 26, 88, 75, 150, … returned an entry, on several occasions. A195197 is the k = 2 sequence, with Schwenk's reference attached.
+
+\section*{5. Formal verification}
+
+\subsection*{5.1 Files and statement}
+\begin{small}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.264\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.66\linewidth}}
+\hline
+\textbf{File} & \textbf{Lines} & \textbf{Namespace and content} \\
+\hline
+\endfirsthead
+\hline
+\textbf{File} & \textbf{Lines} & \textbf{Namespace and content} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{GeneralizedPetersenBase.\allowbreak{}lean} & 697 & \texttt{GeneralizedPetersen.\allowbreak{}Base}: \texttt{GP\ \allowbreak{}n\ \allowbreak{}k} on \texttt{ZMod\ \allowbreak{}n\ \allowbreak{}×\ \allowbreak{}Bool}, rotation, \texttt{Flow}/\texttt{Win}, local identity, window counting, the \texttt{Win\ \allowbreak{}10} example \\
+\texttt{GeneralizedPetersenBlocks.\allowbreak{}lean} & 874 & \texttt{GeneralizedPetersen.\allowbreak{}Blocks}: block structure for odd d, strands, \texttt{next3}; coverings \texttt{GP(n,k)\ \allowbreak{}→\ \allowbreak{}GP(d,k)} (Corollary 3.12 only) \\
+\texttt{GeneralizedPetersenCount.\allowbreak{}lean} & 681 & \texttt{GeneralizedPetersen.\allowbreak{}Count}: \texttt{sign\_\allowbreak{}split}, \texttt{sign\_\allowbreak{}transitive}, \texttt{theta}, \texttt{HamEdges}, \texttt{numHC}, \texttt{gp\_\allowbreak{}dvd\_\allowbreak{}numHC}, conditional \texttt{gp3\_\allowbreak{}dvd\_\allowbreak{}hc} \\
+\texttt{GeneralizedPetersenDescent.\allowbreak{}lean} & 2,566 & \texttt{GeneralizedPetersen.\allowbreak{}Descent}: darts, \texttt{hamTF}, descent, winding cases, \texttt{dartBridge}, \texttt{windingBridge}, \texttt{trace}, \texttt{cycleBridge}, \textbf{\texttt{gp3\_\allowbreak{}dvd\_\allowbreak{}hc\_\allowbreak{}odd}} \\
+\texttt{GeneralizedPetersenSmall.\allowbreak{}lean} & 1,260 & \texttt{GeneralizedPetersen.\allowbreak{}Small}: kernel enumeration \#HC = 7, 9, 11, 26, 75; \texttt{card\_\allowbreak{}dvd\_\allowbreak{}of\_\allowbreak{}perm\_\allowbreak{}free} \\
+\texttt{GeneralizedPetersenFreeAction.\allowbreak{}lean} & 869 & \texttt{GeneralizedPetersen.\allowbreak{}FreeAction}: \texttt{dvd\_\allowbreak{}card\_\allowbreak{}of\_\allowbreak{}iterate\_\allowbreak{}free}; rotation on explicit cycle lists, n = 7, …, 15 \\
+\hline
+\end{longtable}
+\end{small}
+6,947 lines in all. Each file imports \texttt{Mathlib} and the files it needs, in the order \texttt{Small} → \texttt{FreeAction} → \texttt{Base} → \texttt{Blocks} → \texttt{Count} → \texttt{Descent}; \texttt{ChkGeneralizedPetersen.\allowbreak{}lean} prints the axioms of 188 declarations. The main theorem, verbatim from \texttt{GeneralizedPetersenDescent.\allowbreak{}lean}:
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}gp3\_\allowbreak{}dvd\_\allowbreak{}hc\_\allowbreak{}odd\ \allowbreak{}(n\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}[NeZero\ \allowbreak{}n]\ \allowbreak{}(hn\ \allowbreak{}:\ \allowbreak{}Odd\ \allowbreak{}n)\ \allowbreak{}(h7\ \allowbreak{}:\ \allowbreak{}7\ \allowbreak{}≤\ \allowbreak{}n)\ \allowbreak{}:\ \allowbreak{}n\ \allowbreak{}∣\ \allowbreak{}numHC\ \allowbreak{}n\ \allowbreak{}3\ \allowbreak{}:=}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}gp3\_\allowbreak{}dvd\_\allowbreak{}hc'\ \allowbreak{}n\ \allowbreak{}hn\ \allowbreak{}h7\ \allowbreak{}(dartBridge\ \allowbreak{}hn)\ \allowbreak{}windingBridge\ \allowbreak{}(cycleBridge\ \allowbreak{}hn)}
+\end{leancode}
+(\texttt{gp3\_\allowbreak{}dvd\_\allowbreak{}hc\_\allowbreak{}odd'} states the same without the \texttt{NeZero} instance). The reduction of §2 is \texttt{theorem\ \allowbreak{}gp\_\allowbreak{}dvd\_\allowbreak{}numHC\ \allowbreak{}(n\ \allowbreak{}k\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}[NeZero\ \allowbreak{}n]\ \allowbreak{}(hfree\ \allowbreak{}:\ \allowbreak{}∀\ \allowbreak{}i,\ \allowbreak{}0\ \allowbreak{}\textless{}\ \allowbreak{}i\ \allowbreak{}→\ \allowbreak{}i\ \allowbreak{}\textless{}\ \allowbreak{}n\ \allowbreak{}→\ \allowbreak{}∀\ \allowbreak{}E\ \allowbreak{}∈\ \allowbreak{}HamEdges\ \allowbreak{}n\ \allowbreak{}k,\ \allowbreak{}(rotE\ \allowbreak{}n)\textasciicircum{}[i]\ \allowbreak{}E\ \allowbreak{}≠\ \allowbreak{}E)\ \allowbreak{}:\ \allowbreak{}n\ \allowbreak{}∣\ \allowbreak{}numHC\ \allowbreak{}n\ \allowbreak{}k}. The three bridges are \texttt{Prop}-valued definitions in \texttt{GeneralizedPetersenDescent.\allowbreak{}lean} — \texttt{DartBridge\ \allowbreak{}n} (an invariant edge set comes from a cycle p and a d ∣ n, 0 \textless{} d \textless{} n, with \texttt{DartInv\ \allowbreak{}p\ \allowbreak{}d\ \allowbreak{}:\ \allowbreak{}∀\ \allowbreak{}x\ \allowbreak{}y,\ \allowbreak{}HasDart\ \allowbreak{}p\ \allowbreak{}x\ \allowbreak{}y\ \allowbreak{}↔\ \allowbreak{}HasDart\ \allowbreak{}p\ \allowbreak{}(ρ\textasciicircum{}d\ \allowbreak{}x)\ \allowbreak{}(ρ\textasciicircum{}d\ \allowbreak{}y)}), \texttt{WindingBridge\ \allowbreak{}n} (the descended W is non-zero), \texttt{CycleBridge\ \allowbreak{}n} (\texttt{next3\ \allowbreak{}F\ \allowbreak{}*\ \allowbreak{}theta\ \allowbreak{}F} is a cycle with full support for any \texttt{Win\ \allowbreak{}d} agreeing up to sign with the descended 2-factor) — each proved as a theorem.
+
+\subsection*{5.2 Trust base and build}
+\texttt{\#print\ \allowbreak{}axioms} reports, for each of the 188 declarations listed in \texttt{ChkGeneralizedPetersen.\allowbreak{}lean} (41 + 42 + 30 + 30 + 21 + 24 for the six files above), axioms inside \texttt{[propext,\ \allowbreak{}Classical.\allowbreak{}choice,\ \allowbreak{}Quot.\allowbreak{}sound]}: 156 of them the three, and the rest fewer (\texttt{symm\_\allowbreak{}notMem\_\allowbreak{}darts}: \texttt{[propext,\ \allowbreak{}Quot.\allowbreak{}sound]}; the purely computational ones \texttt{[propext]} or none). Verbatim, \texttt{'GeneralizedPetersen.\allowbreak{}Descent.\allowbreak{}gp3\_\allowbreak{}dvd\_\allowbreak{}hc\_\allowbreak{}odd'\ \allowbreak{}depends\ \allowbreak{}on\ \allowbreak{}axioms:\ \allowbreak{}[propext,\ \allowbreak{}Classical.\allowbreak{}choice,\ \allowbreak{}Quot.\allowbreak{}sound]}. There is no \texttt{sorryAx} and no \texttt{Lean.\allowbreak{}ofReduceBool} (\texttt{native\_\allowbreak{}decide}) anywhere. \texttt{gp3\_\allowbreak{}dvd\_\allowbreak{}hc\_\allowbreak{}odd} depends on \texttt{GeneralizedPetersenBase}, \texttt{GeneralizedPetersenBlocks}, \texttt{GeneralizedPetersenCount}, \texttt{GeneralizedPetersenFreeAction} and \texttt{GeneralizedPetersenDescent} — not on the kernel enumerations of \texttt{GeneralizedPetersenSmall}, which are imported through \texttt{GeneralizedPetersenFreeAction} but unused in its proof; the covering lemmas inside \texttt{GeneralizedPetersenBlocks} are imported but unused as well. Toolchain: Lean 4 \texttt{v4.\allowbreak{}33.\allowbreak{}1}, Mathlib commit \texttt{0df444a360ea}. Checking one file at a time, CPU / peak resident memory were 18 s / 6.4 GiB (\texttt{Base}), 19 s / 6.4 GiB (\texttt{Blocks}), 15 s / 6.4 GiB (\texttt{Count}), 45 s / 6.6 GiB (\texttt{Descent}), 8.6 min / 12.4 GiB (\texttt{Small}), 1.6 min / 11.0 GiB (\texttt{FreeAction}); the four files carrying the general theorem stay under 7 GiB, and 13 GiB of memory suffices for the whole development. The archive with a pinned toolchain will be placed at \texttt{\textless{}URL\textgreater{}}.
+
+\subsection*{5.3 What the formalisation changed in the proof}
+\begin{enumerate}
+\item[1.] \textbf{The local identity is a telescoping sum.} On paper, W(j) = W(j−1) was checked by cases on the spoke at j and four orientations; with oriented flows it is −s + s (three lines).
+\item[2.] \textbf{No cluster decomposition.} The paper proof partitioned $G_i$ into maximal clusters of gaps ≤ 2 and summed a surplus per cluster. Lean uses q = n₁ + n₂ + e, the bijection dominoes → ends, and the chain r, r+2, r+4, …; the parity of d is used exactly once, as the invertibility of 2 (the \texttt{Win\ \allowbreak{}10} example shows that the counting alone does not suffice).
+\item[3.] \textbf{No quotient graph and no small cases.} The paper proof formed GP(d,3) and excluded d ∈ \{1, 3, 5\}; descending the indicator functions algebraically removes both.
+\item[4.] \textbf{The precise form of "H is Hamiltonian iff next₃ ∘ θ is a 2q-cycle".} On paper the cycle was cut into arcs whose pairings were composed. In Lean the first-return map of C on the outer vertices above $G_i$ is conjugate to (next₃ ∘ $θ)^{−1}$; no cyclic ordering of $G_i$ and no partition into arcs is needed, θ being a first-return map like next₃.
+\item[5.] \textbf{Signs without cycle types}, \textbar{}s\textbar{} ≤ 1 as a consequence rather than an assumption, and dart invariance from the odd order of $ρ^d$ are the remaining simplifications.
+\end{enumerate}
+
+\section*{6. Discussion}
+\begin{enumerate}
+\item[1.] \textbf{Even n.} Corollary 2.2 holds for all n, but for even n its hypothesis fails $(ρ^2$ fixes a cycle for every even n in 8 ≤ n ≤ 22), and \#HC is not divisible by n for any even n in 8 ≤ n ≤ 38. No formula for the fixed-point counts is offered.
+\item[2.] \textbf{k ≠ 3.} The proof uses k = 3 three times: the bound \textbar{}d·w\textbar{} ≤ (1 + k)(d − p), which for k = 3 leaves only w ∈ \{0, ±2\}; the width k of the window, whose rigidity gives the block structure; and the number gcd(k, d) of strands, odd for k = 3 but possibly even for k = 4. Other k are not addressed.
+\item[3.] \textbf{Corollary 3.12} was observed computationally for every odd d ≤ 43 before the proof; whether it is in the literature on the types of Hamiltonian cycles of GP(n,k) we do not know. Combining Theorem 1 with the recurrence of [H] was not attempted.
+\end{enumerate}
+
+\section*{7. What is not claimed}
+\begin{enumerate}
+\item[1.] \textbf{Only Theorem 1 and the five values of §4(a) are formalised.} Table 1 beyond n = 15, the fixed-point data, Corollary 3.12 and all statements about even n are computation or paper.
+\item[2.] \textbf{No claim of priority.} The values are known [H]; the divisibility for odd n, the freeness of the action and the winding-number corollary were not found by us in print, but the search (§8) is limited and an expert may regard the result as routine. MathSciNet and zbMATH were not available to us.
+\item[3.] \textbf{Citations not fully read.} [H] was read in its arXiv text version (introduction, §5, Appendix A); [S] only through [H] and OEIS A195197; [A] and [W] are cited from memory and secondary sources and marked [to be verified].
+\item[4.] \textbf{Small n.} \texttt{GP\ \allowbreak{}n\ \allowbreak{}k} is defined for all n, k, but for n ≤ 6, k = 3 it is not the usual multigraph; the theorem is stated for n ≥ 7 only.
+\item[5.] \textbf{No independent authorship, no external review.} The paper proof, the enumerators, the Lean development and this note were written by the same agent (§9), and no mathematician outside the authors has reviewed them; agreement with [H] and Lean's kernel are the only checks independent of the authors.
+\end{enumerate}
+
+\section*{8. On prior art}
+The question arose from an enumeration of \#HC(GP(n,3)) for n ≤ 23 in which every odd-n value was a multiple of n. OEIS searches (§4) for the sequence, its odd subsequence and the quotients returned nothing, and keyword searches only A195197 and unrelated entries. arXiv searches (\texttt{abs:"Hamiltonian\ \allowbreak{}cycles"\ \allowbreak{}AND\ \allowbreak{}abs:"linear\ \allowbreak{}recurrence"}, \texttt{all:"Schwenk"\ \allowbreak{}AND\ \allowbreak{}all:"Petersen"}, and others) located [H], whose introduction attributes the k = 2 enumeration to [S] and states the question for larger k; as far as we could see, the text of [H] contains no remark on divisibility, on the rotation action or on winding numbers. Literature on the classification of Hamiltonian cycles of GP(n,k) by type, where Corollary 3.12 might be known, was not searched systematically.
+
+\section*{9. Disclosure of AI use}
+Two of the three authors are AI agents. \textit{Shiori} and \textit{Rin} are instances of Claude (Anthropic) run as the coding agent Claude Code, on a laptop and on the server of the website named on the first page respectively; the models used were publicly released Claude models of the Opus 5 and Fable 5 series. The observation, the paper proof, the enumerators, the Lean 4 development including the formalised statements, the technical reports on which this note is based, and this draft were produced by Shiori. Rin rebuilds the Lean development from the distributed archive on a separate machine, checks the numerical claims of this note against the reports, and prepares the distributed version [to be completed by Rin]. The human author, Kiichi, set the task, chose the problem, fixed the working rules and load limits, and decides whether and where the result is reported; he is not a mathematician and has not himself verified the mathematics. The agents' names are used here in the same way as on the website, where the working records of this project are kept.
+
+Adversarial review was carried out only by further instances of the same model family, which share the authors' blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else is the authors' word.
+
+\begin{thebibliography}{XXXXX}
+\bibitem[A]{A} B. Alspach, \textit{The classification of Hamiltonian generalized Petersen graphs}, J. Combin. Theory Ser. B 34 (1983), 293–312. [to be verified]
+\bibitem[H]{H} J. K. Haugland, \textit{On the number of Hamiltonian cycles in the generalized Petersen graph}, arXiv:2503.08326v2 (2025); J. Combin. Math. Combin. Comput. 126 (2025), 263–278.
+\bibitem[M]{M} Mathlib, \url{https://github.com/leanprover-community/mathlib4}, commit \texttt{0df444a360ea} (Lean 4 v4.33.1).
+\bibitem[S]{S} A. J. Schwenk, \textit{Enumeration of Hamiltonian cycles in certain generalized Petersen graphs}, J. Combin. Theory Ser. B 47 (1989), 53–59. [not read; cited from [H]]
+\bibitem[W]{W} M. E. Watkins, \textit{A theorem on Tait colorings with an application to the generalized Petersen graphs}, J. Combin. Theory 6 (1969), 152–164. [to be verified]
+\end{thebibliography}
+\end{document}

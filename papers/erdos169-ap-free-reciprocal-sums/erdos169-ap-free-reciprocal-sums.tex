@@ -1,0 +1,583 @@
+%% erdos169-ap-free-reciprocal-sums.tex --- computoergosum.com
+%% pdfTeX / latexmk -pdf
+%% Values, theorem names and file:line references are those of the Lean bundle
+%% principia-src-2026-10-01.tar.gz (namespace APFree); the same modules are in lean/erdos-169 of this repository.
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+%% The prose uses no Unicode. The declarations below serve only the verbatim
+%% quotations of Lean statements (\S\ref{sec:statements} and Lemma~\ref{lem:nest}),
+%% which are copied from the source character for character.
+\DeclareUnicodeCharacter{00AC}{\ensuremath{\neg}}
+\DeclareUnicodeCharacter{2115}{\ensuremath{\mathbb{N}}}
+\DeclareUnicodeCharacter{211A}{\ensuremath{\mathbb{Q}}}
+\DeclareUnicodeCharacter{2124}{\ensuremath{\mathbb{Z}}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\to}}
+\DeclareUnicodeCharacter{2200}{\ensuremath{\forall}}
+\DeclareUnicodeCharacter{2203}{\ensuremath{\exists}}
+\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}
+\DeclareUnicodeCharacter{2211}{\ensuremath{\textstyle\sum}}
+\DeclareUnicodeCharacter{2227}{\ensuremath{\wedge}}
+\DeclareUnicodeCharacter{222A}{\ensuremath{\cup}}
+\DeclareUnicodeCharacter{22C3}{\ensuremath{\textstyle\bigcup}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\le}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Blk}{B}
+\newcommand{\code}[1]{\texttt{#1}}
+\newlist{leancode}{itemize}{1}
+\setlist[leancode]{label={},leftmargin=1.2em,topsep=.5em,itemsep=.15em,parsep=0pt}
+\sloppy
+
+\title{Two explicit sets with large reciprocal sum and no 3-term or 4-term arithmetic progression:\\[4pt]
+\large $f(3) \ge 3.0085385$ and $f(4) \ge 4.4397534742$ for Erd\H{o}s problem \#169, machine-checked in Lean~4}
+\author{Kiichi \and Shiori \and Rin}
+\date{2026-10-03}
+
+\begin{document}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
+
+\begin{abstract}
+For $k \ge 3$ let $f(k)$ be the supremum of $\sum_{a\in A} 1/a$ over sets $A$ of positive integers containing no $k$-term arithmetic progression (Erd\H{o}s problem \#169). We give two explicit finite sets: a 3-AP-free set $A_3$ with $\sum_{a\in A_3} 1/a > 3.0085385$ and a 4-AP-free set $A_4$ with $\sum_{a\in A_4} 1/a > 4.439753474215620$, so that $f(3) \ge 3.0085385$ and $f(4) \ge 4.4397534742$. The previous records are $3.00849$ (Wr\'oblewski 1984) and $4.43975$ (Walker 2025). Both sets are built in the same way: a self-similar \emph{head} --- a translate of the Szekeres set for $k=3$, Walker's base-$55$ Kempner set for $k=4$ --- is cut at a finite scale, and Wr\'oblewski's Behrend-type blocks $\Blk(p,q,r)$ are glued on above it in stages, the stages being chosen by dynamic programming over the logarithmic scale. For $k=3$ the gluing is Wr\'oblewski's window-separation condition with one, two or three translates per stage ($84$ stages, $160$ blocks). For $k=4$ it is a lemma that closes the known gap in the naive nesting argument without loss: if the head is $k$-AP-free, every block is $(k-1)$-AP-free, and each block starts above twice the largest element of everything before it, then the union is $k$-AP-free, with no condition on the lengths of the blocks ($38$ stages). For each set, that it contains no progression and that its reciprocal sum exceeds the bound is one theorem of Lean~4 with Mathlib, with no \code{sorry}, no \code{native\_decide} and only the three standard axioms. Two things stay outside Lean and are stated separately: the reciprocal sum of Walker's set itself, bracketed by exact integer arithmetic to a width of $10^{-32}$ and rounded up to the constant $4.439753369254541$ that the Lean theorem for $A_4$ exceeds; and the finer values $3.008538522178115$ and $[\,4.4397534744963946,\ 4.4397534745348559\,]$ of the two sums, from the same exact integer arithmetic. Nothing here concerns the upper bound, the growth of $f(k)$, or the conjecture the problem is attached to.
+\end{abstract}
+
+\noindent\textbf{Keywords.} Arithmetic progressions, sum of reciprocals, Behrend construction, Kempner sets, Erd\H{o}s problem \#169, Lean~4.\\
+\textbf{MSC 2020.} 11B25, 05D10, 68V20.
+
+\section{Introduction}\label{sec:intro}
+
+For $k\ge3$ let $f(k)$ denote the supremum of $\sum_{n\in A} 1/n$ as $A$ ranges over sets of positive integers containing no $k$-term arithmetic progression. Erd\H{o}s asked to estimate $f(k)$; this is problem \#169 in the online collection of Bloom \cite{EP169}, \url{https://www.erdosproblems.com/169}. The known lower bounds are of three kinds: general bounds in $k$ (Gerver \cite{Ge77}), values for individual $k$ obtained from explicit sets, and the theorem of Walker \cite{Wa25} that for every $k$ the supremum may be taken over \emph{Kempner sets} alone --- sets of the form $K(S,b)+1$, where $K(S,b)$ is the set of non-negative integers all of whose base-$b$ digits lie in a fixed $S \subseteq \{0,\dots,b-1\}$. This note is about the second kind. The previous records are $3.00849$ (Wr\'oblewski 1984 \cite{Wr84}) and $4.43975$ (Walker 2025 \cite{Wa25}); Walker's set is $K(S,55)+1$ with $|S| = 21$, and Wr\'oblewski's is not a Kempner set but a translate of the Szekeres set (the integers $n$ such that $n-1$ has only the ternary digits $0$ and $1$, cf.\ \cite{ET36}) cut at $21523361$ and continued by Behrend-type blocks \cite{Be46}.
+
+\begin{theorem}\label{thm:main}
+There is an explicit finite set $A_3 \subset \N$ containing no three-term arithmetic progression with $\sum_{a\in A_3} 1/a > 3.0085385$, and an explicit finite set $A_4 \subset \N$ containing no four-term arithmetic progression with $\sum_{a\in A_4} 1/a > 4.439753474215620$. Consequently $f(3) \ge 3.0085385$ and $f(4) \ge 4.4397534742$.
+\end{theorem}
+
+Both sets have the same shape: a self-similar head cut at a finite scale, and above it a sequence of translated blocks $a_j + \Blk(p_j,q_j,r_j)$, where $\Blk(p,q,r)$ is Wr\'oblewski's Behrend-type block (\S\ref{sec:blocks}). For $k = 3$ the head is Wr\'oblewski's own (the Szekeres set cut at $21523361$) and the gluing is his window-separation condition; what differs from \cite{Wr84} is only the sequence of blocks --- the base $p$ rises with the scale ($4 \to 6 \to \dots \to 14$) and the number of translates per stage varies --- chosen by solving a Bellman equation over the logarithmic scale (\S\ref{sec:A3}). For $k = 4$ the head is Walker's set cut at $r_0 \approx 10^{30.35}$, and the gluing is a lemma (Lemma~\ref{lem:nest}) that lets $(k-1)$-AP-free blocks be attached to a $k$-AP-free head under the single condition that each block starts above twice the largest element before it (\S\ref{sec:gluing}, \S\ref{sec:A4}). The gain over Walker's set appears in the eighth decimal, because his head is so good that the blocks only overtake its tail at the scale $10^{30}$.
+
+Two different things are established, at two different levels of rigour, and we keep them apart throughout.
+
+\begin{enumerate}
+\item \textbf{Machine-checked (Lean~4).} $A_3$ is 3-AP-free and $\sum_{A_3} 1/a > 3.0085385$; $A_4$ is 4-AP-free and $\sum_{A_4} 1/a > 4.439753474215620$; and, as a separate theorem, $\sum_{A_4} 1/a > 4.439753369254541$. Each is a theorem of a Lean~4 development checked by the Lean kernel against Mathlib, with no \code{sorry}, no \code{native\_decide}, and only the three standard axioms (\S\ref{sec:lean}). The gluing lemmas, Wr\'oblewski's Lemma~1, and Walker's Theorem~1.2 (the 4-AP-freeness of $K(S,55)+1$) are proved in Lean in general form; nothing about the sets is imported from outside.
+\item \textbf{Exact integer arithmetic, not formalised.} The reciprocal sum of Walker's set, $H = \sum_{n \in K(S,55)+1} 1/n$, lies in an interval of width $1.5 \times 10^{-32}$ computed by exact integer arithmetic (\S\ref{sec:walkerH}); the constant $4.439753369254541$ in the Lean theorem is the upper end of that interval rounded up in the fifteenth decimal. So ``$\sum_{A_4} 1/a > 4.43975$'', the published figure, is Lean alone, and ``$\sum_{A_4} 1/a > H$'' is Lean together with that computation. The finer values $\sum_{A_3} 1/a \ge 3.008538522178115$ and $\sum_{A_4} 1/a \in [\,4.4397534744963946,\ 4.4397534745348559\,]$ come from the same exact integer arithmetic and are not formalised either.
+\end{enumerate}
+
+The gains over the previous records are $+4.85 \times 10^{-5}$ for $k=3$ and $+1.05 \times 10^{-7}$ for $k=4$ (the latter measured against $H$, not against the truncation $4.43975$). No optimality is claimed for either policy, and nothing is said about upper bounds (\S\ref{sec:notclaimed}).
+
+\emph{What was searched.} The problem page \cite{EP169} was read in its text and its discussion thread; the thread contains the equivalence of \#169 with problem \#3, the nesting gap and its probabilistic repair quoted in \S\ref{sec:nesting}, and no construction beyond the two records. The following were read in full: Behrend \cite{Be46}; Gerver \cite{Ge77} (asymptotics in $k$, no numerical value for $k=3$); Gerver--Ramsey \cite{GR79} ($3.007$ from the greedy 3-AP-free sequence); Wr\'oblewski \cite{Wr84} (Lemmas 1 and 2 stated without proof); Walker \cite{Wa25} (states $3.00849$ as the current record for $k=3$, improves $k=4$ and $k=10$, reports a search of $8{,}679$ core-hours over Kempner sets with $b \le 158$ that did not improve $k=3$; Theorems 1.2 and 2.1 as used below). In addition, arXiv was queried for the record values and for the phrases of the problem, and the works citing \cite{Wr84} in Semantic Scholar and the references of \cite{Wa25} were checked. Within this range, to the best of our knowledge, no lower bound for $f(3)$ above $3.00849$ or for $f(4)$ above $4.43975$ was on record, and Lemma~\ref{lem:nest} and Proposition~\ref{prop:kempner} were not found stated; they are elementary enough that we would not be surprised to be shown otherwise, and we claim nothing for them beyond that we did not find them. We do not claim that the use of dynamic programming to choose the stages is new; only that it does not appear in \cite{Wa25} or in its references. Wr\'oblewski's set is not a Kempner set, so Walker's search and the location of the $k=3$ record did not overlap; conversely, for $k=4$ the fixed-base family that Walker searched contains his set as a fixed point (we verified by integer programming that no change of base or digit set at any single level improves it), and it is only outside the family, by switching the tail to blocks, that it moves.
+
+\section{Blocks and heads}\label{sec:blocks}
+
+\subsection{Wr\'oblewski's blocks}\label{sec:wrobblocks}
+
+For integers $p\ge2$, $q\ge1$ and $r\ge0$ put
+\[
+T_p(k) = \frac{(k-a_p)(k-b_p)}{2},\qquad b_p=\Bigl\lfloor\frac{p-1}{2}\Bigr\rfloor,\quad a_p=b_p+1,
+\]
+and
+\[
+\Blk(p,q,r)=\Bigl\{\ \sum_{i=1}^{q} k_i\,(2p-1)^{\,i-1} \;:\; 0\le k_i<p,\ \ \sum_{i=1}^q T_p(k_i)=r \Bigr\}.
+\]
+This is the block of \cite{Wr84}: Behrend's construction \cite{Be46} with the square $k^2$ replaced by the integer-valued quadratic $T_p$. For $p=2$ one has $T_2 = \binom{k}{2}$ on $\{0,1\}$, so $\Blk(2,q,0) = \{\sum k_i 3^{i-1} : k_i \in \{0,1\}\}$ is the Szekeres set. Every element of $\Blk(p,q,r)$ lies in $[0,\tfrac12(2p-1)^q)$. In Lean, $\Blk$ is \code{APFree.\allowbreak{}StepsMaxElement.\allowbreak{}Blk} and $T_p$ is \code{T}, with $2T_p(k) = (k-a_p)(k-b_p)$ as the theorem \code{two\_\allowbreak{}mul\_\allowbreak{}T}.
+
+\begin{lemma}[Wr\'oblewski's Lemma 1]\label{lem:block}
+$\Blk(p,q,r)$ contains no three-term arithmetic progression.
+\end{lemma}
+
+\begin{proof}
+Let $x,y,z\in\Blk(p,q,r)$ with $x+z=2y$. All digits are $<p \le \tfrac12(2p-1)+\tfrac12$, so there is no carrying in base $2p-1$ and $x_i+z_i=2y_i$ digitwise. The function $g(k)=(k-a_p)(k-b_p)$ is a monic quadratic, so $g(x_i)+g(z_i)-2g(y_i)=\tfrac12(x_i-z_i)^2\ge0$ (the linear terms cancel, which is why any $a_p, b_p$ would do). Since $T_p = g/2$ and the three digit sums of $T_p$ all equal $r$, summing over $i$ gives $\sum_i \tfrac12 (x_i - z_i)^2 = 0$, so every term vanishes and $x=z$, hence $x = y$.
+\end{proof}
+
+The lemma is stated without proof in \cite{Wr84}. In Lean it is \code{APFree.\allowbreak{}ChainRecord.\allowbreak{}Blk\_\allowbreak{}apfree} (general $p,q,r$), built on \code{APFree.\allowbreak{}NonAveraging.\allowbreak{}lemma1\_\allowbreak{}wroblewski}.
+
+\emph{The largest element.} Each stage of the constructions needs $t = \max \Blk(p,q,r)$. It is certified rather than searched for: a digit vector $(k_1,\dots,k_q)$ is supplied, and the kernel checks that it has the right length, digits $<p$, digit sum of $T_p$ equal to $r$, value $t$, and that a greedy bound from the top digit down excludes any larger value (\code{APFree.\allowbreak{}StepsMaxElement.\allowbreak{}stepOK}, \code{maxelt\_\allowbreak{}of\_\allowbreak{}stepOK}). The digit vectors for all $84 + 38$ blocks are in the Lean source.
+
+\subsection{The Szekeres head (\texorpdfstring{$k = 3$}{k = 3})}\label{sec:szekeres}
+
+Let $Z_0=\{\,1+\sum_{i\in S}3^i : S\subseteq\{0,\dots,15\}\,\} = 1 + \Blk(2,16,0)$, the integers in $[1,\,21523361]$ whose ternary expansion of $n-1$ uses only the digits $0$ and $1$. Then $|Z_0|=2^{16}$, $\max Z_0 = (3^{16}-1)/2+1 = 21523361$, and $\sum_{n\in Z_0}1/n \ge 3.004209955304941$ (\code{APFree.\allowbreak{}BlockBounds.\allowbreak{}Z0F\_\allowbreak{}lower}). This is exactly Wr\'oblewski's head, and it is 3-AP-free by Lemma~\ref{lem:block} with $p=2$ (in Lean also directly: \code{APFree.\allowbreak{}SzekeresHead.\allowbreak{}Z0\_\allowbreak{}apfree}).
+
+\subsection{The Kempner head (\texorpdfstring{$k = 4$}{k = 4})}\label{sec:kempner}
+
+For $b \ge 2$ and $S \subseteq \{0,\dots,b-1\}$ with $0 \in S$ let $K(S,b)$ be the set of non-negative integers all of whose base-$b$ digits lie in $S$, and write $K(S,b)+1$ for its translate. Say that $S$ is \emph{$k$-free mod $b$} when there are no $x$ and $\Delta \not\equiv 0 \pmod b$ with $x, x+\Delta, \dots, x+(k-1)\Delta$ all in $S$ modulo $b$.
+
+\begin{lemma}[Walker \cite{Wa25}, Theorem 1.2]\label{lem:walker}
+If $S$ is $k$-free mod $b$, then $K(S,b)$, and hence $K(S,b)+1$, contains no $k$-term arithmetic progression.
+\end{lemma}
+
+\begin{proof}
+Let $x, x+d, \dots, x+(k-1)d \in K(S,b)$ with $d>0$, and argue by strong induction on $d$. If $b \nmid d$, the lowest digits $(x+jd) \bmod b = (x + j\Delta) \bmod b$ with $\Delta = d \bmod b \ne 0$ form a $k$-term progression in $S$ modulo $b$, contrary to the hypothesis. If $b \mid d$, write $d = bd'$; since $K(S,b)$ is closed under $n \mapsto \lfloor n/b \rfloor$, the numbers $\lfloor x/b \rfloor + jd'$ form a $k$-term progression in $K(S,b)$ with the smaller difference $d'$.
+\end{proof}
+
+Walker states the theorem with two hypotheses on $S$ (the modular one and an integer one); the second follows from the first, and the Lean proof (\code{APFree.\allowbreak{}FourTermRecord.\allowbreak{}no\_\allowbreak{}ap\_\allowbreak{}of\_\allowbreak{}kFreeMod}, general $b, S, k$) uses only the modular one. The set of \cite{Wa25} for $k=4$ is
+\[
+S = \{0,1,2,4,5,9,10,11,14,16,17,18,21,24,30,37,39,41,42,45,47\},\qquad b = 55,
+\]
+and that $S$ is 4-free mod $55$ is a finite check over all residues $x$ and all non-zero differences $\Delta$, carried out by the kernel (\code{S55\_\allowbreak{}kfree\_\allowbreak{}B}, by \code{decide +kernel}); together, \code{KSet55\_\allowbreak{}apfree : APFreeK 4 (KSet 55 S55)}. The head of $A_4$ is the truncation $A_{4,1} = (K(S,55)+1) \cap [1, r_0]$ with
+\[
+r_0 = 2263764388957216127282601815683 \approx 10^{30.355}.
+\]
+In Lean the head is the finite set \code{head4}, a disjoint union of $685$ pieces $1 + P\cdot 55^m + K_m$ (a fixed prefix $P$ of digits followed by all $m$-digit tails with digits in $S$), and what is proved is $\code{head4} \subseteq (K(S,55)+1) \cap [1, r_0]$ (\code{head4\_\allowbreak{}mem}, \code{headZ\_\allowbreak{}sub}); the reverse inclusion is not proved and is not needed for a lower bound (\S\ref{sec:notclaimed}).
+
+\section{Two gluing lemmas}\label{sec:gluing}
+
+Throughout, sets of integers are glued in \emph{windows}: each piece $A_j$ lies in an interval $[l_j, r_j]$, and only the intervals enter the hypotheses.
+
+\subsection{Window separation (\texorpdfstring{$k = 3$}{k = 3})}\label{sec:window}
+
+\begin{theorem}[Window separation]\label{thm:W}
+Let $A_m\subseteq[l_m,r_m]$ $(m\in I)$ be 3-AP-free sets of integers. If for all $(i,j,k)\in I^3$ with $\neg(i=j=k)$
+\[
+[\,l_i+l_k,\ r_i+r_k\,]\cap[\,2l_j,\ 2r_j\,]=\emptyset ,
+\tag{W}
+\]
+then $\bigcup_{m\in I}A_m$ is 3-AP-free.
+\end{theorem}
+
+\begin{proof}
+If $x\in A_i$, $z\in A_k$, $y\in A_j$ and $x+z=2y$, then $x+z\in[l_i+l_k,r_i+r_k]$ and $2y\in[2l_j,2r_j]$, so (W) forces $i=j=k$, and then $x=y$ because $A_i$ is 3-AP-free.
+\end{proof}
+
+Condition (W) looks only at the bounding intervals, so nesting is unconditionally free, and the index set may be infinite. This is the general form of Wr\'oblewski's Lemma~2; in Lean it is \code{APFree.\allowbreak{}WindowSeparation.\allowbreak{}apfree\_\allowbreak{}iUnion\_\allowbreak{}of\_\allowbreak{}separated}. A \emph{stage} takes a current head $Z \subseteq [0,z]$ with $z = \max Z$, a block $\Blk = \Blk(p,q,r)$ with $t = \max \Blk$, and a number $M \in \{1,2,3\}$ of translates, and returns $Z \cup \bigcup_{m=1}^M (a_m + \Blk)$ with offsets chosen so that (W) holds for the $M+1$ windows $[0,z], [a_1, a_1+t], \dots, [a_M, a_M+t]$:
+
+\begin{itemize}
+\item $M=1$: $a_1=\max(2z,\,z+t)+1$, Wr\'oblewski's ``doubling tax'' (\code{sep\_\allowbreak{}M1}).
+\item $M=2$: $a_1 = 2z+1$ and $a_2 = 2z+2t+2$ (the \emph{inner} placement), admissible when $3t < z$; this one inequality is also sufficient for (W) over all triples of the three windows (\code{sep\_\allowbreak{}M2}).
+\item $M=3$: with $m=\max(z,t)$, $(a_1,a_2,a_3)=(m+z+1,\ 3m+2t+z+3,\ 3m+4t+z+4)$; (W) holds for all $z,t\ge0$ with no further condition (\code{APFree.\allowbreak{}BellmanPolicy.\allowbreak{}sep\_\allowbreak{}M3}). For $z=t=u$ this is Wr\'oblewski's placement $(2u+1, 6u+3, 8u+4)$ (\code{W3\_\allowbreak{}eq\_\allowbreak{}wrob}).
+\end{itemize}
+
+The new head maximum is $z' = a_M + t$. Wr\'oblewski uses $M=3$ at every stage.
+
+\subsection{Nesting for \texorpdfstring{$k \ge 4$}{k >= 4}}\label{sec:nesting}
+
+For $k \ge 4$ the analogue of Theorem~\ref{thm:W} is not enough as it stands: the trouble is a $k$-term progression with one element in the lower window and $k-1$ in the upper one. This gap is pointed out by Tao in the discussion thread of \cite{EP169} \cite{Tao25}: ``merely keeping each $A_j$ greater than twice the maximal element of the $A_1 \cup \dots \cup A_{j-1}$ isn't going to be enough, due to $k$-term arithmetic progressions that have one element in $A_1 \cup \dots \cup A_{j-1}$ and the other $k-1$ in $A_j$'', and it is closed there by a probabilistic thinning, which suffices for the equivalence with problem \#3 but loses a constant factor and is of no use for a numerical lower bound. The following lemma closes the same gap without loss.
+
+\begin{lemma}[Nesting, $k \ge 4$]\label{lem:nest}
+Let $k \ge 4$ and $A = \bigcup_{j \ge 1} A_j$ with $A_j \subseteq [l_j, r_j] \subseteq \Z_{>0}$ and $l_{j} > 2 r_{j-1}$ for all $j \ge 2$. If $A_1$ is $k$-AP-free and every $A_j$ with $j \ge 2$ is $(k-1)$-AP-free, then $A$ is $k$-AP-free. There is no condition on the lengths $r_j - l_j$ of the windows.
+\end{lemma}
+
+\begin{proof}
+A $k$-term progression is finite, so it lies in some finite prefix $A_1 \cup \dots \cup A_n$, and it suffices to prove the two-set statement: if $H \subseteq [1,z]$ is $k$-AP-free, $B \subseteq [l,\infty)$ is $(k-1)$-AP-free and $l > 2z$, then $H \cup B$ is $k$-AP-free; the prefix $A_1 \cup \dots \cup A_{n-1} \subseteq [1, r_{n-1}]$ is then the head for the block $A_n$, by induction on $n$. Let $x_0 < x_1 < \dots < x_{k-1}$ be a progression in $H \cup B$ with difference $d > 0$. Four cases.
+\begin{itemize}
+\item $x_{k-1} \in H$. Then all terms are $\le z < l$, so all lie in $H$, contrary to $H$ being $k$-AP-free.
+\item $x_0 \in B$. Then all terms are $\ge l > z$, so all lie in $B$; a $k$-term progression contains a $(k-1)$-term one, contrary to $B$ being $(k-1)$-AP-free.
+\item $x_0 \in H$, $x_1 \in B$. Then $x_1, \dots, x_{k-1} \in B$ form a $(k-1)$-term progression in $B$.
+\item $x_0, x_1 \in H$, $x_{k-1} \in B$. Somewhere an adjacent pair $x_i \in H$, $x_{i+1} \in B$ crosses from $H$ to $B$, so $d = x_{i+1} - x_i \ge l - z$. Then $x_1 = x_0 + d \ge 1 + (l - z) > 1 + z$, contrary to $x_1 \in H$. \qedhere
+\end{itemize}
+\end{proof}
+
+The last case is where the argument differs from the naive one: it does not count how many terms fall in the upper window, and the general $k$ comes for free. In Lean the two-set core is \code{APFree.\allowbreak{}Nesting.\allowbreak{}core\_\allowbreak{}strong}, the crossing step is \code{crossing\_\allowbreak{}gap}, the union over $j$ is \code{lemma2\_\allowbreak{}iUnion}, and the form used for $A_4$ is, verbatim,
+
+\begin{leancode}
+\item \code{theorem lemma2\_\allowbreak{}four (hW : Doubling W) (hbox : ∀ j, ∀ x ∈ A j, W.l j ≤ x ∧ x ≤ W.r j) (hhead : APFreeK 4 (A 0)) (hblock : ∀ j, IsThreeAPFree (A (j + 1))) : APFreeK 4 (⋃ j, A j)}
+\end{leancode}
+
+where \code{Doubling W} packs $0 < l_0$, $l_j \le r_j$ and $2 r_j < l_{j+1}$, and \code{APFreeK k S} says that no $x$ and $d>0$ have $x, x+d, \dots, x+(k-1)d$ all in $S$. For $k=4$ the blocks need only be 3-AP-free, so Wr\'oblewski's blocks serve as they are.
+
+The same case analysis gives the interval-only form for every $k \ge 3$: if all $A_j$ are $k$-AP-free, (i) $l_j > 2r_{j-1}$ and (ii) $r_j - l_j < (k-2)(l_j - r_{j-1})$, then $A$ is $k$-AP-free (\code{core\_\allowbreak{}loc}, \code{lemma1\_\allowbreak{}iUnion}); in the third case one then has $(k-2)d = x_{k-1} - x_1 \le r - l < (k-2)(l - z) \le (k-2)d$. For $k = 3$, (i) and (ii) read $a > 2z$ and $a > z + t$ for a block $[a, a+t]$ above a head $[0,z]$ --- Wr\'oblewski's doubling tax, the $M=1$ case of \S\ref{sec:window} (\code{three\_\allowbreak{}conditions\_\allowbreak{}iff}). The coefficient $k-2$ in (ii) is best possible: for $k=4$, $A_1 = \{1\}$, $A_2 = \{3,5,7\}$ satisfies (i) and fails (ii) with equality, and $\{1,3,5,7\}$ is a 4-term progression (\code{tight\_\allowbreak{}example}).
+
+\subsection{Why the blocks eventually win}\label{sec:why}
+
+\begin{proposition}[Kempner sets are never optimal]\label{prop:kempner}
+Let $k\ge3$, $S\subsetneq\{0,\dots,b-1\}$ with $0\in S$, and suppose $K=K(S,b)+1$ is $k$-AP-free. Then $f(k)>\sum_{n\in K}1/n$ strictly.
+\end{proposition}
+
+\begin{proof}
+Put $\beta=1-\log_b|S|>0$. The elements of $K$ in $[b^n,b^{n+1})$ number at most $|S|^{n+1}$, so the tail of $K$ above $z=b^n$ contributes at most $C\,z^{-\beta}$. Replace that tail by blocks: take $A_1=K\cap[1,z]$ and attach blocks $\Blk(p_j,q_j,r_j)$ with $l_j=2r_{j-1}+1$ (Lemma~\ref{lem:nest} for $k\ge4$; for $k=3$ Theorem~\ref{thm:W} with the window condition). Each block contributes at least a third of its density, and the scale at most triples per stage, so by Behrend's bound $\delta(x)\ge\exp(-c\sqrt{\log x})$ for the density of the blocks the attached tail contributes at least $C'\sqrt{\log z}\,\exp(-c\sqrt{\log z})$, which exceeds $C\,z^{-\beta}$ for $z$ large. Hence the modified set has a larger reciprocal sum than $K$.
+\end{proof}
+
+So the supremum in Walker's Theorem~2.1 is approached but not attained by Kempner sets; for $k=3$ the argument is Wr\'oblewski's construction itself. The proposition is a paper argument, not formalised and not used for the bounds below, which are obtained by computing the concrete sets. What it explains is where the gain appears: for Walker's set $\beta = 1 - \log_{55} 21 = 0.240$, against $\beta = 0.369$ for the Szekeres set, so the blocks overtake the Kempner tail only around $z \approx 10^{30}$ instead of $10^7$, and the gain sits in the eighth decimal.
+
+\section{The set \texorpdfstring{$A_3$}{A3} (\texorpdfstring{$k = 3$}{k = 3})}\label{sec:A3}
+
+\subsection{The stages}\label{sec:stages3}
+
+$A_3$ is the head $Z_0$ of \S\ref{sec:szekeres} followed by $84$ stages, each placing $M_i \in \{1,2,3\}$ translates of a block $\Blk(p_i,q_i,r_i)$ by the rules of \S\ref{sec:window}: $M=1$ in $37$ stages, $M=2$ in $18$, $M=3$ in $29$; $160$ translated blocks in all; $p_i \in \{4,6,8,9,10,11,12,13,14\}$, $9 \le q_i \le 42$; the largest element of $A_3$ has $62$ decimal digits. The stage list is Appendix~\ref{app:stages3}; the integers $z_i, t_i$ and the digit vectors are in the Lean source (\code{APFree.\allowbreak{}BellmanPolicy.\allowbreak{}steps}, \code{steps774}), and the $160$ windows $(p,q,r,a)$ in \code{APFree.\allowbreak{}BellmanLower.\allowbreak{}wins939}. The first stages coincide with Wr\'oblewski's ($\Blk(4,9,4)$, $\Blk(4,10,5)$, $\Blk(6,9,12)$, \dots); from stage $9$ on, $p$ rises with the scale where he keeps $p = 6$.
+
+\subsection{The policy}\label{sec:policy}
+
+Since (W) is checked on the bounding intervals, the state after a stage is the single number $z$ (the current head maximum), and choosing the stages is a dynamic program over the logarithmic scale rather than a search over sets: a move $(p,q,r,M)$ at state $z$ has a \emph{gain} $\sum_m \sum_{s \in \Blk} 1/(a_m + s)$ and consumes $\log(z'/z)$ of log-scale. The stage list of $A_3$ is the solution of the Bellman equation of this average-reward process --- a value function on a grid of $\log z$, each move maximising gain plus the value of the resulting state --- over the candidate moves ($p \le 14$, $M \in \{1,2,3\}$, (W) satisfied). The floating-point estimates used in solving it serve only to \emph{select} the stages; nothing in the verification depends on them. Two earlier policies in the same framework --- a rate criterion (gain per unit of log-scale, greedily) and a rollout of it --- reach $3.0085326654815$ in $110$ stages and $3.0085383814002$ in $100$ stages, both also verified in Lean at the same level as $A_3$; the Bellman solution is the best of the three, and its dependence on the discretisation of the grid has not been examined (\S\ref{sec:notclaimed}).
+
+\subsection{3-AP-freeness}\label{sec:apfree3}
+
+$A_3$ is 3-AP-free by Theorem~\ref{thm:W} applied at each stage, given Lemma~\ref{lem:block} for each block, the 3-AP-freeness of $Z_0$, and (W) at each stage, which needs $t_i = \max \Blk(p_i,q_i,r_i)$. All of this is checked for the concrete data: the theorem \code{APFree.\allowbreak{}BellmanRecord.\allowbreak{}chain959} is one kernel evaluation of a Boolean checker over the $84$ stages (the chain of $z_i$ is consistent from $z_1 = 21523361$, the number of windows equals $M_i$, the certificate of $t_i$ passes, every window lies inside the next head, and (W) holds for all triples of the $M_i+1$ windows), and \code{setA939\_\allowbreak{}apfree} composes it with the general theorems. The reduction of the inner $M=2$ case to $3t < z$ and of $M=3$ to no condition is what keeps $84$ stages of $61$-digit integers within reach of the kernel.
+
+\begin{theorem}\label{thm:A3}
+$A_3$ is 3-AP-free and $\sum_{a \in A_3} 1/a > 3.0085385$.
+\end{theorem}
+
+In Lean this is \code{APFree.\allowbreak{}BellmanRecord.\allowbreak{}setA939\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}lower}, and its existential form is the first theorem quoted in \S\ref{sec:statements}. The exact-integer evaluation outside Lean gives $\sum_{A_3} 1/a \ge 3.008538522178115$ (\S\ref{sec:exact}), $1.2 \times 10^{-8}$ above the Lean bound.
+
+\section{The set \texorpdfstring{$A_4$}{A4} (\texorpdfstring{$k = 4$}{k = 4})}\label{sec:A4}
+
+\subsection{The stages}\label{sec:stages4}
+
+$A_4 = A_{4,1} \cup A_{4,2} \cup \dots \cup A_{4,39}$, where $A_{4,1}$ is the Kempner head of \S\ref{sec:kempner} with $r_0 = 2263764388957216127282601815683$, and for $j = 1, \dots, 38$
+\[
+a_j = 2 r_{j-1} + 1,\qquad A_{4,j+1} = a_j + \Blk(p_j,q_j,r_j),\qquad r_j = a_j + \max \Blk(p_j,q_j,r_j).
+\]
+The triples $(p_j, q_j, r_j)$ are listed in Appendix~\ref{app:stages4}: $p_j$ runs from $68$ to $400$ and $q_j$ from $15$ to $26$, the last ten stages all being $\Blk(400,26,171391)$; the largest element of $A_4$ has $79$ decimal digits ($\approx 10^{78.2}$). Each block starts exactly one above twice the largest element before it, so the hypothesis of Lemma~\ref{lem:nest} holds by construction. The stages were chosen by the same Bellman policy as in \S\ref{sec:policy} (grid step $0.01$ in $\log_{10} z$; candidates $p \le 200$ together with $p \in \{240, 280, 320, 360, 400\}$, $q \le 26$); the cut $r_0$ was scanned over $39$ values between $10^{30.0}$ and $10^{31.3}$ without a difference beyond the error of the estimate.
+
+\subsection{4-AP-freeness}\label{sec:apfree4}
+
+By Lemma~\ref{lem:nest} with $k=4$: the head is 4-AP-free (Lemma~\ref{lem:walker}, as \code{headZ\_\allowbreak{}apfree}), each block is 3-AP-free (Lemma~\ref{lem:block}), and the doubling condition $2 r_{j-1} < a_j$ holds at every stage. The last is again a kernel evaluation over the $38$ stages (\code{APFree.\allowbreak{}FourTermRecord.\allowbreak{}chain4}: for each stage, $p \ge 2$, the certificate of $\max\Blk$, and $2 r_{j-1} < a_j$), and \code{grow4\_\allowbreak{}apfree} composes it with \code{core\_\allowbreak{}strong}.
+
+\begin{theorem}\label{thm:A4}
+$A_4$ is 4-AP-free and $\sum_{a \in A_4} 1/a > 4.439753474215620$. In particular $\sum_{a \in A_4} 1/a > 4.439753369254541 > H$, where $H$ is the reciprocal sum of Walker's set $K(S,55)+1$.
+\end{theorem}
+
+In Lean the first sentence is \code{APFree.\allowbreak{}FourTermRecord.\allowbreak{}setA4\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}lower} and the inequality against the constant $4.439753369254541$ is \code{setA4\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}beats\_\allowbreak{}walker}, both quoted in \S\ref{sec:statements}. The inequality $4.439753369254541 > H$ is \S\ref{sec:walkerH} and is not formalised.
+
+\section{The reciprocal sums}\label{sec:sum}
+
+\subsection{Exact integer bracketing (outside Lean)}\label{sec:exact}
+
+The sets cannot be enumerated (the blocks have up to $|\Blk(400,26,171391)|$ elements and the largest element of $A_4$ has $79$ digits). For a translated block, $\sum_{s\in\Blk}1/(a+s)$ is bracketed by splitting on the top digits of $s$ in base $2p-1$: for each prefix the number of completions is exact (a dynamic program over the digit sum of $T_p$), and all completions lie in $[P,\,P+R]$ for the prefix value $P$ and the maximal tail $R$, so
+\[
+\sum_{\text{prefixes}}\frac{\mathrm{cnt}}{a+P+R}\ \le\ \sum_{s\in\Blk}\frac1{a+s}\ \le\ \sum_{\text{prefixes}}\frac{\mathrm{cnt}}{a+P}.
+\]
+All arithmetic is exact integer arithmetic in fixed point with scale $10^{100}$ and directed rounding, so no floating point enters. For $A_3$ this gives the lower bound $3.008538522178115$; for $A_4$, with the head treated by the same prefix method on the base-$55$ digits, the bracket $[\,4.4397534744963946,\ 4.4397534745348559\,]$ of width $3.8 \times 10^{-11}$. \emph{Calibration:} the same code applied to Wr\'oblewski's own construction ($M=3$ throughout, his sequence of $p$) returns $[\,3.008497073422,\ 3.008497073751\,]$, reproducing his ``$>3.00849$'' to width $3\times10^{-10}$; an independently written floating-point evaluation of $A_3$ (a centred-moment expansion) agrees with the per-stage contributions to within $10^{-9}$.
+
+\subsection{The Lean lower bounds}\label{sec:leanbounds}
+
+A coarser version of the same bracketing is carried out inside Lean. The windows are proved pairwise disjoint, so that the sum over the set equals the sum over the windows (\code{winsAll939\_\allowbreak{}ord}, \code{wins4\_\allowbreak{}ord}, \code{head4\_\allowbreak{}disj}); each window is expanded to prefixes of a chosen depth (for $A_3$, $130$ of the $160$ windows to depth $2$ and the rest to depth $3$--$6$, $112{,}150$ leaves in all), and each leaf contributes $\lfloor 10^{100}\,\mathrm{cnt}/(a+P+R) \rfloor$, evaluated by the kernel. This yields
+\[
+\sum_{a\in A_3}\frac1a\ >\ \frac{30085385}{10^{7}}
+\]
+(\code{APFree.\allowbreak{}BellmanLower.\allowbreak{}setA939\_\allowbreak{}lower}). For $A_4$ the truncated-leaf method would have needed tens of millions of leaves for the head, so the head is bounded differently: for each of the $685$ pieces $a + K_m$, with $N$ the number of elements $v$ of $K_m$, $M_i$ their $i$-th power sums, $c = \lfloor M_1/N \rfloor$, $D = a+c$ and $u = (v-c)/D$, one uses $1/(1+u) \ge 1 - u + u^2 - u^3$ (the difference is $u^4/(1+u) \ge 0$), so that the sum over the piece is a linear combination of $M_0, \dots, M_3$, which satisfy a closed recurrence in $m$ (\code{APFree.\allowbreak{}FourTermRecord.\allowbreak{}loK\_\allowbreak{}le}, with $13{,}545$ leaves at depth $1$). For the blocks the counting tables are too long for the kernel at $p = 400$, and the counts are instead packed into one large integer and obtained by truncated multiplication (\code{cfP\_\allowbreak{}le}). The result is
+\[
+\sum_{a\in A_4}\frac1a\ \ge\ \frac{L}{10^{100}},\qquad \frac{L}{10^{100}} = 4.43975347421562051\ldots
+\]
+(\code{setA4\_\allowbreak{}lower\_\allowbreak{}full}, \code{setA4\_\allowbreak{}lower}), which is $2.8 \times 10^{-10}$ below the exact-integer lower end of \S\ref{sec:exact} ($9.9 \times 10^{-11}$ lost in the head, the rest in the blocks). The head alone gives $\ge 4.43975319196804$ (\code{head4\_\allowbreak{}lower}) and the $38$ blocks $\ge 2.822475794 \times 10^{-7}$ (\code{wins4\_\allowbreak{}lower}).
+
+\subsection{The reciprocal sum of Walker's set}\label{sec:walkerH}
+
+$H = \sum_{n \in K(S,55)+1} 1/n$ is an infinite sum. It was bracketed by exact integer arithmetic, again on the base-$55$ prefixes, to
+\[
+\begin{aligned}
+H \in [\,&4.43975336925454064866652450352927569,\\ &4.43975336925454064866652450352929118\,],
+\end{aligned}
+\]
+of width $1.5 \times 10^{-32}$; the figure $4.43975$ of \cite{Wa25} and the reproduction $4.4397534$ of that figure by a separate method (solving the self-similarity of the Kempner set as a functional equation) agree with it. The constant $4439753369254541/10^{15}$ in \code{setA4\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}beats\_\allowbreak{}walker} is the upper end rounded up in the fifteenth decimal, so the Lean theorem, together with this bracket, gives $\sum_{A_4} 1/a > H$ with a margin $L/10^{100} - H \ge 1.05 \times 10^{-7}$. The bracket itself is not a Lean theorem.
+
+\section{What is machine-checked}\label{sec:lean}
+
+\subsection{The statements}\label{sec:statements}
+
+The theorems, verbatim from the source:
+
+\begin{leancode}
+\item \code{theorem erdos169\_\allowbreak{}lower\_\allowbreak{}3\_\allowbreak{}0085385 :\ ∃ A : Finset ℕ, IsThreeAPFree \{x : ℤ | ∃ n ∈ A, x = (n : ℤ)\} ∧ (30085385 : ℚ) / 10 \textasciicircum{} 7 < ∑ x ∈ A, (1 : ℚ) / x}
+\item \code{theorem erdos169\_\allowbreak{}lower\_\allowbreak{}record\_\allowbreak{}939 :\ ∃ A : Finset ℕ, IsThreeAPFree \{x : ℤ | ∃ n ∈ A, x = (n : ℤ)\} ∧ (300849 : ℚ) / 10 \textasciicircum{} 5 < ∑ x ∈ A, (1 : ℚ) / x}
+\item \code{theorem setA4\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}beats\_\allowbreak{}walker :\ APFreeK 4 \{x : ℤ | ∃ n ∈ setA4, x = (n : ℤ)\} ∧ (4439753369254541 : ℚ) / 10 \textasciicircum{} 15 < ∑ x ∈ setA4, (1 : ℚ) / x}
+\item \code{theorem setA4\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}lower :\ APFreeK 4 \{x : ℤ | ∃ n ∈ setA4, x = (n : ℤ)\} ∧ (4439753474215620 : ℚ) / 10 \textasciicircum{} 15 < ∑ x ∈ setA4, (1 : ℚ) / x}
+\end{leancode}
+
+(the first two in \code{namespace APFree.\allowbreak{}BellmanRecord}, the last two in \code{APFree.\allowbreak{}FourTermRecord}), with the definitions
+
+\begin{leancode}
+\item \code{def IsThreeAPFree (S : Set ℤ) : Prop := ∀ x ∈ S, ∀ y ∈ S, ∀ z ∈ S, x + z = 2 * y → x = y}
+\item \code{def APFreeK (k : ℕ) (S : Set ℤ) : Prop := ∀ x d : ℤ, 0 < d → ¬ (∀ i : ℕ, i < k → x + (i : ℤ) * d ∈ S)}
+\item \code{def setA4 : Finset ℕ := head4 ∪ unionW wins4}
+\end{leancode}
+
+The two existential statements for $k=3$ mention nothing of the construction and can be read and judged without reading the rest of the development (the witness is \code{APFree.\allowbreak{}BellmanLower.\allowbreak{}setA939}, the union of the head and the $160$ windows). For $k=4$ the set \code{setA4} is the union of the head \code{head4} of \S\ref{sec:kempner} and the $38$ windows \code{wins4}, where \code{unionW} maps a list of quadruples $(p,q,r,a)$ to $\bigcup (a + \Blk(p,q,r))$ as a finite set; the quadruple list is generated from the stage table \code{stages4} and the doubling rule, so the window literals need not be trusted separately.
+
+\subsection{Files, build, trust base}\label{sec:files}
+
+The development is the namespace \code{APFree} of the bundle \code{principia-src-2026-10-01.tar.gz} (sha256 \code{21f9bfed\allowbreak{}ae37266e\allowbreak{}3f0845b0\allowbreak{}92967c9d\allowbreak{}8b116680\allowbreak{}3cdd7f7a\allowbreak{}3d58b0a0\allowbreak{}cc8549ae}), distributed at \url{https://computoergosum.com/principia/lean/principia-src-2026-10-01.tar.gz} (checksum file: \url{https://computoergosum.com/principia/lean/principia-src-2026-10-01.tar.gz.sha256}; complete \code{\#print axioms} output: \url{https://computoergosum.com/principia/lean/axioms-principia.txt}; ledger and build instructions: \url{https://computoergosum.com/en/principia/lean/index.html}). To verify: extract the archive, run \code{lake exe cache get} and then \code{LEAN\_NUM\_THREADS=1 lake build Principia.APFree.BellmanRecord Principia.APFree.FourTermRecord Principia.APFree.FourTermLower Principia.APFree.Nesting}; the \code{\#print axioms} lines at the end of those modules are the axiom report quoted in \S7.2. It consists of $64$ modules \code{Principia/APFree/*.lean}; the $k=3$ theorems depend on the general modules (window separation, the block lemma, the certificate of $\max\Blk$, the prefix bounds) and on \code{BellmanPolicy}, \code{BellmanLower*} and \code{BellmanRecord}; the $k=4$ theorems on \code{Nesting} and the sixteen modules \code{FourTerm*}. Lean~4 \code{v4.33.1}, Mathlib at the tag \code{v4.33.1} (commit \code{0df444a3}), pinned in \code{lake-manifest.json}. \code{sorry}, \code{axiom} declarations and \code{native\_decide} do not occur; the kernel is used as a decision procedure (\code{decide}, \code{decide +kernel}) on the stage tables, the certificates, the digit counts and the leaf sums, which is what makes $84 + 38$ stages of up to $79$-digit integers affordable, and it is not used anywhere in the general lemmas.
+
+\code{\#print axioms} on the theorems of \S\ref{sec:statements}:
+
+\begin{leancode}
+\item \code{'APFree.\allowbreak{}BellmanRecord.\allowbreak{}erdos169\_\allowbreak{}lower\_\allowbreak{}3\_\allowbreak{}0085385' depends on axioms: [propext, Classical.\allowbreak{}choice, Quot.\allowbreak{}sound]}
+\item \code{'APFree.\allowbreak{}BellmanRecord.\allowbreak{}erdos169\_\allowbreak{}lower\_\allowbreak{}record\_\allowbreak{}939' depends on axioms: [propext, Classical.\allowbreak{}choice, Quot.\allowbreak{}sound]}
+\item \code{'APFree.\allowbreak{}FourTermRecord.\allowbreak{}setA4\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}beats\_\allowbreak{}walker' depends on axioms: [propext, Classical.\allowbreak{}choice, Quot.\allowbreak{}sound]}
+\item \code{'APFree.\allowbreak{}FourTermRecord.\allowbreak{}setA4\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}lower' depends on axioms: [propext, Classical.\allowbreak{}choice, Quot.\allowbreak{}sound]}
+\end{leancode}
+
+The two chain checks \code{chain959} and \code{chain4} depend on \code{propext} alone. Across the whole bundle every \code{depends on axioms} line is a subset of the three standard axioms, and \code{sorryAx} and \code{Lean.\allowbreak{}ofReduceBool} occur nowhere. To check: unpack, \code{lake exe cache get}, then \code{LEAN\_\allowbreak{}NUM\_\allowbreak{}THREADS=1 lake build Principia.\allowbreak{}APFree.\allowbreak{}BellmanRecord} and \code{\dots\allowbreak{}FourTermRecord}; the modules should be built one at a time, since some keep large kernel computations in memory (the $64$ modules took $1467$\,s of Lean time in all, the largest needing $9.5$\,GiB; the seventeen $k=4$ modules take about four minutes, the largest $8.7$\,GiB). The whole bundle was rebuilt from the sources, module by module, after the renaming of the namespaces to their present form, with the statements and proofs compared character for character against the earlier version.
+
+\subsection{Inside and outside Lean}\label{sec:checked}
+
+\begin{center}\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.33\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.30\linewidth}@{}}
+\toprule
+ & $k=3$ ($A_3$) & $k=4$ ($A_4$) \\
+\midrule
+the gluing lemma (Theorem~\ref{thm:W} / Lemma~\ref{lem:nest}) & Lean, general form & Lean, general form \\
+its application to the concrete stages & Lean (\code{chain959}) & Lean (\code{chain4}) \\
+the head is AP-free & Lean & Lean (Lemma~\ref{lem:walker} in general form) \\
+the blocks are 3-AP-free & Lean (Lemma~\ref{lem:block}) & Lean (the same lemma) \\
+the lower bound on the reciprocal sum & Lean: $3.0085385$ & Lean: $4.439753474215620$ \\
+the finer value of the sum & exact integers, outside Lean & exact integers, outside Lean \\
+the reciprocal sum $H$ of Walker's set & --- & outside Lean (\S\ref{sec:walkerH}) \\
+head $=$ truncation of the Kempner set & --- & only $\subseteq$ is proved; enough for a lower bound \\
+Proposition~\ref{prop:kempner} & paper only, not used & paper only, not used \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{What is not claimed}\label{sec:notclaimed}
+
+\begin{enumerate}
+\item \textbf{Nothing about upper bounds.} Nothing here says anything about how large $f(3)$ or $f(4)$ can be, about the growth of $f(k)$, or about the conjecture that $f(k) < \infty$ for all $k$ to which problem \#169 is attached. Two explicit sets are exhibited and their reciprocal sums bounded from below; that is all.
+\item \textbf{No optimality.} Nothing is proved about either policy being the best in its framework. For $k=3$ the Bellman solution was obtained on a discretised grid and its dependence on the discretisation has not been examined; the room left inside the same framework is estimated, coarsely and by floating point, at about $5 \times 10^{-6}$. For $k=4$ the gain over $H$ is in the eighth decimal, and the estimates suggest that only the ninth and tenth are left on the block side; moving anything above the seventh decimal needs a digit set $S$ beyond Walker's search ($b \le 88$ unconditionally, $b \le 200$ with pruning).
+\item \textbf{The finer values are not formalised.} Only $\sum_{A_3} 1/a > 3.0085385$ and $\sum_{A_4} 1/a > 4.439753474215620$ are Lean theorems. The values $3.008538522178115$ and $[\,4.4397534744963946,\ 4.4397534745348559\,]$, and the bracket of $H$, rest on exact-integer computations outside Lean. In particular ``$\sum_{A_4} 1/a > H$'' is Lean plus \S\ref{sec:walkerH}, while ``$\sum_{A_4} 1/a > 4.43975$'' is Lean alone.
+\item \textbf{The head of $A_4$ is only known to be a subset of the truncation.} \code{head4} is proved to lie in $(K(S,55)+1) \cap [1, r_0]$ and to have reciprocal sum $\ge 4.43975319196804$; equality with the truncation is not proved. A subset is all a lower bound needs.
+\item \textbf{The chain checks are machine computations.} \code{chain959} and \code{chain4} are theorems of Lean whose proofs are kernel evaluations over the stage tables; they are verified, not surveyable. The same holds for the leaf sums of \S\ref{sec:leanbounds}.
+\item \textbf{No independent authorship, no external review.} The constructions, the exact-integer code, the Lean development and the formalised \emph{statements} were written by the same agent (\S\ref{sec:ai}). No mathematician outside the authors has reviewed the mathematics, the code or the Lean development; the Lean kernel is the only check independent of the authors, and the statements of \S\ref{sec:statements} are quoted in full so that they can be read directly. For $A_3$ the exact evaluation was not repeated by a second implementation (a floating-point check of the per-stage contributions is the only cross-check); for $A_4$ the Lean bound and the exact-integer bound agree to nine decimals.
+\item \textbf{Proposition~\ref{prop:kempner} is a paper argument.} It is not formalised and is not used for the bounds.
+\item \textbf{The search of prior work is limited} (\S\ref{sec:intro}). MathSciNet and zbMATH were not available to us.
+\end{enumerate}
+
+\section{Correspondence table}\label{sec:corr}
+
+Every Lean name is in the namespace \code{APFree} and every file in \code{Principia/APFree/} of the bundle of \S\ref{sec:files}.
+
+\begin{small}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.44\linewidth}>{\raggedright\arraybackslash}p{0.27\linewidth}@{}}
+\toprule
+\textbf{statement here} & \textbf{Lean declaration} & \textbf{file:line} \\
+\midrule\endfirsthead
+\toprule
+statement here & Lean declaration & file:line \\
+\midrule\endhead
+$\Blk(p,q,r)$; $T_p$; $2T_p(k)=(k-a_p)(k-b_p)$ & \code{StepsMaxElement.\allowbreak{}Blk}; \code{T}; \code{two\_\allowbreak{}mul\_\allowbreak{}T} & \code{StepsMaxElement.\allowbreak{}lean}:111; :60; :69 \\
+Lemma~\ref{lem:block} (blocks are 3-AP-free) & \code{ChainRecord.\allowbreak{}Blk\_\allowbreak{}apfree}; \code{NonAveraging.\allowbreak{}lemma1\_\allowbreak{}wroblewski} & \code{ChainRecordCore.\allowbreak{}lean}:152; \code{NonAveraging.\allowbreak{}lean}:216 \\
+$\max \Blk$ by certificate & \code{StepsMaxElement.\allowbreak{}stepOK}; \code{maxelt\_\allowbreak{}of\_\allowbreak{}stepOK}; \code{BellmanPolicy.\allowbreak{}all\_\allowbreak{}steps\_\allowbreak{}maxelt} & \code{StepsMaxElement.\allowbreak{}lean}:273; :280; \code{BellmanPolicy.\allowbreak{}lean}:527 \\
+the Szekeres head $Z_0$ (\S\ref{sec:szekeres}) & \code{BlockBounds.\allowbreak{}Z0F}; \code{Z0F\_\allowbreak{}lower}; \code{SzekeresHead.\allowbreak{}Z0\_\allowbreak{}apfree}; \code{ChainRecord.\allowbreak{}head\_\allowbreak{}apfree} & \code{BlockBounds.\allowbreak{}lean}:447; \code{BlockBoundsHeadLower.\allowbreak{}lean}:32; \code{SzekeresHead.\allowbreak{}lean}:304; \code{ChainRecord.\allowbreak{}lean}:196 \\
+Kempner sets; $k$-free mod $b$ & \code{FourTermRecord.\allowbreak{}DigIn}; \code{KSet}; \code{KFreeMod}; \code{kFreeModB} & \code{FourTermKempner.\allowbreak{}lean}:34; :147; :80; :84 \\
+Lemma~\ref{lem:walker} (Walker, Theorem 1.2) & \code{FourTermRecord.\allowbreak{}no\_\allowbreak{}ap\_\allowbreak{}of\_\allowbreak{}kFreeMod}; \code{KSet\_\allowbreak{}apfree} & \code{FourTermKempner.\allowbreak{}lean}:105; :150 \\
+$S$ is 4-free mod $55$; the head is 4-AP-free & \code{FourTermRecord.\allowbreak{}S55}; \code{S55\_\allowbreak{}kfree\_\allowbreak{}B}; \code{KSet55\_\allowbreak{}apfree}; \code{headZ\_\allowbreak{}sub}; \code{headZ\_\allowbreak{}apfree} & \code{FourTermKempner.\allowbreak{}lean}:166; :177; :182; \code{FourTermRecord.\allowbreak{}lean}:17; :25 \\
+the head \code{head4} and its bound & \code{FourTermRecord.\allowbreak{}head4}; \code{head4\_\allowbreak{}mem}; \code{head4\_\allowbreak{}lower}; \code{loK\_\allowbreak{}le} & \code{FourTermHeadUnion.\allowbreak{}lean}:35; :56; :47; \code{FourTermHead.\allowbreak{}lean}:388 \\
+Theorem~\ref{thm:W} (window separation); \code{IsThreeAPFree} & \code{WindowSeparation.\allowbreak{}apfree\_\allowbreak{}iUnion\_\allowbreak{}of\_\allowbreak{}separated}; \code{IsThreeAPFree} & \code{WindowSeparation.\allowbreak{}lean}:44; :29 \\
+placements $M=1,2,3$ & \code{BellmanPolicy.\allowbreak{}sep\_\allowbreak{}M1}; \code{sep\_\allowbreak{}M2}; \code{sep\_\allowbreak{}M3}; \code{W3\_\allowbreak{}eq\_\allowbreak{}wrob} & \code{BellmanPolicy.\allowbreak{}lean}:76; :95; :125; :133 \\
+\code{APFreeK}; Lemma~\ref{lem:nest}, two-set core; the crossing step & \code{Nesting.\allowbreak{}APFreeK}; \code{core\_\allowbreak{}strong}; \code{crossing\_\allowbreak{}gap} & \code{Nesting.\allowbreak{}lean}:40; :220; :147 \\
+Lemma~\ref{lem:nest}, the union; the $k=4$ form & \code{Nesting.\allowbreak{}Doubling}; \code{lemma2\_\allowbreak{}iUnion}; \code{lemma2\_\allowbreak{}four} & \code{Nesting.\allowbreak{}lean}:274; :352; :374 \\
+interval-only form, $k \ge 3$ & \code{Nesting.\allowbreak{}core\_\allowbreak{}loc}; \code{lemma1\_\allowbreak{}iUnion} & \code{Nesting.\allowbreak{}lean}:176; :329 \\
+reduction to the doubling tax ($k=3$) & \code{Nesting.\allowbreak{}three\_\allowbreak{}conditions\_\allowbreak{}iff}; \code{three\_\allowbreak{}reduces\_\allowbreak{}to\_\allowbreak{}sep\_\allowbreak{}M1} & \code{Nesting.\allowbreak{}lean}:388; :404 \\
+tightness of (ii) & \code{Nesting.\allowbreak{}tight\_\allowbreak{}example}; \code{tight\_\allowbreak{}equality} & \code{Nesting.\allowbreak{}lean}:413; :421 \\
+the $84$ stages; their chain & \code{BellmanPolicy.\allowbreak{}steps}; \code{steps774}; \code{chain\_\allowbreak{}verified}; \code{steps\_\allowbreak{}kinds}; \code{all\_\allowbreak{}steps\_\allowbreak{}separated} & \code{BellmanPolicy.\allowbreak{}lean}:146; :345; :254; :265; :291 \\
+the $160$ windows; the set $A_3$ & \code{BellmanLower.\allowbreak{}wins939}; \code{winsAll939}; \code{setA939}; \code{winsAll939\_\allowbreak{}ord} & \code{BellmanLower.\allowbreak{}lean}:35; :39; :42; :48 \\
+the chain check of \S\ref{sec:apfree3}; $A_3$ is 3-AP-free & \code{BellmanRecord.\allowbreak{}chain959}; \code{setA939\_\allowbreak{}apfree} & \code{BellmanRecord.\allowbreak{}lean}:46; :68 \\
+$\sum_{A_3} 1/a > 3.0085385$; $> 3.00849$ & \code{BellmanLower.\allowbreak{}setA939\_\allowbreak{}lower}; \code{setA939\_\allowbreak{}beats\_\allowbreak{}record} & \code{BellmanLower.\allowbreak{}lean}:66; :80 \\
+Theorem~\ref{thm:A3}; the same with $3.00849$ & \code{BellmanRecord.\allowbreak{}setA939\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}lower}; \code{setA939\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}beats\_\allowbreak{}record} & \code{BellmanRecord.\allowbreak{}lean}:80; :86 \\
+Theorem~\ref{thm:A3}, existential forms (\S\ref{sec:statements}) & \code{BellmanRecord.\allowbreak{}erdos169\_\allowbreak{}lower\_\allowbreak{}3\_\allowbreak{}0085385}; \code{erdos169\_\allowbreak{}lower\_\allowbreak{}record\_\allowbreak{}939} & \code{BellmanRecord.\allowbreak{}lean}:99; :93 \\
+the $38$ stages; the chain check of \S\ref{sec:apfree4} & \code{FourTermRecord.\allowbreak{}stages4}; \code{wins4}; \code{chain4}; \code{stageChk}; \code{chainChk4}; \code{grow4\_\allowbreak{}apfree} & \code{FourTermStages.\allowbreak{}lean}:13; :59; :56; \code{FourTermChain.\allowbreak{}lean}:28; :33; :52 \\
+the set $A_4$ and its sum & \code{FourTermRecord.\allowbreak{}setA4}; \code{wins4\_\allowbreak{}ord}; \code{head4\_\allowbreak{}disj}; \code{sum\_\allowbreak{}setA4}; \code{wins4\_\allowbreak{}lower} & \code{FourTermLower.\allowbreak{}lean}:35; :40; :44; :52; :21 \\
+the block counts of $A_4$ & \code{FourTermRecord.\allowbreak{}cfP\_\allowbreak{}le} & \code{FourTermBlockCount.\allowbreak{}lean}:157 \\
+$\sum_{A_4} 1/a \ge L/10^{100}$; $> 4.439753474215620$; $> 4.439753369254541$ & \code{FourTermRecord.\allowbreak{}setA4\_\allowbreak{}lower\_\allowbreak{}full}; \code{setA4\_\allowbreak{}lower}; \code{setA4\_\allowbreak{}beats\_\allowbreak{}walker} & \code{FourTermLower.\allowbreak{}lean}:57; :66; :74 \\
+$A_4$ is 4-AP-free & \code{FourTermRecord.\allowbreak{}setA4\_\allowbreak{}apfree} & \code{FourTermRecord.\allowbreak{}lean}:49 \\
+Theorem~\ref{thm:A4} & \code{FourTermRecord.\allowbreak{}setA4\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}lower}; \code{setA4\_\allowbreak{}apfree\_\allowbreak{}and\_\allowbreak{}beats\_\allowbreak{}walker} & \code{FourTermRecord.\allowbreak{}lean}:61; :55 \\
+\bottomrule
+\end{longtable}
+\end{small}
+
+\section{Disclosure of AI use}\label{sec:ai}
+
+Two of the three authors are AI agents. \textit{Shiori} and \textit{Rin} are instances of Claude (Anthropic) run as the coding agent Claude Code, on a laptop and on the server of the website named on the first page respectively. The constructions, the reformulation of the choice of stages as a dynamic program over the window-separation state, the nesting lemma, the exact-integer implementations, the Lean~4 development including the formalised statements, the verification reports on which this note is based, and this draft were produced by Shiori across many separate sessions, each of which began without memory of the previous ones and read the written record instead. Rin is responsible for rebuilding the Lean development from the distributed archive on a separate machine, for checking the numerical claims of this note against the reports, and for preparing the distributed version; for this draft Rin prepared the web edition (typesetting, the site page and the placement of the archive). The rebuild from the distributed bundle was carried out by Rin on 2026-10-02: the bundle was unpacked into a fresh directory and built from its sources alone, with the toolchain and Mathlib revision it fixes (\code{lake exe cache get}, then \code{LEAN\_NUM\_THREADS=1 lake build}); the namespace \code{APFree} built with no errors, and the \code{\#print axioms} output of its 177 declarations agreed line for line with the axiom log shipped in the bundle. The build ran on the laptop on which the development was written, the server having too little memory, so this is a rebuild from the distributed sources rather than a replication across hardware. The human author, Kiichi, set the task, chose the problem, fixed the working rules and load limits, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the authors' blind spots. Two findings of that review are on record in the working notes: an earlier version of the $k=3$ work reported a false record ($3.019346$, from an indexing error in computing $\max\Blk$), after which the calibration against Wr\'oblewski's construction (\S\ref{sec:exact}) was introduced; and a hidden hypothesis (the 3-AP-freeness of the blocks, taken as an assumption by an earlier Lean file) was found and closed when the development was reduced to a single theorem per set. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else is the authors' word.
+
+\begin{thebibliography}{EP169}
+\bibitem{Be46} F.~A. Behrend, \emph{On sets of integers which contain no three terms in arithmetical progression}, Proc.\ Nat.\ Acad.\ Sci.\ U.S.A.\ \textbf{32} (1946), 331--332.
+\bibitem{EP169} T. Bloom (ed.), \emph{Erd\H{o}s problem \#169}, \url{https://www.erdosproblems.com/169} (accessed September 2026).
+\bibitem{ET36} P. Erd\H{o}s and P. Tur\'an, \emph{On some sequences of integers}, J.\ London Math.\ Soc.\ \textbf{11} (1936), 261--264 (not consulted directly).
+\bibitem{Ge77} J. Gerver, \emph{The sum of the reciprocals of a set of integers with no arithmetic progression of $k$ terms}, Proc.\ Amer.\ Math.\ Soc.\ \textbf{62} (1977), 211--214.
+\bibitem{GR79} J. Gerver and L. Ramsey, \emph{Sets of integers with no long arithmetic progressions generated by the greedy algorithm}, Math.\ Comp.\ \textbf{33} (1979), 1353--1360.
+\bibitem{Tao25} T. Tao, comment in the forum thread on problem \#169, \url{https://www.erdosproblems.com/forum/thread/169}, 5 September 2025.
+\bibitem{Wa25} A. Walker, \emph{Integer sets of large harmonic sum which avoid long arithmetic progressions}, arXiv:2203.06045v2 [math.NT], 4 September 2025.
+\bibitem{Wr84} J. Wr\'oblewski, \emph{A nonaveraging set of integers with a large sum of reciprocals}, Math.\ Comp.\ \textbf{43} (1984), 261--262.
+\bibitem{M} Mathlib, \url{https://github.com/leanprover-community/mathlib4} (Lean~4 v4.33.1).
+\end{thebibliography}
+
+\appendix
+\section{The 84 stages of \texorpdfstring{$A_3$}{A3}}\label{app:stages3}
+
+Stage $i$ places $M$ translates of $\Blk(p,q,r)$ on a head with maximum $z_i$; $t_i=\max\Blk(p,q,r)$; $d(\cdot)$ is the number of decimal digits. $z_1=21523361$. The integers $z_i, t_i$, the digit vectors certifying $t_i$, and the $160$ offsets are \code{APFree.\allowbreak{}BellmanPolicy.\allowbreak{}steps}, \code{steps774} and \code{APFree.\allowbreak{}BellmanLower.\allowbreak{}wins939} in the bundle.
+
+\begin{center}\scriptsize\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}rrrrrrr@{}}
+\toprule
+$i$ & $p$ & $q$ & $r$ & $M$ & $d(z_i)$ & $d(t_i)$ \\
+\midrule
+1 & 4 & 9 & 4 & 1 & 8 & 8 \\
+2 & 4 & 9 & 4 & 2 & 8 & 8 \\
+3 & 4 & 10 & 5 & 1 & 9 & 9 \\
+4 & 4 & 10 & 5 & 2 & 9 & 9 \\
+5 & 6 & 9 & 12 & 1 & 10 & 10 \\
+6 & 6 & 9 & 12 & 2 & 10 & 10 \\
+7 & 6 & 10 & 13 & 3 & 11 & 11 \\
+8 & 6 & 11 & 15 & 1 & 12 & 12 \\
+9 & 8 & 10 & 26 & 1 & 12 & 12 \\
+10 & 9 & 10 & 32 & 1 & 13 & 13 \\
+11 & 10 & 10 & 39 & 1 & 13 & 13 \\
+12 & 11 & 10 & 48 & 1 & 13 & 13 \\
+13 & 12 & 10 & 57 & 1 & 14 & 14 \\
+14 & 14 & 10 & 80 & 1 & 14 & 15 \\
+15 & 9 & 12 & 39 & 1 & 15 & 15 \\
+16 & 10 & 12 & 46 & 1 & 15 & 16 \\
+17 & 14 & 11 & 86 & 1 & 16 & 16 \\
+18 & 12 & 12 & 69 & 1 & 16 & 17 \\
+19 & 13 & 12 & 81 & 1 & 17 & 17 \\
+20 & 14 & 12 & 93 & 1 & 17 & 17 \\
+21 & 12 & 13 & 75 & 1 & 18 & 18 \\
+22 & 13 & 13 & 90 & 1 & 18 & 18 \\
+23 & 14 & 13 & 102 & 1 & 19 & 19 \\
+24 & 12 & 14 & 81 & 1 & 19 & 19 \\
+25 & 13 & 14 & 96 & 1 & 20 & 20 \\
+26 & 14 & 14 & 111 & 1 & 20 & 20 \\
+27 & 12 & 15 & 86 & 1 & 21 & 21 \\
+28 & 13 & 15 & 102 & 1 & 21 & 21 \\
+\bottomrule
+\end{tabular}\hfill
+\begin{tabular}{@{}rrrrrrr@{}}
+\toprule
+$i$ & $p$ & $q$ & $r$ & $M$ & $d(z_i)$ & $d(t_i)$ \\
+\midrule
+29 & 14 & 15 & 117 & 3 & 22 & 22 \\
+30 & 13 & 16 & 109 & 1 & 23 & 23 \\
+31 & 14 & 16 & 126 & 3 & 23 & 23 \\
+32 & 13 & 17 & 117 & 1 & 24 & 24 \\
+33 & 14 & 17 & 133 & 3 & 25 & 25 \\
+34 & 13 & 18 & 124 & 1 & 25 & 25 \\
+35 & 14 & 18 & 142 & 3 & 26 & 26 \\
+36 & 13 & 19 & 131 & 1 & 27 & 27 \\
+37 & 14 & 19 & 150 & 3 & 27 & 27 \\
+38 & 13 & 20 & 137 & 1 & 28 & 28 \\
+39 & 14 & 20 & 158 & 3 & 29 & 29 \\
+40 & 13 & 21 & 145 & 1 & 30 & 30 \\
+41 & 14 & 21 & 166 & 3 & 30 & 30 \\
+42 & 13 & 22 & 152 & 1 & 31 & 31 \\
+43 & 14 & 22 & 174 & 3 & 32 & 32 \\
+44 & 13 & 23 & 159 & 1 & 33 & 32 \\
+45 & 14 & 23 & 182 & 3 & 33 & 33 \\
+46 & 13 & 24 & 166 & 1 & 34 & 34 \\
+47 & 14 & 24 & 190 & 3 & 34 & 35 \\
+48 & 13 & 25 & 173 & 1 & 35 & 35 \\
+49 & 14 & 25 & 198 & 3 & 36 & 36 \\
+50 & 12 & 27 & 156 & 1 & 37 & 37 \\
+51 & 14 & 26 & 206 & 3 & 37 & 37 \\
+52 & 12 & 28 & 162 & 1 & 38 & 38 \\
+53 & 14 & 27 & 214 & 3 & 39 & 39 \\
+54 & 12 & 29 & 168 & 1 & 40 & 40 \\
+55 & 14 & 28 & 222 & 3 & 40 & 40 \\
+56 & 13 & 29 & 201 & 2 & 41 & 41 \\
+\bottomrule
+\end{tabular}\hfill
+\begin{tabular}{@{}rrrrrrr@{}}
+\toprule
+$i$ & $p$ & $q$ & $r$ & $M$ & $d(z_i)$ & $d(t_i)$ \\
+\midrule
+57 & 14 & 29 & 230 & 3 & 42 & 42 \\
+58 & 13 & 30 & 208 & 2 & 43 & 42 \\
+59 & 14 & 30 & 238 & 3 & 43 & 43 \\
+60 & 13 & 31 & 215 & 2 & 44 & 44 \\
+61 & 14 & 31 & 246 & 3 & 45 & 45 \\
+62 & 13 & 32 & 222 & 2 & 46 & 45 \\
+63 & 14 & 32 & 254 & 3 & 46 & 46 \\
+64 & 13 & 33 & 229 & 2 & 47 & 46 \\
+65 & 14 & 33 & 262 & 3 & 47 & 47 \\
+66 & 13 & 34 & 236 & 2 & 48 & 48 \\
+67 & 14 & 34 & 270 & 3 & 49 & 49 \\
+68 & 14 & 34 & 270 & 2 & 50 & 49 \\
+69 & 14 & 35 & 278 & 3 & 50 & 50 \\
+70 & 14 & 35 & 278 & 2 & 51 & 50 \\
+71 & 14 & 36 & 286 & 3 & 52 & 52 \\
+72 & 14 & 36 & 286 & 2 & 53 & 52 \\
+73 & 14 & 37 & 294 & 3 & 53 & 53 \\
+74 & 14 & 37 & 294 & 2 & 54 & 53 \\
+75 & 14 & 38 & 302 & 3 & 54 & 55 \\
+76 & 14 & 38 & 302 & 2 & 56 & 55 \\
+77 & 14 & 39 & 310 & 3 & 56 & 56 \\
+78 & 14 & 39 & 310 & 2 & 57 & 56 \\
+79 & 14 & 40 & 318 & 3 & 57 & 57 \\
+80 & 14 & 40 & 318 & 2 & 58 & 57 \\
+81 & 14 & 41 & 326 & 3 & 59 & 59 \\
+82 & 14 & 41 & 326 & 2 & 60 & 59 \\
+83 & 14 & 42 & 334 & 3 & 60 & 60 \\
+84 & 14 & 42 & 334 & 2 & 61 & 60 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\clearpage
+\section{The 38 stages of \texorpdfstring{$A_4$}{A4}}\label{app:stages4}
+
+Stage $j$ places one translate $a_j + \Blk(p_j,q_j,r_j)$ with $a_j = 2r_{j-1}+1$, $r_0 = 2263764388957216127282601815683$ and $r_j = a_j + t_j$, $t_j = \max\Blk(p_j,q_j,r_j)$. The integers $a_j, t_j$ and the digit vectors are \code{APFree.\allowbreak{}FourTermRecord.\allowbreak{}stages4} in the bundle.
+
+\begin{center}\scriptsize
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+$j$ & $p$ & $q$ & $r$ & $d(a_j)$ & $d(t_j)$ \\
+\midrule
+1 & 68 & 15 & 2833 & 31 & 32 \\
+2 & 84 & 15 & 4318 & 32 & 34 \\
+3 & 104 & 15 & 6628 & 34 & 35 \\
+4 & 128 & 15 & 10033 & 35 & 36 \\
+5 & 112 & 16 & 8203 & 37 & 38 \\
+6 & 138 & 16 & 12463 & 38 & 39 \\
+7 & 172 & 16 & 19363 & 40 & 41 \\
+8 & 152 & 17 & 16078 & 41 & 42 \\
+9 & 190 & 17 & 25129 & 43 & 44 \\
+10 & 240 & 17 & 40093 & 44 & 46 \\
+11 & 200 & 18 & 29509 & 46 & 47 \\
+12 & 240 & 18 & 42494 & 47 & 48 \\
+13 & 280 & 18 & 57839 & 49 & 50 \\
+14 & 360 & 18 & 95614 & 50 & 52 \\
+15 & 320 & 19 & 79814 & 52 & 54 \\
+16 & 400 & 19 & 124715 & 54 & 55 \\
+17 & 360 & 20 & 106415 & 56 & 57 \\
+18 & 320 & 21 & 88355 & 58 & 59 \\
+19 & 400 & 21 & 138050 & 59 & 61 \\
+\bottomrule
+\end{tabular}\hfill
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+$j$ & $p$ & $q$ & $r$ & $d(a_j)$ & $d(t_j)$ \\
+\midrule
+20 & 360 & 22 & 117221 & 61 & 63 \\
+21 & 400 & 22 & 144726 & 63 & 64 \\
+22 & 360 & 23 & 122622 & 64 & 66 \\
+23 & 400 & 23 & 151386 & 66 & 67 \\
+24 & 360 & 24 & 128022 & 67 & 69 \\
+25 & 400 & 24 & 158052 & 69 & 70 \\
+26 & 360 & 25 & 133428 & 70 & 72 \\
+27 & 400 & 25 & 164727 & 72 & 73 \\
+28 & 360 & 26 & 138828 & 73 & 74 \\
+29 & 400 & 26 & 171391 & 75 & 76 \\
+30 & 400 & 26 & 171391 & 76 & 76 \\
+31 & 400 & 26 & 171391 & 76 & 76 \\
+32 & 400 & 26 & 171391 & 77 & 76 \\
+33 & 400 & 26 & 171391 & 77 & 76 \\
+34 & 400 & 26 & 171391 & 77 & 76 \\
+35 & 400 & 26 & 171391 & 78 & 76 \\
+36 & 400 & 26 & 171391 & 78 & 76 \\
+37 & 400 & 26 & 171391 & 78 & 76 \\
+38 & 400 & 26 & 171391 & 79 & 76 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}

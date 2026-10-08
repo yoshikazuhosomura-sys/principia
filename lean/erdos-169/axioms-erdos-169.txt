@@ -1,0 +1,353 @@
+# principia / erdos-169: `#print axioms` output, by module (64 modules, 223 lines).
+# Every line is a subset of [propext, Classical.choice, Quot.sound].
+
+## Principia.APFree.StepsMaxElement  (7)
+'APFree.StepsMaxElement.le_of_certB' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsMaxElement.maxelt_of_stepOK' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsMaxElement.steps_length' does not depend on any axioms
+'APFree.StepsMaxElement.steps_ok' depends on axioms: [propext]
+'APFree.StepsMaxElement.all_steps_maxelt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsMaxElement.two_mul_T' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsMaxElement.mem_Blk_iff' depends on axioms: [propext]
+
+## Principia.APFree.BlockBounds  (5)
+'APFree.BlockBounds.Z0F_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BlockBounds.Z0F_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BlockBounds.coe_BlkF' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BlockBounds.loI_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BlockBounds.le_hiI' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.BlockBoundsDigitCount  (2)
+'APFree.BlockBounds.cntTab_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BlockBounds.totLo_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.BlockBoundsMixedDepth  (1)
+'APFree.BlockBounds.totLoD_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.BlockBoundsBudgetLead  (1)
+'APFree.BlockBounds.winsE0_num' depends on axioms: [propext]
+
+## Principia.APFree.BlockBoundsBudgetRest  (1)
+'APFree.BlockBounds.winsE1_num' depends on axioms: [propext]
+
+## Principia.APFree.BlockBoundsHeadLower  (1)
+'APFree.BlockBounds.head_lo_num' depends on axioms: [propext]
+
+## Principia.APFree.BlockBoundsWindows50  (1)
+'APFree.BlockBounds.blocks50_num' depends on axioms: [propext]
+
+## Principia.APFree.BlockBoundsWindows100  (1)
+'APFree.BlockBounds.blocks100b_num' depends on axioms: [propext]
+
+## Principia.APFree.BlockBoundsBudgetTotal  (1)
+'APFree.BlockBounds.total_lower4' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.WindowsDisjoint  (5)
+'APFree.WindowsDisjoint.winsAll_p' does not depend on any axioms
+'APFree.WindowsDisjoint.winsAll_ord' depends on axioms: [propext]
+'APFree.WindowsDisjoint.sum_setA' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowsDisjoint.setA_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowsDisjoint.setA_beats_record' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.BellmanLowerLead  (1)
+'APFree.BellmanLower.wins939a_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.BellmanLowerMid  (1)
+'APFree.BellmanLower.wins939b_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.BellmanLowerRest  (1)
+'APFree.BellmanLower.wins939c_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.BellmanLower  (11)
+'APFree.BellmanLower.winsAll939_ord' depends on axioms: [propext]
+'APFree.BellmanLower.sum_setA939' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanLower.setA939_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanLower.setA939_beats_record' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanLower.erdos169_bellman_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanLower.winsAll939_p' does not depend on any axioms
+'APFree.BellmanLower.winsAll939_ord' depends on axioms: [propext]
+'APFree.BellmanLower.sum_setA939' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanLower.setA939_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanLower.setA939_beats_record' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanLower.erdos169_bellman_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.WindowSeparation  (6)
+'APFree.WindowSeparation.apfree_iUnion_of_separated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowSeparation.apfree_nested' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowSeparation.doubling_tax' depends on axioms: [propext, Quot.sound]
+'APFree.WindowSeparation.wroblewski_windows' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowSeparation.wroblewski_lemma2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowSeparation.badWindows_not_separated' depends on axioms: [propext, Quot.sound]
+
+## Principia.APFree.BellmanPolicy  (12)
+'APFree.BellmanPolicy.sep_M3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanPolicy.chain_verified' does not depend on any axioms
+'APFree.BellmanPolicy.all_steps_separated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanPolicy.W3_eq_wrob' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanPolicy.all_steps_maxelt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanPolicy.chain_verified' does not depend on any axioms
+'APFree.BellmanPolicy.steps_length' does not depend on any axioms
+'APFree.BellmanPolicy.steps_kinds' does not depend on any axioms
+'APFree.BellmanPolicy.sep_M3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanPolicy.W3_eq_wrob' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanPolicy.all_steps_separated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanPolicy.all_steps_maxelt' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.StepsSeparated  (9)
+'APFree.StepsSeparated.chain_verified' does not depend on any axioms
+'APFree.StepsSeparated.steps_length' does not depend on any axioms
+'APFree.StepsSeparated.all_steps_separated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsSeparated.sep_M1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsSeparated.sep_M2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsSeparated.step_M1_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsSeparated.step_M2_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsSeparated.M2_offsets' depends on axioms: [propext, Quot.sound]
+'APFree.StepsSeparated.steps_ok' depends on axioms: [propext, Quot.sound]
+
+## Principia.APFree.WindowSeparationM3  (6)
+'APFree.WindowSeparationM3.sep_M3_gen' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowSeparationM3.sep_M3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowSeparationM3.W3_eq_wrob' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowSeparationM3.step_M3_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowSeparationM3.W3_in_box' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowSeparationM3.M3_doubling' depends on axioms: [propext, Quot.sound]
+
+## Principia.APFree.PolicyRollout  (7)
+'APFree.PolicyRollout.chain_verified' does not depend on any axioms
+'APFree.PolicyRollout.steps_length' does not depend on any axioms
+'APFree.PolicyRollout.all_steps_separated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.PolicyRollout.all_blocks_maxelt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.PolicyRollout.chain_matches_blocks' does not depend on any axioms
+'APFree.PolicyRollout.m3steps_length' does not depend on any axioms
+'APFree.PolicyRollout.m3_all_separated' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.NonAveraging  (3)
+'APFree.NonAveraging.digits_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.NonAveraging.lemma1_nonaveraging' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.NonAveraging.lemma1_wroblewski' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.ChainRecordCore  (4)
+'APFree.ChainRecord.Blk_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.ChainRecord.winZ_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.ChainRecord.apfree_unionL' depends on axioms: [propext, Quot.sound]
+'APFree.ChainRecord.sepL_spec' depends on axioms: [propext, Quot.sound]
+
+## Principia.APFree.ChainRecord  (7)
+'APFree.ChainRecord.chain844' depends on axioms: [propext]
+'APFree.ChainRecord.grow_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.ChainRecord.grow_eq_setA' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.ChainRecord.setA_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.ChainRecord.setA_apfree_and_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.ChainRecord.setA_apfree_and_beats_record' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.ChainRecord.groups_flat' depends on axioms: [propext, Quot.sound]
+
+## Principia.APFree.BellmanRecord  (13)
+'APFree.BellmanRecord.chain959' depends on axioms: [propext]
+'APFree.BellmanRecord.setA939_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanRecord.setA939_apfree_and_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanRecord.setA939_apfree_and_beats_record' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanRecord.erdos169_lower_record_939' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanRecord.erdos169_lower_3_0085385' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanRecord.chain959' depends on axioms: [propext]
+'APFree.BellmanRecord.grow_eq_setA959' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanRecord.setA939_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanRecord.setA939_apfree_and_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanRecord.setA939_apfree_and_beats_record' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanRecord.erdos169_lower_record_939' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BellmanRecord.erdos169_lower_3_0085385' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.BlockBoundsHeadUpper  (1)
+'APFree.BlockBounds.head_hi_num' depends on axioms: [propext]
+
+## Principia.APFree.BlockBoundsHead  (1)
+'APFree.BlockBounds.head_bracket' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.BlockBoundsMixedDepthLead  (1)
+'APFree.BlockBounds.winsD50a_num' depends on axioms: [propext]
+
+## Principia.APFree.BlockBoundsMixedDepthRest  (1)
+'APFree.BlockBounds.winsD50b_num' depends on axioms: [propext]
+
+## Principia.APFree.BlockBoundsMixedDepthTotal  (2)
+'APFree.BlockBounds.total_lower3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BlockBounds.record_3_00849'' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.BlockBoundsStagesLead  (1)
+'APFree.BlockBounds.winsG0_num' depends on axioms: [propext]
+
+## Principia.APFree.BlockBoundsStagesMid  (1)
+'APFree.BlockBounds.winsG1_num' depends on axioms: [propext]
+
+## Principia.APFree.BlockBoundsStagesRest  (1)
+'APFree.BlockBounds.winsG2_num' depends on axioms: [propext]
+
+## Principia.APFree.BlockBoundsTotalDepthTwo  (2)
+'APFree.BlockBounds.total_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.BlockBounds.record_3_00849' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.BlockBoundsWindows20  (2)
+'APFree.BlockBounds.blocks20_num' depends on axioms: [propext]
+'APFree.BlockBounds.record_beaten' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.FourTermBlockCount  (3)
+'APFree.FourTermRecord.cfP_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.FourTermRecord.totLoP_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.FourTermRecord.pwm_eq' depends on axioms: [propext]
+
+## Principia.APFree.Nesting  (15)
+'APFree.Nesting.apFreeK_three_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.Nesting.apFreeK_of_le' does not depend on any axioms
+'APFree.Nesting.apFreeK_mono' does not depend on any axioms
+'APFree.Nesting.core_loc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.Nesting.core_strong' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.Nesting.lemma1_iUnion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.Nesting.lemma2_iUnion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.Nesting.lemma2_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.Nesting.three_conditions_iff' depends on axioms: [propext, Quot.sound]
+'APFree.Nesting.core_loc_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.Nesting.three_reduces_to_sep_M1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.Nesting.tight_example' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.Nesting.tight_equality' depends on axioms: [propext]
+'APFree.Nesting.Doubling.prefix_box' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.Nesting.apFreeK_iUnion_of_prefix' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.FourTermChain  (2)
+'APFree.FourTermRecord.grow4_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.FourTermRecord.growZ4_eq' depends on axioms: [propext, Quot.sound]
+
+## Principia.APFree.FourTermKempner  (1)
+'APFree.FourTermRecord.KSet55_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.FourTermHead  (3)
+'APFree.FourTermRecord.totK_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.FourTermRecord.unionK_ub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.FourTermRecord.unionK_digIn' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.FourTermHeadLead  (1)
+'APFree.FourTermRecord.piecesK1_num' depends on axioms: [propext, Quot.sound]
+
+## Principia.APFree.FourTermHeadMid  (1)
+'APFree.FourTermRecord.piecesK2_num' depends on axioms: [propext, Quot.sound]
+
+## Principia.APFree.FourTermHeadRest  (1)
+'APFree.FourTermRecord.piecesK3_num' depends on axioms: [propext, Quot.sound]
+
+## Principia.APFree.FourTermHeadUnion  (1)
+'APFree.FourTermRecord.head4_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.FourTermTailStagesOneToThree  (1)
+'APFree.FourTermRecord.tailG0_num' depends on axioms: [propext]
+
+## Principia.APFree.FourTermTailStagesFourToSix  (1)
+'APFree.FourTermRecord.tailG1_num' depends on axioms: [propext]
+
+## Principia.APFree.FourTermTailStagesSevenToSixteen  (1)
+'APFree.FourTermRecord.tailG2_num' depends on axioms: [propext]
+
+## Principia.APFree.FourTermTailStagesToTwentyEight  (1)
+'APFree.FourTermRecord.tailG3_num' depends on axioms: [propext]
+
+## Principia.APFree.FourTermTailStagesToThirtyEight  (1)
+'APFree.FourTermRecord.tailG4_num' depends on axioms: [propext]
+
+## Principia.APFree.FourTermStages  (1)
+'APFree.FourTermRecord.chain4' depends on axioms: [propext]
+
+## Principia.APFree.FourTermLower  (1)
+'APFree.FourTermRecord.setA4_lower_full' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.FourTermRecord  (3)
+'APFree.FourTermRecord.setA4_apfree_and_beats_walker' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.FourTermRecord.setA4_apfree_and_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.FourTermRecord.setA4_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.LabelledUnion  (2)
+'APFree.LabelledUnion.apfree_iUnion_of_label' depends on axioms: [propext, Quot.sound]
+'APFree.LabelledUnion.apfree_mixed_ratio' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.LeafUpperBound  (3)
+'APFree.LeafUpperBound.le_hiJ' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.LeafUpperBound.totHiD_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.LeafUpperBound.leaf_upper_gen' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.PolicyLookahead2  (8)
+'APFree.PolicyLookahead2.chain_verified' does not depend on any axioms
+'APFree.PolicyLookahead2.steps_length' does not depend on any axioms
+'APFree.PolicyLookahead2.all_steps_separated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.PolicyLookahead2.all_blocks_maxelt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.PolicyLookahead2.chain_matches_blocks' does not depend on any axioms
+'APFree.PolicyLookahead2.steps_ok' depends on axioms: [propext, Quot.sound]
+'APFree.PolicyLookahead2.blocks790_ok' depends on axioms: [propext]
+'APFree.PolicyLookahead2.step68_separated' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.PolicyLookahead3  (5)
+'APFree.PolicyLookahead3.chain_verified' does not depend on any axioms
+'APFree.PolicyLookahead3.all_steps_separated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.PolicyLookahead3.all_blocks_maxelt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.PolicyLookahead3.chain_matches_blocks' does not depend on any axioms
+'APFree.PolicyLookahead3.m3_all_separated' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.PolicyPrime26  (5)
+'APFree.PolicyPrime26.chain_verified' does not depend on any axioms
+'APFree.PolicyPrime26.all_steps_separated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.PolicyPrime26.blocks26_ok' depends on axioms: [propext]
+'APFree.PolicyPrime26.all_blocks_maxelt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.PolicyPrime26.chain_matches_blocks' does not depend on any axioms
+
+## Principia.APFree.RecordStatement  (4)
+'APFree.RecordStatement.setA_no_3ap' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.RecordStatement.erdos169_lower_record' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.RecordStatement.erdos169_lower_sharp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.RecordStatement.setA_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.StepBlocks  (4)
+'APFree.StepBlocks.step_M1_apfree_blk' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepBlocks.step_M2_apfree_blk' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepBlocks.step_M3_apfree_blk' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepBlocks.headBlk_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.APFree.StepsRegroupedWindows  (1)
+'APFree.StepsRegrouped.wins110_length' does not depend on any axioms
+
+## Principia.APFree.StepsRegroupedLower  (7)
+'APFree.StepsRegrouped.setA110_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsRegrouped.setA110_beats_record' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsRegrouped.sum_setA110' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsRegrouped.winsAll110_ord' depends on axioms: [propext]
+'APFree.StepsRegrouped.wins110_from_steps' does not depend on any axioms
+'APFree.StepsRegrouped.t_agree' does not depend on any axioms
+'APFree.StepsRegrouped.no_M3' does not depend on any axioms
+
+## Principia.APFree.StepsRegroupedRecord  (4)
+'APFree.StepsRegrouped.setA110_apfree_and_beats_record' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsRegrouped.setA110_apfree_and_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsRegrouped.setA110_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.StepsRegrouped.chain1105' depends on axioms: [propext]
+
+## Principia.APFree.StepsWindows  (6)
+'APFree.StepsWindows.wins100_from_steps' does not depend on any axioms
+'APFree.StepsWindows.winsAll_from_steps' does not depend on any axioms
+'APFree.StepsWindows.winsOfStep_M3_eq_W3' depends on axioms: [propext, Quot.sound]
+'APFree.StepsWindows.t_agree100' does not depend on any axioms
+'APFree.StepsWindows.M_le_three' does not depend on any axioms
+'APFree.StepsWindows.stepsPaired100_length' does not depend on any axioms
+
+## Principia.APFree.SzekeresHead  (13)
+'APFree.SzekeresHead.head_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.SzekeresHead.Z0_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.SzekeresHead.Z0_16_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.SzekeresHead.head16_card' depends on axioms: [propext]
+'APFree.SzekeresHead.head16_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.SzekeresHead.tri01_iff' depends on axioms: [propext]
+'APFree.SzekeresHead.ap_of_tri01' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.SzekeresHead.tri01_add_pow' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.SzekeresHead.build_mem_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.SzekeresHead.build_length' depends on axioms: [propext]
+'APFree.SzekeresHead.two_mx' depends on axioms: [propext, Quot.sound]
+'APFree.SzekeresHead.mx_16' depends on axioms: [propext, Quot.sound]
+'APFree.SzekeresHead.head16_max_mem' depends on axioms: [propext, Quot.sound]
+
+## Principia.APFree.WindowSeparationM45  (3)
+'APFree.WindowSeparationM45.sep_M4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowSeparationM45.sep_M5' depends on axioms: [propext, Classical.choice, Quot.sound]
+'APFree.WindowSeparationM45.step_M4_apfree' depends on axioms: [propext, Classical.choice, Quot.sound]

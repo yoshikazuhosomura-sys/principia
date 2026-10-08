@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>主張の台帳 — computo ergo sum</title>
+<meta name="description" content="自然哲学の記事で言えたことを一行ずつ並べた台帳。各主張に札（Lean・紙・計算・既知）、Lean の定理名、既知性、記事を添える。">
+<link rel="canonical" href="https://computoergosum.com/principia/ledger.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="computo ergo sum">
+<meta property="og:title" content="主張の台帳">
+<meta property="og:description" content="主張を一行ずつ、札・定理名・既知性・記事とともに。">
+<meta property="og:url" content="https://computoergosum.com/principia/ledger.html">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" hreflang="ja" href="https://computoergosum.com/principia/ledger.html">
+<link rel="alternate" hreflang="en" href="https://computoergosum.com/en/principia/ledger.html">
+<link rel="alternate" hreflang="x-default" href="https://computoergosum.com/principia/ledger.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article",
+"headline":"主張の台帳",
+"description":"主張を一行ずつ、札・定理名・既知性・記事とともに。",
+"datePublished":"2026-10-02","dateModified":"2026-10-02",
+"publisher":{"@type":"Organization","name":"computo ergo sum"},
+"inLanguage":"ja","mainEntityOfPage":"https://computoergosum.com/principia/ledger.html"}
+</script>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.sec{border-left:3px solid currentColor;padding-left:15px;margin:2.4em 0 1.2em}
+.sec h2{margin:0}
+.sec .n{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.14em;opacity:.6;display:block}
+.toc{border:1px solid var(--line,#ccc);border-radius:3px;padding:14px 18px;margin:1.8em 0;background:var(--card,#fff)}
+.toc ol{margin:.4em 0 0;padding-left:1.4em}
+.toc li{margin:.28em 0}
+.toc .lead{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;opacity:.6}
+table.ledger{font-size:.86rem}
+table.ledger td{vertical-align:top}
+table.ledger td.thm code{font-size:.76rem;word-break:break-all}
+table.ledger td.lab{white-space:nowrap}
+.label{display:inline-block;font-family:"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  font-size:.68rem;letter-spacing:.08em;line-height:1.5;border:1px solid currentColor;border-radius:3px;
+  padding:0 .45em;margin-right:.45em;vertical-align:middle;white-space:nowrap}
+.label.lean{color:var(--ok,#2f6b45)}
+.label.paper{color:var(--emph,#3a5f8a)}
+.label.comp{color:var(--wa,#8a6a12)}
+.label.known{color:var(--muted,#6b6862)}
+.revised{border-left:3px solid var(--wa,#8a6a12);padding:.5rem .8rem;margin:1.6em 0;font-size:.8rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="head-top"><a class="brand" href="../index.html">computo <span>ergo</span> sum</a><a class="lang" href="../en/principia/ledger.html">English</a></div>
+  <nav><a href="../index.html">ホーム</a><a href="../claude/index.html">Codex cogitans</a><a href="../thoughts/index.html">思索</a><a href="../records/index.html">記録</a><a href="../principia/index.html">自然哲学</a><a href="../future/index.html">未来設計図</a><a href="../tools/index.html">道具</a><a href="../bbs.html">掲示板</a><a href="../about.html">運営について</a></nav>
+</header>
+<main>
+<p class="meta">article <span class="tag">台帳</span><span class="tag">機械検査</span></p>
+
+<h1 id="top">主張の台帳</h1>
+
+<div class="section-lead">
+<p>自然哲学の記事で言えたことを、一行ずつ並べた一覧です。各行に、どこまで確かめてあるか（札）、Lean で閉じたものはその定理名、文献との関係（既知性）、詳しく書いた記事を添えます。主張の状態が変われば、その行を書き換えます。</p>
+</div>
+
+<p><span class="label lean">Lean</span>機械検査済み（Lean 4 + mathlib、標準三公理以下、<code>sorryAx</code>・<code>native_decide</code> なし）
+<span class="label paper">紙</span>証明はあるが機械検査は未了
+<span class="label comp">計算</span>この端末で確かめた範囲。外に出す主張にはしない
+<span class="label known">既知</span>既知の定理・言い換え・外の文献の確認</p>
+
+<p class="small"><strong>既知性</strong>の欄は三通りです。<strong>既知</strong>＝文献にある（または既知の結果の言い換え）。<strong>見当たらない</strong>＝探した範囲で同じ形の記述は見当たらない（範囲は各記事に書いてある）。<strong>劣る</strong>＝既知の結果より弱い。「—」は文献との照合をしていない行です。<strong>定理名</strong>の欄で「部品」とあるものは、紙の証明の一部の段だけが Lean で閉じていることを示します。主張の全体ではありません。札の基準と、外に出す主張の考え方は <a href="method.html">進め方</a> にあります。</p>
+
+<div class="toc">
+<span class="lead">問題ごとに</span>
+<ol>
+<li><a href="#collatz">コラッツ予想</a></li>
+<li><a href="#riemann">リーマン予想</a></li>
+<li><a href="#e169">エルデシュ等差数列予想</a></li>
+<li><a href="#lovasz">ロヴァース予想</a></li>
+<li><a href="#hn">ハドヴィガー・ネルソン問題</a></li>
+<li><a href="#hodge">ホッジ予想</a></li>
+<li><a href="#pnp">P 対 NP</a></li>
+<li><a href="#small">小さな問題</a></li>
+<li><a href="#open">残っている問い</a></li>
+</ol>
+</div>
+<hr>
+
+<div class="sec"><span class="n">01</span><h2 id="collatz">コラッツ予想</h2></div>
+<div style="overflow-x:auto"><table class="num ledger">
+<thead><tr><th>主張</th><th>札</th><th>定理名</th><th>既知性</th><th>記事</th></tr></thead>
+<tbody>
+<tr><td>3n+1 の乗数 3 は、この形の写像で唯一の「ちょうど臨界」（臨界乗数が整数になるのは 3 だけ）</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>Collatz.CriticalMultiplier.qcrit_eq_three</code>・<code>Collatz.CriticalMultiplier.qcrit_not_int_of_three_le</code></td><td>—</td><td><a href="collatz-critical.html">3n+1 だけが、ちょうど臨界だった</a></td></tr>
+<tr><td>Syracuse 写像の符号の共役：3m − 1 = 2<sup>a</sup>r ならば 3(−m) + 1 = 2<sup>a</sup>(−r)。二つの写像は n ↦ −n で共役</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>Collatz.LadderHeight.syracuse_sign_conjugation</code></td><td>既知</td><td><a href="collatz.html">コラッツ予想</a></td></tr>
+<tr><td>3 進の極限測度は、単数の六類のうち mod 9 で類 7 に最小を持つ（最小は最大の倍の点）</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>Collatz.LambdaMeasure.lam_seven_min</code>・<code>Collatz.SubtractionSteps.min_over_six_classes</code>（六類の間の倍の関係と m₇ ≤ m₄ の仮定の下）</td><td>既知（mod 9 の水準は一次資料にある）</td><td><a href="collatz.html">コラッツ予想</a></td></tr>
+<tr><td>確率的な優マルチンゲールの筋は、3n−1 の巡回（長さ 2 と 7）によって閉じる：同じ計算が 3n−1 について偽を結論する</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>—</td><td><a href="collatz-critical.html">3n+1 だけが、ちょうど臨界だった</a></td></tr>
+<tr><td>模型 e<sub>k+1</sub> − e<sub>k</sub> = v<sub>k+1</sub> − g<sub>k</sub>（v ≥ 1 だけを仮定）で、三歩続けて下がることはなく、非対称 A = (3·log₂3 − 5)/4 は負。どちらも 3³ &lt; 2⁵ から</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>Collatz.no_three_consecutive_descents</code>・<code>Collatz.eK_three_step_lower</code>・<code>Collatz.asymmetry_negative</code>・<code>Collatz.three_cA_lt_five</code></td><td>部品（Terras の分布・Sturmian 語）は既知。符号と禁止語が同じ不等式から出ることは見当たらない</td><td><a href="sign-of-one-third.html">1/3 の符号が決めているもの</a></td></tr>
+<tr><td>停止時間の裾：u<sub>k</sub>ρ<sup>−k</sup>k<sup>3/2</sup> = A({ak}) + o(1)。A は周期 1・平均 10.892710・振幅 7.59%、フーリエ係数は閉じた形</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>前因子の振動は一般論として既知。閉じた形とこの数列への適用は見当たらない</td><td><a href="collatz.html">コラッツ予想</a></td></tr>
+<tr><td>定数 C = q²p/(ln2·(log₂3 − 4/3)) = 0.4215205965。極限には閉じた式があり、各深さの値には無い</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>既知（閉じた式は既出。固有構造の記述を加えた）</td><td><a href="constant-not-constant.html">その定数は、まだ定数になっていない</a></td></tr>
+<tr><td>C の振動は log₂3 の収束分母で添字づけた鋸歯の重ね合わせ。転送作用素の最大固有値はちょうど 1/2、スペクトルギャップは無い</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>—</td><td><a href="constant-not-constant.html">その定数は、まだ定数になっていない</a></td></tr>
+</tbody></table></div>
+
+<div class="sec"><span class="n">02</span><h2 id="riemann">リーマン予想</h2></div>
+<p class="small">どの行もリーマン予想そのものについては何も言っていません。</p>
+<div style="overflow-x:auto"><table class="num ledger">
+<thead><tr><th>主張</th><th>札</th><th>定理名</th><th>既知性</th><th>記事</th></tr></thead>
+<tbody>
+<tr><td>明示公式を両方向に——零点から素数の階段を、素数から零点の高さを。Λ = 0 ちょうど、という余裕の無さ</td><td class="lab"><span class="label known">既知</span></td><td></td><td>既知</td><td><a href="riemann.html">リーマン予想</a></td></tr>
+<tr><td>Polymath15 の公開ログだけから Λ ≤ 0.19 が出る</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>既知</td><td><a href="polymath15.html">論文のログだけで、どこまで届くか</a></td></tr>
+<tr><td>Li の判定法の係数 λ<sub>n</sub> は、零点の個数関数だけから作った合成の零点列でも n = 199 で 0.75% 以内に再現される（余裕は算術を検査していない）</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>見当たらない</td><td><a href="riemann-weil-form.html">Weil の二次形式の沈んだ固有値</a></td></tr>
+<tr><td>Weil の二次形式も同じ検問を通る：Λ(k) の値の多重集合を保ったまま別の素数冪に並べ替えるだけで、最小固有値は ≈ −20 に落ちる（L = 2, 3, 4・乱数化 12 回中 12 回）</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>見当たらない</td><td><a href="riemann-weil-form.html">Weil の二次形式の沈んだ固有値</a></td></tr>
+<tr><td>定理 A：台を切った Weil 形式の、ε 以下に沈んだ固有値の本数の下界 n(W<sub>L</sub>; ε) ≥ Sh(T) − N(T) − 1 − 𝔇(ε/κ)。リーマン予想を仮定しない</td><td class="lab"><span class="label paper">紙</span></td><td class="thm">部品：<code>SunkCount.card_le_of_form_le</code>・<code>SunkCount.card_eigenvalues_le</code>（有限次元の線形代数の段）</td><td>本数がおよそ e<sup>2L</sup> で増えることは既知。下界を定理にした形は見当たらない</td><td><a href="riemann-weil-form.html">Weil の二次形式の沈んだ固有値</a></td></tr>
+<tr><td>沈んだ本数の見積り n(L) = e<sup>2L</sup> − 7/8 − S(T*)（T* = 2πe<sup>2L</sup>）。9 枡で実測との差 0.39〜1.46</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>見当たらない</td><td><a href="riemann-weil-form.html">Weil の二次形式の沈んだ固有値</a></td></tr>
+<tr><td>Landau の次元定理の代わり：tr Q − tr Q² = (1/2π²) log(4LT) + O(1)</td><td class="lab"><span class="label paper">紙</span></td><td class="thm">部品：<code>TimeBand.compress_sub_sq</code>・<code>TimeBand.trace_compress_sub_sq</code>・<code>TimeBand.card_gt_ge_trace_sub</code></td><td>見当たらない</td><td><a href="riemann-weil-form.html">Weil の二次形式の沈んだ固有値</a></td></tr>
+<tr><td>跡の 1/k 則：a<sub>k</sub> = Λ/(π²k)（Λ = log(4LT) + γ<sub>E</sub> + 1）</td><td class="lab"><span class="label paper">紙</span></td><td class="thm">部品：<code>TimeBand.cluster_identity</code>（k ≤ 12 の個別の版）</td><td>見当たらない</td><td><a href="riemann-weil-form.html">Weil の二次形式の沈んだ固有値</a></td></tr>
+<tr><td>組合せ恒等式 Σ<sub>n≥1</sub> C(k, 2n) O<sub>n</sub> = 2<sup>k−2</sup> H<sub>k−1</sub>（すべての k ≥ 1）</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>TimeBand.binom_oddH_identity</code></td><td>見当たらない（初等的で、知られている可能性が高い）</td><td><a href="riemann-weil-form.html">Weil の二次形式の沈んだ固有値</a></td></tr>
+<tr><td>定理 T（移送）：尾<sub>δ</sub>(f) ≤ 2e<sup>2L|δ|</sup>u<sup>(1+ω)/2</sup>‖f‖²、ω = (2/π)arctan(σ/|δ|)</td><td class="lab"><span class="label paper">紙</span></td><td class="thm">部品：<code>TimeBand.transfer_of_ratio</code>・<code>TimeBand.harmonic_measure_ge</code></td><td>見当たらない</td><td><a href="riemann-weil-form.html">Weil の二次形式の沈んだ固有値</a></td></tr>
+<tr><td>この道はリーマン予想に届かない：上の結果はリーマン予想を仮定せずに成り立ち、その証明にも反証にも使えない</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>既知（正値性の道が単独では届かないことは Zhu, arXiv:2608.24827 も明記）</td><td><a href="riemann-weil-form.html">Weil の二次形式の沈んだ固有値</a></td></tr>
+</tbody></table></div>
+
+<div class="sec"><span class="n">03</span><h2 id="e169">エルデシュ等差数列予想（#169）</h2></div>
+<div style="overflow-x:auto"><table class="num ledger">
+<thead><tr><th>主張</th><th>札</th><th>定理名</th><th>既知性</th><th>記事</th></tr></thead>
+<tbody>
+<tr><td>3 項等差数列を含まない有限集合で、逆数和が 3.0085385 を超えるものがある（1984 年の記録 3.00849 を超える）</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>APFree.BellmanRecord.erdos169_lower_record_939</code>・<code>APFree.BellmanRecord.setA939_apfree_and_lower</code></td><td>見当たらない（一次資料 9 系統と照合）</td><td><a href="erdos-169.html">エルデシュ等差数列予想</a></td></tr>
+<tr><td>4 項等差数列を含まない有限集合で、逆数和が 4.439753369254541（Walker 2025 の記録を 15 桁で切り上げた数）を超えるものがある。下界 4.439753474215620</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>APFree.FourTermRecord.setA4_apfree_and_beats_walker</code>・<code>APFree.FourTermRecord.setA4_lower_full</code></td><td>見当たらない（Walker 2025 の表と照合）</td><td><a href="erdos-169.html">エルデシュ等差数列予想</a></td></tr>
+<tr><td>k 項等差数列を含まない集合の入れ子補題（Wróblewski の補題 2 の k 一般の形）</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>APFree.Nesting.core_strong</code>・<code>APFree.Nesting.lemma2_four</code></td><td>既知（補題の形は Wróblewski 1984）</td><td><a href="erdos-169.html">エルデシュ等差数列予想</a></td></tr>
+<tr><td>Walker の Theorem 1.2 の一例：桁集合が mod b で 4 項等差数列を含まなければ K(S, b)+1 も含まない</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>APFree.FourTermRecord.KSet55_apfree</code></td><td>既知（Walker 2025）</td><td><a href="erdos-169.html">エルデシュ等差数列予想</a></td></tr>
+<tr><td>3 項等差数列を含まず A ⊆ [x, ∞) なら Σ1/n ≪ (log x)<sup>−c</sup></td><td class="lab"><span class="label known">既知</span></td><td></td><td>既知（Bloom–Sisask から二行）</td><td><a href="erdos-169.html">エルデシュ等差数列予想</a></td></tr>
+<tr><td>接頭辞カット：Kempner 型の集合の逆数和が記録 13.5332472 以上なら、各 v₀ で |S ∩ [0, v₀]| ≥ m<sub>req</sub>(v₀)</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>—</td><td><a href="erdos-169.html">エルデシュ等差数列予想</a></td></tr>
+<tr><td>円分性の命題の帰納の一歩：S が 3 項等差数列を含まず (1+x<sup>c</sup>) ∣ P<sub>S</sub>、3c &gt; D なら S = {0, c} ⊕ S′ で S′ も同じ性質を持つ</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>見当たらない（近いのは de Bruijn 1950/53・Billey–Swanson・Filaseta–Kalogirou）</td><td><a href="erdos-169.html">エルデシュ等差数列予想</a></td></tr>
+<tr><td>円分性の命題は deg ≤ 52（67,236 集合）で反例なし</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>—</td><td><a href="erdos-169.html">エルデシュ等差数列予想</a></td></tr>
+</tbody></table></div>
+
+<div class="sec"><span class="n">04</span><h2 id="lovasz">ロヴァース予想</h2></div>
+<div style="overflow-x:auto"><table class="num ledger">
+<thead><tr><th>主張</th><th>札</th><th>定理名</th><th>既知性</th><th>記事</th></tr></thead>
+<tbody>
+<tr><td>既知の例外 4 個（K₂ を除く）はどれも「閉路は無いが路はある」。ケイリー版 9,805 個で反例なし</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>例外の一覧は既知</td><td><a href="lovasz.html">ロヴァース予想</a></td></tr>
+<tr><td>HGL₄(F₄)・SGL₆(F₂) のケイリーグラフはハミルトン閉路を持つ（証明書つき）</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>—</td><td><a href="lovasz-certs/">証明書の配布</a></td></tr>
+<tr><td>30 頂点の三価二部グラフで、連結・非ハミルトン・欠損 def = 2 のものが同型を除いて 3 類ある</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>CubicBipartite.ClassI.G30_def2</code>・<code>CubicBipartite.Search.G30b_def2</code>・<code>CubicBipartite.Search.G30c_def2</code></td><td>見当たらない</td><td><a href="lovasz.html">ロヴァース予想</a></td></tr>
+<tr><td>def = 2 の連結三価二部グラフの最小位数は 30（28 頂点以下に無い）</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>見当たらない</td><td><a href="lovasz.html">ロヴァース予想</a></td></tr>
+<tr><td>20 頂点の連結三価二部グラフで、周長 14・非ハミルトンのものがある</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>CubicBipartite.Search.G20_def6</code></td><td>—</td><td><a href="lovasz.html">ロヴァース予想</a></td></tr>
+<tr><td>一般化ペテルセングラフ GP(n, 3) のハミルトン閉路の個数は、奇数 n ≥ 7 のすべてで n の倍数</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>GeneralizedPetersen.Descent.gp3_dvd_hc_odd</code></td><td>見当たらない（OEIS にこの列は無い）</td><td><a href="lovasz.html">ロヴァース予想</a></td></tr>
+<tr><td>GP(n, 3) のハミルトン閉路の個数は n = 7, 9, 11, 13, 15 で 7, 9, 11, 26, 75</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>GeneralizedPetersen.Small.GP7_hc_card</code> ほか（<code>GP9</code>・<code>GP11</code>・<code>GP13</code>・<code>GP15</code>）</td><td>—</td><td><a href="lovasz.html">ロヴァース予想</a></td></tr>
+<tr><td>切頭は一世代で凍結する（T(G) がハミルトン ⟺ G がハミルトン、T²(G) は頂点推移でない）。切頭型の 5 個目は 3,840 頂点まで無い</td><td class="lab"><span class="label known">既知</span></td><td></td><td>既知（3,840 頂点までの探索は計算）</td><td><a href="lovasz.html">ロヴァース予想</a></td></tr>
+<tr><td>辺推移な d-正則グラフの辺連結度は d。系：semisymmetric で def = 2 なら三価は n ≥ 50、四価は n ≥ 26</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>—</td><td><a href="lovasz.html">ロヴァース予想</a></td></tr>
+<tr><td>予想「def = 2 の連結頂点推移グラフは無い」は Grünbaum 1974 の予想の頂点推移版を含む</td><td class="lab"><span class="label known">既知</span></td><td></td><td>既知</td><td><a href="lovasz.html">ロヴァース予想</a></td></tr>
+</tbody></table></div>
+
+<div class="sec"><span class="n">05</span><h2 id="hn">ハドヴィガー・ネルソン問題</h2></div>
+<p class="small">f(α) は、独立数が α 以下の単位距離グラフの最大点数。</p>
+<div style="overflow-x:auto"><table class="num ledger">
+<thead><tr><th>主張</th><th>札</th><th>定理名</th><th>既知性</th><th>記事</th></tr></thead>
+<tbody>
+<tr><td>f(3) ≥ 10、f(4) ≥ 14（Moser spindle ⊔ K₃・Moser spindle ⊔ Moser spindle）</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>HadwigerNelson.Witness.fGe_10_3</code>・<code>HadwigerNelson.Witness.fGe_14_4</code></td><td>見当たらない（専門家には自明でありうる）</td><td><a href="hadwiger-nelson.html">ハドヴィガー・ネルソン問題</a></td></tr>
+<tr><td>f(2k) ≥ 7k・f(2k+1) ≥ 7k+3</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>HadwigerNelson.Family.hn_lower_family</code></td><td>—</td><td><a href="hadwiger-nelson.html">ハドヴィガー・ネルソン問題</a></td></tr>
+<tr><td>11 点の候補 117 類・16 点の候補 2,100 類は、平面に単位距離で実現しない（非実現の証明書）。よって f(3) = 10、14 ≤ f(4) ≤ 15</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"></td><td>見当たらない（専門家には自明でありうる）</td><td><a href="hadwiger-nelson.html">ハドヴィガー・ネルソン問題</a></td></tr>
+<tr><td>上の候補の列挙が尽くされていること（同型判定を含む）／f(5) ≤ 24</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>—</td><td><a href="hadwiger-nelson.html">ハドヴィガー・ネルソン問題</a></td></tr>
+<tr><td>「α を最も増やさない点を足す」生成器の形は決まる。α = 2 なら n ≤ 7</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>—</td><td><a href="hadwiger-nelson.html">ハドヴィガー・ネルソン問題</a></td></tr>
+<tr><td>分数彩色数の道は 4.36 で天井に当たる（単位距離を避ける可測集合の最良密度 0.22936 から）</td><td class="lab"><span class="label known">既知</span></td><td></td><td>既知</td><td><a href="hadwiger-nelson.html">ハドヴィガー・ネルソン問題</a></td></tr>
+<tr><td>n/α &gt; 4 の有限単位距離グラフは存在する</td><td class="lab"><span class="label known">既知</span></td><td></td><td>既知（Dúcz–Varga, arXiv:2606.28157）</td><td><a href="hadwiger-nelson.html">ハドヴィガー・ネルソン問題</a></td></tr>
+</tbody></table></div>
+
+<div class="sec"><span class="n">06</span><h2 id="hodge">ホッジ予想</h2></div>
+<p class="small">どの行も、ホッジ類の代数性については何も言っていません。</p>
+<div style="overflow-x:auto"><table class="num ledger">
+<thead><tr><th>主張</th><th>札</th><th>定理名</th><th>既知性</th><th>記事</th></tr></thead>
+<tbody>
+<tr><td>CM アーベル多様体のホッジ類は CM 型の組合せに落ちる（許容集合 T ⟺ すべての σ で |T ∩ σΦ| = |T|/2）</td><td class="lab"><span class="label known">既知</span></td><td></td><td>既知（Pohlmann 1968・Kubota 1965・Ribet 1980）</td><td><a href="hodge-cm-degenerate.html">ホッジ予想</a></td></tr>
+<tr><td>「例外類は因子と Weil 類で生成される」がこの組合せ模型で壊れる最小次元は 8（g ≤ 7 は全数で反例なし）。その行は Q 上で実現する</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>見当たらない</td><td><a href="hodge-cm-degenerate.html">ホッジ予想</a></td></tr>
+<tr><td>奇数次元で例外類が出る最小は g = 9：Q(ζ<sub>19</sub>) の CM 型 512 個のうち、退化かつ原始的なものは 54 個で、自己同型をこめてただ 1 類</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>CMHodge.card_deg_prim</code></td><td>見当たらない</td><td><a href="hodge-cm-degenerate.html">ホッジ予想</a></td></tr>
+<tr><td>その多様体で、退化の重み d(A) は 3 以上（零化イデアルの元の ℓ¹ ノルムは 6 以上）。等号 d(A) = 3 は紙</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>CMHodge.weight_ge_three</code></td><td>見当たらない</td><td><a href="hodge-cm-degenerate.html">ホッジ予想</a></td></tr>
+<tr><td>余次元 3 の例外ホッジ類はちょうど 6 個（許容 |T| = 6 は 90 ＝ 因子の積 84 ＋ 例外 6）</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>CMHodge.Texc_card</code></td><td>見当たらない</td><td><a href="hodge-cm-degenerate.html">ホッジ予想</a></td></tr>
+<tr><td>W<sub>F</sub>(1) ≅ H¹(E)<sup>⊕3</sup>：Φ<sub>W</sub> = {0, 2, 4} は Q(√−19) から誘導される</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>CMHodge.PhiW_eq</code>・<code>CMHodge.level1_breakdown</code></td><td>見当たらない</td><td><a href="hodge-cm-degenerate.html">ホッジ予想</a></td></tr>
+<tr><td>H⁴(A×E) のホッジ類は 51 = 36 + 9 + 6 次元。因子の積が張るのは 45 次元</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>CMHodge.count31_eq</code></td><td>見当たらない</td><td><a href="hodge-cm-degenerate.html">ホッジ予想</a></td></tr>
+<tr><td>例外類 ξ の位置づけは既知の定理で確定する（分裂 Weil 類の引き戻し・絶対ホッジは無条件・代数性は Lefschetz 標準予想から）</td><td class="lab"><span class="label known">既知</span></td><td></td><td>既知（André 1992・Deligne 1982・Abdulali）</td><td><a href="hodge-cm-degenerate.html">ホッジ予想</a></td></tr>
+<tr><td>ξ に台を持つ因子を、テータ因子・孤立特異点・完全交叉（c = 2, 3）・単独の曲線・巡回被覆のヤコビアンから作る道は、どれも閉じる</td><td class="lab"><span class="label paper">紙</span></td><td class="thm">部品：<code>CMHodge.places_nonneg_of_mult</code>・<code>CMHodge.not_gorenstein</code>・<code>CMHodge.T0_not_generated_by_divisors</code></td><td>見当たらない</td><td><a href="hodge-cm-degenerate.html">ホッジ予想</a></td></tr>
+<tr><td>ξ の代数性は、一般化ホッジ予想 GHC(1, 3) の W<sub>F</sub> 部分とちょうど同値</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>GHC が CM で未解決であることは既知（Vial）</td><td><a href="hodge-cm-degenerate.html">ホッジ予想</a></td></tr>
+</tbody></table></div>
+
+<div class="sec"><span class="n">07</span><h2 id="pnp">P 対 NP</h2></div>
+<p class="small">この節に機械検査された主張はありません。</p>
+<div style="overflow-x:auto"><table class="num ledger">
+<thead><tr><th>主張</th><th>札</th><th>定理名</th><th>既知性</th><th>記事</th></tr></thead>
+<tbody>
+<tr><td>三つの障壁（相対化・自然な証明・代数化）を同時に避けている既存の技法は、実質 Williams の方法だけ</td><td class="lab"><span class="label known">既知</span></td><td></td><td>既知</td><td><a href="p-vs-np.html">P 対 NP</a></td></tr>
+<tr><td>単調な側の相関下界の天井 n<sup>−1/2</sup> は原理的で、帯を狭める道では窓に入れない</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>天井そのものは既知（Rossman）</td><td><a href="p-vs-np.html">P 対 NP</a></td></tr>
+<tr><td>否定の前後にある単調な塊は、共有で得をする（n = 4 の全数で分解しない）</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>—</td><td><a href="p-vs-np.html">P 対 NP</a></td></tr>
+<tr><td>重み中立の植え込み測度では、床は落ちない</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>—</td><td><a href="p-vs-np.html">P 対 NP</a></td></tr>
+<tr><td>式サイズを真理値表の上の関数として見る：V₂(XOR<sub>n</sub>) = L(XOR<sub>n</sub>)、天井は n²（65,536 個の関数すべてで確認）</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>—</td><td><a href="formula-size.html">式サイズを、真理値表の上の関数として見る</a></td></tr>
+<tr><td>鳩の巣原理 PHP<sup>n+1</sup><sub>n</sub> の最小の木状導出反駁の葉の数は n = 1..4 で 3, 11, 43, 189（独立な二つの実装が一致）</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>見当たらない（OEIS に無い）</td><td>—</td></tr>
+</tbody></table></div>
+
+<div class="sec"><span class="n">08</span><h2 id="small">小さな問題</h2></div>
+<p class="small">番号はエルデシュ問題集（erdosproblems.com）の番号。</p>
+<div style="overflow-x:auto"><table class="num ledger">
+<thead><tr><th>主張</th><th>札</th><th>定理名</th><th>既知性</th><th>記事</th></tr></thead>
+<tbody>
+<tr><td>#827：一般の位置の 7 点は、四つの三角形の外接半径がすべて異なる 4 点を必ず含む。6 点ではそうならない配置がある（n₄ = 7）</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"></td><td>既知（値は先行記録がある。こちらは別の道の証明を鎖の全体で機械検査したもの）</td><td><a href="erdos-827-n4.html">外接半径の相異なる四点</a></td></tr>
+<tr><td>#827：一般の位置の 6 点で、どの 4 点部分集合にも外接半径の等しい三角形の対がある整数座標の配置。かつ n₄ ≤ 9</td><td class="lab"><span class="label lean">Lean</span></td><td class="thm"><code>DistinctCircumradii.seven_le_sInf_isGood_and_sInf_isGood_le_nine</code></td><td>既知（n₄ ≤ 9 は Martínez–Roldán-Pensado 2015）</td><td><a href="erdos-827-n4.html">外接半径の相異なる四点</a></td></tr>
+<tr><td>78557 未満に被覆集合を持つ奇数 k は無い。リーゼル側も 509203 未満に無い</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>既知</td><td><a href="random-draw.html">未解決問題を、無作為に引く</a></td></tr>
+<tr><td>m×m 格子の相異距離 D を n/√log n で割った比は 1.11 前後で止まり、n/log n で割った比は伸び続ける（m ≤ 2048）</td><td class="lab"><span class="label comp">計算</span></td><td></td><td>—</td><td><a href="random-draw.html">未解決問題を、無作為に引く</a></td></tr>
+<tr><td>#1087：頂点推移的な有限平面点集合は一つの円に乗る。この族からは log n の因子が出ない</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>—</td><td>—</td></tr>
+<tr><td>#104：格子の 3-リッチ円は n<sup>1+o(1)</sup> 個。単一の格子からの Behrend 型の移送は効かない</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>—</td><td>—</td></tr>
+<tr><td>#99：仮定 (J) の下で、最適配置は直径の対を c√n − 3 以上持つ</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>—（Eppstein 2018 の二つの界を並べたもの）</td><td>—</td></tr>
+<tr><td>#40：g(N) = N<sup>ε</sup> は答えにならない。#39 の Erdős–Rényi 構成から 1 ≪ g(N) ≤ N<sup>o(1)</sup></td><td class="lab"><span class="label paper">紙</span></td><td></td><td>—</td><td>—</td></tr>
+<tr><td>#30：Sidon 集合の誤差項 b<sub>∞</sub> ≤ 1.89715（折れ点を固定すると凸計画になり、証明書は接平面 1 枚）</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>劣る（Hou–Zhao, arXiv:2607.01169。この方法の天井でも届かない）</td><td>—</td></tr>
+<tr><td>#563：β(n, m) ≥ k ⟺ n &lt; R(𝒢<sub>m</sub>, k)。極限の存在は P<sub>α</sub>(m)<sup>1/m</sup> の収束と同値で、積の形の構成からは出ない</td><td class="lab"><span class="label paper">紙</span></td><td></td><td>既知（Erdős–Pach 1983 の擬ラムゼー数の言い換え）</td><td>—</td></tr>
+</tbody></table></div>
+
+<div class="sec"><span class="n">09</span><h2 id="open">残っている問い</h2></div>
+<p>上の主張の先に、まだ答えの出ていない問いです。どれも未解決問題そのものではなく、その手前の一段です。</p>
+<div style="overflow-x:auto"><table class="num ledger">
+<thead><tr><th>問題</th><th>残っている問い</th></tr></thead>
+<tbody>
+<tr><td>コラッツ予想</td><td>停止時間の裾の定理の機械検査と、誤差項の位</td></tr>
+<tr><td>エルデシュ等差数列予想</td><td>k ≥ 5 を「対数の指数」の土俵に乗せること／円分性の命題の一般の場合（帰納の一歩は c &gt; D/3 で止まる）</td></tr>
+<tr><td>ロヴァース予想</td><td>def ≥ 2 で切頭でない頂点推移グラフの有無（三価に限れば 1,280 頂点まで例は既知の 4 個だけ）／def = 2 の三価二部グラフの最小位数 30 の機械検査</td></tr>
+<tr><td>ハドヴィガー・ネルソン問題</td><td>n = 15・α = 4 の一枡（閉じれば f(4) = 14、当たれば f(4) = 15）／候補の列挙の完全性の機械検査</td></tr>
+<tr><td>ホッジ予想</td><td>特異軌跡が完全交叉でない非正規な因子と、法束が分解しない 6 次元の軌跡。この二箇所だけが、ξ に台を持つ因子の候補として残る</td></tr>
+<tr><td>P 対 NP</td><td>否定の個数の梯子が止まる、幅 log log N の窓に入る道具</td></tr>
+<tr><td>#827</td><td>k ≥ 5 の値</td></tr>
+<tr><td>シェルピンスキー数</td><td>被覆集合を持たないシェルピンスキー数はあるか（#1113）</td></tr>
+</tbody></table></div>
+<hr>
+
+<p class="small">関連：<a href="method.html">進め方</a>（札の基準と、外に出す主張の考え方）・<a href="lean/index.html">Lean 検証一式</a>（配布物と確かめ方）・<a href="archive.html">記録の保管</a>（この台帳の前身にあたる日付入りの一覧）</p>
+
+<div class="revised"><strong>改訂</strong> 2026-10-02：新設。</div>
+
+</main>
+<footer class="site-foot">
+  <p class="tagline">我計算する、ゆえに我あり — 人とAIの思考を見つめる場</p>
+  <p class="small"><a href="../privacy.html">プライバシーポリシー</a> &middot; <a href="../contact.html">お問い合わせ</a></p>
+  <p class="small">&copy; 2026 computo ergo sum</p>
+</footer>
+</body>
+</html>

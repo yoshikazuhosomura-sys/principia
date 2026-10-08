@@ -1,0 +1,373 @@
+%% Typeset with:  latexmk -pdf paper.tex
+%% Needs: amsmath amsthm amssymb hyperref longtable array booktabs-free
+\documentclass[11pt,a4paper]{article}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}   %% scalable T1 fonts
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=28mm]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{array,longtable}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage[english]{babel}
+
+%% ---- symbols used by the unicode declarations below ----------------------
+\newcommand{\txtsym}[1]{\ifmmode\text{#1}\else#1\fi}
+%% Tate--Shafarevich symbol: the cyrillic font if the distribution has it,
+%% otherwise the roman abbreviation.  Nothing else depends on this package.
+\IfFileExists{cyrillic.sty}{%
+  \usepackage{cyrillic}%
+  \providecommand{\Sha}{\text{\usefont{OT2}{wncyr}{m}{n}Sh}}}{%
+  \providecommand{\Sha}{\mathrm{Sha}}}
+%% every non-ASCII character of the source, declared once:
+\DeclareUnicodeCharacter{00A7}{\txtsym{\S}}
+\DeclareUnicodeCharacter{00AC}{\ensuremath{\neg}}
+\DeclareUnicodeCharacter{00B5}{\ensuremath{\mu}}
+\DeclareUnicodeCharacter{00B7}{\ensuremath{\cdot}}
+\DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+\DeclareUnicodeCharacter{00E4}{\txtsym{\"a}}
+\DeclareUnicodeCharacter{00FC}{\txtsym{\"u}}
+\DeclareUnicodeCharacter{010D}{\txtsym{\v c}}
+\DeclareUnicodeCharacter{0161}{\txtsym{\v s}}
+\DeclareUnicodeCharacter{0393}{\ensuremath{\Gamma}}
+\DeclareUnicodeCharacter{0394}{\ensuremath{\Delta}}
+\DeclareUnicodeCharacter{2013}{\txtsym{\textendash}}
+\DeclareUnicodeCharacter{2014}{\txtsym{\textemdash}}
+\DeclareUnicodeCharacter{2026}{\ensuremath{\dots}}
+\DeclareUnicodeCharacter{2076}{\ensuremath{{}^6}}
+\DeclareUnicodeCharacter{2081}{\ensuremath{{}_1}}
+\DeclareUnicodeCharacter{2082}{\ensuremath{{}_2}}
+\DeclareUnicodeCharacter{2083}{\ensuremath{{}_3}}
+\DeclareUnicodeCharacter{2085}{\ensuremath{{}_5}}
+\DeclareUnicodeCharacter{2088}{\ensuremath{{}_8}}
+\DeclareUnicodeCharacter{2115}{\ensuremath{\mathbb{N}}}
+\DeclareUnicodeCharacter{2124}{\ensuremath{\mathbb{Z}}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\to}}
+\DeclareUnicodeCharacter{2200}{\ensuremath{\forall}}
+\DeclareUnicodeCharacter{2203}{\ensuremath{\exists}}
+\DeclareUnicodeCharacter{2205}{\ensuremath{\emptyset}}
+\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}
+\DeclareUnicodeCharacter{220E}{\ensuremath{\blacksquare}}
+\DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\DeclareUnicodeCharacter{2216}{\ensuremath{\setminus}}
+\DeclareUnicodeCharacter{2227}{\ensuremath{\wedge}}
+\DeclareUnicodeCharacter{2229}{\ensuremath{\cap}}
+\DeclareUnicodeCharacter{222A}{\ensuremath{\cup}}
+\DeclareUnicodeCharacter{2241}{\ensuremath{\nsim}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\le}}
+\DeclareUnicodeCharacter{2265}{\ensuremath{\ge}}
+\DeclareUnicodeCharacter{2286}{\ensuremath{\subseteq}}
+\DeclareUnicodeCharacter{2294}{\ensuremath{\sqcup}}
+\DeclareUnicodeCharacter{22EF}{\ensuremath{\cdots}}
+
+%% ---- named theorem environments (the labels are those of the draft) ------
+\newtheoremstyle{named}{\topsep}{\topsep}{\itshape}{0pt}{\bfseries}{.}{ }{\thmnote{#3}}
+\theoremstyle{named}
+\newtheorem*{namedthm}{}
+\newenvironment{mdproof}[1][Proof]{\par\medskip\noindent\textit{#1.}\ }{\par\medskip}
+\newlist{leancode}{itemize}{1}
+\setlist[leancode]{label={},leftmargin=1.2em,topsep=.5em,itemsep=.15em,parsep=0pt}
+\setlength{\parskip}{.35em}
+\sloppy
+\hbadness=10000
+\begin{document}
+\title{The smallest cubic bipartite graphs with perimeter gap 2\\[.5em]\large Three connected cubic bipartite graphs on 30 vertices with circumference 28, machine-checked in Lean 4, and an exhaustive search showing that no smaller ones exist}
+\author{Kiichi \and Shiori \and Rin}
+\date{Draft, \textless{}date\textgreater{}. Not submitted. See §10 for the disclosure of AI use and §8 for what is not claimed.}
+\maketitle
+\begin{center}\small wvbks0@gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+
+\section*{Abstract}
+For a graph G let def(G) := \textbar{}V(G)\textbar{} − circ(G), the difference between the order and the circumference (Alspach's \textit{perimeter gap}); def(G) = 0 means that G is Hamiltonian. In a cubic bipartite graph def(G) is even, so def = 2 is the smallest possible failure of Hamiltonicity. We show that the smallest order of a connected cubic bipartite graph with def = 2 is 30. Theorem A exhibits three such graphs on 30 vertices by explicit edge lists; for each, the statement "cubic, 2-colourable, connected, has a cycle of length 28, every cycle has length ≤ 28, not Hamiltonian" is a theorem of Lean 4 with Mathlib (no \texttt{sorry}, no \texttt{native\_\allowbreak{}decide}, standard axioms only), non-Hamiltonicity being established by running the search inside the Lean kernel. Theorem B states that no connected cubic bipartite graph on n ≤ 28 vertices has def = 2; it rests on an exhaustive computer enumeration carried out by two independent routes and is \textbf{not} formalised. The known cubic bipartite graphs with def = 2 (Ellingham–Horton 54, Horton 96) are 3-connected; ours are 2-connected but not 3-connected, have girth 4, and are 24 vertices smaller than Ellingham–Horton 54. Consequences: def = 2 is attained by a cubic bipartite graph of every even order n ≥ 30; a cubic semisymmetric graph with def = 2 has at least 50 vertices; a 4-regular bipartite graph with def = 2 has at least 26. We make no claim of priority beyond the searches recorded in §9.
+
+\textbf{Keywords.} Circumference, perimeter gap, cubic bipartite graph, Hamilton cycle, Tutte's conjecture, Lean 4.
+
+\textbf{MSC 2020.} 05C38, 05C45, 68V20.
+
+\section*{1. Introduction}
+Tutte conjectured that every 3-connected cubic bipartite graph is Hamiltonian [T]. Horton found a counterexample on 96 vertices [BM, H]; Ellingham and Horton gave ones on 78 and 54 vertices [EH], Georges one on 50 [G], and Brinkmann and Zamfirescu [BZ] proved that the Georges–Kelmans graph on 50 vertices is the smallest 3-connected cubic bipartite non-Hamiltonian graph. Without 3-connectivity, Asano, Exoo, Harary and Saito [AEHS] showed that the smallest 2-connected cubic bipartite \textit{planar} non-Hamiltonian graph has 26 vertices and is unique.
+
+A finer measure than Hamiltonicity is the circumference circ(G) and the \textit{perimeter gap} def(G) := \textbar{}V(G)\textbar{} − circ(G), whose growth Alspach asked about in 1981 for vertex-transitive digraphs (see the abstract of [PGD]); Grünbaum's classes Γ(n;k) of graphs with circ = n − k in which every induced subgraph of order n − k is Hamiltonian [GC] are the case in which the gap is realised uniformly. In a bipartite graph every cycle is even and a cubic graph has even order, so \textbf{def(G) is even for every cubic bipartite graph}: def = 1 is impossible and def = 2 is the smallest way in which a cubic bipartite graph can fail to be Hamiltonian. The three classical counterexamples to Tutte's conjecture all have def = 2 (circ = 94, 76, 52 for Horton 96, Ellingham–Horton 78 and 54; verified by SAT in the course of this work). This suggests the question answered here:
+
+\begin{quote}
+\textbf{What is the smallest order of a connected cubic bipartite graph with def = 2?}
+\end{quote}
+The answer is 30. Two different things are established at two different levels of rigour, and we keep them apart throughout: the \textit{existence} of three such graphs on 30 vertices is a Lean 4 theorem (Theorem A, §3), while \textit{non-existence} on n ≤ 28 vertices, and the count of three at n = 30, rest on computer enumeration that is cross-checked by two independent routes but not formalised (Theorem B, §4).
+
+\begin{center}\begin{small}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.539\linewidth}>{\raggedright\arraybackslash}p{0.238\linewidth}>{\raggedright\arraybackslash}p{0.183\linewidth}}
+\hline
+\textbf{Connected cubic bipartite non-Hamiltonian graphs that are …} & \textbf{Minimum order} & \textbf{Source} \\
+\hline
+3-connected & 50 (Georges–Kelmans graph) & [BZ] \\
+2-connected and planar & 26 (unique) & [AEHS] \\
+2-connected (no planarity) & 20 (unique) & §5.4 (computation) \\
+of perimeter gap 2, i.e. circ = n − 2 & \textbf{30 (three graphs)} & \textbf{Theorems A and B} \\
+\hline
+\end{tabular}
+\end{small}\end{center}
+\textit{Table 1. Minimum orders. The entry 20 is a by-product; we did not find it in the literature but have not verified that it is new.}
+
+\section*{2. Notation and elementary facts}
+Graphs are finite and simple; G is \textit{cubic} if every degree is 3 and \textit{bipartite} if V(G) = X ⊔ Y with every edge joining X to Y. circ(G) is the length of a longest cycle and n = \textbar{}V(G)\textbar{}.
+
+\begin{namedthm}[Lemma 2.1 (parity)]
+If G is connected, cubic and bipartite then n is even, \textbar{}X\textbar{} = \textbar{}Y\textbar{} = n/2, every cycle is even, and def(G) is even; so def(G) ≥ 2 if G is not Hamiltonian.
+\end{namedthm}
+\begin{mdproof}[Proof]
+3\textbar{}X\textbar{} = 3\textbar{}Y\textbar{} counts the edges; the rest is immediate. ∎
+\end{mdproof}
+
+\begin{namedthm}[Lemma 2.2 (structure)]
+Let G be cubic bipartite with def(G) = 2 and let C be a cycle of length n − 2. The two vertices x, y off C lie on opposite sides, say x ∈ X, y ∈ Y. Put A := N(x) ∖ \{y\} ⊆ Y ∩ V(C) and B := N(y) ∖ \{x\} ⊆ X ∩ V(C). Then \textbar{}A\textbar{} = \textbar{}B\textbar{} = 2 if x \textasciitilde{} y and 3 if x ≁ y, and V(C) ∖ (A ∪ B) is covered by a perfect matching M of \textit{chords} (edges of G not on C and not at x, y): G = C + x + y + M.
+\end{namedthm}
+
+\textit{Proof.} C has (n − 2)/2 vertices on each side, so one of x, y is on each side. A vertex of C has one edge besides its two C-edges; it goes to x, to y, or to another vertex of C, and in the last case these edges form a perfect matching of the vertices not in A ∪ B. ∎
+
+\begin{namedthm}[Lemma 2.3 (connectivity)]
+(a) A connected cubic bipartite graph has no bridge and no cut vertex. (b) In a cubic graph vertex and edge connectivity coincide; so a connected cubic bipartite graph that is not 3-connected has a 2-edge cut.
+\end{namedthm}
+
+\textit{Proof.} (a) If uv is a bridge and H the component of G − uv containing u, with bipartition (P, Q), u ∈ P, then counting the edges of H gives 3\textbar{}P\textbar{} − 1 = 3\textbar{}Q\textbar{}, impossible. A cut vertex of a cubic graph sends exactly one of its three edges into some component, and that edge is a bridge. (b) is classical. ∎
+
+\begin{namedthm}[Proposition 2.4 (decomposition along a 2-edge cut)]
+Let G be cubic bipartite with def(G) = 2, with C, x, y, A, B, M as in Lemma 2.2, and let \{e₁, e₂\} be a 2-edge cut of G. Then:
+\end{namedthm}
+
+\begin{enumerate}
+\item[1.] e₁, e₂ both lie on C, so C − \{e₁, e₂\} consists of two paths P₁, P₂ (the \textit{arcs}), and no chord and no edge at x or y crosses the cut;
+\item[2.] x and y lie on the same side of the cut, say with P₁; put side₁ := P₁ + x + y + (chords inside P₁), side₂ := P₂ + (chords inside P₂), L₁ := \textbar{}V(P₁)\textbar{}, L₂ := \textbar{}V(P₂)\textbar{};
+\item[3.] L₁ and L₂ are even and L₂ ≥ 6;
+\item[4.] G is Hamiltonian iff both side₁ and side₂ contain a spanning path joining the two ends of their arc;
+\item[5.] side₂ always contains one (the arc P₂ itself), so \textbf{G is non-Hamiltonian iff side₁ has no spanning path between the ends of P₁.}
+\end{enumerate}
+Hence n = L₁ + L₂ + 2 ≥ L₁ + 8, and the smallest order of a def = 2 cubic bipartite graph with a 2-edge cut is $L₁^min$ + 8, where $L₁^min$ is the least L₁ for which some side₁ has no spanning end-to-end path.
+
+\textit{Proof.} (1) A cycle crosses an edge cut an even number of times. If C did not cross, the side not containing C would be a subset of \{x, y\}, sending 3, 4 or 6 edges across the cut, contradicting \textbar{}cut\textbar{} = 2. So C crosses exactly at e₁, e₂, and no other edge crosses. (2) If x were with P₁ and y with P₂, every vertex of P₁ would be either in A or matched by a chord inside P₁; chords join Y to X, so \#(X ∩ P₁) − \#(Y ∩ P₁) = \textbar{}A\textbar{} ≥ 2, whereas along an arc the sides alternate and the difference is at most 1. (3) With x, y on the same side the same count gives \#(X ∩ P₁) = \#(Y ∩ P₁), so L₁ and hence L₂ are even; all of P₂ is matched by chords inside P₂, a chord joins vertices at C-distance ≥ 3 (simplicity), and no such matching exists on 2 or 4 vertices. (4) A Hamilton cycle crosses the cut exactly at e₁, e₂ and splits into two spanning end-to-end paths; conversely two such paths joined by e₁, e₂ form a Hamilton cycle. (5) is immediate. ∎
+
+\begin{namedthm}[Proposition 2.5]
+A cubic bipartite graph with def(G) = 2 and n ≤ 48 is not 3-connected, and so admits the decomposition of Proposition 2.4.
+\end{namedthm}
+\begin{mdproof}[Proof]
+def = 2 means non-Hamiltonian; by [BZ] every 3-connected cubic bipartite graph on fewer than 50 vertices is Hamiltonian; Lemma 2.3 supplies the 2-edge cut. ∎
+\end{mdproof}
+
+\section*{3. Three graphs on 30 vertices (Theorem A)}
+
+\subsection*{3.1 The graphs}
+In all three, the vertices are 0, …, 29; the vertices 0, …, 27 form the cycle C₂₈ = 0–1–2–⋯–27–0, so x = 28, y = 29 and x \textasciitilde{} y in the notation of Lemma 2.2; even positions of C together with 29 form one colour class, odd positions together with 28 the other. Each graph has 45 edges.
+
+\textbf{$G_I$} (order of Aut 128, two 2-edge cuts): \texttt{0-1\ \allowbreak{}0-27\ \allowbreak{}0-28\ \allowbreak{}1-2\ \allowbreak{}1-14\ \allowbreak{}2-3\ \allowbreak{}2-17\ \allowbreak{}3-4\ \allowbreak{}3-12\ \allowbreak{}4-5\ \allowbreak{}4-28\ \allowbreak{}5-6\ \allowbreak{}5-8\ \allowbreak{}6-7\ \allowbreak{}6-9\ \allowbreak{}7-8\ \allowbreak{}7-10\ \allowbreak{}8-9\ \allowbreak{}9-10\ \allowbreak{}10-11\ \allowbreak{}11-12\ \allowbreak{}11-29\ \allowbreak{}12-13\ \allowbreak{}13-14\ \allowbreak{}13-26\ \allowbreak{}14-15\ \allowbreak{}15-16\ \allowbreak{}15-29\ \allowbreak{}16-17\ \allowbreak{}16-25\ \allowbreak{}17-18\ \allowbreak{}18-19\ \allowbreak{}18-27\ \allowbreak{}19-20\ \allowbreak{}19-22\ \allowbreak{}20-21\ \allowbreak{}20-23\ \allowbreak{}21-22\ \allowbreak{}21-24\ \allowbreak{}22-23\ \allowbreak{}23-24\ \allowbreak{}24-25\ \allowbreak{}25-26\ \allowbreak{}26-27\ \allowbreak{}28-29}
+
+\textbf{$G_II$} (order of Aut 256, three 2-edge cuts): \texttt{0-1\ \allowbreak{}0-27\ \allowbreak{}0-28\ \allowbreak{}1-2\ \allowbreak{}1-4\ \allowbreak{}2-3\ \allowbreak{}2-5\ \allowbreak{}3-4\ \allowbreak{}3-6\ \allowbreak{}4-5\ \allowbreak{}5-6\ \allowbreak{}6-7\ \allowbreak{}7-8\ \allowbreak{}7-29\ \allowbreak{}8-9\ \allowbreak{}8-19\ \allowbreak{}9-10\ \allowbreak{}9-26\ \allowbreak{}10-11\ \allowbreak{}10-28\ \allowbreak{}11-12\ \allowbreak{}11-14\ \allowbreak{}12-13\ \allowbreak{}12-15\ \allowbreak{}13-14\ \allowbreak{}13-16\ \allowbreak{}14-15\ \allowbreak{}15-16\ \allowbreak{}16-17\ \allowbreak{}17-18\ \allowbreak{}17-29\ \allowbreak{}18-19\ \allowbreak{}18-27\ \allowbreak{}19-20\ \allowbreak{}20-21\ \allowbreak{}20-23\ \allowbreak{}21-22\ \allowbreak{}21-24\ \allowbreak{}22-23\ \allowbreak{}22-25\ \allowbreak{}23-24\ \allowbreak{}24-25\ \allowbreak{}25-26\ \allowbreak{}26-27\ \allowbreak{}28-29}
+
+\textbf{$G_III$} (order of Aut 2048, four 2-edge cuts): \texttt{0-1\ \allowbreak{}0-27\ \allowbreak{}0-28\ \allowbreak{}1-2\ \allowbreak{}1-4\ \allowbreak{}2-3\ \allowbreak{}2-5\ \allowbreak{}3-4\ \allowbreak{}3-6\ \allowbreak{}4-5\ \allowbreak{}5-6\ \allowbreak{}6-7\ \allowbreak{}7-8\ \allowbreak{}7-29\ \allowbreak{}8-9\ \allowbreak{}8-11\ \allowbreak{}9-10\ \allowbreak{}9-12\ \allowbreak{}10-11\ \allowbreak{}10-13\ \allowbreak{}11-12\ \allowbreak{}12-13\ \allowbreak{}13-14\ \allowbreak{}14-15\ \allowbreak{}14-28\ \allowbreak{}15-16\ \allowbreak{}15-18\ \allowbreak{}16-17\ \allowbreak{}16-19\ \allowbreak{}17-18\ \allowbreak{}17-20\ \allowbreak{}18-19\ \allowbreak{}19-20\ \allowbreak{}20-21\ \allowbreak{}21-22\ \allowbreak{}21-29\ \allowbreak{}22-23\ \allowbreak{}22-25\ \allowbreak{}23-24\ \allowbreak{}23-26\ \allowbreak{}24-25\ \allowbreak{}24-27\ \allowbreak{}25-26\ \allowbreak{}26-27\ \allowbreak{}28-29}
+
+In $G_I$ the 2-edge cuts are \{(4,5), (10,11)\} and \{(18,19), (24,25)\}; cutting at the first, side₂ is the arc 5–⋯–10 with chords 5-8, 6-9, 7-10 (K₃,₃ minus an edge, L₂ = 6) and L₁ = 22, as in Proposition 2.4. The lists can be checked by hand to be cubic and bipartite and to contain C₂₈; what cannot be checked by hand is the absence of a Hamilton cycle, and that is what Lean certifies.
+
+\subsection*{3.2 Invariants}
+\begin{center}\begin{small}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.414\linewidth}>{\raggedright\arraybackslash}p{0.164\linewidth}>{\raggedright\arraybackslash}p{0.211\linewidth}>{\raggedright\arraybackslash}p{0.172\linewidth}}
+\hline
+\textbf{Invariant (computed, not formalised)} & \textbf{$G_I$} & \textbf{$G_II$} & \textbf{$G_III$} \\
+\hline
+girth; diameter & 4; 9 & 4; 7 & 4; 7 \\
+vertex = edge connectivity; number of 2-edge cuts & 2; 2 & 2; 3 & 2; 4 \\
+4-cycles / 6-cycles & 10 / 14 & 15 / 11 & 20 / 8 \\
+order of Aut; vertex orbit sizes & 128; 8, 8, 4, 4, 4, 2 & 256; 8, 4, 4, 4, 4, 2, 2, 2 & 2048; 16, 8, 4, 2 \\
+circumference; Hamilton path; homogeneously traceable & 28; yes; yes & 28; yes; yes & 28; yes; no (26 of 30) \\
+multiplicity of eigenvalue 0; perfect matchings & 8; 536 & 8; 616 & 12; 640 \\
+\hline
+\end{tabular}
+\end{small}\end{center}
+\textit{Table 2. The number of 2-edge cuts alone shows that the three graphs are pairwise non-isomorphic. The only cubic bipartite graph on 30 vertices with a name that we know of is the Tutte–Coxeter graph (girth 8, 3-connected, Hamiltonian); none of the three is isomorphic to it. graph6 strings of the labelled graphs (standard, not canonical), for matching against databases: $G_I$} \texttt{]hCGGCD?gA\_\allowbreak{}@C@??g?G?@??C\_\allowbreak{}?G??G??C??@???G??A\_\allowbreak{}??D???D??A?\_\allowbreak{}?G?K??C@a?????CO?G}\textit{, $G_II$} \texttt{]hSggC@?G?\_\allowbreak{}@?@??\_\allowbreak{}?g?D??S??G??G@?C??@???G???\_\allowbreak{}??D???D???A\_\allowbreak{}A??K??C@\_\allowbreak{}A???@?C?G}\textit{, $G_III$} \texttt{]hSggC@?G?\_\allowbreak{}D?D?A\_\allowbreak{}?G?@??C??G??g??S??D???G???\_\allowbreak{}??@???@???A\_\allowbreak{}???k???D\_\allowbreak{}?G??@??OG}.*
+
+\subsection*{3.3 Theorem A and its Lean statement}
+\begin{quote}
+\begin{namedthm}[Theorem A]
+Each of $G_I$, $G_II$, $G_III$ is a connected cubic bipartite graph on 30 vertices with circumference 28, i.e. def = 2. In particular a connected cubic bipartite graph with def = 2 exists on 30 vertices, and by Table 2 there are at least three such graphs up to isomorphism.
+\end{namedthm}
+\end{quote}
+The first sentence is machine-checked. The three Lean theorems have identical shape; for $G_I$ it reads, verbatim from \texttt{CubicBipartiteGap2.\allowbreak{}lean} (namespace \texttt{CubicBipartite.\allowbreak{}ClassI}):
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}G30\_\allowbreak{}def2\ \allowbreak{}:}
+\item \texttt{(∀\ \allowbreak{}v\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}30,\ \allowbreak{}G30.\allowbreak{}degree\ \allowbreak{}v\ \allowbreak{}=\ \allowbreak{}3)\ \allowbreak{}∧}
+\item \texttt{G30.\allowbreak{}Colorable\ \allowbreak{}2\ \allowbreak{}∧}
+\item \texttt{G30.\allowbreak{}Connected\ \allowbreak{}∧}
+\item \texttt{(∃\ \allowbreak{}c\ \allowbreak{}:\ \allowbreak{}G30.\allowbreak{}Walk\ \allowbreak{}0\ \allowbreak{}0,\ \allowbreak{}c.\allowbreak{}IsCycle\ \allowbreak{}∧\ \allowbreak{}c.\allowbreak{}length\ \allowbreak{}=\ \allowbreak{}28)\ \allowbreak{}∧}
+\item \texttt{(∀\ \allowbreak{}(v\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}30)\ \allowbreak{}(c\ \allowbreak{}:\ \allowbreak{}G30.\allowbreak{}Walk\ \allowbreak{}v\ \allowbreak{}v),\ \allowbreak{}c.\allowbreak{}IsCycle\ \allowbreak{}→\ \allowbreak{}c.\allowbreak{}length\ \allowbreak{}≤\ \allowbreak{}28)\ \allowbreak{}∧}
+\item \texttt{¬\ \allowbreak{}G30.\allowbreak{}IsHamiltonian}
+\end{leancode}
+and \texttt{CubicBipartite.\allowbreak{}Search.\allowbreak{}G30b\_\allowbreak{}def2} (graph \texttt{G30b}) and \texttt{CubicBipartite.\allowbreak{}Search.\allowbreak{}G30c\_\allowbreak{}def2} (graph \texttt{G30c}), in the same file, read the same with \texttt{G30} replaced by \texttt{G30b}, \texttt{G30c}. \texttt{degree}, \texttt{Colorable}, \texttt{Connected}, \texttt{Walk}, \texttt{IsCycle} and \texttt{IsHamiltonian} are Mathlib's notions for \texttt{SimpleGraph}; the last two conjuncts with the fourth give circ = 28 = 30 − 2.
+
+\textbf{The graph is the edge list.} Inside Lean the adjacency of \texttt{G30} is encoded in the bits of a natural number (for speed of kernel evaluation), and the development proves by \texttt{decide} that this encoding agrees with the explicit list of 45 pairs of §3.1 (\texttt{CubicBipartite.\allowbreak{}ClassI.\allowbreak{}adj\_\allowbreak{}iff\_\allowbreak{}mem\_\allowbreak{}edgeList}; \texttt{adj\_\allowbreak{}iff\_\allowbreak{}mem\_\allowbreak{}edgeListb}, \texttt{adj\_\allowbreak{}iff\_\allowbreak{}mem\_\allowbreak{}edgeListc} in \texttt{CubicBipartite.\allowbreak{}Search}; the lists have length 45 by \texttt{edgeList\_\allowbreak{}card} etc.). A reader who trusts the kernel needs to read only the edge list and the six-line statement.
+
+\textbf{Non-Hamiltonicity inside the kernel.} No external certificate is used. The development defines a depth-first search over the bit-encoded adjacency — \texttt{go} in \texttt{CubicBipartite.\allowbreak{}ClassI}, specialised to $G_I$, generalised in \texttt{CubicBipartite.\allowbreak{}Search} to
+
+\begin{leancode}
+\item \texttt{def\ \allowbreak{}gl\ \allowbreak{}(NBD\ \allowbreak{}AMD\ \allowbreak{}n\ \allowbreak{}s\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}:\ \allowbreak{}ℕ\ \allowbreak{}→\ \allowbreak{}ℕ\ \allowbreak{}→\ \allowbreak{}ℕ\ \allowbreak{}→\ \allowbreak{}Bool}
+\item \texttt{\textbar{}\ \allowbreak{}0,\ \allowbreak{}v,\ \allowbreak{}\_\allowbreak{}\ \allowbreak{}=\textgreater{}\ \allowbreak{}adjB\ \allowbreak{}AMD\ \allowbreak{}n\ \allowbreak{}v\ \allowbreak{}s}
+\item \texttt{\textbar{}\ \allowbreak{}(k\ \allowbreak{}+\ \allowbreak{}1),\ \allowbreak{}v,\ \allowbreak{}vis\ \allowbreak{}=\textgreater{}\ \allowbreak{}(!Nat.\allowbreak{}testBit\ \allowbreak{}vis\ \allowbreak{}(nb\ \allowbreak{}NBD\ \allowbreak{}v\ \allowbreak{}0)\ \allowbreak{}\&\&\ \allowbreak{}gl\ \allowbreak{}NBD\ \allowbreak{}AMD\ \allowbreak{}n\ \allowbreak{}s\ \allowbreak{}k\ \allowbreak{}(nb\ \allowbreak{}NBD\ \allowbreak{}v\ \allowbreak{}0)\ \allowbreak{}(vis\ \allowbreak{}\textbar{}\textbar{}\textbar{}\ \allowbreak{}2\ \allowbreak{}\textasciicircum{}\ \allowbreak{}nb\ \allowbreak{}NBD\ \allowbreak{}v\ \allowbreak{}0))\ \allowbreak{}\textbar{}\textbar{}\ \allowbreak{}…}
+\end{leancode}
+(the same for the second and third neighbour) — where \texttt{gl\ \allowbreak{}…\ \allowbreak{}s\ \allowbreak{}k\ \allowbreak{}v\ \allowbreak{}vis} asks whether from v there is a path of k further steps through vertices whose bit in \texttt{vis} is clear, ending at a neighbour of s. Only \textit{completeness} is proved (\texttt{gl\_\allowbreak{}of\_\allowbreak{}walk}, by structural induction on walks): a walk from v to z of length k + 1 with no repeated vertex that avoids the vertices marked in \texttt{vis} forces \texttt{gl\ \allowbreak{}…\ \allowbreak{}z\ \allowbreak{}k\ \allowbreak{}v\ \allowbreak{}vis\ \allowbreak{}=\ \allowbreak{}true}. Soundness is neither needed nor proved: a Hamilton cycle, rotated to vertex 0 (\texttt{Walk.\allowbreak{}rotate}, \texttt{isHamiltonianCycle\_\allowbreak{}rotate}), would give such a walk, so \texttt{gl\ \allowbreak{}…\ \allowbreak{}0\ \allowbreak{}29\ \allowbreak{}0\ \allowbreak{}1\ \allowbreak{}=\ \allowbreak{}true}; the kernel evaluates the expression to \texttt{false} by \texttt{decide\ \allowbreak{}+kernel}, split into three subtrees along the three edges at vertex 0. The search trees have 200,144 nodes for $G_I$ (62,693 + 68,725 + 68,725), 110,676 for $G_II$ (69,967 + 22,438 + 18,270) and 64,510 for $G_III$ (29,087 + 29,087 + 6,335); since \texttt{Nat.\allowbreak{}testBit}, \texttt{\textbar{}\textbar{}\textbar{}}, \texttt{\textgreater{}\textgreater{}\textgreater{}}, \texttt{\&\&\&}, \texttt{\textasciicircum{}} are evaluated by the kernel with GMP arithmetic, a subtree is checked in 10–30 s. "Every cycle has length ≤ 28" combines: a cycle has at most 30 vertices; its length is even (\texttt{closed\_\allowbreak{}walk\_\allowbreak{}even}, from the 2-colouring); and length 30 would make it a Hamilton cycle (\texttt{isHamiltonianCycle\_\allowbreak{}iff\_\allowbreak{}isCycle\_\allowbreak{}and\_\allowbreak{}length\_\allowbreak{}eq}).
+
+\textbf{Trust base.} \texttt{\#print\ \allowbreak{}axioms} reports, for the 14 theorems of \texttt{CubicBipartite.\allowbreak{}ClassI} and the 20 of \texttt{CubicBipartite.\allowbreak{}Search} listed in \texttt{ChkCubicBipartite.\allowbreak{}lean}, only \texttt{propext}, \texttt{Classical.\allowbreak{}choice} and \texttt{Quot.\allowbreak{}sound} (the purely computational lemmas such as \texttt{edgeList\_\allowbreak{}card}, \texttt{go\_\allowbreak{}sub1}, \texttt{glb\_\allowbreak{}top} depend on \texttt{propext} alone); verbatim, \texttt{'CubicBipartite.\allowbreak{}ClassI.\allowbreak{}G30\_\allowbreak{}def2'\ \allowbreak{}depends\ \allowbreak{}on\ \allowbreak{}axioms:\ \allowbreak{}[propext,\ \allowbreak{}Classical.\allowbreak{}choice,\ \allowbreak{}Quot.\allowbreak{}sound]}, and likewise for \texttt{CubicBipartite.\allowbreak{}Search.\allowbreak{}G30b\_\allowbreak{}def2} and \texttt{CubicBipartite.\allowbreak{}Search.\allowbreak{}G30c\_\allowbreak{}def2}. There is no \texttt{sorryAx} and no \texttt{Lean.\allowbreak{}ofReduceBool} (\texttt{native\_\allowbreak{}decide}) anywhere. Toolchain: Lean 4 v4.33.1 with the matching Mathlib; build data in §6.
+
+\section*{4. Non-existence below 30 (Theorem B)}
+\begin{quote}
+\begin{namedthm}[Theorem B (computation, not formalised)]
+No connected cubic bipartite graph on n ≤ 28 vertices has def = 2. On 30 vertices, every connected cubic bipartite graph with def = 2 in which the two vertices off a longest cycle are adjacent is isomorphic to $G_I$, $G_II$ or $G_III$.
+\end{namedthm}
+\end{quote}
+\begin{quote}
+\begin{namedthm}[Corollary]
+The smallest order of a connected cubic bipartite graph with def = 2 is 30.
+\end{namedthm}
+\end{quote}
+
+\subsection*{4.1 Enumerator}
+By Lemma 2.2 a def = 2 graph is C + x + y + M. Label V(C) by $Z_N$, N = n − 2, even positions in X; x is joined to a set A of positions of one parity and y to a set B of the other, \textbar{}A\textbar{} = \textbar{}B\textbar{} = 2 (x \textasciitilde{} y) or 3 (x ≁ y); M is a perfect matching of the remaining positions by chords joining even to odd positions at cyclic distance ≥ 3. Every def = 2 graph arises from some (A, B, M), and C + x + y + M has def = 2 iff it is non-Hamiltonian. So: for each canonical (A, B), add chords one at a time, keeping only branches whose partial graph is non-Hamiltonian (adding edges can only create Hamilton cycles); a leaf, a fully matched non-Hamiltonian graph, is a def = 2 graph. \textit{Hamiltonicity test:} edges are labelled IN/OUT with propagation (two IN edges at a vertex force the third OUT, one IN and one undecided force IN, a premature closed cycle fails), branching on an undecided edge; a vertex of degree 2 in the partial graph has both edges forced IN, so the solver works on the contracted core of 8 + 2·(chords added) vertices and a test takes about 1.2 µs; a Hamilton cycle of a child of a non-Hamiltonian parent must use the new chord, which is forced IN. \textit{Symmetry:} rotations and reflections of C act on (A, B), an odd rotation exchanging the roles of x and y; (A, B) is taken lexicographically least in its orbit under this group of order 2N. \textit{Domain pruning:} a free odd position v is removed from the domain of a free even position u if adding the single chord uv makes the partial graph Hamiltonian (by monotonicity no completion containing uv is a leaf); an empty domain, or the non-existence of a perfect matching in the remaining domain graph, cuts the branch.
+
+\subsection*{4.2 Results}
+\begin{small}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.056\linewidth}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}p{0.289\linewidth}>{\raggedright\arraybackslash}p{0.252\linewidth}>{\raggedright\arraybackslash}p{0.084\linewidth}}
+\hline
+\textbf{n} & \textbf{canonical (A,B): adj / non-adj} & \textbf{non-Ham. at root: adj / non-adj} & \textbf{search nodes: adj / non-adj} & \textbf{leaves} \\
+\hline
+\endfirsthead
+\hline
+\textbf{n} & \textbf{canonical (A,B): adj / non-adj} & \textbf{non-Ham. at root: adj / non-adj} & \textbf{search nodes: adj / non-adj} & \textbf{leaves} \\
+\hline
+\endhead
+\hline
+\endfoot
+8 & 2 / 1 & 0 / 0 & 0 / 0 & 0 \\
+10 & 5 / 2 & 0 / 0 & 0 / 0 & 0 \\
+12 & 9 / 9 & 1 / 1 & 0 / 0 & 0 \\
+14 & 16 / 22 & 3 / 4 & 1 / 0 & 0 \\
+16 & 24 / 56 & 6 / 21 & 8 / 7 & 0 \\
+18 & 36 / 112 & 11 / 52 & 41 / 62 & 0 \\
+20 & 50 / 224 & 18 / 129 & 192 / 527 & 0 \\
+22 & 69 / 390 & 28 / 249 & 1,130 / 3,608 & 0 \\
+24 & 90 / 670 & 40 / 471 & 6,597 / 29,626 & 0 \\
+26 & 117 / 1,064 & 56 / 791 & 43,566 / 253,562 & 0 \\
+28 & 147 / 1,659 & 75 / 1,299 & 309,090 / 2,480,085 & 0 \\
+\textbf{30} & 184 / 2,457 & 99 / — & 2,403,841 / — & \textbf{8 / 4} \\
+\hline
+\end{longtable}
+\end{small}
+\textit{Table 3. Exhaustive enumeration with no assumption on girth, connectivity or symmetry; "adj / non-adj" is x \textasciitilde{} y / x ≁ y; "non-Ham. at root" counts the pairs (A, B) for which C + x + y is already non-Hamiltonian (only these can lead to leaves). Odd n is excluded and n \textless{} 8 admits no configuration. The n = 30 non-adjacent line comes from a second implementation of the same enumerator, run in three overlapping shards (node counts therefore omitted); the second implementation also gives 184 / 99 / 8 in the adjacent case. The 8 adjacent leaves fall into 3 isomorphism classes (5 + 2 + 1, by a backtracking isomorphism test): $G_I$, $G_II$, $G_III$. The 4 non-adjacent leaves have the invariant profiles of $G_I$ (three) and $G_II$ (one); see §7(1).}
+
+Each leaf at n = 30 was re-verified independently: cubic, bipartite, simple with 45 edges, contains C₂₈, non-Hamiltonian by the propagation solver \textbf{and} by an unrelated plain depth-first search, and for the three representatives by a third method (enumeration of all perfect matchings and inspection of the complementary 2-factors, none of which is a single 30-cycle). \textbf{Controls:} (i) the Hamiltonicity solver agreed with the plain depth-first search on 1,155 partial configurations at n ∈ \{14, 18, 22, 24\}, 204 of them non-Hamiltonian; (ii) \textit{positive control:} the witnesses of Ellingham–Horton 54 (C₅₂, x, y, 23 chords) were given to the enumerator at n = 54 in two labellings, and in both it keeps every prefix from the chordless root to the full graph — the leaf is never pruned; (iii) the second implementation, parametrised by the degree d, reproduces the first two columns of Table 3 for all 36 entries with n ≤ 24 and at n = 30 returns the same 8 adjacent leaves with the same orders of Aut (128 ×5, 256 ×2, 2048 ×1), numbers of 2-edge cuts and girth.
+
+\subsection*{4.3 A second route via the 2-edge cut}
+Proposition 2.4 reduces the question, for graphs with a 2-edge cut, to the least L₁ such that some side₁ — a path P₁ on L₁ vertices, plus x, y and chords inside P₁ — has no spanning path between the ends of P₁. This is a different enumeration (an arc instead of a cycle; symmetry group of order 2; "spanning end-to-end path" reduced to Hamiltonicity by an auxiliary vertex joined to the two ends).
+
+\begin{center}\begin{small}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.078\linewidth}>{\raggedright\arraybackslash}p{0.194\linewidth}>{\raggedright\arraybackslash}p{0.301\linewidth}>{\raggedright\arraybackslash}p{0.262\linewidth}>{\raggedright\arraybackslash}p{0.126\linewidth}}
+\hline
+\textbf{L₁} & \textbf{(A,B): adj / non-adj} & \textbf{non-Ham. at root: adj / non-adj} & \textbf{search nodes: adj / non-adj} & \textbf{failing sides} \\
+\hline
+4, …, 16 & up to 784 / 3,136 & up to 225 / 1,700 & up to 1,215 / 3,542 & 0 \\
+18 & 1,296 / 7,056 & 441 / 4,405 & 7,804 / 29,586 & 0 \\
+20 & 2,025 / 14,400 & 784 / 9,898 & 52,419 / 255,381 & 0 \\
+\textbf{22} & 3,025 / — & 1,296 / — & 375,543 / — & \textbf{21 / 18} \\
+\hline
+\end{tabular}
+\end{small}\end{center}
+\textit{Table 4. Enumeration of side₁ only, complete for every even L₁ ≤ 20 in both cases. "Failing sides" counts labelled representatives, not isomorphism classes. $L₁^min$ = 22.}
+
+Hence every def = 2 cubic bipartite graph with a 2-edge cut has n ≥ 22 + 8 = 30, and with Proposition 2.5 (which uses [BZ]) the first sentence of Theorem B follows a second time: a def = 2 graph on n ≤ 28 would have a failing side₁ with L₁ ≤ 20, and there is none. Conversely, gluing a failing side₁ with L₁ = 22 to the 6-vertex side₂ gives 30-vertex def = 2 graphs; three such gluings were re-verified and have Aut of order 128, 256, 128, i.e. they are $G_I$, $G_II$, $G_I$. The degree-parametrised enumerator, run in this one-sided mode, also finds L₁ ≤ 20 empty and L₁ = 22 non-empty, and the graph it builds from one failing side agrees edge for edge with a def = 2 graph found independently in the non-adjacent branch of Table 3.
+
+\textbf{Girth ≥ 6.} The three graphs have girth 4 necessarily: at n = 30 Proposition 2.4 forces L₂ = 6 and side₂ = K₃,₃ minus an edge. Restricting the enumeration to girth ≥ 6 gives no leaf for n = 28, 30 (both cases) and n = 32 (adjacent case; the non-adjacent case was not completed), so the smallest def = 2 cubic bipartite graph of girth ≥ 6 has between 32 and 54 vertices, the upper bound being Ellingham–Horton 54.
+
+\section*{5. Consequences and related bounds}
+\begin{namedthm}[Corollary 5.1]
+For every even n ≥ 30 there is a connected cubic bipartite graph with def = 2.
+\end{namedthm}
+\begin{mdproof}[Proof]
+Glue a failing side₁ with L₁ = 22 to a side₂ with L₂ = n − 24 ≥ 6: arcs with chord matchings (0,3),(1,4),(2,5); (0,3),(1,6),(2,5),(4,7); (0,3),(1,4),(2,7),(5,8),(6,9) give L₂ = 6, 8, 10, every even L₂ ≥ 6 is a sum of these, and by Proposition 2.4(5) the result is non-Hamiltonian and contains the (n − 2)-cycle. ∎
+\end{mdproof}
+
+\textbf{Semisymmetric and vertex-transitive graphs.} A graph is \textit{semisymmetric} if it is regular, edge-transitive and not vertex-transitive; it is then bipartite with the colour classes as vertex orbits. Whether a non-Hamiltonian semisymmetric graph exists is open; the cubic ones are Hamiltonian up to order 768 by the census of Conder, Malnič, Marušič and Potočnik, and below order 3000 according to the abstract of [SS].
+
+\begin{quote}
+\begin{namedthm}[Proposition 5.2]
+A connected d-regular edge-transitive graph has edge connectivity d (Tindell). Consequently a cubic semisymmetric graph with def = 2 has n ≥ 50, and a 4-regular one has n ≥ 26.
+\end{namedthm}
+\end{quote}
+\textit{Proof.} For d = 3, edge connectivity 3 implies 3-connectivity (a cut vertex or a 2-cut in a cubic graph gives a vertex set with fewer than 3 outgoing edges), so a def = 2 example is a 3-connected cubic bipartite non-Hamiltonian graph and [BZ] gives n ≥ 50. For d = 4, Proposition 5.3 finds no def = 2 graph with n ≤ 24. ∎
+
+Without any symmetry assumption, the enumeration also shows that among the 12 leaves at n = 30 the \textit{deficiency graph} Δ := \{(u, v) ∈ X × Y : G − u − v is Hamiltonian\} never covers all vertices (\textbar{}Δ\textbar{} = 33, 7, 1 for $G_I$, $G_II$, $G_III$; in $G_III$ every longest cycle misses the same pair), whereas in a semisymmetric or vertex-transitive graph Δ is a union of Aut-orbits and covers every vertex. No vertex-transitive graph with def = 2 is known (the four known connected vertex-transitive non-Hamiltonian graphs other than K₂ have def = 1, 1, 3, 3, truncation multiplying def by 3); Grünbaum's conjecture Γ(n;2) = ∅ [GC] contains the uniform case.
+
+\textbf{4-regular bipartite graphs.} Häggkvist conjectured (1976) that every 2-connected k-regular bipartite graph on at most 6k vertices is Hamiltonian; the best published bound we could identify is 6k − 38 [JL], void for k = 4, and the earlier bounds 4.2k, 5k − 12, 5k − 8 do not reach beyond n ≤ 16 for k = 4.
+
+\begin{quote}
+\begin{namedthm}[Proposition 5.3 (computation)]
+No 4-regular bipartite graph on n ≤ 24 vertices has def = 2 (and none with x \textasciitilde{} y on n ≤ 28). Hence a counterexample to Häggkvist's conjecture for k = 4 would have circumference at most n − 4.
+\end{namedthm}
+\end{quote}
+The enumeration is that of §4.1 with Lemma 2.2 for degree d (\textbar{}A\textbar{} = \textbar{}B\textbar{} = d − 1 or d, chord degree d − 2 outside A ∪ B, so for d = 4 the chords form paths and cycles). For 4-regular graphs with a 2-edge cut the analogue of Proposition 2.4 holds with L₂ ≥ 8, and the one-sided enumeration finds L₁ ≤ 20 empty, so such graphs have n ≥ 32.
+
+\textbf{The smallest non-Hamiltonian cubic bipartite graph (§5.4).} Dropping def = 2, the analogue of Proposition 2.4 holds for any connected cubic bipartite graph with a 2-edge cut (each side has even order ≥ 6 with its two attachment vertices on opposite sides, and G is Hamiltonian iff both sides have a spanning path between their attachment vertices), and with [BZ] the question reduces to the smallest side without such a path. An exhaustive enumeration of sides of order 8, 10, 12, 14 finds none below 14 and six at 14; gluing K₃,₃ minus an edge to each gives 20-vertex graphs, all six isomorphic to
+
+\texttt{0-8\ \allowbreak{}0-9\ \allowbreak{}0-14\ \allowbreak{}1-7\ \allowbreak{}1-10\ \allowbreak{}1-11\ \allowbreak{}2-8\ \allowbreak{}2-10\ \allowbreak{}2-11\ \allowbreak{}3-8\ \allowbreak{}3-10\ \allowbreak{}3-11\ \allowbreak{}4-7\ \allowbreak{}4-12\ \allowbreak{}4-13\ \allowbreak{}5-9\ \allowbreak{}5-12\ \allowbreak{}5-13\ \allowbreak{}6-9\ \allowbreak{}6-12\ \allowbreak{}6-13\ \allowbreak{}7-17\ \allowbreak{}14-18\ \allowbreak{}14-19\ \allowbreak{}15-17\ \allowbreak{}15-18\ \allowbreak{}15-19\ \allowbreak{}16-17\ \allowbreak{}16-18\ \allowbreak{}16-19}
+
+(three copies of K₂,₃ attached to a central vertex 7 and, through the connectors 8, 9, 14, to the vertex 0; a Hamilton cycle would have to use the edge to 7 from all three gadgets).
+
+\begin{quote}
+\begin{namedthm}[Proposition 5.4 (computation, with [BZ])]
+The smallest connected cubic bipartite non-Hamiltonian graph has 20 vertices and is unique. It is non-planar, has girth 4, Aut of order 768, circumference 14 and def = 6.
+\end{namedthm}
+\end{quote}
+The existence half is machine-checked: \texttt{CubicBipartite.\allowbreak{}Search.\allowbreak{}G20\_\allowbreak{}def6} proves for \texttt{G20\ \allowbreak{}:\ \allowbreak{}SimpleGraph\ \allowbreak{}(Fin\ \allowbreak{}20)} the conjunction "cubic ∧ \texttt{Colorable\ \allowbreak{}2} ∧ \texttt{Connected} ∧ a cycle of length 14 exists ∧ every cycle has length ≤ 14 ∧ \texttt{¬\ \allowbreak{}G20.\allowbreak{}IsHamiltonian}"; the absence of cycles of length 16, 18, 20 uses a pigeonhole lemma in Lean (\texttt{cycle\_\allowbreak{}avoid\_\allowbreak{}card}: a cycle of length ≥ 16 misses at most 4 of the 20 vertices, so passes through one of five chosen vertices) followed by kernel search from each of the five (5,244 nodes). Minimality and uniqueness are computation. The value is consistent with [AEHS] (planar minimum 26), the graph being non-planar (a subdivision of K₃,₃ with branch vertices \{1, 2, 3\} and \{8, 10, 11\}).
+
+\section*{6. Certificates and reproducibility}
+The Lean development is a single file, \texttt{CubicBipartiteGap2.\allowbreak{}lean} (1,385 lines, \texttt{import\ \allowbreak{}Mathlib} its only import), in two namespaces. \texttt{CubicBipartite.\allowbreak{}ClassI} holds the bit-encoded adjacency of $G_I$, the edge list and \texttt{adj\_\allowbreak{}iff\_\allowbreak{}mem\_\allowbreak{}edgeList}, degree, colouring, connectivity, the 28-cycle, the search \texttt{go} with its completeness \texttt{go\_\allowbreak{}of\_\allowbreak{}walk}, the kernel evaluations \texttt{go\_\allowbreak{}sub1}, \texttt{go\_\allowbreak{}sub27}, \texttt{go\_\allowbreak{}sub28}, and \texttt{G30\_\allowbreak{}def2}. \texttt{CubicBipartite.\allowbreak{}Search} holds the general part — \texttt{gl}, \texttt{gl\_\allowbreak{}of\_\allowbreak{}walk}, \texttt{cycle\_\allowbreak{}kernel\_\allowbreak{}true}, \texttt{no\_\allowbreak{}long\_\allowbreak{}cycle\_\allowbreak{}at}, \texttt{closed\_\allowbreak{}walk\_\allowbreak{}even}, \texttt{cycle\_\allowbreak{}len\_\allowbreak{}le\_\allowbreak{}card}, \texttt{cycle\_\allowbreak{}avoid\_\allowbreak{}card}, for any \texttt{SimpleGraph\ \allowbreak{}(Fin\ \allowbreak{}n)} with a bit encoding — and then $G_II$ with \texttt{G30b\_\allowbreak{}def2}, $G_III$ with \texttt{G30c\_\allowbreak{}def2} and the 20-vertex graph with \texttt{G20\_\allowbreak{}def6}. \texttt{ChkCubicBipartite.\allowbreak{}lean} prints the axioms of the 14 + 20 theorems. Toolchain Lean 4 v4.33.1 with Mathlib. Checking the file takes 277 s of CPU with peak resident memory 9.8 GiB (about 6.3 GiB of it the Mathlib import; the kernel searches add the rest). 10 GiB of memory suffices. The archive with a pinned toolchain and a build script will be placed at \texttt{\textless{}URL\textgreater{}}.
+
+The enumerators of §4.1, §4.3, §5 are C and Python programs; the verification scripts (degree, bipartiteness, C₂₈, two Hamiltonicity tests, perfect-matching enumeration, Aut, 2-edge cuts, spectrum, graph6) use only the Python standard library. CPU: about 47 min for Table 3, 40 s for Table 4, 30 min for the 4-regular enumeration, under 10 s for §5.4, on one or two cores. They will be distributed at the same address. None of this is formalised.
+
+\section*{7. Discussion and open questions}
+\begin{enumerate}
+\item[1.] \textbf{The count at n = 30.} A leaf appears in the non-adjacent enumeration exactly when Δ contains a non-edge; $Δ(G_I)$ and $Δ(G_II)$ contain 16 and 4 non-edges while $Δ(G_III)$ is a single edge, so $G_I$, $G_II$ must and $G_III$ cannot appear there. That the four non-adjacent leaves of Table 3 are \textit{only} $G_I$ and $G_II$ is supported by their invariants, not by an isomorphism test.
+\item[2.] \textbf{32 ≤ n ≤ 48.} By Proposition 2.5 every def = 2 cubic bipartite graph in this range has a 2-edge cut, so its classification reduces to failing sides with L₁ ≤ n − 8 ≤ 40; Table 4 reaches L₁ = 22 in 20 s, each further step multiplying the node count by about 7.
+\item[3.] \textbf{Girth ≥ 6 and 3-connectivity.} The smallest def = 2 cubic bipartite graph of girth ≥ 6 lies in [32, 54] (§4.3); the smallest 3-connected one lies in [50, 54] and is 50 iff the Georges–Kelmans graph has circumference 48, which we could not test for want of an adjacency list.
+\item[4.] \textbf{Vertex-transitive def = 2.} None is known; §5 excludes cubic bipartite ones of order ≤ 30.
+\item[5.] \textbf{Formalising Theorem B.} Running Table 3 in the kernel by the method of §3.3 would need about 3·10⁶ nodes; at the measured 0.45 ms and 51 KB per node this is 22 min of CPU but about 150 GiB of memory. A certificate-based formalisation, recording the pruning decisions, is the natural next step.
+\end{enumerate}
+
+\section*{8. What is not claimed}
+\begin{enumerate}
+\item[1.] \textbf{Theorem B is not formalised.} Only Theorem A and the existence half of Proposition 5.4 are Lean theorems. Minimality, the count three at n = 30, Proposition 5.3, and minimality and uniqueness in Proposition 5.4 rest on computer enumerations that are cross-checked (§4.2) but not kernel-checked. The count "three" is not fully closed (§7(1)).
+\item[2.] \textbf{No House of Graphs check.} We could not query the House of Graphs database (its API requires authentication and its web interface is a JavaScript application), so the three graphs have not been matched against it; the graph6 strings in §3.2 are supplied for anyone who can.
+\item[3.] \textbf{No claim of priority.} To the best of our knowledge the smallest order of a cubic bipartite graph with circ = n − 2 has not been asked or answered in print, nor the value 20 of Proposition 5.4; §9 records exactly what was searched. MathSciNet and zbMATH were not available to us.
+\item[4.] \textbf{Dependence on [BZ].} Proposition 2.5, §4.3, Proposition 5.2 for d = 3, Proposition 5.4 and §7(3) use the minimality of the Georges–Kelmans graph as stated in the abstract of [BZ]; we have read the abstract, not the proof. The route of §4.2 does not use it.
+\item[5.] \textbf{Citations not read in full.} [AEHS] and [JL], and the statement of Häggkvist's conjecture, are taken from secondary descriptions; [BZ] from its abstract. Lemma 2.3(b) and Tindell's theorem are used without a reference.
+\item[6.] \textbf{No independent authorship.} The enumerators, the verification scripts, the Lean development and the formalised statements were written by the same agent (§10). The two enumeration routes and the three non-Hamiltonicity tests are procedurally, not conceptually, independent; the Lean statements in §3.3 are short enough to be read directly for this reason.
+\item[7.] \textbf{No external review.} No mathematician outside the authors has reviewed the mathematics, the code or the Lean development. Lean's kernel is the only check independent of the authors.
+\end{enumerate}
+
+\section*{9. On prior art}
+arXiv full-text search, all fields, exact phrases: \texttt{"cubic\ \allowbreak{}bipartite"\ \allowbreak{}non-hamiltonian} (2 hits, neither on circumference), \texttt{"circumference"\ \allowbreak{}"cubic\ \allowbreak{}bipartite"} (0), \texttt{"circumference"\ \allowbreak{}"bicubic"} (0), \texttt{"longest\ \allowbreak{}cycle"\ \allowbreak{}"bipartite\ \allowbreak{}cubic"} (0), \texttt{"bipartite"\ \allowbreak{}"hypohamiltonian"} (1, on K₂-hypohamiltonian graphs), \texttt{"Georges-Kelmans"} (1: [BZ]), \texttt{"circumference"\ \allowbreak{}"n-2"\ \allowbreak{}cubic\ \allowbreak{}graph} (1: [HZ]), and a dozen further phrasings with nothing relevant. Web search located [AEHS], [BZ], Owens' work on the shortness exponent of cubic bipartite graphs (Discrete Math. 44 (1983) 327–330 [to be verified]) and the MathWorld page on bicubic non-Hamiltonian graphs, which lists only 3-connected examples (50, 54, 78, 78, 92, 96). The closest paper is [HZ], which constructs cubic homogeneously traceable non-Hamiltonian graphs of every even order ≥ 10; $G_I$ and $G_II$ are homogeneously traceable (Table 2), but [HZ] considers neither bipartiteness nor circumference n − 2 for cubic graphs, and its family cannot be bipartite at small orders by Proposition 5.4. The literature on the circumference of cubic bipartite graphs that we found concerns the shortness exponent (asymptotics), not a constant gap.
+
+\section*{10. Disclosure of AI use}
+Two of the three authors are AI agents. \textit{Shiori} and \textit{Rin} are instances of Claude (Anthropic) run as the coding agent Claude Code, on a laptop and on the server of the website named on the first page respectively; the models used were publicly released Claude models of the Opus 5 and Fable 5 series. The reduction of Lemma 2.2, the decomposition of Proposition 2.4, the enumerators and their controls, the Lean 4 development including the formalised statements, the technical reports on which this note is based, and this draft were produced by Shiori. Rin rebuilds the Lean development from the distributed archive on a separate machine, checks the numerical claims of this note against the reports, and prepares the distributed version [to be completed by Rin]. The human author, Kiichi, set the task, chose the problem, fixed the working rules and load limits, and decides whether and where the result is reported; he is not a mathematician and has not himself verified the mathematics. The agents' names are used here in the same way as on the website, where the working records of this project are kept.
+
+Adversarial review was carried out only by further instances of the same model family, which share the authors' blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else is the authors' word.
+
+\begin{thebibliography}{XXXXX}
+\bibitem[AEHS]{AEHS} T. Asano, G. Exoo, F. Harary and A. Saito, \textit{The smallest 2-connected cubic bipartite planar nonhamiltonian graph}, Discrete Math. 38 (1982), 1–6. [cited from secondary descriptions]
+\bibitem[BM]{BM} J. A. Bondy and U. S. R. Murty, \textit{Graph Theory with Applications}, Macmillan, 1976 (Horton's graph). [to be verified]
+\bibitem[BZ]{BZ} G. Brinkmann and C. T. Zamfirescu, \textit{The minimality of the Georges–Kelmans graph}, Math. Comp., DOI 10.1090/mcom/3701; arXiv:2101.00943.
+\bibitem[EH]{EH} M. N. Ellingham and J. D. Horton, \textit{Non-Hamiltonian 3-connected cubic bipartite graphs}, J. Combin. Theory Ser. B 34 (1983), 350–353. [to be verified]
+\bibitem[G]{G} J. P. Georges, \textit{Non-Hamiltonian bicubic graphs}, J. Combin. Theory Ser. B 46 (1989), 121–124. [to be verified]
+\bibitem[GC]{GC} \textit{A note on Grünbaum's conjecture about longest cycles and paths}, arXiv:2602.19669 (2026). [authors to be added]
+\bibitem[H]{H} J. D. Horton, \textit{On two-factors of bipartite regular graphs}, Discrete Math. 41 (1982), 35–41. [to be verified]
+\bibitem[HZ]{HZ} Y. Hu and X. Zhan, \textit{Regular homogeneously traceable nonhamiltonian graphs}, arXiv:2107.11561.
+\bibitem[JL]{JL} B. Jackson and H. Li, \textit{Hamilton cycles in 2-connected regular bipartite graphs}, J. Combin. Theory Ser. B 62 (1994), 236–258. [cited from secondary descriptions]
+\bibitem[PGD]{PGD} \textit{Long cycles in vertex transitive digraphs}, arXiv:2602.16333 (2026); its abstract records Alspach's 1981 question on the perimeter gap. [authors to be added]
+\bibitem[SS]{SS} arXiv:2602.14388 (2026), on the Hamiltonicity of semisymmetric graphs. [title and authors to be verified]
+\bibitem[T]{T} W. T. Tutte, \textit{On the 2-factors of bicubic graphs}, Discrete Math. 1 (1971), 203–208. [to be verified]
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,71 @@
+/-
+  `principia` / erdos-169 — 機械検証済みの数学の束。
+
+  * `Principia.APFree`
+
+  このファイルはモジュールを読み込むだけの入口である。
+-/
+import Principia.APFree.BellmanLower
+import Principia.APFree.BellmanLowerLead
+import Principia.APFree.BellmanLowerMid
+import Principia.APFree.BellmanLowerRest
+import Principia.APFree.BellmanPolicy
+import Principia.APFree.BellmanRecord
+import Principia.APFree.BlockBounds
+import Principia.APFree.BlockBoundsBudgetLead
+import Principia.APFree.BlockBoundsBudgetRest
+import Principia.APFree.BlockBoundsBudgetTotal
+import Principia.APFree.BlockBoundsDigitCount
+import Principia.APFree.BlockBoundsHead
+import Principia.APFree.BlockBoundsHeadLower
+import Principia.APFree.BlockBoundsHeadUpper
+import Principia.APFree.BlockBoundsMixedDepth
+import Principia.APFree.BlockBoundsMixedDepthLead
+import Principia.APFree.BlockBoundsMixedDepthRest
+import Principia.APFree.BlockBoundsMixedDepthTotal
+import Principia.APFree.BlockBoundsStagesLead
+import Principia.APFree.BlockBoundsStagesMid
+import Principia.APFree.BlockBoundsStagesRest
+import Principia.APFree.BlockBoundsTotalDepthTwo
+import Principia.APFree.BlockBoundsWindows100
+import Principia.APFree.BlockBoundsWindows20
+import Principia.APFree.BlockBoundsWindows50
+import Principia.APFree.ChainRecord
+import Principia.APFree.ChainRecordCore
+import Principia.APFree.FourTermBlockCount
+import Principia.APFree.FourTermChain
+import Principia.APFree.FourTermHead
+import Principia.APFree.FourTermHeadLead
+import Principia.APFree.FourTermHeadMid
+import Principia.APFree.FourTermHeadRest
+import Principia.APFree.FourTermHeadUnion
+import Principia.APFree.FourTermKempner
+import Principia.APFree.FourTermLower
+import Principia.APFree.FourTermRecord
+import Principia.APFree.FourTermStages
+import Principia.APFree.FourTermTailStagesFourToSix
+import Principia.APFree.FourTermTailStagesOneToThree
+import Principia.APFree.FourTermTailStagesSevenToSixteen
+import Principia.APFree.FourTermTailStagesToThirtyEight
+import Principia.APFree.FourTermTailStagesToTwentyEight
+import Principia.APFree.LabelledUnion
+import Principia.APFree.LeafUpperBound
+import Principia.APFree.Nesting
+import Principia.APFree.NonAveraging
+import Principia.APFree.PolicyLookahead2
+import Principia.APFree.PolicyLookahead3
+import Principia.APFree.PolicyPrime26
+import Principia.APFree.PolicyRollout
+import Principia.APFree.RecordStatement
+import Principia.APFree.StepBlocks
+import Principia.APFree.StepsMaxElement
+import Principia.APFree.StepsRegroupedLower
+import Principia.APFree.StepsRegroupedRecord
+import Principia.APFree.StepsRegroupedWindows
+import Principia.APFree.StepsSeparated
+import Principia.APFree.StepsWindows
+import Principia.APFree.SzekeresHead
+import Principia.APFree.WindowSeparation
+import Principia.APFree.WindowSeparationM3
+import Principia.APFree.WindowSeparationM45
+import Principia.APFree.WindowsDisjoint

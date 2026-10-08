@@ -1,0 +1,5 @@
+.lake/
+*.olean
+lake-packages/
+*.aux
+*.log

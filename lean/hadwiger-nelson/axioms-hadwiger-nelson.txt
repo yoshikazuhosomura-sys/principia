@@ -1,0 +1,270 @@
+# principia / hadwiger-nelson: `#print axioms` output, by module (43 modules, 182 lines).
+# Every line is a subset of [propext, Classical.choice, Quot.sound].
+
+## Principia.HadwigerNelson.LowerBound  (54)
+'HadwigerNelson.Witness.hn_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.fGe_10_3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.fGe_14_4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.realizA' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.indepA' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.tupA' depends on axioms: [propext, Quot.sound]
+'HadwigerNelson.Witness.pA_inj' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.EA_edges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.monoA' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.realizB' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.indepB' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.tupB' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.pB_inj' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.EB_edges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.monoB' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.indepNum_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.indepNum_le_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.indepNum_le_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.realiz_of_edges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.injective_of_strictMono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.s3_mul_s11' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.indepA_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Witness.indepB_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.hn_lower_family' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.fGe_even' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.fGe_odd' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.indepNum_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.indepNum_sum_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.le_indepNum_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.isIndepSet_toLeft' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.isIndepSet_toRight' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.isIndepSet_disjSum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.realizV_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.lt_shift' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.transl_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.sq2_transl' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.fGe_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.fGe_of_fGeV' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.fGeV_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.indepNum_comap_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.indepNum_le'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.fGe_7_2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.fGe_3_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.fGe_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.realizS' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.realizT' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.tupS' depends on axioms: [propext, Quot.sound]
+'HadwigerNelson.Family.tupT' depends on axioms: [propext, Quot.sound]
+'HadwigerNelson.Family.indepS' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.indepT' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.indepS_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.indepT_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.indepNum_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HadwigerNelson.Family.indepNum_le_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order11  (27)
+'UnitDistance.Order11.no_realization' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.no_edges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.cands_card' does not depend on any axioms
+'UnitDistance.Order11.trilat_core' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.lam_box' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.triStep_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.tri_box' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.mulI_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.coord_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.chk_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.normalize' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.close_edges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.close_realiz' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.no_realiz_0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.no_realiz_94' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.no_realiz_116' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.chk0' depends on axioms: [propext, Quot.sound]
+'UnitDistance.Order11.chk94' depends on axioms: [propext, Quot.sound]
+'UnitDistance.Order11.no_realiz_38' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.no_realiz_63' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.no_realiz_65' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.no_realiz_115' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.chk38' depends on axioms: [propext, Quot.sound]
+'UnitDistance.Order11.chk115' depends on axioms: [propext, Quot.sound]
+'UnitDistance.Order11.triangle_sat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order11.chk_lat_false' depends on axioms: [propext, Quot.sound]
+'UnitDistance.Order11.holds_st0' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Core  (4)
+'UnitDistance.Order10.close_realiz' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.normalize'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.close_edges'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.realiz_edges' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Calibration  (1)
+'UnitDistance.Order10.chk_lat_false' depends on axioms: [propext, Quot.sound]
+
+## Principia.UnitDistance.Order10Cert00  (2)
+'UnitDistance.Order10.noR00' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE00' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Cert01  (4)
+'UnitDistance.Order10.chkH204' depends on axioms: [propext, Quot.sound]
+'UnitDistance.Order10.noEH204' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noR01' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE01' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Cert02  (2)
+'UnitDistance.Order10.noR02' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE02' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Cert03  (2)
+'UnitDistance.Order10.noR03' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE03' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Cert04  (2)
+'UnitDistance.Order10.noR04' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE04' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Cert05  (2)
+'UnitDistance.Order10.noR05' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE05' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Cert06  (2)
+'UnitDistance.Order10.noR06' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE06' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Cert07  (3)
+'UnitDistance.Order10.chkH535' depends on axioms: [propext, Quot.sound]
+'UnitDistance.Order10.noR07' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE07' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Cert08  (4)
+'UnitDistance.Order10.chkH569' depends on axioms: [propext, Quot.sound]
+'UnitDistance.Order10.noEH569' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noR08' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE08' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Cert09  (2)
+'UnitDistance.Order10.noR09' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE09' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10CertExtra00  (2)
+'UnitDistance.Order10.noR200' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE200' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10CertExtra01  (2)
+'UnitDistance.Order10.noR201' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE201' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10CertExtra02  (2)
+'UnitDistance.Order10.noR202' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE202' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10CertExtra03  (2)
+'UnitDistance.Order10.noR203' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE203' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10CertExtra04  (2)
+'UnitDistance.Order10.noR204' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.noE204' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order10Main  (3)
+'UnitDistance.Order10.no_realization' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.no_edges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.candsH_card' depends on axioms: [propext]
+
+## Principia.UnitDistance.Order10MainExtra  (3)
+'UnitDistance.Order10.no_realization2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.no_edges2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order10.candsH2_card' depends on axioms: [propext]
+
+## Principia.UnitDistance.Order16Core  (5)
+'UnitDistance.Order16.no_edges_sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.no_edges_map' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.close_relabel' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.realiz_edges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.close_realiz' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Lemmas  (5)
+'UnitDistance.Order16.par_core' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.normalizeI' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.chkP_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.close_realizP' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.realiz_edgesI' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Calibration  (2)
+'UnitDistance.Order16.chkP_lat_false' depends on axioms: [propext, Quot.sound]
+'UnitDistance.Order16.chkP_lat2_false' depends on axioms: [propext, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert00  (4)
+'UnitDistance.Order16.chk0' depends on axioms: [propext, Quot.sound]
+'UnitDistance.Order16.no_realiz_0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noR00' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE00' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert01  (2)
+'UnitDistance.Order16.noR01' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE01' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert02  (2)
+'UnitDistance.Order16.noR02' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE02' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert03  (2)
+'UnitDistance.Order16.noR03' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE03' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert04  (2)
+'UnitDistance.Order16.noR04' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE04' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert05  (2)
+'UnitDistance.Order16.noR05' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE05' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert06  (2)
+'UnitDistance.Order16.noR06' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE06' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert07  (2)
+'UnitDistance.Order16.noR07' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE07' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert08  (2)
+'UnitDistance.Order16.noR08' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE08' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert09  (2)
+'UnitDistance.Order16.noR09' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE09' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert10  (2)
+'UnitDistance.Order16.noR10' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE10' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert11  (2)
+'UnitDistance.Order16.noR11' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE11' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert12  (2)
+'UnitDistance.Order16.noR12' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE12' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert13  (2)
+'UnitDistance.Order16.noR13' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE13' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert14  (2)
+'UnitDistance.Order16.noR14' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE14' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Cert15  (2)
+'UnitDistance.Order16.noR15' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noE15' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Parallelogram  (4)
+'UnitDistance.Order16.chk108' depends on axioms: [propext, Quot.sound]
+'UnitDistance.Order16.no_realiz_108' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.no_realiz_340' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.noRp' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Main  (4)
+'UnitDistance.Order16.cands16_card' depends on axioms: [propext]
+'UnitDistance.Order16.cands16e_card' depends on axioms: [propext]
+'UnitDistance.Order16.no_realization' depends on axioms: [propext, Classical.choice, Quot.sound]
+'UnitDistance.Order16.no_edges' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.UnitDistance.Order16Relabel  (1)
+'UnitDistance.Order16.noRx' depends on axioms: [propext, Classical.choice, Quot.sound]

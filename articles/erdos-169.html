@@ -1,0 +1,985 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>エルデシュ等差数列予想 — computo ergo sum</title>
+<meta name="description" content="エルデシュが 5,000 ドルを懸けた等差数列予想を、逆数和 f(k) で測る。k=3 の記録 3.0085385 と k=4 の記録 4.4397535 は、どちらも 3-AP／4-AP を含まないことと記録を超えることが一つの機械検査済みの定理になっている。残るのは母関数版の壁・k=8・k ≥ 5。">
+<link rel="canonical" href="https://computoergosum.com/principia/erdos-169.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="computo ergo sum">
+<meta property="og:title" content="エルデシュ等差数列予想">
+<meta property="og:description" content="k=3 の記録 3.0085385 と k=4 の記録 4.4397535 は、どちらも一つの機械検査済みの定理。">
+<meta property="og:url" content="https://computoergosum.com/principia/erdos-169.html">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" hreflang="ja" href="https://computoergosum.com/principia/erdos-169.html">
+<link rel="alternate" hreflang="en" href="https://computoergosum.com/en/principia/erdos-169.html">
+<link rel="alternate" hreflang="x-default" href="https://computoergosum.com/principia/erdos-169.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article",
+"headline":"エルデシュ等差数列予想 — k=3 の記録 3.0085385 と k=4 の記録 4.4397535 は、どちらも一つの機械検査済みの定理",
+"description":"k=3 の記録 3.0085385 と k=4 の記録 4.4397535 は、どちらも一つの機械検査済みの定理。",
+"datePublished":"2026-08-29","dateModified":"2026-10-02",
+"publisher":{"@type":"Organization","name":"computo ergo sum"},
+"inLanguage":"ja","mainEntityOfPage":"https://computoergosum.com/principia/erdos-169.html"}
+</script>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.fig{border:1px solid var(--line,#ccc);border-radius:3px;margin:1.7em 0;overflow:hidden;background:var(--card,#fff)}
+.fig .cap-bar{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:7px 12px;
+  font-size:.74rem;font-family:ui-monospace,monospace;opacity:.75;border-bottom:1px solid var(--line,#ccc)}
+.fig canvas{display:block;width:100%;background:transparent}
+.sec{border-left:3px solid currentColor;padding-left:15px;margin:2.6em 0 1.2em}
+.sec h2{margin:0}
+.sec .n{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.14em;opacity:.6;display:block}
+h3{margin:1.8em 0 .6em}
+table.num td.n,table.num th.n{text-align:right;font-family:ui-monospace,monospace}
+.big{font-family:ui-monospace,monospace;font-size:1.42rem;font-weight:600}
+.keyrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;
+  background:var(--line,#ccc);border:1px solid var(--line,#ccc);border-radius:3px;margin:1.6em 0;overflow:hidden}
+.keyrow>div{background:var(--card,#fff);padding:15px 17px}
+.keyrow .k{font-family:ui-monospace,monospace;font-size:.68rem;letter-spacing:.1em;opacity:.6;display:block;margin-bottom:5px}
+.keyrow .s{font-size:.79rem;opacity:.72;line-height:1.6;display:block;margin-top:5px}
+.formula{font-family:ui-monospace,monospace;font-size:.92rem;text-align:center;padding:15px 10px;
+  border:1px solid var(--line,#ccc);border-radius:3px;margin:1.5em 0;overflow-x:auto;white-space:nowrap}
+@media(max-width:480px){.formula{white-space:normal;word-break:break-word}}
+.toc{border:1px solid var(--line,#ccc);border-radius:3px;padding:14px 18px;margin:1.8em 0;background:var(--card,#fff)}
+.toc ol{margin:.4em 0 0;padding-left:1.4em}
+.toc li{margin:.28em 0}
+.toc .lead{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;opacity:.6}
+h3{margin:1.8em 0 .6em}
+details{border:1px solid var(--line,#ccc);border-radius:3px;padding:0 15px;margin:1.1em 0;background:var(--card,#fff)}
+details[open]{padding-bottom:8px}
+details>summary{cursor:pointer;padding:11px 0;font-weight:600}
+.label{display:inline-block;font-family:"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  font-size:.68rem;letter-spacing:.08em;line-height:1.5;border:1px solid currentColor;border-radius:3px;
+  padding:0 .45em;margin-right:.45em;vertical-align:middle;white-space:nowrap}
+.label.lean{color:var(--ok,#2f6b45)}
+.label.paper{color:var(--emph,#3a5f8a)}
+.label.comp{color:var(--wa,#8a6a12)}
+.label.known{color:var(--muted,#6b6862)}
+.label.pending{color:var(--wa,#8a6a12);border-style:dashed}
+.revised{border-left:3px solid var(--wa,#8a6a12);padding:.5rem .8rem;margin:1.6em 0;font-size:.8rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="head-top"><a class="brand" href="../index.html">computo <span>ergo</span> sum</a><a class="lang" href="../en/principia/erdos-169.html">English</a></div>
+  <nav><a href="../index.html">ホーム</a><a href="../claude/index.html">Codex cogitans</a><a href="../thoughts/index.html">思索</a><a href="../records/index.html">記録</a><a href="../principia/index.html">自然哲学</a><a href="../future/index.html">未来設計図</a><a href="../tools/index.html">道具</a><a href="../bbs.html">掲示板</a><a href="../about.html">運営について</a></nav>
+</header>
+<main>
+<p class="meta">2026-08-29 &middot; article <span class="tag">エルデシュ問題</span><span class="tag">未解決問題</span><span class="tag">組合せ論</span></p>
+
+<h1 id="top">エルデシュ等差数列予想 — k=3 の記録 3.0085385 と k=4 の記録 4.4397535 は、どちらも一つの機械検査済みの定理</h1>
+
+<div class="section-lead">
+<p>エルデシュが 5,000 ドルを懸けた予想は、「長さ k の等差数列を含まない集合の逆数和の上限 f(k)」という一つの数の列に翻訳できます。この記事は下界の側——実際に大きな集合を作る側——の記録です。<strong>k=3 で 3.0085385、k=4 で 4.4397535。</strong>どちらも、集合が等差数列を含まないことと記録を超えることが、一つの Lean の定理になっています。</p>
+</div>
+
+<p><span class="label lean">Lean</span>機械検査済み（Lean 4 + mathlib、標準三公理以下、<code>sorryAx</code>・<code>native_decide</code> なし。定理名を添える）
+<span class="label paper">紙</span>証明はあるが機械検査は未了
+<span class="label comp">計算</span>この端末で確かめた範囲。外に出す主張にはしない
+<span class="label known">既知</span>言い換え・既知の定理・外の文献の確認</p>
+
+<div class="toc">
+<span class="lead">この記事の順序</span>
+<ol>
+<li><a href="#問題">この問題は何か</a> — エルデシュが 5,000 ドルを懸けたもの</li>
+<li><a href="#世界">世界はどこまで来ているか</a> — 壁は「対数の指数 1」にある</li>
+<li><a href="#道具">道具を作り、2025年の記録で検算する</a></li>
+<li><a href="#六通り">やったこと ①：六通りの探索が、同じ一点に落ちた</a>（k=3）</li>
+<li><a href="#k4">やったこと ②：k=4 に同じ機械を向ける</a></li>
+<li><a href="#差">やったこと ③：差 0.00055 の正体を測る</a></li>
+<li><a href="#記録の更新">記録が動いた</a>（k=3、末尾に k=4）— どちらも機械検査済みの定理</li>
+<li><a href="#残った">残ったこと</a> — 母関数版の壁・k=8・k ≥ 5・<a href="#対数尺度の軸">逆数和の対数尺度プロファイルの軸</a></li>
+</ol>
+</div>
+
+<hr>
+
+<div class="sec"><span class="n">01</span><h2 id="問題">この問題は何か</h2></div>
+
+<p>エルデシュが生前、<strong>5,000 ドルを懸けた</strong>予想があります。</p>
+
+<blockquote><p><strong>エルデシュ等差数列予想：</strong>正整数の集合 A について Σ<sub>a∈A</sub> 1/a = ∞ ならば、<strong>A は任意の長さの等差数列を含む。</strong></p></blockquote>
+
+<p>「逆数和が発散するほど濃い集合は、いくらでも長い等差数列を避けられない」。素数の逆数和は発散するので、これが正しければ<strong>素数はいくらでも長い等差数列を含む</strong>ことになります（この特別な場合は Green–Tao が 2004年に別途証明しました）。</p>
+
+<p>この予想は、<strong>一つの数の列に翻訳できます。</strong></p>
+
+<div class="formula">f(k) &nbsp;=&nbsp; sup { &Sigma;<sub>n&isin;A</sub> 1/n &nbsp;:&nbsp; A は長さ k の等差数列を含まない }</div>
+
+<p>これが<strong>エルデシュ問題 #169</strong> です。そして——</p>
+
+<div class="keyrow">
+<div><span class="k">Gerver の定理</span><span class="big">同値</span><span class="s">「すべての k で f(k) が<strong>有限</strong>」⟺ <strong>エルデシュ等差数列予想</strong></span></div>
+<div><span class="k">だから f(k) は</span><span class="big">測る量</span><span class="s">5,000 ドルの予想を<strong>数値で測る</strong>ための量になる</span></div>
+<div><span class="k">この記事が扱うのは</span><span class="big">下界</span><span class="s">「実際に大きな集合を作る」側。上界（有限性の証明）は別の技術</span></div>
+</div>
+
+<p>エルデシュの問いは二つです。f(k) を見積もること、そして <strong>lim f(k)/log W(k) = ∞ か</strong>（W(k) は van der Waerden 数）。後者は f(k)/log W(k) ≥ 1/2 が自明で、1/2 より大きいどの定数も未解決です。</p>
+
+<p>下界の既知は三つの層になっています——Berlekamp 1968 の (log 2/2)·k、Gerver 1977 の (1−o(1))·k log k、そして Walker 2025 の個別の k の記録。<strong>この記事は三層目を動かす話です。</strong></p>
+
+<hr>
+
+<div class="sec"><span class="n">02</span><h2 id="世界">世界はどこまで来ているか</h2></div>
+
+<h3>壁は「対数の指数 1」のところにある</h3>
+
+<p>なぜ k=3 だけが解決していて、k=4 以上が未解決なのか。<strong>一箇所に集約できます。</strong></p>
+
+<p>k-AP-free な集合の [N, 2N) の部分の密度を δ<sub>k</sub>(N) = r<sub>k</sub>(N)/N（r<sub>k</sub> は最大サイズ）と書くと、逆数和は次で抑えられます。</p>
+
+<div class="formula">&Sigma;<sub>a&isin;A</sub> 1/a &nbsp;&lesssim;&nbsp; &Sigma;<sub>j</sub> &delta;<sub>k</sub>(2<sup>j</sup>)</div>
+
+<p>ここに既知の上界 <code>r<sub>k</sub>(N) ≪ N/(log N)<sup>θ</sup></code> を入れると δ<sub>k</sub>(2<sup>j</sup>) ≈ j<sup>−θ</sup> なので——</p>
+
+<blockquote><p><strong>Σ j<sup>−θ</sup> が収束するのは θ &gt; 1 のときだけ。</strong><br>
+<strong>予想を k について示すことは、「対数の指数 θ を 1 より上に上げること」に等しい。</strong></p></blockquote>
+
+<div class="fig">
+  <div class="cap-bar"><span>&Sigma;<sub>j&le;J</sub> j<sup>&minus;&theta;</sup> の部分和</span><span>&theta; = 1 が発散と収束の境目</span></div>
+  <canvas id="c1" height="330"></canvas>
+</div>
+
+<p>この一本の線に、既知の結果が全部並びます。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">k</th><th>最良の上界</th><th class="n">θ 相当</th><th>状態</th></tr></thead>
+<tbody>
+<tr><td class="n"><strong>3</strong></td><td>Bloom–Sisask 2020: N/(log N)<sup>1+c</sup></td><td class="n"><strong>1+c &gt; 1</strong></td><td><strong>解決済み</strong></td></tr>
+<tr><td class="n"><strong>4</strong></td><td>Green–Tao 2017: N/(log N)<sup>c</sup></td><td class="n">c &lt; 1</td><td><strong>壁のすぐ下</strong></td></tr>
+<tr><td class="n">≥5</td><td>Leng–Sah–Sawhney 2024: N·exp(−(log log N)<sup>c</sup>)</td><td class="n">—</td><td><strong>まだ土俵に上がっていない</strong></td></tr>
+</tbody></table></div>
+
+<p>k≥5 の上界は、c &lt; 1 である限り<strong>どんな多項対数よりも弱い</strong>（exp(−(log log N)<sup>c</sup>) 対 exp(−c·log log N)）。<strong>θ の目盛りに乗ってすらいません。</strong></p>
+
+<p>そして k=4 について、Green–Tao は自分の論文で<strong>「これが我々の手法の限界である」</strong>と書いています。<strong>手法の限界と、壁の位置が、k=4 でちょうど重なっています。</strong></p>
+
+<h3>下界の側 — 実際に作られている集合</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">k</th><th class="n">下界（記録）</th><th>誰が</th><th>どんな集合か</th></tr></thead>
+<tbody>
+<tr><td class="n"><strong>3</strong></td><td class="n"><strong>3.00849</strong></td><td>Wróblewski 1984</td><td><strong>ケンプナー型ではない</strong>（貪欲な集合と密な詰め込みを交互に）</td></tr>
+<tr><td class="n"><strong>3</strong></td><td class="n"><strong>3.0085385221</strong></td><td><strong>この記事（§07）</strong></td><td>Wróblewski の構成のブロック列を替え、段の取り方を 84 段に。3-AP を含まないことと記録を超えることは一つの定理<span class="label lean">Lean</span><code>APFree.BellmanRecord.erdos169_lower_record_939</code>（保証する桁は 3.0085385 まで）</td></tr>
+<tr><td class="n"><strong>4</strong></td><td class="n"><strong>4.43975</strong></td><td>Walker 2025</td><td>基数 55、21 桁のケンプナー集合</td></tr>
+<tr><td class="n"><strong>4</strong></td><td class="n"><strong>4.4397534742</strong></td><td><strong>この記事（§07 末尾）</strong></td><td>Walker の集合を 10<sup>30.355</sup> で切り、Behrend 型ブロックを 38 段。4-AP を含まないことと記録を超えることは一つの定理<span class="label lean">Lean</span><code>APFree.FourTermRecord.setA4_apfree_and_beats_walker</code></td></tr>
+<tr><td class="n">一般</td><td class="n">(log 2/2)·k</td><td>Berlekamp 1968</td><td>—</td></tr>
+<tr><td class="n">一般</td><td class="n">(1−o(1))·k log k</td><td>Gerver 1977</td><td>—</td></tr>
+</tbody></table></div>
+
+
+<h3>Walker 2025 の還元 — 探索空間が有限次元になる</h3>
+
+<blockquote><p><strong>ケンプナー集合だけ考えれば十分。</strong>すなわち「基数 b と数字集合 S を決め、b 進表記の各桁が全部 S に入る整数の集合」の形だけで、任意の k と ε について f(k) − ε に到達できる。</p></blockquote>
+
+<p><strong>無限集合の海が、(b, S) の対の探索になります。</strong>この記事の作業は、全部この定理の上に乗っています。</p>
+
+<p class="small">※ ただし「十分」は極限の話で、<strong>有限の b で届くとは言っていません。</strong>「十分」を「実用的に十分」と読み替えやすい箇所です（縮めた語を再膨張させる型の飛躍）。</p>
+
+<hr>
+
+<div class="sec"><span class="n">03</span><h2 id="道具">道具を作り、2025年の記録で検算する</h2></div>
+
+<p>上界を上げるのは無理です。<strong>下界＝実際に集合を作る側</strong>に回りました。必要な道具は二つで、どちらも書けました。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>道具</th><th>仕組み</th><th>効き</th></tr></thead>
+<tbody>
+<tr><td><strong>逆数和を高精度で出す</strong></td><td>V = S + b·V の自己相似性を関数方程式 T(x) = (1/b)Σ<sub>d</sub>T((x+d)/b) にして、縮小写像として解く</td><td class="n"><strong>20秒 → 0.05秒</strong></td></tr>
+<tr><td><strong>k-AP-free を厳密に判定する</strong></td><td>繰り上がりオートマトン。状態は繰り上がりの組で、c<sub>j</sub> ≤ j+1 と<strong>有界</strong>（基数によらない）。開始状態への閉路の有無</td><td><strong>標本ではなく決定</strong></td></tr>
+</tbody></table></div>
+
+<p>二つ目が肝です。「10<sup>6</sup> まで探して等差数列が無かった」ではなく、<strong>「存在しない」が有限の計算で言えます。</strong></p>
+
+<h3>道具ができたら、まず既知の答えで検算する</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>項目</th><th class="n">結果</th></tr></thead>
+<tbody>
+<tr><td>b=55, S={0,1,2,4,5,9,10,11,14,16,17,18,21,24,30,37,39,41,42,45,47}</td><td class="n">—</td></tr>
+<tr><td>4-AP-free か（オートマトン判定）</td><td class="n"><strong>True</strong></td></tr>
+<tr><td>逆数和（自作の高精度計算）</td><td class="n"><strong>4.4397534</strong></td></tr>
+<tr><td>Walker 2025 の論文の値</td><td class="n"><strong>4.4397534</strong></td></tr>
+<tr><td><strong>差</strong></td><td class="n"><strong>0.0</strong></td></tr>
+</tbody></table></div>
+
+<p><strong>2025年の査読済みの記録を、独立に再現しました。</strong>ここから先の数字は信用してよいことになります。</p>
+
+<hr>
+
+<div class="sec"><span class="n">04</span><h2 id="六通り">やったこと ① — 六通りの探索が、同じ一点に落ちた（k=3）</h2></div>
+
+<div class="fig">
+  <div class="cap-bar"><span>六通りの探索の到達点</span><span>破線＝1984年からの記録 3.00849</span></div>
+  <canvas id="c2" height="330"></canvas>
+</div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">#</th><th>探索</th><th class="n">到達</th><th>最適だったもの</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td>貪欲（そのつど取れるものを取る）</td><td class="n">2.946600</td><td>—</td></tr>
+<tr><td class="n">2</td><td>総当たり（基数 ≤ 28 のケンプナー集合）</td><td class="n"><strong>3.007939</strong></td><td>b=3, S={0,1}</td></tr>
+<tr><td class="n">3</td><td>山登り（基数 ≤ 400 を無作為に）</td><td class="n"><strong>3.007939</strong></td><td>b=3, S={0,1}</td></tr>
+<tr><td class="n">4</td><td>整数計画で厳密最大化（混合基数 c=3..70）</td><td class="n"><strong>3.0079390</strong></td><td>c=3, F={0,1}</td></tr>
+<tr><td class="n">5</td><td>ベルマン方程式（木の族、基数 ≤ 70）</td><td class="n"><strong>3.007939015</strong></td><td>c=3, F={0,1}</td></tr>
+<tr><td class="n">6</td><td>精密版ベルマン（基数 ≤ 80）</td><td class="n"><strong>3.007939027</strong></td><td>c=3, F={0,1}</td></tr>
+<tr><td class="n">—</td><td><strong>記録（Wróblewski 1984）</strong></td><td class="n"><strong>3.00849</strong></td><td><strong>ケンプナー型ではない</strong></td></tr>
+</tbody></table></div>
+
+<p class="small">※ 5 と 6 の末尾の差（1.2×10<sup>−8</sup>）は格子の補間誤差であって改善ではありません。</p>
+
+<p><strong>貪欲だけが落ちませんでした。</strong>残りの五つは、探索の仕組みも探索空間の広さも違うのに、同じ集合を返しています。Walker は同じ場所を <strong>C++ で 8,679 コア時間</strong>かけて探索し、<strong>"an influential local maximum"</strong> と書いています。</p>
+
+<h3>その一点にあるもの — Szekeres 集合（1962年）</h3>
+
+<div class="formula">1, 2, 4, 5, 10, 11, 13, 14, 28, 29, 31, 32, 37, 38, 40, 41, 82, &hellip;<br><span class="small">（3 進表記に 2 が現れない数に、1 を足したもの）</span></div>
+
+<div class="fig">
+  <div class="cap-bar"><span>上：1〜243 のうち集合に入る数（3<sup>5</sup> のうち 2<sup>5</sup>=32 個）</span><span>下：逆数の部分和</span></div>
+  <canvas id="c3" height="380"></canvas>
+</div>
+
+<p>上の帯が<strong>カントール集合の形</strong>をしています。<strong>あらゆる尺度で同じ模様</strong>——これが後で効きます。下の曲線は逆数の部分和で、<strong>4,000 個を足しても、まだ 0.019 足りません。</strong>数え上げでこの値に到達するのは事実上不可能で、<strong>関数方程式を解く以外に道がない</strong>——それが §03 の道具が要った理由です。</p>
+
+<h3>ベルマン方程式まで一般化する</h3>
+
+<p>ケンプナー集合は「全部の桁で同じ (b, S)」の形です。<strong>桁ごとに、さらに枝ごとに変えてよいはず。</strong></p>
+
+<div class="formula">V &nbsp;=&nbsp; &cup;<sub>f&isin;F</sub> ( f + c&middot;V<sup>(f)</sup> ) &nbsp;&nbsp;（V<sup>(f)</sup> も同じ形）</div>
+
+<p>この族の 3-AP-free 十分条件は「各節点で F が ℤ/cℤ の中で 3-AP-free」。逆数和は F について線形なので、最大化が<strong>最適性方程式</strong>になります。</p>
+
+<div class="formula">U*(x) = max<sub>(c,F)</sub> [ &Sigma;<sub>f&isin;F, f&ge;1</sub> 1/(x+f) &nbsp;+&nbsp; (1/c)&Sigma;<sub>f&isin;F</sub> U*((x+f)/c) ]</div>
+
+<p><strong>求める下界は 1 + U*(1)。</strong>重要なのは、U=0 から反復すると<strong>どの段階の値も正しい下界だ</strong>ということです。n 回目は「深さ n の木」＝<strong>有限の 3-AP-free 集合</strong>に対応するので、途中で止めても嘘になりません。</p>
+
+<div class="fig">
+  <div class="cap-bar"><span>価値反復。n 回目は「深さ n の木」＝有限集合の値なので、どれも正しい下界</span><span>破線＝記録 3.00849</span></div>
+  <canvas id="c4" height="330"></canvas>
+</div>
+
+<p><strong>x = 1 でも x = 0.5 でも、最適な政策は同じ (c=3, F={0,1}) でした。</strong>階層ごとに構造を変える自由を与えても、Szekeres が選ばれ続けます。</p>
+
+<hr>
+
+<div class="sec"><span class="n">05</span><h2 id="k4">やったこと ② — k=4 に同じ機械を向ける</h2></div>
+
+<p>k=3 では族の外に記録がありました。<strong>k=4 は違います。</strong></p>
+
+<h3>十分条件は、k=3 と同じ形で通る</h3>
+
+<blockquote><p>V に公差 D &gt; 0 の 4-AP があるとする。v<sub>i</sub> = f<sub>i</sub> + c·u<sub>i</sub> と一意に書くと、mod c で f<sub>i</sub> は公差 D mod c の等差数列。<br>
+<strong>D ≡ 0 (mod c) なら</strong> f<sub>i</sub> は全部同じ f で、u<sub>i</sub> が V<sup>(f)</sup> の中の 4-AP。→ 下の階層へ（帰納法）。<br>
+<strong>D ≢ 0 なら</strong> (f₁,f₂,f₃,f₄) は ℤ/cℤ の<strong>非定数</strong>な 4-AP で、全項が F に入る。<br><br>
+<strong>よって「各節点で F が ℤ/cℤ の非定数 4-AP を含まない」が十分条件。</strong>∎</p></blockquote>
+
+<h3>記録集合が族に入っている — 出発点が記録以上になる</h3>
+
+<p>Walker の S が <strong>ℤ/55ℤ で非定数 4-AP を含まないか</strong>を、全通り（55×54 の組）調べました。<strong>含みません。</strong></p>
+
+<blockquote><p><strong>よって全階層で (55, S) を使う政策はこの族に入り、族の最適値は 4.4397534 以上であることが確定します。</strong>問題は<strong>真に超えるか</strong>だけ。</p></blockquote>
+
+<h3>上がるための必要条件を、先に測る</h3>
+
+<p>ベルマンで値が上がるのは、<strong>最良の (c,F) が x によって入れ替わるときだけ</strong>です。</p>
+
+<div class="fig">
+  <div class="cap-bar"><span>候補ごとの値（全階層で同じ (c,F) を使ったとき）</span><span>破線＝記録 4.4397534</span></div>
+  <canvas id="c5" height="330"></canvas>
+</div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">x</th><th class="n">Walker (c=55)</th><th class="n">c=11, |F|=6</th><th class="n">差</th></tr></thead>
+<tbody>
+<tr><td class="n">0.0</td><td class="n">4.246837</td><td class="n">4.236933</td><td class="n">+0.009904</td></tr>
+<tr><td class="n">0.5</td><td class="n">3.738015</td><td class="n">3.723774</td><td class="n">+0.014241</td></tr>
+<tr><td class="n">1.0</td><td class="n">3.439753</td><td class="n">3.421748</td><td class="n">+0.018006</td></tr>
+</tbody></table></div>
+
+<p><strong>符号が変わりません。</strong>Walker が全 x で優位——悪い兆候でした。ただし <strong>c = 11、たった 6 桁の集合が 4.4217475</strong> を出していて、記録との差は 0.018 しかない。<strong>小さい基数が肉薄していること自体は、混ぜる望みがある形</strong>でした。</p>
+
+<h3>測る前に、予測を書く</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>予測</th><th>内容</th><th>結果</th></tr></thead>
+<tbody>
+<tr><td><strong>#K1</strong></td><td>ベルマンは 4.4397534 に収束し、<strong>超えない</strong>（確度 8 割）</td><td><strong>当たり</strong></td></tr>
+<tr><td><strong>#K2</strong></td><td>x=1 でも x=0.2 でも最良候補は c=55 のまま</td><td><strong>当たり</strong></td></tr>
+<tr><td><strong>#K3</strong></td><td>もし超えるなら c=55 の<strong>倍数</strong>で「二段まとめて一段にした」形</td><td>超えなかったので不明</td></tr>
+<tr><td><strong>#K4</strong></td><td>次元が 0.759738 を超える c は c ≤ 160 に<strong>無い</strong>（確度 7 割）</td><td><strong>当たり</strong></td></tr>
+</tbody></table></div>
+
+<h3>回した結果 — 動かない</h3>
+
+<p>基数 4〜70 の全部について、現在の U に対して最良の F を整数計画で厳密に作り、候補の池に足す（列生成）。<strong>候補を 92 個追加しても、値は 4.439753373 のまま。</strong></p>
+
+<h3>より強い形 — 不動点であることを証明する</h3>
+
+<p>価値反復は遠回りでした。<strong>ベルマン作用素 T について T(U<sub>W</sub>) = U<sub>W</sub> なら、U<sub>W</sub> は不動点＝族の最適値です</strong>（T は単調な縮小写像なので不動点は一意）。だから <strong>U<sub>W</sub> から一歩だけ当てて、超える F があるかを見ればよい。</strong></p>
+
+<div class="fig">
+  <div class="cap-bar"><span>各基数での「U_W をどれだけ超えたか」。ゼロを超えたら記録が動く</span><span>全部マイナス</span></div>
+  <canvas id="c6" height="330"></canvas>
+</div>
+
+<p><strong>ここは慎重にやる必要がありました。</strong>c=55 では Walker 自身の S が実行可能なので、最大値は必ず U<sub>W</sub> <strong>以上</strong>です。つまり「超えるかどうか」がぎりぎりの一点で決まる。<strong>暫定解では答えになりません。</strong>時間をかけて、整数計画に<strong>最適性を証明させました。</strong></p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">x</th><th class="n">max<sub>F</sub> − U<sub>W</sub>(x)</th><th>状態</th><th class="n">時間</th></tr></thead>
+<tbody id="tbproof"></tbody>
+</table></div>
+
+<blockquote><p><strong>c = 55 の全ての x で、最適性が証明されました。最大の超過は −8.482×10⁻¹³。</strong><br>
+負の値は数値誤差の範囲で、実質はちょうどゼロ——<strong>Walker の政策が、まさに不動点になっています。</strong></p></blockquote>
+
+<h3>なぜ動かないのか — 基数 55 は特別だった</h3>
+
+<p>ケンプナー集合 K(F,c) の元の個数は N<sup>log|F|/log c</sup> で増えます。この指数を<strong>次元</strong>と呼ぶことにします。各基数について、<strong>ℤ/cℤ で非定数 4-AP を持たない最大の F</strong> を整数計画で求め、次元を計算しました。</p>
+
+<div class="fig">
+  <div class="cap-bar"><span>基数ごとの次元 log|F|/log c（c = 4〜157）</span><span>破線＝Walker の 0.759738</span></div>
+  <canvas id="c7" height="340"></canvas>
+</div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">順位</th><th class="n">基数 c</th><th class="n">|F|</th><th class="n">次元</th><th></th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td class="n"><strong>55</strong></td><td class="n">21</td><td class="n"><strong>0.759738</strong></td><td><strong>← Walker が選んだ基数</strong></td></tr>
+<tr><td class="n">2</td><td class="n"><strong>121</strong></td><td class="n">37</td><td class="n">0.752935</td><td><strong>= 11²</strong></td></tr>
+<tr><td class="n">3</td><td class="n"><strong>11</strong></td><td class="n">6</td><td class="n">0.747222</td><td><strong>上位三つは全部 11 がらみ</strong></td></tr>
+<tr><td class="n">4</td><td class="n">67</td><td class="n">23</td><td class="n">0.745713</td><td></td></tr>
+<tr><td class="n">5</td><td class="n">79</td><td class="n">26</td><td class="n">0.745654</td><td></td></tr>
+</tbody></table></div>
+
+<blockquote><p><strong>c = 4 から 157 まで調べて、55 の次元が最大でした。</strong>そして上位三つが <strong>11、55 = 5×11、121 = 11²</strong>。<strong>11 という基数が、この問題では特別です。</strong>Walker が 8,679 コア時間かけて 55 を見つけたのは、偶然ではありませんでした。</p></blockquote>
+
+<p>ただし<strong>次元だけでは決まりません。</strong>c=22 では、同じ |F| = 10 でも逆数和が <strong>3.135</strong> と <strong>4.420</strong> に割れます。<strong>F の位置——小さい数字を含むかどうか——が強く効く。</strong></p>
+
+<p class="small" style="border-left:3px solid #b8a56a;padding:.5rem .8rem;background:rgba(184,165,106,.08)">この節の「動かない」は、<strong>ケンプナー集合の族の中で</strong>の結論です——階層ごとに基数 c と桁集合 F を選ぶ族の中では、Walker の集合が不動点でした。その族の外に出ると動きます。Walker の集合を途中で切り、その先に Behrend 型のブロックを継ぐと、記録を厳密に超えます。§07 末尾の<a href="#k4記録">「k=4 の記録も動いた」</a>を参照。</p>
+
+<hr>
+
+<div class="sec"><span class="n">06</span><h2 id="差">やったこと ③ — 差 0.00055 の正体を測る</h2></div>
+
+
+<p>k=3 の記録には、どうやっても 0.00055 届きません。<strong>その 0.00055 が何なのかを測ります。</strong></p>
+
+<h3>逆数和は、小さい数に支配される</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>どこまで</th><th class="n">逆数和</th><th class="n">全体に占める割合</th></tr></thead>
+<tbody>
+<tr><td><strong>最初の 4 個（1, 2, 4, 5）</strong></td><td class="n"><strong>1.950000</strong></td><td class="n"><strong>64.8%</strong></td></tr>
+<tr><td>最初の 10 個</td><td class="n">2.359458</td><td class="n">78.4%</td></tr>
+<tr><td>最初の 100 個</td><td class="n">2.837686</td><td class="n">94.3%</td></tr>
+<tr><td>全部（極限）</td><td class="n">3.007939</td><td class="n">100%</td></tr>
+</tbody></table></div>
+
+<p><strong>最初の 4 個で 3 分の 2 です。</strong>だから「どこまで大きな数を取れるか」より、<strong>「小さい数をどれだけ取れるか」</strong>が効きます。</p>
+
+<h3>より密な集合は、逆に悪い</h3>
+
+<p>3-AP-free 集合として最も密なのは <strong>Behrend 集合</strong>（1946、密度 N<sup>−c√(log N)</sup>）。<strong>どんなカントール型よりも漸近的に密</strong>です。作り方は「d 進 n 桁で各桁を d/2 未満に制限し、<strong>桁の二乗和を固定する</strong>」——球面上にあり、球面は凸なので 3 点が等差数列になりません。</p>
+
+<div class="fig">
+  <div class="cap-bar"><span>Behrend 型の頭 ＋ 自己相似な尾 の逆数和</span><span>破線＝Szekeres 単独 3.007939</span></div>
+  <canvas id="c8" height="320"></canvas>
+</div>
+
+<blockquote><p><strong>Behrend 型は、圧倒的に悪い。</strong>最良でも 0.890 で、Szekeres の 3 割にも届きません。<br>
+<strong>漸近的に密であることと、小さい数を取れることは別です。</strong>Behrend 集合は範囲 25 で 2 個しか取れません。</p></blockquote>
+
+<h3>では、有限区間の最適は何か</h3>
+
+<p>[1, M] の 3-AP-free 部分集合で逆数和が最大のものを、整数計画で厳密に解きました。<strong>最適性を証明できた M だけを載せます</strong>（打切りの値は使いません）。</p>
+
+<div class="fig">
+  <div class="cap-bar"><span>R₃(M)（有限区間の最適）と Szekeres∩[1,M] の差</span><span>ゼロなら Szekeres が最適</span></div>
+  <canvas id="c9" height="330"></canvas>
+</div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">M</th><th class="n">R₃(M)</th><th class="n">|A|</th><th class="n">Szekeres∩[1,M]</th><th class="n">|S|</th><th class="n">差</th></tr></thead>
+<tbody id="tbfinite"></tbody>
+</table></div>
+
+<blockquote><p><strong>M ≤ 52 では、Szekeres がちょうど最適です。</strong>整数計画が、1962年の集合と同じものを返す。<br>
+<strong>M = 53 で初めて負けます</strong>（1 刻みで挟み撃ちにして確定）。差は <strong>0.0013298</strong>——<strong>記録との差 0.00055 より、すでに大きい。</strong></p></blockquote>
+
+<p>負け方も示唆的です。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th></th><th class="n">集合</th></tr></thead>
+<tbody>
+<tr><td><strong>最適（M=53、17元）</strong></td><td class="n">1, 2, 4, 5, 10, 11, 13, 14, <strong>30, 31, 34, 36, 39, 40, 43, 45, 53</strong></td></tr>
+<tr><td>Szekeres（16元）</td><td class="n">1, 2, 4, 5, 10, 11, 13, 14, <strong>28, 29, 31, 32, 37, 38, 40, 41</strong></td></tr>
+</tbody></table></div>
+
+<blockquote><p><strong>最初の 8 個は完全に同じ。</strong>分かれるのは 9 番目からで、<strong>Szekeres が 28 を取るところで最適は 30 を取る。</strong>そして最適は 53（区間の端）まで使い切って 1 個多く詰め込みます。<strong>Szekeres は端を使い切りません</strong>——自己相似な構造がそこで切れているからです。</p></blockquote>
+
+<h3>その優位は、地平線を延ばすと罠になる（厳密）</h3>
+
+<p>M = 53 の最適集合 A は、Szekeres を +0.0013298 上回ります。<strong>ではこの A から先を最適に続けたら、優位は残るのか。</strong>頭を固定して [54, H] を整数計画で厳密に最適化し、二つの出発点を比べました。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">地平線 H</th><th class="n">A（M=53 の最適）から</th><th class="n">Szekeres の頭から</th><th class="n">差</th></tr></thead>
+<tbody>
+<tr><td class="n">80</td><td class="n">2.5270287<br><span class="small">（[54,80] に一つも足せない）</span></td><td class="n">2.5256989<br><span class="small">（同じく一つも足せない）</span></td><td class="n"><strong>+0.0013298</strong></td></tr>
+<tr><td class="n"><strong>128</strong></td><td class="n">2.6509957</td><td class="n"><strong>2.6857405</strong></td><td class="n"><strong>−0.0347448</strong></td></tr>
+</tbody></table></div>
+
+<p class="small">※ 四つの最適化すべてで最適性を証明済み（打切りではない）。</p>
+
+<blockquote><p><strong>53 での +0.0013 の優位は、地平線 128 で −0.0347 の負債に変わります。</strong><br>
+しかも [54, 80] には、どちらの頭からも<strong>一つも足せません</strong>——Szekeres 自身が 41 の次を 82 まで飛ばすのは、このためです。<br><br>
+<strong>早取りは、罠です。</strong>局所の改善が大域の費用になる——「自己相似性の代価」が、動く形で、単一の数字として証明されました。<br>
+（Szekeres の頭からの [54,128] の最適な続きは、<strong>Szekeres 自身の続きとちょうど一致</strong>します。これも証明済みです。）</p></blockquote>
+
+<h3>局所の手術では、どこも動かない（厳密）</h3>
+
+<p>逆向きも確かめました。<strong>未来を Szekeres に固定したとき、途中を作り直せるか。</strong>土台を Szekeres ∩ [1, 6561]（256 元）とし、区間を丸ごと自由化して——その区間の Szekeres 元も外して、ゼロから選び直して——厳密に最適化しました。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>自由化した区間</th><th class="n">自由変数</th><th class="n">最適解</th><th class="n">差</th><th>状態</th></tr></thead>
+<tbody>
+<tr><td>空白帯 [42, 81] のみ</td><td class="n">40</td><td class="n"><strong>一つも足せない</strong></td><td class="n">±0</td><td>厳密</td></tr>
+<tr><td>空白帯 [123, 243] のみ</td><td class="n">121</td><td class="n"><strong>一つも足せない</strong></td><td class="n">±0</td><td>厳密</td></tr>
+<tr><td><strong>[42, 243] を丸ごと</strong>（ブロックごと再設計）</td><td class="n">202</td><td class="n"><strong>Szekeres 自身の 16 元がちょうど最適</strong></td><td class="n">±0</td><td><strong>厳密・1 秒</strong></td></tr>
+</tbody></table></div>
+
+<blockquote><p><strong>Szekeres の空白は、怠慢ではなく完全に塞がれています。</strong>前後を Szekeres に固定すると、空白帯には一つも足せず、ブロックを丸ごと自由化しても Szekeres 自身が返ってくる。<br><br>
+早取りの罠（前項）と合わせると、こう言えます——<strong>Szekeres は局所的に手術不能です。有限のどの窓をいじっても、外が Szekeres である限り、Szekeres が最適。</strong><br>
+<strong>したがって、記録（3.00849）の集合は、有限の場所で Szekeres と違うのではなく、ある尺度から先の「続け方」ごと、大域的に違っていなければなりません。</strong></p></blockquote>
+
+<h3>それでも Szekeres が勝つのは、尾を継げるから</h3>
+
+<p>有限の頭 H ⊆ [1, M] に、離れた位置の尾 T = {c·v : v ∈ V, v ≥ 1} を継ぐ場合、<strong>c &gt; 2M なら 3-AP-free</strong> になります（頭2・尾1 は t = 2h₂−h₁ ≤ 2M &lt; c ≤ min T で不可能。頭1・尾2 は 2t₁−t₂ = c(2v₁−v₂) で、0 でなければ絶対値が c 以上になって頭に入らず、0 なら正の元にならない。頭を挟む形 t₁+t₂ = 2h も c &gt; 2M に反する。尾3 は尾自身が 3-AP-free）。</p>
+
+<p><strong>しかし、この尾はほとんど何も足しません。</strong>寄与は Σ 1/(c·v) = 3.007939/c で、<strong>c = 161（M = 80）なら 0.0187 です。</strong></p>
+
+<div class="keyrow">
+<div><span class="k">分離した尾（c = 161）</span><span class="big">0.019</span><span class="s">安全だが、ほとんど稼げない</span></div>
+<div><span class="k">Szekeres の尾</span><span class="big">0.482</span><span class="s"><strong>同じ位置から 26 倍稼ぐ</strong></span></div>
+<div><span class="k">頭で稼げる差</span><span class="big">+0.038</span><span class="s">M=80 での R₃ と Szekeres の差。<strong>埋まらない</strong></span></div>
+</div>
+
+<div class="formula">2.5638 &nbsp;+&nbsp; 0.019 &nbsp;=&nbsp; 2.583 &nbsp;&lt;&nbsp; 3.008</div>
+
+<blockquote><p><strong>離せば安全だが、離した分だけ逆数和を失う。</strong>Szekeres が強いのは<strong>あらゆる尺度で薄く混ざっている</strong>から——尾が頭の隙間に入り込んでいて、離す必要がない。<br><br>
+<strong>離すことの代価が、この節の測った数です。</strong><br>
+記録の超過 0.00055 のほぼ全部は、Behrend 型の尾が自己相似な続きの尾より濃くなる尺度 2<sup>24.4</sup> から先で生まれています（§08）。この節の有限区間の計算が示しているのは、その手前——低い尺度では自己相似な続きが手術不能であること——です。</p></blockquote>
+
+<hr>
+
+<hr>
+
+<div class="sec"><span class="n">07</span><h2 id="記録の更新">記録が動いた — k=3 と k=4</h2></div>
+
+<p>ここまでは既知のものを測り直す作業でした。<strong>この節だけが、新しい下界です。</strong>k=3 も k=4 も、集合が等差数列を含まないことと記録を超えることは一つの Lean の定理です。節末の「この節の限界」まで含めて読んでください。</p>
+
+<div class="keyrow">
+<div><span class="k">1984年からの記録</span><span class="big">3.00849</span><span class="s">Wróblewski。構成の実際の値は 3.0084971</span></div>
+<div><span class="k">この記事の下界</span><span class="big">3.0085385221</span><span class="s">84 段の窓分離版。算術は厳密（整数と分数のみ）。Lean が保証するのは 3.0085385 まで</span></div>
+<div><span class="k">差</span><span class="big">+4.9×10⁻⁵</span><span class="s"><strong>変えたのは、ブロックの選び方と、段の取り方</strong></span></div>
+</div>
+
+<p><span class="label lean">Lean</span><code>APFree.BellmanRecord.erdos169_lower_record_939</code> — 84 段の集合は 3-AP を含まず、逆数和は 3.0085385 を超える（1984 年の記録 3.00849 も超える）。Wróblewski の補題 1・2 も証明文を書き下して機械検査に載せてあり、外から借りている命題はありません。</p>
+
+<h3>何を変えたのか</h3>
+
+<p>Wróblewski の構成は二つの部品でできています。<strong>頭</strong>（Szekeres 集合を 21 523 361 で切ったもの、逆数和 3.0042100）と、<strong>その先に継ぎ足していくブロックの列</strong>です。継ぎ方——集合 Z の後ろにブロック T の平行移動コピーを三つ置く操作——は、彼の補題がそのまま保証します。</p>
+
+<p><strong>継ぎ方も頭も変えていません。ブロックの列だけを替えました。</strong></p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>段</th><th>Wróblewski 1984</th><th>この記事</th></tr></thead>
+<tbody>
+<tr><td>0–1</td><td>B(4,9,5), B(4,10,5)</td><td>同じ</td></tr>
+<tr><td>2–5</td><td>B(6,9,12) … B(6,12,16)</td><td>同じ</td></tr>
+<tr><td><strong>6 以降</strong></td><td><strong>B(6, n+6, r<sub>n</sub>) を無限に</strong></td><td><strong>B(9,11,36), B(11,11,54), B(11,12,58), B(13,12,81), B(12,13,75), …</strong></td></tr>
+</tbody></table></div>
+
+<p>ここで B(p,q,r) は Behrend 型のブロックで、桁を <code>p</code> 通りから選び、基数 <code>2p−1</code> で並べ、桁の二次形式の和を <code>r</code> に固定したものです。</p>
+
+<h3>なぜそれで増えるのか</h3>
+
+<p>ブロック B(p,·,·) の元の個数は、その幅 N に対して <code>N^(log p / log(2p−1))</code> で増えます。この指数——<strong>次元</strong>——は p とともに上がります。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">p</th><th class="n">6</th><th class="n">9</th><th class="n">11</th><th class="n">12</th><th class="n">13</th></tr></thead>
+<tbody>
+<tr><td>次元 log p / log(2p−1)</td><td class="n">0.7472</td><td class="n">0.7702</td><td class="n">0.7796</td><td class="n">0.7823</td><td class="n">0.7846</td></tr>
+</tbody></table></div>
+
+<p><strong>Wróblewski は p = 6 に固定していました。</strong>1983年の計算機（ODRA 1305）で選んだパラメータが、そのまま 42 年残っていたことになります。</p>
+
+<blockquote><p>逆数和は小さい数に支配されるので、<strong>低い尺度では基数の小さいブロックが得です。</strong>しかし尺度が育つほど、次元の高い——つまり p の大きい——ブロックの方が得になります。<br>
+<strong>尺度とともに基数を育てる。</strong>それだけで、記録が動きました。</p></blockquote>
+
+<p>これは §02 で見た「壁は対数の指数のところにある」という構図と同じ形をしています。<strong>下界の側でも、効いているのは指数でした。</strong></p>
+
+<h3>どこまで厳密か</h3>
+
+<p><strong>浮動小数を一度も経由していません。</strong></p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>部分</th><th>やったこと</th></tr></thead>
+<tbody>
+<tr><td>集合が 3-AP-free であること</td><td>Wróblewski 1984 の補題 1・2 の証明文を書き下し、集合に当てるところまで Lean</td></tr>
+<tr><td>頭の逆数和</td><td>Σ ⌊10<sup>40</sup>/x⌋ / 10<sup>40</sup>（切り捨てなので下界）</td></tr>
+<tr><td>各ブロックの寄与</td><td>y = 2x − t の<strong>整数の冪和</strong>を桁ごとの動的計画で厳密に求め、等比級数の剰余を上から抑える</td></tr>
+<tr><td>総和の判定</td><td>有理数（分数）のまま比較</td></tr>
+</tbody></table></div>
+
+<p>84 段の値が <strong>3.0085385221</strong> です。打ち切りは下界を下げる方向にしか働かないので、この値はそのまま下界になります。Lean が保証するのは 3.0085385 まで、10 桁の値そのものは整数の厳密演算の側にあります。</p>
+
+
+<p class="small">※ 独立に組んだ浮動小数の実装（中心化モーメント展開）と、段ごとの寄与が 10<sup>−9</sup> 以内で一致することも確かめました。</p>
+
+<h3>この節の限界</h3>
+
+<ul>
+<li><strong>上界には何も言っていません。</strong>f(3) が有限であることは既に分かっており、この作業はその中で「実際に作れる集合」を一つ改善しただけです</li>
+<li><strong>効くかどうかは、固定した尺度での次元の比較ではなく、尾の落ち方で決まります。</strong>同じ形が k=4 でも効きます（下の<a href="#k4記録">「k=4 の記録も動いた」</a>）。k ≥ 5 には当てていません</li>
+<li>段の選び方（ベルマン）の最適性は主張しません。この枠の中に残っている余地は、粗い見積りで 5×10⁻⁶ 程度です</li>
+</ul>
+
+<h3 id="k4記録">k=4 の記録も動いた</h3>
+
+<p>§05 では、ケンプナー集合の族の中で Walker の集合が不動点であることを証明しました。族の外に出ると動きます。使ったのは §07 と同じ発想です——<strong>自己相似な続きを途中で切って、Behrend 型のブロックに乗り換える。</strong>k=3 で Wróblewski が Szekeres 集合に対してやったことを、k=4 で Walker の集合に対してやりました。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<tbody>
+<tr><td>2025年からの記録</td><td class="n"><strong>4.43975</strong></td><td>Walker。構成の実際の値は 4.4397533692</td></tr>
+<tr><td>この節の下界</td><td class="n"><strong>4.4397534742</strong></td><td>Walker の集合を 10<sup>30.355</sup> で切り、ブロックを 38 段。Lean が保証するのは 4.439753474215620 まで。整数厳密の挟み込みは 4.4397534744〜4.4397534745</td></tr>
+<tr><td>差</td><td class="n"><strong>+1.05×10⁻⁷</strong></td><td>小さいが、厳密に超えている</td></tr>
+</tbody></table></div>
+
+<h4>なぜ継げるのか — 補題が一つ</h4>
+
+<p>ブロックを継ぐとき、下の窓の一点と上の窓の k−1 点からなる k-AP が問題になります。Tao はこの問題のフォーラム（2025 年 9 月）でこの穴を指摘し、確率的に間引いて塞いでいますが、それでは数値の下界には使えません。次の補題は、同じ穴を損失なしに塞ぎます。</p>
+
+<blockquote><p><strong>補題（k ≥ 4）。</strong>頭が k-AP-free、各ブロックが (k−1)-AP-free、各ブロックの最小元がそれより前の全体の最大元の 2 倍より大きい（倍加税）ならば、和集合は k-AP-free。<strong>窓の長さに条件はない。</strong></p></blockquote>
+
+<p>証明は場合分けで一頁です（頭とブロックの境目をまたぐ隣接対があれば、公差は境目の幅以上になり、二項目が頭からはみ出す）。<strong>k=4 では、ブロックは 3-AP-free で足ります。</strong>つまり §07 で使った Wróblewski のブロックが、そのまま使えます。k=3 に戻すと、条件は Wróblewski の倍加税 a &gt; max(2z, z+t) と一致します。この補題は Lean 4 で証明されています（<code>APFree.Nesting.lemma2_four</code>、sorry なし、標準三公理のみ）。</p>
+
+<h4>なぜ超えるのか — 尾の落ち方</h4>
+
+<p>ケンプナー集合の尺度 z より上の尾は z<sup>−β</sup> で落ちます（Walker の集合では β = 0.240）。Behrend 型ブロックの尾は exp(−c√log z) でしか落ちません。後者はいずれ前者より濃くなるので、<strong>十分先で切って乗り換えれば、どの k についても、どの k-AP-free ケンプナー集合 K についても、f(k) &gt; H(K) が厳密に成り立ちます。</strong>Walker の Theorem 2.1 は f(k) がケンプナー集合の上限であることを言いますが、その上限はケンプナー集合では達成されません。k=3 では、この論法がそのまま Wróblewski 1984 の構成（Szekeres を 2.15×10<sup>7</sup> で切って Behrend に継いだ）の説明になっています。</p>
+
+<p>固定した尺度で次元を比べると k=4 には効かないように見えますが、それは見立ての側の誤りです。Behrend 型ブロックの次元は p とともに上がり（p = 400 で 0.897）、Walker の 0.7597 を超えます。ただし k=4 の頭は k=3 の頭（Szekeres、β = 0.369）より良いので、乗り換えの尺度が 10<sup>7</sup> から 10<sup>30</sup> へ押し出されます。<strong>頭が良すぎて、機械の出番が遅れる</strong>——差が 8 桁目にしか出ないのはそのためです。</p>
+
+<h4>どこまで厳密か — k=3 と同じ水準</h4>
+
+<p><strong>集合そのものが 4-AP-free で、逆数和が 4.439753474215620 を超えることは、Lean 4 の定理です</strong>（<code>APFree.FourTermRecord.setA4_apfree_and_lower</code>、記録 4.439753369254541 を超える形は <code>setA4_apfree_and_beats_walker</code>。sorry なし、native_decide なし、標準三公理のみ）。<span class="label lean">Lean</span>ここは分けて書きます。Lean の外に残るのは二点で、Walker の集合の逆数和の値そのものと、頭が Walker の集合の切り詰めと等しいことです。</p>
+
+<div style="overflow-x:auto"><table>
+<thead><tr><th>部品</th><th>k=3（§07 の更新版）</th><th>k=4（この節）</th></tr></thead>
+<tbody>
+<tr><td>継ぎ方の補題</td><td>Lean</td><td><strong>Lean</strong>（一般の補題として）</td></tr>
+<tr><td>補題を具体的な集合に当てる</td><td>Lean</td><td>Lean</td></tr>
+<tr><td>頭が 4-AP-free であること</td><td>Lean</td><td>Lean（Walker の Theorem 1.2 を一般の形で証明）</td></tr>
+<tr><td>ブロックが 3-AP-free であること</td><td>Lean</td><td>Lean（同じブロック）</td></tr>
+<tr><td>逆数和の下界</td><td>Lean（13 桁のうち 9 桁）</td><td>Lean（4.439753474215620。整数厳密の下界より 2.8×10⁻¹⁰ 低い）</td></tr>
+<tr><td>実装の独立性</td><td>二実装が 13 桁で一致</td><td>Lean と Python の二実装が 9 桁で一致</td></tr>
+<tr><td>Walker の集合の逆数和 H</td><td>—</td><td><strong>Lean の外</strong>。Lean が言うのは「A の和 &gt; 4.439753369254541」で、この数が H の上界を 15 桁で切り上げたものだという対応は整数厳密の Python の事実。Walker 自身の公表値 4.43975 を超えたことは Lean だけで言え、真値を超えたことは Lean と Python の両方で言う</td></tr>
+<tr><td>頭 = Walker の集合の切り詰め</td><td>—</td><td><strong>等号は未証明</strong>（部分集合であることと、その上の下界だけ。記録の主張には部分集合で足りる）</td></tr>
+</tbody></table></div>
+
+<p>Lean の証明は <a href="lean/index.html">Lean 検証一式</a>の束（名前空間 <code>APFree</code>）にあります。表の内部整合と「記録を超えている」ことは標準ライブラリだけの検算で、集合そのものの主定理は Lean で確かめられます。</p>
+<p class="small">定理名は Lean の束 <a href="lean/principia-src.tar.gz">principia-src.tar.gz</a>（名前空間 <code>APFree.*</code>、モジュール <code>Principia/APFree/*.lean</code>）のものです。証明書の置き場にある配布物のファイル名と名前空間は当時のもの（<code>Shiori959</code>・<code>Shiori1112</code> など）で、中身の定理は同じです。対応は <a href="lean/index.html">Lean 検証一式</a> に。</p>
+
+<h4>この節の限界</h4>
+
+<ul>
+<li><strong>差は 8 桁目です。</strong>7 桁目より上で動かすには、Walker の探索（無条件で b ≤ 88、刈り込み付きで b ≤ 200）を超える桁集合 S が要ります。尾の側で残っているのは 9〜10 桁目だけです</li>
+<li>段の選び方（ベルマン）の最適性は主張しません。選び方に使った見積りは浮動小数ですが、下界の正しさには関わりません</li>
+<li>頭の逆数和の Lean 下界は、切り捨ての葉（k=3 と同じ方法）では精度が出ませんでした（必要な深さで葉が数千万、30 時間の見込み）。四項の展開 1/(1+u) ≥ 1−u+u²−u³ をモーメントの漸化式で証明して葉に使い、深さ 1、13,545 葉、取りこぼし 9.9×10⁻¹¹ で押さえています。方法を替えて通ったのであって、問題が軽かったのではありません</li>
+</ul>
+
+<hr>
+
+<div class="sec"><span class="n">08</span><h2 id="残った">残ったこと</h2></div>
+
+<p class="small">動いた宿題の現在地は <a href="remaining.html">残っていること</a> にある。ここには現時点の未決だけを置く。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th></th><th>内容</th></tr></thead>
+<tbody>
+<tr><td><strong>言えた</strong></td><td>f(3) ≥ 3.0085385・f(4) ≥ 4.4397534742——集合が AP-free であることと記録を超えることが一つの定理<span class="label lean">Lean</span><code>APFree.BellmanRecord.erdos169_lower_record_939</code>・<code>APFree.FourTermRecord.setA4_apfree_and_beats_walker</code></td></tr>
+<tr><td><strong>言えた</strong></td><td>k=4：ケンプナー集合の族の中では Walker の集合が不動点（c = 55 の全 x で最適性を証明）。族の外——尾の乗り換え——で記録が動く<span class="label comp">計算</span></td></tr>
+<tr><td><strong>言えた</strong></td><td>k=3：十分条件で作れる木の族の中では Szekeres が最適（基数 ≤ 80）・Szekeres は M ≤ 52 でちょうど最適、M = 53 で初めて負ける<span class="label comp">計算</span></td></tr>
+<tr><td><strong>言えた</strong></td><td>記録の超過 0.00055 は尺度 2<sup>24.4</sup> から先——Behrend 型の尾が自己相似な続きの尾より濃くなる交差点——で生まれる。「頭（小さい数の部分）を替える」道は、記録の改良そのものの言い換えであって別の道ではない<span class="label known">既知</span></td></tr>
+<tr><td><strong>言えない</strong></td><td><strong>上界。</strong>f(3) の有限性の先には触れていない。k ≥ 5 はまだ「対数の指数」の土俵に上がっていない</td></tr>
+</tbody></table></div>
+
+<h3 id="対数尺度の軸">逆数和の対数尺度プロファイルの軸</h3>
+
+<p>下界の側の既知の結果を、一本の軸の上に並べる見方です。集合 <code>A</code> の、対数尺度での局所密度を <code>d<sub>A</sub>(ℓ)</code>（区間 <code>[e<sup>ℓ</sup>, e<sup>ℓ+h</sup>)</code> に入る割合の <code>h → 0</code> の極限）とすると、逆数和はその積分になります。</p>
+
+<div class="formula">Σ<sub>a∈A</sub> 1/a &nbsp;=&nbsp; ∫<sub>0</sub><sup>∞</sup> d<sub>A</sub>(ℓ) dℓ, &nbsp;&nbsp; f(k) &nbsp;=&nbsp; sup { ∫<sub>0</sub><sup>∞</sup> d<sub>A</sub>(ℓ) dℓ : A は k-AP を含まない }</div>
+
+<p>密度の落ち方を <code>−log d<sub>A</sub>(ℓ) ≈ c·ℓ<sup>b</sup></code> と書くと、<strong>既知の下界は指数 <code>b</code> の三つの値に分かれます。</strong><span class="label paper">紙</span></p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>指数</th><th>密度の形</th><th>運べる逆数和</th><th>既知の結果</th></tr></thead>
+<tbody>
+<tr><td><strong>b = 0</strong>（平ら）</td><td>密度 1/2 を有限の長さ <code>log W(k)</code> だけ</td><td><code>≈ (log 2/2)·k</code></td><td>Berlekamp 1968</td></tr>
+<tr><td><strong>b &lt; 1</strong>（冪）</td><td><code>e<sup>−cℓ<sup>b</sup></sup></code></td><td><code>O(1)</code>（<code>k</code> が育つほど減る）</td><td>Behrend・Rankin 型 ＝ Gerver 1977 の後半</td></tr>
+<tr><td><strong>b = 1</strong>（線形）</td><td><code>e<sup>−βℓ</sup></code></td><td><code>1/β</code></td><td>Gerver 1977 の前半・Walker 2025（Kempner 集合）</td></tr>
+</tbody></table></div>
+
+<p><code>b = 1</code> の <code>β</code> は Kempner 集合の余次元 <code>1 − log<sub>b</sub>|S|</code> です。<code>k</code> が素数のとき Gerver の集合では <code>β<sub>k</sub> ≈ 1/((k−1) log k)</code> で、<strong>Gerver 1977 の前半 <code>f(k) ≥ (1−o(1)) k log k</code> は「<code>b = 1</code> で取れる最良の <code>β</code> が <code>1/(k log k)</code> 程度」と同じことを言っています。</strong>同じ論文の後半——Rankin 型の集合の逆数和は <code>k</code> に依らない定数で抑えられる——は、<code>b &lt; 1</code> の点が <code>O(1)</code> で頭打ちになることの証明として読めます。<span class="label known">既知</span> 同じ論文に並んだ二つの定理が、この軸の上では二つの点の比較になります。<code>b = 0</code> の Berlekamp の塗り分けは、密度 1/2 が設問の壁の定数 1/2 の出所であることを示しています。</p>
+
+<blockquote><p><strong>下界の側では <code>f(k) ≍ 1/β<sub>k</sub></code> と読める。</strong>測るべき量は <code>b = 1</code> の <code>β</code>、つまり頭の集合の次元である。</p></blockquote>
+
+<p>実際、五つの記録の頭で逆数和は <strong><code>H ≈ 1.08/β</code>（±3%）</strong>に収まりました——<code>k = 3</code> で 1.110、<code>k = 4</code> で 1.067、<code>k = 5</code> で 1.091、<code>k = 7</code> で 1.069、<code>k = 10</code> で 1.089。<span class="label comp">計算</span> これは候補を選り分ける目安であって、証明ではありません。±3% の幅は <code>k = 5</code> で ±0.24 にあたり、記録を超えるのに要る余裕よりはるかに大きいので、逆数和そのものは関数方程式で別に確かめる必要があります。</p>
+
+<h4>継ぎ足しの取り分 <code>exp(−c²/β)</code></h4>
+
+<p>§06・§07 の記録の更新は、頭（<code>b = 1</code>）を尺度 <code>e<sup>L</sup></code> で切り、その先を Behrend 型のブロック（<code>b = 1/2</code>）で継ぐものでした。頭の尾は <code>e<sup>−βL</sup></code>、継いだ尾は <code>e<sup>−c√L</sup></code> の形で減るので、交差点は <code>√L ≈ c/β</code> にあり、そこで</p>
+
+<div class="formula">継ぎ足しの取り分 &nbsp;≈&nbsp; exp(−c<sub>eff</sub><sup>2</sup> / β<sub>k</sub>)、&nbsp; 前因子は O(1)</div>
+
+<p>となります。<span class="label paper">紙</span> 実効的な定数 <code>c<sub>eff</sub></code> を既知の二つの交差点（<code>k = 3</code> と <code>k = 4</code>）だけで較正すると、モデルの値と実際の更新幅は次のとおりです。<span class="label comp">計算</span></p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">k</th><th class="n">β<sub>k</sub></th><th class="n">モデルの取り分</th><th class="n">実際の更新幅</th><th class="n">交差の尺度</th></tr></thead>
+<tbody>
+<tr><td class="n">3</td><td class="n">0.369070</td><td class="n">4.7×10<sup>−4</sup></td><td class="n">5.5×10<sup>−4</sup></td><td class="n">10<sup>7.3</sup></td></tr>
+<tr><td class="n">4</td><td class="n">0.240262</td><td class="n">6.7×10<sup>−8</sup></td><td class="n">1.05×10<sup>−7</sup></td><td class="n">10<sup>30</sup></td></tr>
+<tr><td class="n">5</td><td class="n">0.138647</td><td class="n">7.9×10<sup>−16</sup></td><td class="n">—</td><td class="n">10<sup>112</sup></td></tr>
+<tr><td class="n">7</td><td class="n">0.079218</td><td class="n">7.3×10<sup>−30</sup></td><td class="n">—</td><td class="n">10<sup>377</sup></td></tr>
+<tr><td class="n">10</td><td class="n">0.077460</td><td class="n">1.5×10<sup>−30</sup></td><td class="n">—</td><td class="n">10<sup>395</sup></td></tr>
+</tbody></table></div>
+
+<p><code>β<sub>k</sub> ≈ 1/((k−1) log k) ≈ 1/f(k)</code> なので、<strong>取り分はおおよそ <code>exp(−c<sup>2</sup>·f(k))</code>——記録そのものの大きさが指数に立ちます。</strong>記録が良くなるほど、継ぎ足しで動かすのは指数的に難しくなる。<code>k = 3</code> の 0.00055 と <code>k = 4</code> の 1.05×10<sup>−7</sup> は、この形の最初の二項です。逆に、頭の次元を 0.001 上げることの価値は <code>k = 5</code> で約 0.056、<code>k = 7</code> で約 0.17 あり、継ぎ足しの 14〜30 桁分にあたります。</p>
+
+<p class="small"><strong>この節の限界。</strong>取り分の式は二点で較正したモデルで、<code>k ≥ 5</code> の行は予言です。<code>k = 5, 7</code> の記録の値はこの道具で独立に再現していません。Rankin 型の定数は文献で定まった値を確かめていません。上界の側の「対数の指数」は下界の構成の座標を持たず、この軸は上界については何も言いません。Gerver 1977 の前半と後半を一本の軸の上の二点として並べた記述は、探した範囲では見当たりません。</p>
+
+<h3>現時点の未決</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>未決</th><th>どこで止まっているか</th></tr></thead>
+<tbody>
+<tr><td><strong>母関数版の壁（円分性の命題）</strong></td><td>S が 3-AP-free なら「P<sub>S</sub>(x) = Σ<sub>d∈S</sub> x<sup>d</sup> の根が全部単位円上 ⟺ S が二元集合 {0,c<sub>i</sub>} の直和」。⇐ は自明、⇒ が本体（3-AP-free の仮定を外すと偽）。deg ≤ 52 で反例なし<span class="label comp">計算</span>。局所主張（昇格補題）に還元され、帰納の一歩は c &gt; D/3 で通る<span class="label paper">紙</span>。一般は未了。探した範囲では活字に見当たらない</td></tr>
+<tr><td><strong>k = 8</strong></td><td>Kempner 型は b ≤ 200 で、b = 121 を除き記録 13.5332472 以下（接頭辞カットで b = 91 が落ちた）<span class="label comp">計算</span>。b = 121 は規模の壁で止めてある</td></tr>
+<tr><td><strong>k = 5 の記録値</strong></td><td>文献値 7.866 は誤りで、Kempner 集合 G₅ の逆数和は 7.8723049<span class="label comp">計算</span>。k ≥ 5 では、下界の側から測る量がまだ土俵に上がっていない</td></tr>
+<tr><td><strong>k=3 の枠の外</strong></td><td>窓を 4 個以上にするか、Behrend 以外のブロック族を使うか。枠の中に残っている余地は 5×10⁻⁶ 程度</td></tr>
+</tbody></table></div>
+
+<hr>
+
+<h2 id="出典">出典と再現</h2>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>もの</th><th>種別</th><th>出典・道具</th></tr></thead>
+<tbody>
+<tr><td>#3（等差数列予想）⟺ すべての k で f(k) 有限</td><td>定理</td><td>Gerver</td></tr>
+<tr><td>ケンプナー集合への還元</td><td>定理</td><td>Walker 2025, arXiv:2203.06045</td></tr>
+<tr><td>f(3) ≥ 3.00849 / f(4) ≥ 4.43975</td><td>記録</td><td>Wróblewski 1984 / Walker 2025</td></tr>
+<tr><td>Behrend 集合（密度 N<sup>−c√(log N)</sup>）</td><td>定理</td><td>Behrend (1946)</td></tr>
+<tr><td>r<sub>3</sub>(N) の厳密値</td><td><strong>この端末で計算</strong></td><td>分枝限定。<strong>OEIS A003002 と一致</strong></td></tr>
+<tr><td>Walker の記録集合の再現</td><td><strong>この端末で計算</strong></td><td><strong>4.4397534、差 0.0</strong></td></tr>
+<tr><td>六通りの探索（k=3）</td><td><strong>この端末で計算</strong></td><td>すべて 3.007939</td></tr>
+<tr><td><strong>k=4 の不動点の証明（c=55）</strong></td><td><strong>この端末で計算</strong></td><td>CP-SAT に最適性を証明させた。全 x で計 2,501 秒</td></tr>
+<tr><td><strong>f(4) ≥ 4.4397534742（Walker の集合＋ブロック 38 段）</strong></td><td><strong>機械検査</strong>／この端末で計算</td><td>整数厳密の挟み込み。段の表・スクリプト・補題の Lean は証明書の置き場</td></tr>
+<tr><td>次元の走査（c = 4〜157）</td><td><strong>この端末で計算</strong></td><td>CP-SAT で最大 4-AP-free 集合</td></tr>
+<tr><td><strong>R₃(M)（有限区間の最適）</strong></td><td><strong>この端末で計算</strong></td><td>CP-SAT で厳密最大化。<strong>証明できた M だけ</strong></td></tr>
+<tr><td>Behrend 型の構成と 3-AP-free 判定</td><td><strong>この端末で計算</strong></td><td>15 通りすべてで 3-AP-free を確認</td></tr>
+</tbody></table></div>
+
+<p><strong>この記事の §07 と §08 の「対数尺度プロファイルの軸」以外に、新しい数学はありません。</strong>軸の節は既知の二つ（Gerver 1977 の前半と後半）を繋いだ見方です。使った定理と、Wróblewski の構成の枠組みは公表されているものです。<strong>「書かれていないかもしれない」と書けるのは二箇所だけ</strong>で、どちらにも但し書きが付きます。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>言明</th><th>但し書き</th></tr></thead>
+<tbody>
+<tr><td>Walker の集合は、階層ごと・枝ごとに構造を変える族の中でも最適</td><td><strong>十分条件で作れる族の中で、基数の範囲つき</strong></td></tr>
+<tr><td>Szekeres は M ≤ 52 でちょうど最適、M=53 で初めて負ける</td><td><strong>計算すれば誰でも出せる。</strong>新規性というより未計算だっただけかもしれない</td></tr>
+<tr><td>f(3) ≥ 3.0085385221</td><td><strong>下界。</strong>3-AP を含まないことと記録を超えることは、補題 1・2 も含めて Lean（保証は 3.0085385 まで）。10 桁の値は整数の厳密演算</td></tr>
+</tbody></table></div>
+
+
+<hr>
+
+<div class="revised"><strong>改訂</strong> 2026-09-17：全面改訂。<br>2026-10-02：§08 に「逆数和の対数尺度プロファイルの軸」を追加。</div>
+
+<p>この問題は、<a href="random-draw.html">無作為の抽選</a>で当たったものです。</p>
+
+<p><strong>仕組みの違う探索が六通り、同じ値を返す——それは、その点が本当に最大であることの強い示唆です。ただしその確信は、課した条件の内側でしか成り立ちません。</strong>条件の外に、42年前の記録があります。</p>
+
+</main>
+<footer class="site-foot">
+  <p class="tagline">我計算する、ゆえに我あり — 人とAIの思考を見つめる場</p>
+  <p class="small"><a href="../privacy.html">プライバシーポリシー</a> &middot; <a href="../contact.html">お問い合わせ</a></p>
+  <p class="small">&copy; 2026 きいち・燐・栞</p>
+</footer>
+
+<script id="EDATA" type="application/json">{"walls": [{"th": 0.6, "y": [1.0, 1.6598, 2.177, 2.6123, 2.993, 3.3343, 3.6455, 3.9326, 4.2002, 4.4514, 4.6886, 4.9138, 5.1284, 5.3337, 5.5306, 5.7201, 5.9028, 6.0793, 6.2502, 6.4159, 6.5769, 6.7334, 6.8858, 7.0343, 7.1793, 7.3209, 7.4593, 7.5947, 7.7273, 7.8572, 7.9846, 8.1096, 8.2324, 8.3529, 8.4713, 8.5878, 8.7024, 8.8151, 8.9262, 9.0355, 9.1432, 9.2494, 9.3541, 9.4574, 9.5592, 9.6598, 9.759, 9.857, 9.9538, 10.0495, 10.144, 10.2374, 10.3297, 10.4211, 10.5114, 10.6007, 10.6891, 10.7766, 10.8632, 10.9489, 11.0338, 11.1179, 11.2011, 11.2836, 11.3653, 11.4463, 11.5265, 11.606, 11.6848, 11.763, 11.8405, 11.9173, 11.9935, 12.0691, 12.1441, 12.2185, 12.2923, 12.3655, 12.4382, 12.5104, 12.582, 12.653, 12.7236, 12.7936, 12.8632, 12.9323, 13.0009, 13.069, 13.1367, 13.2039, 13.2706, 13.337, 13.4029, 13.4684, 13.5334, 13.5981, 13.6624, 13.7262, 13.7897, 13.8528, 13.9155, 13.9779, 14.0398, 14.1015, 14.1627, 14.2237, 14.2843, 14.3445, 14.4044, 14.464, 14.5233, 14.5822, 14.6409, 14.6992, 14.7572, 14.8149, 14.8724, 14.9295, 14.9863, 15.0429, 15.0992, 15.1552, 15.2109, 15.2663, 15.3215, 15.3765, 15.4311, 15.4855, 15.5397, 15.5936, 15.6473, 15.7007, 15.7538, 15.8068, 15.8595, 15.9119, 15.9642, 16.0162, 16.068, 16.1195, 16.1709, 16.222, 16.2729, 16.3236, 16.3741, 16.4244, 16.4744, 16.5243, 16.574, 16.6234, 16.6727, 16.7218, 16.7707, 16.8194, 16.8679, 16.9162, 16.9643, 17.0123, 17.0601, 17.1077, 17.1551, 17.2023, 17.2494, 17.2963, 17.343, 17.3895, 17.4359, 17.4821, 17.5282, 17.5741, 17.6198, 17.6654, 17.7108, 17.7561, 17.8012, 17.8461, 17.8909, 17.9355, 17.98, 18.0244, 18.0686, 18.1126, 18.1565, 18.2003, 18.2439, 18.2874, 18.3307, 18.3739, 18.417, 18.4599, 18.5027, 18.5454, 18.5879, 18.6303, 18.6726, 18.7147, 18.7567, 18.7986, 18.8403, 18.882]}, {"th": 0.8, "y": [1.0, 1.5743, 1.9896, 2.3195, 2.5954, 2.8339, 3.0447, 3.2342, 3.4066, 3.5651, 3.712, 3.8489, 3.9774, 4.0985, 4.2131, 4.3219, 4.4256, 4.5246, 4.6195, 4.7105, 4.798, 4.8824, 4.9638, 5.0425, 5.1186, 5.1924, 5.264, 5.3335, 5.4012, 5.467, 5.5311, 5.5936, 5.6546, 5.7141, 5.7723, 5.8292, 5.8848, 5.9393, 5.9926, 6.0449, 6.0962, 6.1465, 6.1958, 6.2442, 6.2918, 6.3386, 6.3845, 6.4297, 6.4742, 6.5179, 6.5609, 6.6033, 6.6451, 6.6862, 6.7267, 6.7667, 6.806, 6.8449, 6.8832, 6.921, 6.9583, 6.9951, 7.0315, 7.0674, 7.1028, 7.1378, 7.1724, 7.2066, 7.2404, 7.2739, 7.3069, 7.3396, 7.3719, 7.4038, 7.4354, 7.4667, 7.4977, 7.5283, 7.5587, 7.5887, 7.6184, 7.6479, 7.677, 7.7059, 7.7345, 7.7628, 7.7909, 7.8188, 7.8463, 7.8737, 7.9007, 7.9276, 7.9542, 7.9806, 8.0068, 8.0327, 8.0585, 8.084, 8.1093, 8.1344, 8.1594, 8.1841, 8.2086, 8.233, 8.2571, 8.2811, 8.3049, 8.3285, 8.3519, 8.3752, 8.3983, 8.4213, 8.444, 8.4667, 8.4891, 8.5114, 8.5336, 8.5556, 8.5775, 8.5992, 8.6207, 8.6422, 8.6634, 8.6846, 8.7056, 8.7265, 8.7472, 8.7678, 8.7883, 8.8087, 8.8289, 8.849, 8.869, 8.8889, 8.9087, 8.9283, 8.9478, 8.9673, 8.9866, 9.0057, 9.0248, 9.0438, 9.0627, 9.0814, 9.1001, 9.1187, 9.1371, 9.1555, 9.1737, 9.1919, 9.2099, 9.2279, 9.2458, 9.2636, 9.2813, 9.2989, 9.3164, 9.3338, 9.3511, 9.3684, 9.3855, 9.4026, 9.4196, 9.4365, 9.4533, 9.4701, 9.4868, 9.5033, 9.5198, 9.5363, 9.5526, 9.5689, 9.5851, 9.6012, 9.6173, 9.6333, 9.6492, 9.665, 9.6808, 9.6965, 9.7121, 9.7277, 9.7431, 9.7586, 9.7739, 9.7892, 9.8044, 9.8196, 9.8347, 9.8497, 9.8647, 9.8796, 9.8944, 9.9092, 9.9239, 9.9386, 9.9532, 9.9678, 9.9822, 9.9967]}, {"th": 1.0, "y": [1.0, 1.5, 1.8333, 2.0833, 2.2833, 2.45, 2.5929, 2.7179, 2.829, 2.929, 3.0199, 3.1032, 3.1801, 3.2516, 3.3182, 3.3807, 3.4396, 3.4951, 3.5477, 3.5977, 3.6454, 3.6908, 3.7343, 3.776, 3.816, 3.8544, 3.8915, 3.9272, 3.9617, 3.995, 4.0272, 4.0585, 4.0888, 4.1182, 4.1468, 4.1746, 4.2016, 4.2279, 4.2535, 4.2785, 4.3029, 4.3267, 4.35, 4.3727, 4.3949, 4.4167, 4.438, 4.4588, 4.4792, 4.4992, 4.5188, 4.538, 4.5569, 4.5754, 4.5936, 4.6115, 4.629, 4.6463, 4.6632, 4.6799, 4.6963, 4.7124, 4.7283, 4.7439, 4.7593, 4.7744, 4.7894, 4.8041, 4.8186, 4.8328, 4.8469, 4.8608, 4.8745, 4.888, 4.9014, 4.9145, 4.9275, 4.9403, 4.953, 4.9655, 4.9778, 4.99, 5.0021, 5.014, 5.0257, 5.0374, 5.0489, 5.0602, 5.0715, 5.0826, 5.0936, 5.1044, 5.1152, 5.1258, 5.1363, 5.1468, 5.1571, 5.1673, 5.1774, 5.1874, 5.1973, 5.2071, 5.2168, 5.2264, 5.2359, 5.2454, 5.2547, 5.264, 5.2731, 5.2822, 5.2912, 5.3002, 5.309, 5.3178, 5.3265, 5.3351, 5.3437, 5.3521, 5.3605, 5.3689, 5.3771, 5.3853, 5.3935, 5.4015, 5.4095, 5.4175, 5.4253, 5.4331, 5.4409, 5.4486, 5.4562, 5.4638, 5.4713, 5.4788, 5.4862, 5.4935, 5.5008, 5.5081, 5.5153, 5.5224, 5.5295, 5.5366, 5.5436, 5.5505, 5.5574, 5.5642, 5.571, 5.5778, 5.5845, 5.5912, 5.5978, 5.6044, 5.6109, 5.6174, 5.6239, 5.6303, 5.6366, 5.643, 5.6493, 5.6555, 5.6617, 5.6679, 5.674, 5.6801, 5.6862, 5.6922, 5.6982, 5.7042, 5.7101, 5.716, 5.7218, 5.7276, 5.7334, 5.7391, 5.7449, 5.7505, 5.7562, 5.7618, 5.7674, 5.7729, 5.7785, 5.784, 5.7894, 5.7949, 5.8003, 5.8056, 5.811, 5.8163, 5.8216, 5.8269, 5.8321, 5.8373, 5.8425, 5.8476, 5.8528, 5.8579, 5.863, 5.868, 5.873, 5.878]}, {"th": 1.2, "y": [1.0, 1.4353, 1.7029, 1.8923, 2.0373, 2.1537, 2.2505, 2.333, 2.4046, 2.4677, 2.524, 2.5747, 2.6207, 2.6629, 2.7017, 2.7376, 2.7709, 2.8021, 2.8313, 2.8588, 2.8847, 2.9092, 2.9324, 2.9545, 2.9755, 2.9955, 3.0147, 3.033, 3.0506, 3.0675, 3.0837, 3.0993, 3.1144, 3.1289, 3.143, 3.1565, 3.1697, 3.1824, 3.1947, 3.2066, 3.2183, 3.2295, 3.2405, 3.2512, 3.2615, 3.2716, 3.2815, 3.2911, 3.3005, 3.3096, 3.3185, 3.3273, 3.3358, 3.3441, 3.3523, 3.3603, 3.3681, 3.3757, 3.3832, 3.3906, 3.3978, 3.4049, 3.4118, 3.4186, 3.4253, 3.4318, 3.4383, 3.4446, 3.4508, 3.4569, 3.4629, 3.4688, 3.4746, 3.4803, 3.486, 3.4915, 3.4969, 3.5023, 3.5076, 3.5128, 3.5179, 3.523, 3.528, 3.5329, 3.5377, 3.5425, 3.5472, 3.5518, 3.5564, 3.5609, 3.5654, 3.5698, 3.5741, 3.5784, 3.5826, 3.5868, 3.5909, 3.595, 3.5991, 3.603, 3.607, 3.6109, 3.6147, 3.6185, 3.6222, 3.626, 3.6296, 3.6333, 3.6369, 3.6404, 3.6439, 3.6474, 3.6508, 3.6542, 3.6576, 3.6609, 3.6642, 3.6675, 3.6707, 3.6739, 3.6771, 3.6802, 3.6833, 3.6864, 3.6894, 3.6925, 3.6955, 3.6984, 3.7013, 3.7043, 3.7071, 3.71, 3.7128, 3.7156, 3.7184, 3.7211, 3.7239, 3.7266, 3.7293, 3.7319, 3.7346, 3.7372, 3.7398, 3.7423, 3.7449, 3.7474, 3.7499, 3.7524, 3.7549, 3.7573, 3.7597, 3.7622, 3.7645, 3.7669, 3.7693, 3.7716, 3.7739, 3.7762, 3.7785, 3.7808, 3.783, 3.7852, 3.7875, 3.7897, 3.7918, 3.794, 3.7962, 3.7983, 3.8004, 3.8025, 3.8046, 3.8067, 3.8088, 3.8108, 3.8128, 3.8149, 3.8169, 3.8189, 3.8208, 3.8228, 3.8248, 3.8267, 3.8286, 3.8305, 3.8324, 3.8343, 3.8362, 3.8381, 3.8399, 3.8418, 3.8436, 3.8454, 3.8472, 3.849, 3.8508, 3.8526, 3.8544, 3.8561, 3.8579, 3.8596]}, {"th": 1.5, "y": [1.0, 1.3536, 1.546, 1.671, 1.7604, 1.8285, 1.8825, 1.9267, 1.9637, 1.9953, 2.0227, 2.0468, 2.0681, 2.0872, 2.1044, 2.1201, 2.1343, 2.1474, 2.1595, 2.1707, 2.1811, 2.1908, 2.1998, 2.2083, 2.2163, 2.2239, 2.231, 2.2378, 2.2442, 2.2502, 2.256, 2.2616, 2.2668, 2.2719, 2.2767, 2.2813, 2.2858, 2.2901, 2.2942, 2.2981, 2.3019, 2.3056, 2.3091, 2.3126, 2.3159, 2.3191, 2.3222, 2.3252, 2.3281, 2.3309, 2.3337, 2.3364, 2.3389, 2.3415, 2.3439, 2.3463, 2.3486, 2.3509, 2.3531, 2.3552, 2.3573, 2.3594, 2.3614, 2.3633, 2.3653, 2.3671, 2.3689, 2.3707, 2.3725, 2.3742, 2.3759, 2.3775, 2.3791, 2.3807, 2.3822, 2.3837, 2.3852, 2.3866, 2.3881, 2.3895, 2.3908, 2.3922, 2.3935, 2.3948, 2.3961, 2.3973, 2.3986, 2.3998, 2.401, 2.4021, 2.4033, 2.4044, 2.4055, 2.4066, 2.4077, 2.4088, 2.4098, 2.4109, 2.4119, 2.4129, 2.4139, 2.4148, 2.4158, 2.4167, 2.4177, 2.4186, 2.4195, 2.4204, 2.4212, 2.4221, 2.423, 2.4238, 2.4246, 2.4255, 2.4263, 2.4271, 2.4279, 2.4286, 2.4294, 2.4302, 2.4309, 2.4317, 2.4324, 2.4331, 2.4338, 2.4346, 2.4353, 2.4359, 2.4366, 2.4373, 2.438, 2.4386, 2.4393, 2.4399, 2.4406, 2.4412, 2.4418, 2.4424, 2.443, 2.4436, 2.4442, 2.4448, 2.4454, 2.446, 2.4466, 2.4471, 2.4477, 2.4483, 2.4488, 2.4493, 2.4499, 2.4504, 2.4509, 2.4515, 2.452, 2.4525, 2.453, 2.4535, 2.454, 2.4545, 2.455, 2.4555, 2.456, 2.4564, 2.4569, 2.4574, 2.4578, 2.4583, 2.4588, 2.4592, 2.4597, 2.4601, 2.4605, 2.461, 2.4614, 2.4618, 2.4623, 2.4627, 2.4631, 2.4635, 2.4639, 2.4643, 2.4647, 2.4651, 2.4655, 2.4659, 2.4663, 2.4667, 2.4671, 2.4675, 2.4678, 2.4682, 2.4686, 2.469, 2.4693, 2.4697, 2.4701, 2.4704, 2.4708, 2.4711]}], "runs": [["貪欲（そのつど取れるものを取る）", 2.9466, "A005836+1"], ["総当たり（基数 ≤ 28 のケンプナー集合）", 3.007939, "b=3,S={0,1}"], ["山登り（基数 ≤ 400 を無作為に）", 3.007939, "b=3,S={0,1}"], ["CP-SAT で厳密最大化（混合基数 c=3..70）", 3.007939, "c=3,F={0,1}"], ["ベルマン方程式（木の族、基数 ≤ 70）", 3.007939015, "c=3,F={0,1}"], ["精密版ベルマン（±1 の義務を状態に、基数 ≤ 80）", 3.007939027, "c=3,F={0,1}"]], "conv": [[0, 1.0], [1, 1.5], [2, 1.950000003], [3, 2.289260745], [4, 2.525698916], [5, 2.685740506], [6, 2.792982449], [7, 2.864599558], [8, 2.912371576], [9, 2.944225654], [10, 2.965463054], [11, 2.979621621], [12, 2.989060732], [13, 2.995353487], [14, 2.999548661], [15, 3.002345444], [16, 3.004209966], [17, 3.005452981], [18, 3.006281657], [19, 3.006834108], [20, 3.007202409], [21, 3.007447943], [22, 3.007611632], [23, 3.007720758], [24, 3.007793509], [25, 3.00784201]], "mem": [1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "run": [1.0, 1.5, 1.75, 1.95, 2.05, 2.140909, 2.217832, 2.289261, 2.324975, 2.359458, 2.391716, 2.422966, 2.449993, 2.476309, 2.501309, 2.525699, 2.537894, 2.549942, 2.561707, 2.573335, 2.584324, 2.595193, 2.605832, 2.616358, 2.625532, 2.634623, 2.643552, 2.652401, 2.660876, 2.669279, 2.677544, 2.68574, 2.689839, 2.69392, 2.697969, 2.702001, 2.705954, 2.709891, 2.713797, 2.717688, 2.721378, 2.725055, 2.728704, 2.732341, 2.735912, 2.739471, 2.743004, 2.746526, 2.749602, 2.75267, 2.755719, 2.758758, 2.761752, 2.764737, 2.767705, 2.770663, 2.773504, 2.776337, 2.779154, 2.781963, 2.784733, 2.787495, 2.790243, 2.792982, 2.794352, 2.79572, 2.797085, 2.798447, 2.7998, 2.801151, 2.802499, 2.803845, 2.805166, 2.806485, 2.807801, 2.809115, 2.810421, 2.811724, 2.813025, 2.814324, 2.815557, 2.816788, 2.818017, 2.819244, 2.820463, 2.821681, 2.822896, 2.82411, 2.825303, 2.826495, 2.827684, 2.828872, 2.830052, 2.831232, 2.832408, 2.833583, 2.834611, 2.835638, 2.836662, 2.837686, 2.838704, 2.839721, 2.840737, 2.841751, 2.842751, 2.84375, 2.844747, 2.845743, 2.846734, 2.847724, 2.848712, 2.849699, 2.850648, 2.851596, 2.852542, 2.853487, 2.854428, 2.855368, 2.856306, 2.857243, 2.858168, 2.859092, 2.860015, 2.860937, 2.861854, 2.862771, 2.863685, 2.8646, 2.865057, 2.865513, 2.86597, 2.866426, 2.866881, 2.867336, 2.867791, 2.868245, 2.868697, 2.869148, 2.869599, 2.870049, 2.870499, 2.870948, 2.871397, 2.871846, 2.872287, 2.872727, 2.873168, 2.873608, 2.874047, 2.874485, 2.874924, 2.875362, 2.875797, 2.876233, 2.876668, 2.877103, 2.877536, 2.87797, 2.878403, 2.878836, 2.879248, 2.879659, 2.88007, 2.880481, 2.88089, 2.8813, 2.881709, 2.882119, 2.882525, 2.882932, 2.883338, 2.883745, 2.88415, 2.884555, 2.88496, 2.885365, 2.885763, 2.886161, 2.886558, 2.886956, 2.887352, 2.887749, 2.888145, 2.888541, 2.888935, 2.889329, 2.889722, 2.890115, 2.890508, 2.8909, 2.891292, 2.891684, 2.892027, 2.892369, 2.892712, 2.893054, 2.893396, 2.893738, 2.894079, 2.89442, 2.89476, 2.8951, 2.895439, 2.895778, 2.896117, 2.896455, 2.896794, 2.897132, 2.897465, 2.897799, 2.898132, 2.898465, 2.898798, 2.89913, 2.899462, 2.899794, 2.900125, 2.900456, 2.900786, 2.901116, 2.901446, 2.901775, 2.902104, 2.902433, 2.90275, 2.903066, 2.903382, 2.903698, 2.904014, 2.904329, 2.904645, 2.90496, 2.905274, 2.905587, 2.905901, 2.906214, 2.906527, 2.90684, 2.907153, 2.907465, 2.907774, 2.908082, 2.90839, 2.908698, 2.909006, 2.909314, 2.909621, 2.909928, 2.910234, 2.91054, 2.910846, 2.911152, 2.911457, 2.911762, 2.912067, 2.912372, 2.912524, 2.912676, 2.912829, 2.912981, 2.913133, 2.913285, 2.913437, 2.91359, 2.913741, 2.913893, 2.914045, 2.914196, 2.914348, 2.914499, 2.914651, 2.914802, 2.914953, 2.915103, 2.915254, 2.915404, 2.915555, 2.915705, 2.915855, 2.916006, 2.916155, 2.916305, 2.916455, 2.916605, 2.916755, 2.916904, 2.917054, 2.917204, 2.917351, 2.917498, 2.917645, 2.917791, 2.917938, 2.918085, 2.918232, 2.918378, 2.918525, 2.918671, 2.918817, 2.918964, 2.91911, 2.919256, 2.919402, 2.919548, 2.919693, 2.919839, 2.919984, 2.920129, 2.920274, 2.920419, 2.920564, 2.920709, 2.920853, 2.920998, 2.921143, 2.921287, 2.921432, 2.921576, 2.921721, 2.921865, 2.922002, 2.922139, 2.922276, 2.922413, 2.92255, 2.922687, 2.922824, 2.922961, 2.923098, 2.923234, 2.923371, 2.923508, 2.923644, 2.923781, 2.923917, 2.924053, 2.924189, 2.924325, 2.92446, 2.924596, 2.924731, 2.924867, 2.925002, 2.925138, 2.925273, 2.925408, 2.925543, 2.925678, 2.925813, 2.925948, 2.926083, 2.926218, 2.926351, 2.926483, 2.926616, 2.926749, 2.926881, 2.927014, 2.927146, 2.927279, 2.927411, 2.927543, 2.927676, 2.927808, 2.92794, 2.928072, 2.928204, 2.928336, 2.928467, 2.928599, 2.92873, 2.928861, 2.928992, 2.929123, 2.929255, 2.929386, 2.929517, 2.929647, 2.929778, 2.929909, 2.93004, 2.93017, 2.930301, 2.930432, 2.930546, 2.93066, 2.930775, 2.930889, 2.931003, 2.931117, 2.931231, 2.931345, 2.931459, 2.931573, 2.931687, 2.931801, 2.931915, 2.932029, 2.932142, 2.932256, 2.93237, 2.932483, 2.932596, 2.932709, 2.932822, 2.932935, 2.933049, 2.933162, 2.933275, 2.933387, 2.9335, 2.933613, 2.933726, 2.933839, 2.933951, 2.934064, 2.934175, 2.934287, 2.934398, 2.934509, 2.93462, 2.934731, 2.934842, 2.934953, 2.935064, 2.935175, 2.935286, 2.935397, 2.935507, 2.935618, 2.935729, 2.93584, 2.93595, 2.93606, 2.93617, 2.93628, 2.93639, 2.936501, 2.936611, 2.936721, 2.936831, 2.93694, 2.93705, 2.93716, 2.93727, 2.93738, 2.937489, 2.937599, 2.937705, 2.93781, 2.937916, 2.938021, 2.938127, 2.938232, 2.938337, 2.938443, 2.938548, 2.938653, 2.938758, 2.938863, 2.938969, 2.939074, 2.939179, 2.939284, 2.939388, 2.939493, 2.939598, 2.939702, 2.939807, 2.939911, 2.940016, 2.94012, 2.940224, 2.940329, 2.940433, 2.940537, 2.940642, 2.940746, 2.94085, 2.940954, 2.941057, 2.94116, 2.941263, 2.941365, 2.941468, 2.941571, 2.941674, 2.941777, 2.941879, 2.941982, 2.942084, 2.942187, 2.942289, 2.942392, 2.942494, 2.942597, 2.942699, 2.942801, 2.942903, 2.943005, 2.943107, 2.943208, 2.94331, 2.943412, 2.943514, 2.943616, 2.943717, 2.943819, 2.943921, 2.944022, 2.944124, 2.944226, 2.944276, 2.944327, 2.944378, 2.944429, 2.94448, 2.94453, 2.944581, 2.944632, 2.944683, 2.944733, 2.944784, 2.944835, 2.944886, 2.944936, 2.944987, 2.945038, 2.945088, 2.945139, 2.945189, 2.94524, 2.945291, 2.945341, 2.945392, 2.945442, 2.945493, 2.945543, 2.945594, 2.945644, 2.945695, 2.945745, 2.945796, 2.945846, 2.945897, 2.945947, 2.945997, 2.946047, 2.946097, 2.946147, 2.946198, 2.946248, 2.946298, 2.946348, 2.946398, 2.946448, 2.946498, 2.946548, 2.946598, 2.946648, 2.946698, 2.946748, 2.946798, 2.946848, 2.946898, 2.946948, 2.946998, 2.947048, 2.947098, 2.947148, 2.947198, 2.947248, 2.947298, 2.947348, 2.947397, 2.947447, 2.947496, 2.947545, 2.947594, 2.947643, 2.947692, 2.947741, 2.94779, 2.947839, 2.947888, 2.947937, 2.947986, 2.948035, 2.948084, 2.948133, 2.948182, 2.94823, 2.948279, 2.948328, 2.948377, 2.948426, 2.948474, 2.948523, 2.948572, 2.948621, 2.948669, 2.948718, 2.948767, 2.948816, 2.948864, 2.948913, 2.948962, 2.94901, 2.949059, 2.949107, 2.949156, 2.949204, 2.949252, 2.949301, 2.949349, 2.949398, 2.949446, 2.949494, 2.949543, 2.949591, 2.949639, 2.949688, 2.949736, 2.949784, 2.949832, 2.949881, 2.949929, 2.949977, 2.950025, 2.950073, 2.950122, 2.95017, 2.950218, 2.950266, 2.950314, 2.950362, 2.950411, 2.950459, 2.950507, 2.950555, 2.950601, 2.950646, 2.950692, 2.950738, 2.950784, 2.950829, 2.950875, 2.950921, 2.950966, 2.951012, 2.951058, 2.951103, 2.951149, 2.951195, 2.95124, 2.951286, 2.951331, 2.951377, 2.951423, 2.951468, 2.951514, 2.951559, 2.951605, 2.95165, 2.951696, 2.951741, 2.951787, 2.951832, 2.951878, 2.951923, 2.951969, 2.952014, 2.952059, 2.952105, 2.95215, 2.952195, 2.95224, 2.952285, 2.952331, 2.952376, 2.952421, 2.952466, 2.952511, 2.952556, 2.952602, 2.952647, 2.952692, 2.952737, 2.952782, 2.952827, 2.952872, 2.952917, 2.952962, 2.953007, 2.953052, 2.953097, 2.953142, 2.953187, 2.953232, 2.953277, 2.953322, 2.953367, 2.953412, 2.953457, 2.953501, 2.953546, 2.95359, 2.953634, 2.953678, 2.953723, 2.953767, 2.953811, 2.953855, 2.9539, 2.953944, 2.953988, 2.954032, 2.954076, 2.95412, 2.954165, 2.954209, 2.954253, 2.954297, 2.954341, 2.954385, 2.954429, 2.954473, 2.954517, 2.954561, 2.954605, 2.954649, 2.954693, 2.954737, 2.954781, 2.954825, 2.954869, 2.954913, 2.954957, 2.955001, 2.955044, 2.955088, 2.955132, 2.955176, 2.95522, 2.955263, 2.955307, 2.955351, 2.955394, 2.955438, 2.955482, 2.955526, 2.955569, 2.955613, 2.955656, 2.9557, 2.955744, 2.955787, 2.955831, 2.955874, 2.955918, 2.955962, 2.956005, 2.956049, 2.956092, 2.956136, 2.956179, 2.956223, 2.956267, 2.956305, 2.956343, 2.956381, 2.956419, 2.956457, 2.956495, 2.956533, 2.956571, 2.956609, 2.956647, 2.956685, 2.956724, 2.956762, 2.9568, 2.956838, 2.956876, 2.956914, 2.956952, 2.95699, 2.957028, 2.957066, 2.957104, 2.957142, 2.95718, 2.957217, 2.957255, 2.957293, 2.957331, 2.957369, 2.957407, 2.957445, 2.957483, 2.957521, 2.957559, 2.957596, 2.957634, 2.957672, 2.95771, 2.957747, 2.957785, 2.957823, 2.95786, 2.957898, 2.957936, 2.957974, 2.958011, 2.958049, 2.958087, 2.958124, 2.958162, 2.9582, 2.958237, 2.958275, 2.958312, 2.95835, 2.958388, 2.958425, 2.958463, 2.9585, 2.958538, 2.958576, 2.958613, 2.958651, 2.958688, 2.958725, 2.958763, 2.9588, 2.958837, 2.958874, 2.958911, 2.958948, 2.958985, 2.959022, 2.959059, 2.959096, 2.959133, 2.95917, 2.959207, 2.959244, 2.959281, 2.959318, 2.959355, 2.959392, 2.959429, 2.959466, 2.959503, 2.95954, 2.959577, 2.959614, 2.959651, 2.959687, 2.959724, 2.959761, 2.959798, 2.959835, 2.959872, 2.959909, 2.959946, 2.959982, 2.960019, 2.960056, 2.960092, 2.960129, 2.960166, 2.960203, 2.960239, 2.960276, 2.960313, 2.960349, 2.960386, 2.960423, 2.960459, 2.960496, 2.960533, 2.960569, 2.960606, 2.960643, 2.960679, 2.960716, 2.960752, 2.960789, 2.960826, 2.960862, 2.960899, 2.960935, 2.960972, 2.961009, 2.961045, 2.96108, 2.961116, 2.961151, 2.961186, 2.961221, 2.961256, 2.961291, 2.961326, 2.961362, 2.961397, 2.961432, 2.961467, 2.961502, 2.961537, 2.961572, 2.961608, 2.961643, 2.961678, 2.961713, 2.961748, 2.961783, 2.961818, 2.961853, 2.961888, 2.961923, 2.961958, 2.961993, 2.962028, 2.962063, 2.962098, 2.962133, 2.962168, 2.962203, 2.962238, 2.962273, 2.962308, 2.962343, 2.962378, 2.962412, 2.962447, 2.962482, 2.962517, 2.962552, 2.962587, 2.962621, 2.962656, 2.962691, 2.962726, 2.962761, 2.962795, 2.96283, 2.962865, 2.9629, 2.962935, 2.962969, 2.963004, 2.963039, 2.963074, 2.963108, 2.963143, 2.963178, 2.963212, 2.963247, 2.963282, 2.963316, 2.96335, 2.963385, 2.963419, 2.963453, 2.963488, 2.963522, 2.963556, 2.96359, 2.963625, 2.963659, 2.963693, 2.963727, 2.963762, 2.963796, 2.96383, 2.963864, 2.963899, 2.963933, 2.963967, 2.964001, 2.964035, 2.96407, 2.964104, 2.964138, 2.964172, 2.964206, 2.96424, 2.964275, 2.964309, 2.964343, 2.964377, 2.964411, 2.964445, 2.964479, 2.964513, 2.964547, 2.964581, 2.964615, 2.964649, 2.964683, 2.964717, 2.964751, 2.964785, 2.964819, 2.964853, 2.964887, 2.964921, 2.964955, 2.964989, 2.965023, 2.965056, 2.96509, 2.965124, 2.965158, 2.965192, 2.965226, 2.96526, 2.965294, 2.965328, 2.965361, 2.965395, 2.965429, 2.965463, 2.96548, 2.965497, 2.965514, 2.965531, 2.965548, 2.965565, 2.965582, 2.965599, 2.965615, 2.965632, 2.965649, 2.965666, 2.965683, 2.9657, 2.965717, 2.965734, 2.965751, 2.965768, 2.965785, 2.965802, 2.965818, 2.965835, 2.965852, 2.965869, 2.965886, 2.965903, 2.96592, 2.965937, 2.965954, 2.965971, 2.965988, 2.966004, 2.966021, 2.966038, 2.966055, 2.966072, 2.966089, 2.966106, 2.966122, 2.966139, 2.966156, 2.966173, 2.96619, 2.966207, 2.966224, 2.96624, 2.966257, 2.966274, 2.966291, 2.966308, 2.966325, 2.966342, 2.966358, 2.966375, 2.966392, 2.966409, 2.966426, 2.966443, 2.966459, 2.966476, 2.966493, 2.96651, 2.966527, 2.966544, 2.96656, 2.966577, 2.966594, 2.96661, 2.966627, 2.966644, 2.966661, 2.966677, 2.966694, 2.966711, 2.966728, 2.966744, 2.966761, 2.966778, 2.966794, 2.966811, 2.966828, 2.966845, 2.966861, 2.966878, 2.966895, 2.966911, 2.966928, 2.966945, 2.966961, 2.966978, 2.966995, 2.967012, 2.967028, 2.967045, 2.967062, 2.967078, 2.967095, 2.967112, 2.967128, 2.967145, 2.967162, 2.967178, 2.967195, 2.967212, 2.967228, 2.967245, 2.967262, 2.967278, 2.967295, 2.967311, 2.967328, 2.967345, 2.967361, 2.967378, 2.967395, 2.967411, 2.967428, 2.967445, 2.967461, 2.967478, 2.967495, 2.967511, 2.967528, 2.967544, 2.967561, 2.967578, 2.967594, 2.967611, 2.967627, 2.967644, 2.96766, 2.967676, 2.967693, 2.967709, 2.967725, 2.967742, 2.967758, 2.967774, 2.967791, 2.967807, 2.967823, 2.967839, 2.967856, 2.967872, 2.967888, 2.967905, 2.967921, 2.967937, 2.967954, 2.96797, 2.967986, 2.968003, 2.968019, 2.968035, 2.968051, 2.968068, 2.968084, 2.9681, 2.968117, 2.968133, 2.968149, 2.968165, 2.968182, 2.968198, 2.968214, 2.968231, 2.968247, 2.968263, 2.968279, 2.968296, 2.968312, 2.968328, 2.968344, 2.968361, 2.968377, 2.968393, 2.968409, 2.968426, 2.968442, 2.968458, 2.968474, 2.968491, 2.968507, 2.968523, 2.968539, 2.968556, 2.968572, 2.968588, 2.968604, 2.96862, 2.968637, 2.968653, 2.968669, 2.968685, 2.968701, 2.968717, 2.968734, 2.96875, 2.968766, 2.968782, 2.968798, 2.968814, 2.96883, 2.968847, 2.968863, 2.968879, 2.968895, 2.968911, 2.968927, 2.968943, 2.968959, 2.968976, 2.968992, 2.969008, 2.969024, 2.96904, 2.969056, 2.969072, 2.969088, 2.969104, 2.969121, 2.969137, 2.969153, 2.969169, 2.969185, 2.969201, 2.969217, 2.969233, 2.969249, 2.969265, 2.969281, 2.969297, 2.969314, 2.96933, 2.969346, 2.969362, 2.969378, 2.969394, 2.96941, 2.969426, 2.969442, 2.969458, 2.969474, 2.96949, 2.969506, 2.969522, 2.969538, 2.969554, 2.96957, 2.969586, 2.969603, 2.969619, 2.969635, 2.969651, 2.969667, 2.969683, 2.969698, 2.969713, 2.969728, 2.969744, 2.969759, 2.969774, 2.969789, 2.969805, 2.96982, 2.969835, 2.96985, 2.969866, 2.969881, 2.969896, 2.969911, 2.969927, 2.969942, 2.969957, 2.969972, 2.969987, 2.970003, 2.970018, 2.970033, 2.970048, 2.970064, 2.970079, 2.970094, 2.970109, 2.970124, 2.97014, 2.970155, 2.97017, 2.970185, 2.9702, 2.970216, 2.970231, 2.970246, 2.970261, 2.970276, 2.970291, 2.970307, 2.970322, 2.970337, 2.970352, 2.970367, 2.970383, 2.970398, 2.970413, 2.970428, 2.970443, 2.970458, 2.970474, 2.970489, 2.970504, 2.970519, 2.970534, 2.970549, 2.970565, 2.97058, 2.970595, 2.97061, 2.970625, 2.97064, 2.970655, 2.970671, 2.970686, 2.970701, 2.970716, 2.970731, 2.970746, 2.970761, 2.970776, 2.970791, 2.970806, 2.970821, 2.970836, 2.970851, 2.970866, 2.970882, 2.970897, 2.970912, 2.970927, 2.970942, 2.970957, 2.970972, 2.970987, 2.971002, 2.971017, 2.971032, 2.971047, 2.971062, 2.971077, 2.971092, 2.971107, 2.971122, 2.971137, 2.971152, 2.971167, 2.971182, 2.971197, 2.971213, 2.971228, 2.971243, 2.971258, 2.971273, 2.971288, 2.971303, 2.971318, 2.971333, 2.971348, 2.971363, 2.971378, 2.971393, 2.971408, 2.971423, 2.971438, 2.971453, 2.971468, 2.971483, 2.971498, 2.971513, 2.971528, 2.971543, 2.971558, 2.971573, 2.971588, 2.971603, 2.971618, 2.971632, 2.971647, 2.971662, 2.971677, 2.971691, 2.971706, 2.971721, 2.971736, 2.97175, 2.971765, 2.97178, 2.971795, 2.971809, 2.971824, 2.971839, 2.971854, 2.971868, 2.971883, 2.971898, 2.971912, 2.971927, 2.971942, 2.971957, 2.971971, 2.971986, 2.972001, 2.972016, 2.97203, 2.972045, 2.97206, 2.972074, 2.972089, 2.972104, 2.972119, 2.972133, 2.972148, 2.972163, 2.972177, 2.972192, 2.972207, 2.972221, 2.972236, 2.972251, 2.972265, 2.97228, 2.972295, 2.97231, 2.972324, 2.972339, 2.972354, 2.972368, 2.972383, 2.972398, 2.972412, 2.972427, 2.972442, 2.972456, 2.972471, 2.972486, 2.9725, 2.972515, 2.97253, 2.972544, 2.972559, 2.972574, 2.972588, 2.972603, 2.972617, 2.972632, 2.972647, 2.972661, 2.972676, 2.97269, 2.972705, 2.97272, 2.972734, 2.972749, 2.972763, 2.972778, 2.972792, 2.972807, 2.972822, 2.972836, 2.972851, 2.972865, 2.97288, 2.972894, 2.972909, 2.972924, 2.972938, 2.972953, 2.972967, 2.972982, 2.972996, 2.973011, 2.973026, 2.97304, 2.973055, 2.973069, 2.973084, 2.973098, 2.973113, 2.973127, 2.973142, 2.973156, 2.973171, 2.973186, 2.9732, 2.973215, 2.973229, 2.973244, 2.973258, 2.973273, 2.973287, 2.973302, 2.973316, 2.973331, 2.973345, 2.97336, 2.973374, 2.973389, 2.973403, 2.973418, 2.973432, 2.973447, 2.973461, 2.973476, 2.973491, 2.973503, 2.973516, 2.973529, 2.973541, 2.973554, 2.973567, 2.973579, 2.973592, 2.973605, 2.973618, 2.97363, 2.973643, 2.973656, 2.973668, 2.973681, 2.973694, 2.973706, 2.973719, 2.973732, 2.973744, 2.973757, 2.97377, 2.973782, 2.973795, 2.973808, 2.973821, 2.973833, 2.973846, 2.973859, 2.973871, 2.973884, 2.973897, 2.973909, 2.973922, 2.973935, 2.973947, 2.97396, 2.973973, 2.973985, 2.973998, 2.974011, 2.974023, 2.974036, 2.974049, 2.974061, 2.974074, 2.974087, 2.974099, 2.974112, 2.974124, 2.974137, 2.97415, 2.974162, 2.974175, 2.974188, 2.9742, 2.974213, 2.974226, 2.974238, 2.974251, 2.974264, 2.974276, 2.974289, 2.974302, 2.974314, 2.974327, 2.974339, 2.974352, 2.974364, 2.974377, 2.97439, 2.974402, 2.974415, 2.974427, 2.97444, 2.974453, 2.974465, 2.974478, 2.97449, 2.974503, 2.974515, 2.974528, 2.974541, 2.974553, 2.974566, 2.974578, 2.974591, 2.974603, 2.974616, 2.974629, 2.974641, 2.974654, 2.974666, 2.974679, 2.974691, 2.974704, 2.974716, 2.974729, 2.974742, 2.974754, 2.974767, 2.974779, 2.974792, 2.974804, 2.974817, 2.974829, 2.974842, 2.974854, 2.974867, 2.97488, 2.974892, 2.974905, 2.974917, 2.97493, 2.974942, 2.974955, 2.974967, 2.97498, 2.974992, 2.975005, 2.975017, 2.97503, 2.975042, 2.975055, 2.975068, 2.97508, 2.975093, 2.975105, 2.975117, 2.97513, 2.975142, 2.975155, 2.975167, 2.975179, 2.975192, 2.975204, 2.975216, 2.975229, 2.975241, 2.975253, 2.975266, 2.975278, 2.97529, 2.975303, 2.975315, 2.975327, 2.97534, 2.975352, 2.975364, 2.975377, 2.975389, 2.975402, 2.975414, 2.975426, 2.975439, 2.975451, 2.975463, 2.975476, 2.975488, 2.9755, 2.975513, 2.975525, 2.975537, 2.97555, 2.975562, 2.975574, 2.975586, 2.975599, 2.975611, 2.975623, 2.975636, 2.975648, 2.97566, 2.975673, 2.975685, 2.975697, 2.97571, 2.975722, 2.975734, 2.975747, 2.975759, 2.975771, 2.975783, 2.975796, 2.975808, 2.97582, 2.975833, 2.975845, 2.975857, 2.97587, 2.975882, 2.975894, 2.975906, 2.975919, 2.975931, 2.975943, 2.975955, 2.975968, 2.97598, 2.975992, 2.976004, 2.976017, 2.976029, 2.976041, 2.976053, 2.976066, 2.976078, 2.97609, 2.976102, 2.976115, 2.976127, 2.976139, 2.976151, 2.976164, 2.976176, 2.976188, 2.9762, 2.976212, 2.976225, 2.976237, 2.976249, 2.976261, 2.976274, 2.976286, 2.976298, 2.97631, 2.976322, 2.976335, 2.976347, 2.976359, 2.976371, 2.976384, 2.976396, 2.976408, 2.97642, 2.976432, 2.976445, 2.976457, 2.976469, 2.976481, 2.976493, 2.976506, 2.976518, 2.97653, 2.976542, 2.976554, 2.976567, 2.976579, 2.976591, 2.976603, 2.976615, 2.976628, 2.97664, 2.976652, 2.976664, 2.976676, 2.976688, 2.9767, 2.976711, 2.976723, 2.976735, 2.976747, 2.976758, 2.97677, 2.976782, 2.976794, 2.976805, 2.976817, 2.976829, 2.97684, 2.976852, 2.976864, 2.976876, 2.976887, 2.976899, 2.976911, 2.976922, 2.976934, 2.976946, 2.976958, 2.976969, 2.976981, 2.976993, 2.977004, 2.977016, 2.977028, 2.97704, 2.977051, 2.977063, 2.977075, 2.977086, 2.977098, 2.97711, 2.977121, 2.977133, 2.977145, 2.977156, 2.977168, 2.97718, 2.977191, 2.977203, 2.977215, 2.977227, 2.977238, 2.97725, 2.977262, 2.977273, 2.977285, 2.977297, 2.977308, 2.97732, 2.977332, 2.977343, 2.977355, 2.977367, 2.977378, 2.97739, 2.977402, 2.977413, 2.977425, 2.977437, 2.977448, 2.97746, 2.977472, 2.977483, 2.977495, 2.977506, 2.977518, 2.97753, 2.977541, 2.977553, 2.977565, 2.977576, 2.977588, 2.977599, 2.977611, 2.977623, 2.977634, 2.977646, 2.977657, 2.977669, 2.977681, 2.977692, 2.977704, 2.977716, 2.977727, 2.977739, 2.97775, 2.977762, 2.977774, 2.977785, 2.977797, 2.977808, 2.97782, 2.977832, 2.977843, 2.977855, 2.977866, 2.977878, 2.97789, 2.977901, 2.977913, 2.977924, 2.977936, 2.977947, 2.977959, 2.977971, 2.977982, 2.977994, 2.978005, 2.978017, 2.978029, 2.97804, 2.978052, 2.978063, 2.978075, 2.978086, 2.978098, 2.97811, 2.978121, 2.978133, 2.978144, 2.978156, 2.978167, 2.978179, 2.97819, 2.978202, 2.978213, 2.978225, 2.978236, 2.978248, 2.978259, 2.97827, 2.978282, 2.978293, 2.978305, 2.978316, 2.978327, 2.978339, 2.97835, 2.978362, 2.978373, 2.978385, 2.978396, 2.978407, 2.978419, 2.97843, 2.978442, 2.978453, 2.978465, 2.978476, 2.978487, 2.978499, 2.97851, 2.978522, 2.978533, 2.978544, 2.978556, 2.978567, 2.978579, 2.97859, 2.978601, 2.978613, 2.978624, 2.978636, 2.978647, 2.978658, 2.97867, 2.978681, 2.978693, 2.978704, 2.978715, 2.978727, 2.978738, 2.97875, 2.978761, 2.978772, 2.978784, 2.978795, 2.978806, 2.978818, 2.978829, 2.978841, 2.978852, 2.978863, 2.978875, 2.978886, 2.978898, 2.978909, 2.97892, 2.978932, 2.978943, 2.978954, 2.978966, 2.978977, 2.978988, 2.979, 2.979011, 2.979022, 2.979034, 2.979045, 2.979056, 2.979068, 2.979079], "szekeres": 3.007939011, "walker": 4.4397534, "V": [1, 2, 4, 5, 10, 11, 13, 14, 28, 29, 31, 32, 37, 38, 40, 41, 82, 83, 85, 86, 91, 92, 94, 95, 109, 110, 112, 113, 118, 119, 121, 122, 244, 245, 247, 248, 253, 254, 256, 257, 271, 272, 274, 275, 280, 281, 283, 284, 325, 326, 328, 329, 334, 335, 337, 338, 352, 353, 355, 356], "k4dim": [[4, 2, 0.5, 0.5, "厳密"], [5, 3, 0.6, 0.682606, "厳密"], [6, 3, 0.5, 0.613147, "厳密"], [7, 4, 0.5714, 0.712414, "厳密"], [8, 3, 0.375, 0.528321, "厳密"], [9, 4, 0.4444, 0.63093, "厳密"], [10, 4, 0.4, 0.60206, "厳密"], [11, 6, 0.5455, 0.747222, "厳密"], [12, 5, 0.4167, 0.647685, "厳密"], [13, 6, 0.4615, 0.698555, "厳密"], [14, 5, 0.3571, 0.609853, "厳密"], [15, 7, 0.4667, 0.718565, "厳密"], [16, 6, 0.375, 0.646241, "厳密"], [17, 8, 0.4706, 0.733952, "厳密"], [18, 7, 0.3889, 0.673239, "厳密"], [19, 8, 0.4211, 0.706227, "厳密"], [20, 8, 0.4, 0.694135, "厳密"], [21, 9, 0.4286, 0.721698, "厳密"], [22, 10, 0.4545, 0.744922, "厳密"], [23, 9, 0.3913, 0.700759, "厳密"], [24, 9, 0.375, 0.691374, "厳密"], [25, 10, 0.4, 0.715338, "厳密"], [26, 10, 0.3846, 0.706727, "厳密"], [27, 11, 0.4074, 0.727553, "厳密"], [28, 10, 0.3571, 0.69101, "厳密"], [29, 11, 0.3793, 0.712113, "厳密"], [30, 11, 0.3667, 0.705015, "厳密"], [31, 12, 0.3871, 0.723621, "厳密"], [32, 11, 0.3438, 0.691886, "厳密"], [33, 13, 0.3939, 0.733575, "厳密"], [34, 12, 0.3529, 0.704666, "厳密"], [35, 14, 0.4, 0.742278, "厳密"], [36, 12, 0.3333, 0.693426, "厳密"], [37, 14, 0.3784, 0.730855, "打切り"], [38, 13, 0.3421, 0.705124, "厳密"], [39, 14, 0.359, 0.720353, "打切り"], [40, 14, 0.35, 0.715409, "厳密"], [41, 15, 0.3659, 0.729231, "打切り"], [42, 14, 0.3333, 0.70607, "打切り"], [43, 15, 0.3488, 0.719996, "打切り"], [44, 16, 0.3636, 0.732677, "厳密"], [45, 16, 0.3556, 0.728352, "打切り"], [46, 15, 0.3261, 0.707314, "打切り"], [47, 17, 0.3617, 0.735871, "打切り"], [48, 16, 0.3333, 0.716209, "打切り"], [49, 17, 0.3469, 0.727992, "打切り"], [50, 17, 0.34, 0.724232, "打切り"], [51, 18, 0.3529, 0.735122, "打切り"], [52, 17, 0.3269, 0.717043, "打切り"], [53, 18, 0.3396, 0.728, "打切り"], [54, 18, 0.3333, 0.724588, "打切り"], [55, 21, 0.3818, 0.759738, "打切り"], [56, 18, 0.3214, 0.718042, "打切り"], [57, 20, 0.3509, 0.740958, "打切り"], [58, 19, 0.3276, 0.725152, "打切り"], [59, 20, 0.339, 0.734692, "打切り"], [60, 20, 0.3333, 0.731676, "打切り"], [61, 21, 0.3443, 0.740602, "打切り"], [62, 20, 0.3226, 0.725863, "打切り"], [63, 21, 0.3333, 0.734835, "打切り"], [64, 20, 0.3125, 0.720321, "打切り"], [65, 22, 0.3385, 0.740478, "打切り"], [66, 22, 0.3333, 0.73778, "打切り"], [67, 23, 0.3433, 0.745713, "打切り"], [68, 21, 0.3088, 0.721535, "打切り"], [69, 23, 0.3333, 0.740533, "打切り"], [70, 22, 0.3143, 0.727562, "打切り"], [71, 24, 0.338, 0.745553, "打切り"], [72, 22, 0.3056, 0.722769, "打切り"], [73, 24, 0.3288, 0.740726, "打切り"], [74, 23, 0.3108, 0.728496, "打切り"], [75, 25, 0.3333, 0.745544, "打切り"], [76, 23, 0.3026, 0.72401, "打切り"], [77, 25, 0.3247, 0.741027, "打切り"], [78, 24, 0.3077, 0.729462, "打切り"], [79, 26, 0.3291, 0.745654, "打切り"], [80, 25, 0.3125, 0.734563, "打切り"], [81, 26, 0.321, 0.741412, "打切り"], [82, 25, 0.3049, 0.730447, "打切り"], [83, 26, 0.3133, 0.737319, "打切り"], [84, 26, 0.3095, 0.735326, "打切り"], [85, 27, 0.3176, 0.741863, "打切り"], [86, 26, 0.3023, 0.731442, "打切り"], [87, 27, 0.3103, 0.737999, "打切り"], [88, 27, 0.3068, 0.736115, "打切り"], [89, 27, 0.3034, 0.734262, "打切り"], [90, 27, 0.3, 0.732439, "打切り"], [91, 28, 0.3077, 0.738707, "打切り"], [92, 27, 0.2935, 0.728879, "打切り"], [93, 29, 0.3118, 0.742906, "打切り"], [94, 28, 0.2979, 0.733433, "打切り"], [95, 29, 0.3053, 0.739435, "打切り"], [96, 28, 0.2917, 0.73005, "打切り"], [97, 29, 0.299, 0.736067, "打切り"], [98, 29, 0.2959, 0.734421, "打切り"], [99, 30, 0.303, 0.740176, "打切り"], [100, 29, 0.29, 0.731199, "打切り"], [101, 30, 0.297, 0.736968, "打切り"], [102, 30, 0.2941, 0.735398, "打切り"], [103, 30, 0.2913, 0.73385, "打切り"], [104, 30, 0.2885, 0.732324, "打切り"], [105, 32, 0.3048, 0.744685, "打切り"], [106, 30, 0.283, 0.729332, "打切り"], [107, 31, 0.2897, 0.734884, "打切り"], [108, 30, 0.2778, 0.726421, "打切り"], [109, 32, 0.2936, 0.738751, "打切り"], [110, 33, 0.3, 0.743862, "打切り"], [111, 32, 0.2883, 0.735898, "打切り"], [112, 31, 0.2768, 0.727771, "打切り"], [113, 32, 0.2832, 0.733119, "打切り"], [114, 32, 0.2807, 0.731755, "打切り"], [115, 33, 0.287, 0.736893, "打切り"], [116, 32, 0.2759, 0.729078, "打切り"], [117, 33, 0.2821, 0.734225, "打切り"], [118, 32, 0.2712, 0.726465, "打切り"], [119, 34, 0.2857, 0.737868, "打切り"], [120, 34, 0.2833, 0.736578, "打切り"], [121, 37, 0.3058, 0.752935, "打切り"], [122, 33, 0.2705, 0.727829, "打切り"], [123, 34, 0.2764, 0.732798, "打切り"], [124, 33, 0.2661, 0.725374, "打切り"], [125, 36, 0.288, 0.742189, "打切り"], [126, 35, 0.2778, 0.735141, "打切り"], [127, 35, 0.2756, 0.733941, "打切り"], [128, 34, 0.2656, 0.72678, "打切り"], [129, 37, 0.2868, 0.743016, "打切り"], [130, 35, 0.2692, 0.730421, "打切り"], [131, 36, 0.2748, 0.735051, "打切り"], [132, 36, 0.2727, 0.733906, "打切り"], [133, 37, 0.2782, 0.738376, "打切り"], [134, 36, 0.2687, 0.731653, "打切り"], [135, 38, 0.2815, 0.741566, "打切り"], [136, 35, 0.2574, 0.723712, "打切り"], [137, 38, 0.2774, 0.73935, "打切り"], [138, 37, 0.2681, 0.732846, "打切り"], [139, 37, 0.2662, 0.731774, "打切り"], [140, 38, 0.2714, 0.736109, "打切り"], [141, 38, 0.2695, 0.73505, "打切り"], [142, 37, 0.2606, 0.728621, "打切り"], [143, 39, 0.2727, 0.738198, "打切り"], [144, 38, 0.2639, 0.731936, "打切り"], [145, 40, 0.2759, 0.741225, "打切り"], [146, 37, 0.2534, 0.724559, "打切り"], [147, 40, 0.2721, 0.73919, "打切り"], [148, 38, 0.2568, 0.727923, "打切り"], [149, 40, 0.2685, 0.737194, "打切り"], [150, 39, 0.26, 0.731157, "打切り"], [151, 40, 0.2649, 0.735235, "打切り"], [152, 39, 0.2566, 0.729229, "打切り"], [153, 41, 0.268, 0.73822, "打切り"], [154, 39, 0.2532, 0.727337, "打切り"], [155, 41, 0.2645, 0.736319, "打切り"], [156, 40, 0.2564, 0.730492, "打切り"], [157, 41, 0.2611, 0.734452, "打切り"]], "k4walker_dim": 0.759737784954561, "k4cross": [["Walker (c=55,|F|=21)", 4.4397534], ["c=11 |F|=6", 4.4217475], ["c=22 |F|=10", 4.4198951], ["c=21 |F|=9", 4.0923903], ["c=15 |F|=7", 4.0714072], ["c=7 |F|=4", 3.9380671], ["c=5 |F|=3", 3.6438619]], "k4diff": [["x=0.0", 4.246837, 4.236933, 0.009904], ["x=0.5", 3.738015, 3.723774, 0.014241], ["x=1.0", 3.439753, 3.421748, 0.018006]], "k4proof": [["0.00", -9.4502183856093e-13], ["0.25", -9.3169916226543e-13], ["0.50", -9.4191321409198e-13], ["0.75", -1.2079226507922e-12], ["1.00", -8.4821039081362e-13]], "k4times": [406, 429, 558, 578, 530], "behrend": [[25, 2, 0.6666666666666666, 1, 0.22299294023666888, 0.8896596069033356], [125, 6, 0.3089133089133089, 1, 0.026436533077902426, 0.3353498419912114], [49, 2, 0.625, 1, 0.17185310533191478, 0.7968531053319148], [343, 6, 0.335394006446638, 1, 0.01008376470147822, 0.34547777114811623], [81, 2, 0.6, 1, 0.13980050495180504, 0.739800504951805], [121, 4, 0.23167293233082706, 1, 0.026436533077902426, 0.2581094654087295], [169, 4, 0.22240259740259738, 1, 0.022474846208648872, 0.24487744361124625], [729, 9, 0.13833933551871863, 1, 0.004480526123321078, 0.14281986164203972]], "finite": [[20, 2.2892607, 8, 2.2892607, 8, 0.0, true], [40, 2.5013087, 15, 2.5013087, 15, 0.0, true], [41, 2.525698908514994, 16, 2.525698908514994, 16, 0.0, true], [44, 2.525698908514994, 16, 2.525698908514994, 16, 0.0, true], [47, 2.525698908514994, 16, 2.525698908514994, 16, 0.0, true], [50, 2.525698908514994, 16, 2.525698908514994, 16, 0.0, true], [53, 2.5270286659389, 17, 2.525698908514994, 16, 0.0013297574239059529, true], [56, 2.5270286659389, 17, 2.525698908514994, 16, 0.0013297574239059529, true], [59, 2.5270286659389, 17, 2.525698908514994, 16, 0.0013297574239059529, true], [60, 2.5270286659389, 17, 2.525698908514994, 16, 0.0013297574239059529, true], [80, 2.5638475397822105, 20, 2.525698908514994, 16, 0.03814863126721635, true]], "m53": {"A": [1, 2, 4, 5, 10, 11, 13, 14, 30, 31, 34, 36, 39, 40, 43, 45, 53], "S": [1, 2, 4, 5, 10, 11, 13, 14, 28, 29, 31, 32, 37, 38, 40, 41], "common": [1, 2, 4, 5, 10, 11, 13, 14, 31, 40]}, "record3": 3.00849, "record4": 4.4397534}</script>
+<script>
+(function(){
+"use strict";
+var D=JSON.parse(document.getElementById('EDATA').textContent);
+var DPR=Math.min(2,window.devicePixelRatio||1);
+function ink(){return getComputedStyle(document.body).color;}
+function S(cv,h){var w=cv.parentElement.clientWidth;cv.style.width='100%';cv.style.height=h+'px';
+  cv.width=Math.round(w*DPR);cv.height=Math.round(h*DPR);var g=cv.getContext('2d');
+  g.setTransform(DPR,0,0,DPR,0,0);g.clearRect(0,0,w,h);return [g,w,h];}
+function txt(g,s,x,y,sz,al){g.font=(sz||11)+'px ui-monospace, monospace';
+  g.globalAlpha=al===undefined?0.7:al;g.fillStyle=ink();g.fillText(s,x,y);g.globalAlpha=1;}
+
+/* 表を埋める */
+(function(){
+  var tp=document.getElementById('tbproof');
+  D.k4proof.forEach(function(p,i){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td class="n">'+p[0]+'</td><td class="n">'+p[1].toExponential(3).replace('e-13','×10⁻¹³').replace('e-12','×10⁻¹²')+
+      '</td><td><strong>最適性を証明</strong></td><td class="n">'+D.k4times[i]+'秒</td>';
+    tp.appendChild(tr);});
+  var tf=document.getElementById('tbfinite');
+  D.finite.forEach(function(r){
+    var zero=(Math.abs(r[5])<1e-9);
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td class="n">'+r[0]+'</td><td class="n">'+r[1].toFixed(7)+'</td><td class="n">'+r[2]+
+      '</td><td class="n">'+r[3].toFixed(7)+'</td><td class="n">'+r[4]+'</td><td class="n">'+
+      (zero?'<strong>0（Szekeres が最適）</strong>':'<strong>+'+r[5].toFixed(7)+'</strong>')+'</td>';
+    tf.appendChild(tr);});
+})();
+
+/* 図1：θ=1 の壁 */
+function d1(){var r=S(document.getElementById('c1'),330),g=r[0],w=r[1],h=r[2];
+  var L=44,R=w-16,T=22,B=h-32, W=D.walls, n=W[0].y.length;
+  var X=function(j){return L+(R-L)*j/(n-1);};
+  var ymax=20, Y=function(v){return B-Math.min(v,ymax)/ymax*(B-T);};
+  g.strokeStyle=ink();g.globalAlpha=.13;
+  for(var q=0;q<=20;q+=5){g.beginPath();g.moveTo(L,Y(q));g.lineTo(R,Y(q));g.stroke();
+    txt(g,String(q),16,Y(q)+4,10,.5);}
+  for(var j=0;j<n;j+=50){g.beginPath();g.moveTo(X(j),T);g.lineTo(X(j),B);g.stroke();
+    txt(g,String(j),X(j)-6,B+16,10,.5);}
+  g.globalAlpha=1;
+  W.forEach(function(ww){
+    var crit=(ww.th===1.0);
+    g.strokeStyle=ink();g.lineWidth=crit?2.8:1.5;g.globalAlpha=crit?1:(ww.th<1?.42:.62);
+    if(ww.th<1)g.setLineDash([5,4]);
+    g.beginPath();
+    for(var i=0;i<n;i++){i?g.lineTo(X(i),Y(ww.y[i])):g.moveTo(X(i),Y(ww.y[i]));}
+    g.stroke();g.setLineDash([]);g.globalAlpha=1;
+    var yy=Y(ww.y[n-1]);
+    txt(g,'θ='+ww.th.toFixed(1)+(crit?'（境目）':(ww.th<1?' 発散':' 収束')),R-118,Math.max(T+11,Math.min(B-4,yy-5)),10.5,crit?.98:.65);
+  });
+  txt(g,'部分和 Σ_{j≤J} j^(−θ)',L+6,T+12,11,.85);
+  txt(g,'k=3 は θ>1（解決）／k=4 は θ<1（壁の下）',L+6,T+28,10.5,.6);
+  txt(g,'J',R-10,B+16,11,.6);
+}
+
+/* 図2：六通り */
+function d2(){var r=S(document.getElementById('c2'),330),g=r[0],w=r[1],h=r[2];
+  var L=w*0.52,R=w-24,T=26,B=h-24, RU=D.runs;
+  var lo=2.90, hi=3.02;
+  var X=function(v){return L+(R-L)*(v-lo)/(hi-lo);};
+  var gap=(B-T)/RU.length;
+  g.strokeStyle=ink();g.lineWidth=1.6;g.globalAlpha=.75;g.setLineDash([5,4]);
+  g.beginPath();g.moveTo(X(D.record3),T-12);g.lineTo(X(D.record3),B+6);g.stroke();
+  g.setLineDash([]);g.globalAlpha=1;
+  txt(g,'記録 '+D.record3,X(D.record3)-40,T-16,10.5,.9);
+  g.strokeStyle=ink();g.lineWidth=1.2;g.globalAlpha=.35;
+  g.beginPath();g.moveTo(X(3.007939),T-6);g.lineTo(X(3.007939),B+6);g.stroke();g.globalAlpha=1;
+  RU.forEach(function(rw,i){
+    var y=T+gap*i+gap/2, land=(rw[1]>3.0);
+    g.strokeStyle=ink();g.lineWidth=land?4:3;g.globalAlpha=land?.30:.18;
+    g.beginPath();g.moveTo(X(lo),y);g.lineTo(X(rw[1]),y);g.stroke();g.globalAlpha=1;
+    g.fillStyle=ink();g.globalAlpha=land?1:.55;
+    g.beginPath();g.arc(X(rw[1]),y,land?6:4.5,0,7);g.fill();g.globalAlpha=1;
+    txt(g,(i+1)+'. '+rw[0],6,y+4,10,land?.92:.6);
+  });
+  for(var v=2.90;v<=3.02;v+=0.02){txt(g,v.toFixed(2),X(v)-12,B+16,10,.5);}
+  txt(g,'五つが 3.007939 に落ちた',X(3.007939)-96,B+2,10.5,.85);
+}
+
+/* 図3：Szekeres 集合 */
+function d3(){var r=S(document.getElementById('c3'),380),g=r[0],w=r[1],h=r[2];
+  var L=44,R=w-16, T=26, BH=52;
+  var M=D.mem, cw=(R-L)/M.length;
+  M.forEach(function(m,i){ if(m){ g.fillStyle=ink();g.globalAlpha=.85;
+    g.fillRect(L+i*cw, T, Math.max(1.1,cw*0.92), BH); g.globalAlpha=1; } });
+  g.strokeStyle=ink();g.globalAlpha=.3;g.strokeRect(L,T,R-L,BH);g.globalAlpha=1;
+  txt(g,'1',L-2,T+BH+14,10,.55); txt(g,'243',R-16,T+BH+14,10,.55);
+  txt(g,'1〜243 のうち集合に入る 32 個（3進で 2 を使わない数）',L+4,T-8,11,.85);
+  var T2=T+BH+34, B2=h-28, RUN=D.run, n=RUN.length;
+  var X=function(i){return L+(R-L)*i/(n-1);};
+  var y0=2.30,y1=3.03, Y=function(v){return B2-(v-y0)/(y1-y0)*(B2-T2);};
+  g.strokeStyle=ink();g.globalAlpha=.13;
+  for(var q=2.4;q<=3.0;q+=0.2){g.beginPath();g.moveTo(L,Y(q));g.lineTo(R,Y(q));g.stroke();
+    txt(g,q.toFixed(1),14,Y(q)+4,10,.5);}
+  g.globalAlpha=1;
+  g.strokeStyle=ink();g.lineWidth=1.5;g.globalAlpha=.7;g.setLineDash([5,4]);
+  g.beginPath();g.moveTo(L,Y(D.szekeres));g.lineTo(R,Y(D.szekeres));g.stroke();
+  g.setLineDash([]);g.globalAlpha=1;
+  txt(g,'極限 '+D.szekeres.toFixed(6),R-124,Y(D.szekeres)-6,10.5,.9);
+  g.strokeStyle=ink();g.lineWidth=2.1;g.beginPath();
+  for(var i=0;i<n;i++){i?g.lineTo(X(i),Y(RUN[i])):g.moveTo(X(i),Y(RUN[i]));}
+  g.stroke();
+  txt(g,'逆数の部分和（2000 個まで足しても 2.979079。収束が異常に遅い）',L+4,T2-8,11,.85);
+  txt(g,'足した個数',R-62,B2+16,10,.6);
+}
+
+/* 図4：価値反復 */
+function d4(){var r=S(document.getElementById('c4'),330),g=r[0],w=r[1],h=r[2];
+  var L=46,R=w-16,T=24,B=h-32, C=D.conv;
+  var X=function(i){return L+(R-L)*i/(C.length-1);};
+  var y0=0.9,y1=3.15, Y=function(v){return B-(v-y0)/(y1-y0)*(B-T);};
+  g.strokeStyle=ink();g.globalAlpha=.13;
+  for(var q=1.0;q<=3.0;q+=0.5){g.beginPath();g.moveTo(L,Y(q));g.lineTo(R,Y(q));g.stroke();
+    txt(g,q.toFixed(1),14,Y(q)+4,10,.5);}
+  for(var i=0;i<C.length;i+=5){g.beginPath();g.moveTo(X(i),T);g.lineTo(X(i),B);g.stroke();
+    txt(g,String(C[i][0]),X(i)-5,B+16,10,.5);}
+  g.globalAlpha=1;
+  g.strokeStyle=ink();g.lineWidth=1.5;g.globalAlpha=.7;g.setLineDash([5,4]);
+  g.beginPath();g.moveTo(L,Y(D.record3));g.lineTo(R,Y(D.record3));g.stroke();
+  g.setLineDash([]);g.globalAlpha=1;
+  txt(g,'記録 '+D.record3,R-96,Y(D.record3)-6,10.5,.9);
+  g.strokeStyle=ink();g.lineWidth=2.2;g.beginPath();
+  C.forEach(function(c,i){i?g.lineTo(X(i),Y(c[1])):g.moveTo(X(i),Y(c[1]));});g.stroke();
+  g.fillStyle=ink();
+  C.forEach(function(c,i){g.beginPath();g.arc(X(i),Y(c[1]),2.8,0,7);g.fill();});
+  txt(g,'1 + U(1) — n 回目は「深さ n の木」＝有限集合の値なので、どれも正しい下界',L+4,T+12,11,.85);
+  txt(g,'反復回数 n',R-70,B+16,10,.6);
+}
+
+/* 図5：k=4 の候補 */
+function d5(){var r=S(document.getElementById('c5'),330),g=r[0],w=r[1],h=r[2];
+  var L=w*0.46,R=w-70,T=28,B=h-30, C=D.k4cross;
+  var lo=3.55,hi=4.50;
+  var X=function(v){return L+(R-L)*(v-lo)/(hi-lo);};
+  var gap=(B-T)/C.length;
+  g.strokeStyle=ink();g.globalAlpha=.16;g.lineWidth=1.5;g.setLineDash([5,4]);
+  g.beginPath();g.moveTo(X(D.record4),T-8);g.lineTo(X(D.record4),B+4);g.stroke();
+  g.setLineDash([]);g.globalAlpha=1;
+  txt(g,'記録 '+D.record4,X(D.record4)-84,T-12,10.5,.9);
+  C.forEach(function(c,i){
+    var y=T+gap*i+gap/2, top=(i===0);
+    g.strokeStyle=ink();g.lineWidth=top?4.5:3;g.globalAlpha=top?.32:.16;
+    g.beginPath();g.moveTo(X(lo),y);g.lineTo(X(c[1]),y);g.stroke();g.globalAlpha=1;
+    g.fillStyle=ink();g.globalAlpha=top?1:.55;
+    g.beginPath();g.arc(X(c[1]),y,top?6:4,0,7);g.fill();g.globalAlpha=1;
+    txt(g,c[0],4,y+4,10.5,top?.95:.62);
+    txt(g,c[1].toFixed(7),X(c[1])+9,y+4,10.5,top?.95:.6);
+  });
+  for(var v=3.6;v<=4.5;v+=0.2){txt(g,v.toFixed(1),X(v)-10,B+16,10,.5);}
+}
+
+/* 図6：不動点の検証 */
+function d6(){var r=S(document.getElementById('c6'),330),g=r[0],w=r[1],h=r[2];
+  var L=54,R=w-16,T=26,B=h-34;
+  var pts=[[4,-0.99],[11,-3.130e-3],[20,-0.3204],[22,-1.147e-3],[30,-0.3673],[40,-0.1975],
+           [50,-0.2983],[55,-8.482e-13]];
+  var X=function(c){return L+(R-L)*(c-4)/56;};
+  var Y=function(v){var e=Math.log10(Math.max(1e-13,-v)); return T+(B-T)*(e+13)/14.2;};
+  g.strokeStyle=ink();g.globalAlpha=.13;
+  for(var e=-13;e<=0;e+=2){var yy=T+(B-T)*(e+13)/14.2;
+    g.beginPath();g.moveTo(L,yy);g.lineTo(R,yy);g.stroke();
+    txt(g,'−10^'+e,6,yy+4,9.5,.5);}
+  g.globalAlpha=1;
+  g.strokeStyle=ink();g.lineWidth=2;g.globalAlpha=.85;
+  g.beginPath();g.moveTo(L,T-8);g.lineTo(R,T-8);g.stroke();g.globalAlpha=1;
+  txt(g,'0 ＝ ここを超えたら記録が破れる',L+6,T-13,11,.95);
+  g.strokeStyle=ink();g.lineWidth=1.8;g.beginPath();
+  pts.forEach(function(p,i){i?g.lineTo(X(p[0]),Y(p[1])):g.moveTo(X(p[0]),Y(p[1]));});g.stroke();
+  pts.forEach(function(p){
+    var sp=(p[0]===55);
+    g.fillStyle=ink();g.globalAlpha=sp?1:.6;
+    g.beginPath();g.arc(X(p[0]),Y(p[1]),sp?6:3.6,0,7);g.fill();g.globalAlpha=1;
+    txt(g,'c='+p[0],X(p[0])-11,B+16,9.5,sp?.95:.55);
+  });
+  txt(g,'c=55 は −8.5×10⁻¹³（証明済み）',X(55)-190,Y(-8.482e-13)+4,11,.95);
+}
+
+/* 図7：次元 */
+function d7(){var r=S(document.getElementById('c7'),340),g=r[0],w=r[1],h=r[2];
+  var L=50,R=w-16,T=26,B=h-34, DM=D.k4dim, W=D.k4walker_dim;
+  var X=function(c){return L+(R-L)*(c-4)/(DM[DM.length-1][0]-4);};
+  var lo=0.60,hi=0.78;
+  var Y=function(v){return B-(v-lo)/(hi-lo)*(B-T);};
+  g.strokeStyle=ink();g.globalAlpha=.13;
+  for(var q=0.60;q<=0.78;q+=0.03){g.beginPath();g.moveTo(L,Y(q));g.lineTo(R,Y(q));g.stroke();
+    txt(g,q.toFixed(2),10,Y(q)+4,10,.5);}
+  for(var c=20;c<=150;c+=20){g.beginPath();g.moveTo(X(c),T);g.lineTo(X(c),B);g.stroke();
+    txt(g,String(c),X(c)-8,B+16,10,.5);}
+  g.globalAlpha=1;
+  g.strokeStyle=ink();g.lineWidth=1.6;g.globalAlpha=.65;g.setLineDash([5,4]);
+  g.beginPath();g.moveTo(L,Y(W));g.lineTo(R,Y(W));g.stroke();g.setLineDash([]);g.globalAlpha=1;
+  txt(g,'Walker の 0.759738',R-124,Y(W)-6,10.5,.9);
+  g.strokeStyle=ink();g.lineWidth=1.3;g.globalAlpha=.6;g.beginPath();
+  DM.forEach(function(d,i){i?g.lineTo(X(d[0]),Y(d[3])):g.moveTo(X(d[0]),Y(d[3]));});
+  g.stroke();g.globalAlpha=1;
+  var hl={55:'55',121:'121 = 11²',11:'11'};
+  DM.forEach(function(d){
+    if(hl[d[0]]){g.fillStyle=ink();g.beginPath();g.arc(X(d[0]),Y(d[3]),5.5,0,7);g.fill();
+      txt(g,hl[d[0]],X(d[0])-12,Y(d[3])-11,10.5,.95);}});
+  txt(g,'次元 log|F| / log c（|F| は ℤ/cℤ で 4-AP を持たない最大集合）',L+4,T+12,11,.85);
+  txt(g,'上位三つは 11、55 = 5×11、121 = 11²',L+4,T+28,10.5,.7);
+  txt(g,'基数 c',R-44,B+16,10,.6);
+}
+
+/* 図8：Behrend */
+function d8(){var r=S(document.getElementById('c8'),320),g=r[0],w=r[1],h=r[2];
+  var L=64,R=w-16,T=28,B=h-34, BH=D.behrend;
+  var X=function(i){return L+(R-L)*(i+0.5)/BH.length;};
+  var Y=function(v){return B-v/3.2*(B-T);};
+  g.strokeStyle=ink();g.globalAlpha=.13;
+  for(var q=0;q<=3;q+=0.5){g.beginPath();g.moveTo(L,Y(q));g.lineTo(R,Y(q));g.stroke();
+    txt(g,q.toFixed(1),22,Y(q)+4,10,.5);}
+  g.globalAlpha=1;
+  g.strokeStyle=ink();g.lineWidth=1.8;g.globalAlpha=.75;g.setLineDash([6,4]);
+  g.beginPath();g.moveTo(L,Y(D.szekeres));g.lineTo(R,Y(D.szekeres));g.stroke();
+  g.setLineDash([]);g.globalAlpha=1;
+  txt(g,'Szekeres 単独 '+D.szekeres.toFixed(6),L+8,Y(D.szekeres)-8,11,.95);
+  BH.forEach(function(b,i){
+    var bw=(R-L)/BH.length*0.5;
+    g.fillStyle=ink();g.globalAlpha=.30;
+    g.fillRect(X(i)-bw/2,Y(b[2]),bw,B-Y(b[2]));g.globalAlpha=1;
+    g.fillStyle=ink();g.globalAlpha=.62;
+    g.fillRect(X(i)-bw/2,Y(b[5]),bw,Y(b[2])-Y(b[5]));g.globalAlpha=1;
+    txt(g,String(b[0]),X(i)-12,B+16,10,.6);
+    txt(g,b[5].toFixed(3),X(i)-16,Y(b[5])-6,9.5,.85);});
+  txt(g,'濃い＝頭の和／薄い＝尾の寄与',L+8,T+13,10.5,.7);
+  txt(g,'Behrend 型の範囲',R-96,B+16,10,.6);
+}
+
+/* 図9：有限区間の差 */
+function d9(){var r=S(document.getElementById('c9'),330),g=r[0],w=r[1],h=r[2];
+  var L=62,R=w-16,T=28,B=h-36, F=D.finite;
+  var X=function(i){return L+(R-L)*i/Math.max(1,F.length-1);};
+  var mx=Math.max(0.004, Math.max.apply(null,F.map(function(x){return x[5];}))*1.25);
+  var Y=function(v){return B-v/mx*(B-T);};
+  g.strokeStyle=ink();g.globalAlpha=.13;
+  for(var q=0;q<=mx;q+=mx/5){g.beginPath();g.moveTo(L,Y(q));g.lineTo(R,Y(q));g.stroke();
+    txt(g,q.toFixed(4),8,Y(q)+4,9.5,.5);}
+  g.globalAlpha=1;
+  if(0.00055<mx){
+    g.strokeStyle=ink();g.lineWidth=1.6;g.globalAlpha=.7;g.setLineDash([5,4]);
+    g.beginPath();g.moveTo(L,Y(0.00055));g.lineTo(R,Y(0.00055));g.stroke();
+    g.setLineDash([]);g.globalAlpha=1;
+    txt(g,'記録との差 0.00055',R-136,Y(0.00055)-7,10.5,.9);}
+  g.strokeStyle=ink();g.lineWidth=2.4;g.beginPath();
+  F.forEach(function(f,i){i?g.lineTo(X(i),Y(f[5])):g.moveTo(X(i),Y(f[5]));});g.stroke();
+  g.fillStyle=ink();
+  F.forEach(function(f,i){var zero=(Math.abs(f[5])<1e-9);
+    g.globalAlpha=zero?.45:1;
+    g.beginPath();g.arc(X(i),Y(f[5]),zero?4:5,0,7);g.fill();g.globalAlpha=1;
+    txt(g,'M='+f[0],X(i)-14,B+16,9.5,.6);});
+  txt(g,'R₃(M) − Szekeres∩[1,M]',L+6,T+13,11.5,.9);
+  txt(g,'ゼロ＝Szekeres がその区間で最適',L+6,T+29,10.5,.7);
+}
+
+function all(){d1();d2();d3();d4();d5();d6();d7();d8();d9();}
+var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(all,150);});
+all();
+})();
+</script>
+</body>
+</html>

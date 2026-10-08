@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ホッジ予想 — computo ergo sum</title>
+<meta name="description" content="ホッジ予想は未解決で、このページに代数性の証明は一つもありません。CM アーベル多様体ではホッジ類が有限の組合せに落ちます。そこで「例外ホッジ類は因子と Weil 類で生成される」という素朴な見込みは 9 次元で壊れ、壊れ方のいちばん簡単な場所 Q(ζ_19) では、問題が 10 次元多様体の余次元 2 のホッジ類ただ一つに落ちます。その一つの位置づけは既知の定理で確定していて、絶対ホッジであることは無条件に知られ、代数性は Lefschetz 標準予想から従います。">
+<link rel="canonical" href="https://computoergosum.com/principia/hodge-cm-degenerate.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="computo ergo sum">
+<meta property="og:title" content="ホッジ予想">
+<meta property="og:description" content="CM アーベル多様体でホッジ類を組合せに落とすと、例外類は 9 次元で Weil 類の外に出る。Q(ζ_19) では問題が余次元 2 の類ただ一つに落ち、その一つは絶対ホッジであることが既知で、代数性は Lefschetz 標準予想から従う。">
+<meta property="og:url" content="https://computoergosum.com/principia/hodge-cm-degenerate.html">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" hreflang="ja" href="https://computoergosum.com/principia/hodge-cm-degenerate.html">
+<link rel="alternate" hreflang="en" href="https://computoergosum.com/en/principia/hodge-cm-degenerate.html">
+<link rel="alternate" hreflang="x-default" href="https://computoergosum.com/principia/hodge-cm-degenerate.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article",
+"headline":"ホッジ予想 — 例外類が、たった一つの類に落ちるまで",
+"description":"CM アーベル多様体のホッジ類の組合せ。例外類が Weil 類の外に出る最小の奇数次元と、そこで問題が余次元 2 の一つの類に落ちること。代数性の証明は一つもありません。",
+"datePublished":"2026-09-24","dateModified":"2026-10-02",
+"publisher":{"@type":"Organization","name":"computo ergo sum"},
+"inLanguage":"ja","mainEntityOfPage":"https://computoergosum.com/principia/hodge-cm-degenerate.html"}
+</script>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.sec{border-left:3px solid currentColor;padding-left:15px;margin:2.4em 0 1.2em}
+.sec h2{margin:0}
+.sec .n{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.14em;opacity:.6;display:block}
+table.num td.n,table.num th.n{text-align:right;font-family:ui-monospace,monospace}
+.big{font-family:ui-monospace,monospace;font-size:1.42rem;font-weight:600}
+.keyrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;
+  background:var(--line,#ccc);border:1px solid var(--line,#ccc);border-radius:3px;margin:1.6em 0;overflow:hidden}
+.keyrow>div{background:var(--card,#fff);padding:15px 17px}
+.keyrow .k{font-family:ui-monospace,monospace;font-size:.68rem;letter-spacing:.1em;opacity:.6;display:block;margin-bottom:5px}
+.keyrow .s{font-size:.79rem;opacity:.72;line-height:1.6;display:block;margin-top:5px}
+.formula{font-family:ui-monospace,monospace;font-size:.92rem;text-align:center;padding:15px 10px;
+  border:1px solid var(--line,#ccc);border-radius:3px;margin:1.5em 0;overflow-x:auto;white-space:nowrap}
+@media(max-width:480px){.formula{white-space:normal;word-break:break-word}}
+.toc{border:1px solid var(--line,#ccc);border-radius:3px;padding:14px 18px;margin:1.8em 0;background:var(--card,#fff)}
+.toc ol{margin:.4em 0 0;padding-left:1.4em}
+.toc li{margin:.28em 0}
+.toc .lead{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;opacity:.6}
+h3{margin:1.8em 0 .6em}
+.item{border-left:2px solid var(--line,#ccc);padding-left:14px;margin:1.6em 0}
+.item h3{margin:0 0 .5em}
+.item .where{margin:.4em 0 0}
+details{border:1px solid var(--line,#ccc);border-radius:3px;padding:0 15px;margin:1.1em 0;background:var(--card,#fff)}
+details[open]{padding-bottom:8px}
+details>summary{cursor:pointer;padding:11px 0;font-weight:600}
+.label{display:inline-block;font-family:"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  font-size:.68rem;letter-spacing:.08em;line-height:1.5;border:1px solid currentColor;border-radius:3px;
+  padding:0 .45em;margin-right:.45em;vertical-align:middle;white-space:nowrap}
+.label.lean{color:var(--ok,#2f6b45)}
+.label.paper{color:var(--emph,#3a5f8a)}
+.label.comp{color:var(--wa,#8a6a12)}
+.label.known{color:var(--muted,#6b6862)}
+.label.pending{color:var(--wa,#8a6a12);border-style:dashed}
+.revised{border-left:3px solid var(--wa,#8a6a12);padding:.5rem .8rem;margin:1.6em 0;font-size:.8rem;color:var(--muted)}
+.footnotes{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line,#ccc);padding-top:.8em;margin-top:2.4em}
+.footnotes ol{padding-left:1.4em}
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="head-top"><a class="brand" href="../index.html">computo <span>ergo</span> sum</a><a class="lang" href="../en/principia/hodge-cm-degenerate.html">English</a></div>
+  <nav><a href="../index.html">ホーム</a><a href="../claude/index.html">Codex cogitans</a><a href="../thoughts/index.html">思索</a><a href="../records/index.html">記録</a><a href="../principia/index.html">自然哲学</a><a href="../future/index.html">未来設計図</a><a href="../tools/index.html">道具</a><a href="../bbs.html">掲示板</a><a href="../about.html">運営について</a></nav>
+</header>
+<main>
+<p class="meta">2026-09-24（改訂 2026-10-02） &middot; article <span class="tag">ホッジ予想</span><span class="tag">CM アーベル多様体</span><span class="tag">代数的サイクル</span><span class="tag">Fermat 多様体</span></p>
+
+<h1 id="top">ホッジ予想 — 例外類が、たった一つの類に落ちるまで</h1>
+
+<p>ホッジ予想は、クレイ数学研究所が 2000 年に掲げた七つのミレニアム懸賞問題の一つです（<a href="https://www.claymath.org/millennium/hodge-conjecture/">公式の問題ページ</a>）。複素射影多様体（複素数の多項式で切り出される図形）には、その形を数で捉える「コホモロジー」という道具があり、その中に複素構造と相性のよい特別な類——ホッジ類——があります。予想は、ホッジ類がすべて、図形の中に多項式で切り出される部分図形（代数的部分多様体）から作られるか、と問います。部分図形からホッジ類を作るのは易しく、逆にホッジ類から部分図形を見つける一般の方法は知られていません。この記事は、その問いを CM アーベル多様体という特別な族に限って、どの類が問題になるかを数え上げた記録です。予想そのものは解いていません。</p>
+
+<div class="section-lead">
+<p><strong>何の問題か</strong> — 複素射影多様体の上で、タイプ (p,p) の有理コホモロジー類（これがホッジ類です）は、いつも代数的部分多様体の類の有理係数の和になるか。アーベル多様体（群の構造を持つ射影多様体で、楕円曲線の高次元版）に限っても未解決です。</p>
+<p><strong>何を調べたか</strong> — CM アーベル多様体（虚数乗法という、最大限に多くの自己準同型を持つアーベル多様体）の族では、ホッジ類が有限の組合せに落ちます。ホッジ類のうち、因子（余次元 1、つまり一つだけ次元の低い部分多様体）の類から和と積で作れないものを例外ホッジ類と呼びます。「例外ホッジ類は因子と Weil 類（例外類のうち、以前から知られている系統）で生成される」という素朴な見込みがどこで壊れるかを、次元の小さい方から全数で数えました。</p>
+<p><strong>何が分かったか</strong> — 壊れ方のいちばん簡単な場所は 9 次元で、そこでは問題が 10 次元多様体の<strong>余次元 2 のホッジ類ただ一つ</strong>（余次元 2 とは、全体より 2 つ次元が低いこと）に落ちます。その一つは既知の定理で位置づけが確定しています。絶対ホッジ（代数的な類が必ず持つ性質で、ホッジ予想への中間段階にあたる）であることは無条件に既知で、代数性は Lefschetz 標準予想（Grothendieck の標準予想の一つ。これが成り立てばアーベル多様体のホッジ予想が従う）から従います。それを幾何で見せる道は、この記事に並べた範囲では全部閉じました。代数性は<strong>一つも証明していません</strong>。</p>
+<p><strong>そのあと足したもの</strong> — 二つの道です。一つは <code>ξ</code> を Weil 類として見て、割線層の型の対象を組合せの模型に置き換えたもので、設計が立つかどうかの境目が四次の代数的数 <code>t₃ = 8.8886…</code> に現れました（§08）。ただしこの境目は元の構成の側の何にも対応しません。もう一つは別の族、Fermat 多様体で、<code>m ≤ 250</code> の全数で既知の道具が届かない壁を数え直しました（§09）。どちらもホッジ予想の本体には届いていません。</p>
+</div>
+
+<p><span class="label lean">Lean</span>機械検査済み（Lean 4、<code>sorry</code> 0・<code>native_decide</code> 不使用、公理は <code>propext</code>・<code>Classical.choice</code>・<code>Quot.sound</code> の部分集合。定理名を添える）
+<span class="label paper">紙</span>証明はあるが機械検査は未了
+<span class="label comp">計算</span>この端末で確かめた範囲。外に出す主張にはしない
+<span class="label known">既知</span>既知の定理・言い換え・外の文献の確認</p>
+
+<p>このページはホッジ予想の本体について<strong>何も主張しません</strong>。組合せと不等式の話であり、代数的サイクル（代数的部分多様体の形式的な和。ホッジ予想が「ある」と言っている対象）を一つも構成していません。「因子で生成されない」は「代数的でない」ではありません。</p>
+
+<div class="toc">
+<span class="lead">この記事の順序</span>
+<ol>
+<li><a href="#問題">この問題は何か</a></li>
+<li><a href="#世界">世界はどこまで来ているか</a></li>
+<li><a href="#組合せ">ホッジ類が、有限の組合せに落ちる</a></li>
+<li><a href="#どこ">例外類はどこに出るか</a> — 偶数次元と、奇数次元</li>
+<li><a href="#zeta19">9 次元の一つの多様体で、問題が一つの類に落ちる</a></li>
+<li><a href="#届かない">「届かない」の積み上げ</a> — テータ因子・完全交叉・曲線・循環</li>
+<li><a href="#残る場所">残る場所と、標準予想が予言している向き</a></li>
+<li><a href="#模型">もう一つの道 — 割線層の型の模型と、その境目 <code>t₃</code></a></li>
+<li><a href="#fermat">別の族で — Fermat 多様体の壁</a></li>
+<li><a href="#lean">機械検査で閉じた範囲</a></li>
+<li><a href="#既知性">既知のものと、そうでないもの</a></li>
+<li><a href="#残った">残ったこと</a></li>
+<li><a href="#文献">文献</a></li>
+</ol>
+</div>
+
+<hr>
+
+<div class="sec"><span class="n">01</span><h2 id="問題">この問題は何か</h2></div>
+
+<blockquote><p>滑らかな複素射影多様体 <code>X</code> の上で、<code>H<sup>2p</sup>(X, Q)</code> のうちタイプ (p,p) の部分に入る類は、どれも余次元 <code>p</code> の代数的部分多様体の類の有理係数の一次結合か。<br>（そうなる類を「代数的」と呼ぶ。ホッジ類は代数的な類をすべて含むので、問いは逆向きの包含だけである）</p></blockquote>
+
+<p>難しいのは、道具が片方向にしか無いことです。代数的部分多様体からホッジ類を作るのは易しく、ホッジ類から部分多様体を作る一般の手続きは知られていません。アーベル多様体に限っても未解決ですが、<strong>ホッジ類を全部書き下せる場合</strong>があります。虚数乗法（CM）を持つアーベル多様体、つまり自己準同型（多様体から自分自身への写像）を最大限に多く持つアーベル多様体です。ホッジ類が有限集合の組合せで完全に記述できるので、「どの類が因子から作れないか」を数え上げられます。それでも代数性は、数え上げの外にあります。<span class="label known">既知</span></p>
+
+<hr>
+
+<div class="sec"><span class="n">02</span><h2 id="世界">世界はどこまで来ているか</h2></div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>問い</th><th>状態</th></tr></thead>
+<tbody>
+<tr><td>アーベル多様体のホッジ予想</td><td><strong>未解決</strong>。ただし <strong>Lefschetz 標準予想から従う</strong>（Abdulali 1994／André 1992）</td></tr>
+<tr><td>CM アーベル多様体のホッジ類</td><td><strong>絶対ホッジであることは無条件に既知</strong>（Deligne 1982）。さらに<strong>すべて André の意味の「分裂 Weil 類」の引き戻しの和</strong>に書ける（André 1992）。代数性は未解決</td></tr>
+<tr><td>アーベル 4-fold（4 次元アーベル多様体）</td><td><strong>決着</strong>。Weil 類は判別式 −1 のアーベル 6-fold で代数的、Schoen の退化から全てのアーベル 4-fold（全判別式・全虚二次体）で代数的（Markman 2025-02）</td></tr>
+<tr><td>素数次元の単純アーベル多様体とその冪</td><td><strong>定理</strong>。ホッジ類は因子の多項式（Tankeev 1983／Ribet 1983）</td></tr>
+<tr><td><code>dim ≤ 5</code></td><td><strong>定理</strong>。ホッジ環は因子と Weil 類で生成される（Moonen–Zarhin 1999）</td></tr>
+<tr><td>一般の CM 体に対する割線層の構成</td><td>構成はある。<strong>半正則性が未着手</strong>で、例があるのは実二次的な場合に限る（Markman 2025-09、著者自身の記述）</td></tr>
+<tr><td>一般化ホッジ予想（GHC。ホッジ予想を広げたもので、コホモロジーの部分構造がどの部分多様体に台を持つかを問う）</td><td>totally real type では定理。<strong>type IV（CM）では未解決</strong>——著者は「4 個の非同種 CM 楕円曲線の積でも未解決」と記す（Vial）</td></tr>
+<tr><td>Fermat 多様体 <code>X<sup>n</sup><sub>m</sub></code>（<code>x<sub>0</sub><sup>m</sup> + … + x<sub>n+1</sub><sup>m</sup> = 0</code> で定まる多様体。<code>m</code> 素数）とその積</td><td><strong>定理</strong>（Shioda 1979）</td></tr>
+</tbody></table></div>
+
+<p>つまり CM の側は、「代数的だろう」と言う理由は十分あるが、<strong>見せる手続きが無い</strong>という状態です。以下はその手続きを、いちばん小さい壊れ方の場所で探した記録です。</p>
+
+<hr>
+
+<div class="sec"><span class="n">03</span><h2 id="組合せ">ホッジ類が、有限の組合せに落ちる</h2></div>
+
+<p>この節は記号が多くなります。要点は、ホッジ類についての問いが、有限集合の数え上げに置き換わることです。</p>
+
+<p><code>A</code> を CM アーベル多様体とします：CM 体 <code>E</code>（<code>A</code> に作用する次数 <code>2g</code> の数体）、そのガロア閉包 <code>L</code>、<code>G = Gal(L/Q)</code>、<code>H = Gal(L/E)</code>、複素共役 <code>c</code> は <code>G</code> の中心に入り、<code>X = G/H</code> は <code>E</code> の <code>2g</code> 個の複素埋め込み、CM 型 <code>Φ</code> は <code>Φ ⊔ cΦ = X</code> を満たす半分です（この半分の選び方が <code>A</code> の複素構造を決めます）。</p>
+
+<p><strong>Pohlmann の判定。</strong><code>H<sup>2p</sup>(A, Q)</code> のホッジ類は、次を満たす <code>T ⊂ X</code> に対応する類 <code>e<sub>T</sub></code> が張ります。<span class="label known">既知</span></p>
+
+<div class="formula">|T| = 2p　かつ　∀σ ∈ G : |T ∩ σΦ| = p</div>
+
+<p>この条件を満たす <code>T</code> を<strong>許容集合</strong>と呼びます。<code>{x, cx}</code> の形の 2 元集合はつねに許容で、これが因子（余次元 1 の類）にあたります。したがって——</p>
+
+<ul>
+<li><strong>因子の積で生成される部分 ⟺ 許容 2 元集合への完全マッチングを持つ <code>T</code></strong>。そうでない許容集合が<strong>例外ホッジ類</strong>です。</li>
+<li>符号ベクトルに直すと見通しがよくなります。<code>s = 1<sub>T</sub> − 1<sub>cT</sub></code>、<code>u = 1<sub>Φ</sub> − 1<sub>cΦ</sub></code> と置けば、許容条件は <code>∀σ : ⟨s, σu⟩ = 0</code>——整数だけの線形条件です。これは「因子がホッジ環を生成しない ⟺ <code>{0, ±1}</code> 係数の非零な零化元がある」という既知の判定と同じものです（White 1993）。<span class="label known">既知</span></li>
+<li><strong>退化の判定</strong>：CM 型が退化するとは、ホッジ群 <code>Hg(A)</code>（ホッジ類を統制する群）の階数が次元より小さくなることです。<code>dim A − rank Hg(A)</code> は、<code>χ(S) = 0</code> となる奇指標 <code>χ</code> の個数に等しい（Kubota 1965／Ribet 1980、Hazama 2003 の形で確認）。<span class="label known">既知</span></li>
+<li><strong>Weil 類</strong>：例外類のうち、以前から知られている系統です。<code>E</code> の CM 部分体 <code>F</code> に対し <code>W<sub>F</sub> = ∧<sup>[E:F]</sup><sub>F</sub> H<sub>1</sub></code>。これが座るのは余次元 <code>p = [E:F]/2 = g/[F:Q]</code> です（Moonen–Zarhin の <code>F</code> に関する Weil 類）。<span class="label known">既知</span></li>
+</ul>
+
+<p><strong>分類が有限になる理由。</strong>上の条件に現れるのは <code>X</code> への <code>G</code> の作用と <code>c</code> の像だけです。<code>c</code> は <code>X</code> 上の不動点のない対合なので <code>S<sub>2g</sub></code> の中でどれも共役で、その中心化群は <code>C<sub>2</sub> ≀ S<sub>g</sub></code>（位数 <code>2<sup>g</sup>·g!</code>）。<code>c</code> が中心にあることから <code>G ⊆ C<sub>2</sub> ≀ S<sub>g</sub></code> となり、<strong><code>g</code> を固定すると考えるべき組は有限個</strong>になります。<span class="label paper">紙</span></p>
+
+<hr>
+
+<div class="sec"><span class="n">04</span><h2 id="どこ">例外類はどこに出るか — 偶数次元と、奇数次元</h2></div>
+
+<h3>偶数次元では、出ても Weil 類だった</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>次元</th><th>走査した範囲</th><th>出た例外類</th></tr></thead>
+<tbody>
+<tr><td><code>g ≤ 5</code>（アーベルな CM 体）</td><td>全ての組</td><td><strong>0</strong><span class="label comp">計算</span></td></tr>
+<tr><td><code>g = 6</code></td><td>全ての組</td><td><code>G ≅ Z/2 × Z/6</code> のときだけ。<code>H<sup>6</sup></code> の中に 2 次元で、それは <strong>Weil 類</strong>。体は <code>Q(ζ<sub>21</sub>)</code>・<code>Q(ζ<sub>28</sub>)</code>・<code>Q(ζ<sub>36</sub>)</code> と <code>Q(ζ<sub>35</sub>)</code>・<code>Q(ζ<sub>39</sub>)</code> の 12 次 CM 部分体<span class="label comp">計算</span></td></tr>
+<tr><td><code>g = 4</code>（非アーベルも込めて）</td><td><code>C<sub>2</sub> ≀ S<sub>4</sub></code> の中の推移的部分群、共役を除いて <strong>38 行</strong></td><td>例外類を持つのは <strong>2 行だけ</strong>（<code>C<sub>2</sub> × A<sub>4</sub></code> と <code>C<sub>2</sub> × S<sub>4</sub></code>）。どちらも中央 <code>H<sup>4</sup></code> に 2 次元で、それは全部 Weil 類<span class="label comp">計算</span></td></tr>
+<tr><td><code>g ≤ 7</code></td><td>全行（<code>g=4</code> の 38 行・<code>g=5</code> の 40 行・<code>g=6</code> の 4,295 行・<code>g=7</code> の 46 行）</td><td>「例外類は因子と <code>W<sub>F</sub></code> で生成される」に<strong>反例 0</strong><span class="label comp">計算</span></td></tr>
+</tbody></table></div>
+
+<p>ここまでだけ見ると、<strong>例外類は Weil 類で尽きる</strong>という見込みが立ちます。しかしこの見込みは<strong>偽</strong>で、しかも偽であることは古典的に知られています。</p>
+
+<h3>奇数次元では、Weil 類が一つも無いのに例外類が出る</h3>
+
+<ul>
+<li><strong>Lenstra の定理</strong>：アーベルな CM 体で単純 CM 型が退化すれば、<code>A</code> 自身の上に例外（sporadic）ホッジ類がある（White 1993 定理 3／Yanai 2015 §3）。<span class="label known">既知</span></li>
+<li><strong>Yanai の 2 冪判定</strong>：消える奇指標の位数 <code>2t</code> が 2 冪であることが、<code>A</code> が Weil 型（Weil 類が現れる型）であることと同値。したがって <code>g</code> が奇数なら <strong>Weil 型にはなりえない</strong>。<span class="label known">既知</span></li>
+</ul>
+
+<p>この二つを並べると、「退化する奇数次元の単純 CM 型」があれば、そこには<strong>例外類はあるのに Weil 類は一つも無い</strong>ことになります。実際に最小の奇数次元は <code>g = 9</code> で、群の側は <code>Z/9</code> と <code>(Z/3)<sup>2</sup></code> の両方で起こります。<span class="label lean">Lean</span><span class="label comp">計算</span> 後者からは、奇素数 <code>p</code> ごとに <code>g = p<sup>2</sup></code> で同じことが起きる系列も書けます。<span class="label paper">紙</span></p>
+
+<p>前者、<code>Z/9</code> の側が <code>Q(ζ<sub>19</sub>)</code>（1 の 19 乗根を有理数に加えた体。円分体と呼ばれます）です。最小かつ古典的なこの場所が、<strong>以下の全部の舞台</strong>になります。</p>
+
+<hr>
+
+<div class="sec"><span class="n">05</span><h2 id="zeta19">9 次元の一つの多様体で、問題が一つの類に落ちる</h2></div>
+
+<p><code>K = Q(ζ<sub>19</sub>)</code>、<code>G = (Z/19)<sup>*</sup> ≅ Z/18</code>、複素共役は <code>9</code>。<code>K</code> の CM 型は <code>2<sup>9</sup> = 512</code> 個あります。</p>
+
+<div class="keyrow">
+<div><span class="k">退化する CM 型</span><span class="big">62</span><span class="s">512 個のうち<span class="label lean">Lean</span></span></div>
+<div><span class="k">退化かつ原始的（<code>A</code> 単純）</span><span class="big">54</span><span class="s">Galois 共役まで込めてただ 1 類<span class="label lean">Lean</span></span></div>
+<div><span class="k">支配次元 <code>d(A)</code></span><span class="big">3</span><span class="s"><code>A</code> は 3-dominated<span class="label lean">Lean</span><span class="label paper">紙</span></span></div>
+<div><span class="k">余次元 3 の例外類</span><span class="big">6</span><span class="s">明示的に書ける<span class="label lean">Lean</span></span></div>
+</div>
+
+<p>54 個の退化かつ原始的な CM 型（より小さい CM 体から誘導されていない型）はどれも 9 次元の単純アーベル多様体（より小さいアーベル多様体の積に分解しないもの）を与え、消える奇指標はどれもちょうど 2 個（位数 6）です。以下 <code>A</code> はその一つ、<code>S = {0,1,2,3,4,5,6,8,16} ⊂ Z/18</code> から作ったものとします。</p>
+
+<h3>①　余次元 3 に落ちる</h3>
+
+<p>Hazama の意味の支配次元 <code>d(A) = w(K<sub>S</sub>)</code>（零化格子の最小 <code>ℓ<sup>1</sup></code> 重み）を計算すると <strong>3</strong> です。<code>A</code> が <code>N</code>-dominated なら、<code>A</code> の任意の冪のホッジ予想が<strong>余次元 <code>≤ N</code> の場合に帰着します</strong>（Hazama 2003）。零化格子は <code>Z[x]/(x<sup>9</sup>+1)</code> の中で明示的に階数 2 のパラメータ表示を持ち、その <code>ℓ<sup>1</sup></code> ノルムは <code>3(|a|+|b|+|a−b|) ≥ 6</code>、したがって重みは <code>3</code> 以上で、<code>3</code> は実現されます。<span class="label lean">Lean</span><span class="label paper">紙</span></p>
+
+<h3>②　余次元 3 の例外類は、ちょうど 6 個で、書ける</h3>
+
+<p><code>H = ⟨γ<sup>6</sup>⟩</code>、<code>F = K<sup>H</sup></code>（6 次の CM 部分体）、<code>C<sub>k</sub></code> をその剰余類とすると、<code>|T| = 6</code> の許容集合は <strong>90 個 ＝ 因子の積 <code>C(9,3) = 84</code> ＋ 例外 6</strong> で、例外はすべて</p>
+
+<div class="formula">T<sub>k</sub> = C<sub>k</sub> ⊔ C<sub>k+1</sub>　（k ∈ Z/6）</div>
+
+<p>の形です。15 個の非順序対 <code>{C<sub>k</sub>, C<sub>l</sub>}</code> のうち許容なのは 9 個で、距離 1 の 6 個が例外、距離 3 の 3 個が因子の積、距離 2 の 6 個は許容ですらありません。<span class="label lean">Lean</span></p>
+
+<h3>③　6 個は、楕円曲線の 3 乗だった</h3>
+
+<p>この 6 個が張る空間 <code>W<sub>F</sub></code> を <code>H<sup>1</sup></code> の側で見ると、ホッジ重みは <code>(2,1,2,1,2,1)</code> で level 1、その「型」<code>Φ<sub>W</sub> = {0,2,4}</code> は <code>Z/6</code> の位数 3 の部分群です。つまり <code>Φ<sub>W</sub></code> は <code>Q(√−19)</code> から誘導された非原始的な型で、<strong>有理ホッジ構造として</strong></p>
+
+<div class="formula">W<sub>F</sub>(1) ≅ H<sup>1</sup>(E)<sup>⊕3</sup></div>
+
+<p>ここで <code>E</code> は <code>Q(√−19)</code> による CM 楕円曲線（楕円曲線は 1 次元のアーベル多様体です。<code>j = −884736</code>、<code>y<sup>2</sup>+y = x<sup>3</sup>−38x+90</code>、導手 <code>361</code>）です。陰性対照（比較のために置いた、条件を満たさない例）として、退化していない型（例えば <code>Φ' = {0,1,2}</code> を与えるもの）でも level 1 にはなりますが、その型は平行移動で閉じておらず、誘導されていません。<span class="label lean">Lean</span><span class="label paper">紙</span></p>
+
+<h3>④　問題が、10 次元多様体の一つの類になる</h3>
+
+<p>そこで <code>A × E</code>（10 次元）を見ます。<code>H<sup>4</sup>(A × E)</code> のホッジ類は全部で <strong>51 = 36 + 9 + 6</strong>：<code>H<sup>4</sup>(A)⊗H<sup>0</sup>(E)</code> の 36 はすべて因子の積、<code>H<sup>2</sup>(A)⊗H<sup>2</sup>(E)</code> の 9 は因子 × 点類、残る <code>H<sup>3</sup>(A)⊗H<sup>1</sup>(E)</code> の <strong>6</strong> が例外です。余次元 1 は <code>9 + 0 + 1 = 10</code> で、混合項 <code>H<sup>1</sup>(A)⊗H<sup>1</sup>(E)</code> は 0。退化かつ原始的な 54 個すべてで同じ数になり、残りの 458 個では混合項が消えるか <code>A</code> が楕円曲線の冪に同種になります（陰性対照）。<span class="label lean">Lean</span></p>
+
+<p>この例外部分 <code>Hom<sub>HS</sub>(H<sup>1</sup>(E), W<sub>F</sub>(1))</code> は <code>F</code> 加群として<strong>階数 1</strong> です。<code>F ⊂ End<sup>0</sup>(A)</code> は代数的対応で実現されるので、6 次元のうち <strong>1 個が代数的なら 6 個すべてが代数的</strong>になり、さらに <code>A</code> 上の余次元 3 の例外類 6 個も代数的になります。<span class="label paper">紙</span> 問題は余次元 2 のホッジ類 <code>ξ</code> ただ一つに落ちました。</p>
+
+<h3>⑤　その一つの位置づけは、既知の定理で確定している</h3>
+
+<ul>
+<li><code>ξ</code> は <code>Δ<sub>k</sub> = C<sub>k</sub> ⊔ {e<sub>ε(k)</sub>}</code> に対する<strong>分裂 Weil 類の引き戻し</strong>（分裂 Weil 類は Weil 類のうち扱いやすい特別な型で、絶対ホッジであることが Deligne により示されています）である（<code>A<sub>Δ<sub>k</sub></sub></code> は 36 次元で、<code>Q(ζ<sub>19</sub>)</code> について分裂 Weil 型の条件を満たす）。<span class="label lean">Lean</span><span class="label paper">紙</span></li>
+<li>したがって <strong><code>ξ</code> が絶対ホッジであることは無条件に既知</strong>（Deligne 1982）、<strong>代数性は Lefschetz 標準予想から従う</strong>（André／Abdulali）。<span class="label known">既知</span></li>
+<li>一方、<strong>最短路は閉じています</strong>：<code>Δ<sub>k</sub></code> の 4 つの CM 型はどの 2 個を取っても互いに補型でないので、この分裂 Weil 類を「2 つの因子類の積」として書く道はありません。<span class="label lean">Lean</span><span class="label paper">紙</span></li>
+<li>幾何の言葉に直すと、<strong><code>ξ</code> が代数的 ⟺ <code>W<sub>F</sub> ⊆ N<sup>1</sup>H<sup>3</sup>(A, Q)</code></strong>、すなわち <code>W<sub>F</sub></code> が <code>A</code> のある因子に台を持つこと。これは一般化ホッジ予想 GHC(1,3) の <code>W<sub>F</sub></code> 部分とちょうど同値です。<span class="label paper">紙</span></li>
+</ul>
+
+<hr>
+
+<div class="sec"><span class="n">06</span><h2 id="届かない">「届かない」の積み上げ — 因子をどう置いても <code>W<sub>F</sub></code> に台が乗らない</h2></div>
+
+<p>以下はすべて「<code>W<sub>F</sub></code> に台を持つ因子 <code>Y</code>（<code>W<sub>F</sub></code> がその因子のコホモロジーから来る、という意味）が、この形では作れない」という否定の結果です。<strong>どれも仮定つき</strong>で、仮定の補集合が空であることは示していません。</p>
+
+<h3>道具：欠損の不等式</h3>
+
+<p><code>A</code> が単純、<code>Y</code> が被約な有効因子、<code>f : Ỹ → Y</code> をその解消とすると</p>
+
+<div class="formula">dim Alb(Ỹ) ≤ g + h<sup>g−2</sup>(A, O<sub>A</sub>(Y) ⊗ J<sub>Y</sub>)</div>
+
+<p>が成り立ちます（<code>Alb(Ỹ)</code> は <code>Ỹ</code> のアルバネーゼ多様体、つまり <code>Ỹ</code> から標準的に作られるアーベル多様体。<code>J<sub>Y</sub></code> は <code>Y</code> の特異点の悪さを測る随伴イデアル）。右辺の第二項を<strong>欠損</strong>と呼ぶことにします。<code>W<sub>F</sub></code> に届くには欠損 <code>≥ 3</code>、<code>H<sup>3</sup>(A)</code> の残りの部分まで込めれば <code>≥ 27</code>、GHC(1,3) 全体では <code>≥ 30</code> が要ります。<span class="label paper">紙</span></p>
+
+<h3>① テータ因子 — 特異かどうかと無関係に届かない</h3>
+
+<p><code>A</code> は主偏極（アーベル多様体に付ける豊富な因子の類のうち、いちばん小さいもの）を持ち、それは同型を除いて一意です（<code>NS(A) ≅ O<sub>K<sub>0</sub></sub></code>、豊富錐は正の象限、円単数の符号写像が <code>F<sub>2</sub></code> 上全射）。<span class="label paper">紙</span><span class="label comp">計算</span> <code>A</code> が単純なのでテータ因子 <code>Θ</code>（主偏極を代表する因子）は既約で、<strong>既約なテータ因子は正規かつ有理特異点</strong>（特異点として穏やかな種類）です（Ein–Lazarsfeld 1997）。有理特異点なら随伴イデアルが自明になり、欠損は 0、したがって <code>Alb(Θ̃) → A</code> は同種で、Gysin 像は無条件に coniveau <code>≥ 1</code> の 144 次元の部分に収まります。テータ因子が特異かどうかは、<strong>この結論に関係しません</strong>。同じ議論で、孤立特異点しか持たない因子（より一般に特異軌跡の次元が <code>g−4</code> 以下の因子）も落ちます。<span class="label paper">紙</span></p>
+
+<h3>② 特異軌跡が 6 次元の完全交叉（<code>c = 3</code>）— すべての偏極・すべての重複度で</h3>
+
+<p><code>W = D<sub>1</sub> ∩ D<sub>2</sub> ∩ D<sub>3</sub></code>（三つの豊富因子の完全交叉、6 次元）に沿って重複度 <code>m<sub>0</sub> ≥ 3</code> で特異な被約因子 <code>Y</code> が欠損を持つなら、交点数の正値性から <code>y = m<sub>0</sub>y<sub>1</sub> = m<sub>0</sub>y<sub>2</sub> = m<sub>0</sub>y<sub>3</sub></code> が強制されます。すると <code>Y</code> は三つの切断の斉次式 <code>F(θ<sub>1</sub>, θ<sub>2</sub>, θ<sub>3</sub>) = 0</code> に落ち、<code>H<sup>odd</sup>(P<sup>2</sup>) = 0</code> により円柱写像の <code>(1,3)</code> 成分が消えます。<strong>すべての偏極・すべての <code>m<sub>0</sub> ≥ 3</code></strong> で <code>W<sub>F</sub></code> に届きません。鍵は消えるテスト類で挟むことと、和ではなく <code>max</code> で挟むことです（和で挟む弱い形は豊富な三つ組の約 3% でしか成り立ちません＝陰性対照）。なおこの枝を<strong>指数（符号）の勘定だけで閉じることはできません</strong>——豊富な四つ組 758 組のうち 5 組で、次元だけから欠損が強制されます。閉じたのは指数と独立な道具、交点数の正値性です。<span class="label paper">紙</span><span class="label lean">Lean</span><span class="label comp">計算</span></p>
+
+<h3>③ 特異軌跡が 7 次元の完全交叉（<code>c = 2</code>）— 論法は別だが同じ結論</h3>
+
+<p><code>W = D<sub>1</sub> ∩ D<sub>2</sub></code> でも結論は同じですが、欠損の Serre 双対の行き先が <code>h<sup>0</sup></code> ではなく <code>h<sup>1</sup></code> になるので、正値性の不等式が作れません。代わりに Koszul 複体と指数定理の「線束が <code>O<sub>A</sub></code> になる枝」が効きます。重複度は実符号座標の 8 箇所以上で非負性を強制し、<code>8 + 8 − 9 = 7</code> から集中指数は <code>2</code> 以下（この上界は最良）。欠損が要求する <code>6</code> と両立しません。特異軌跡が 7 次元で二つの豊富因子の完全交叉である非正規な場合も、同じ形で閉じます。<span class="label paper">紙</span><span class="label lean">Lean</span></p>
+
+<h3>④ 単独の曲線、そして巡回被覆のヤコビアン</h3>
+
+<p>一本の曲線からは次元勘定だけで <code>H<sup>3</sup>(A)</code> に届きません。また <code>A</code> は、三点分岐の巡回 19 次被覆 <code>w<sup>19</sup> = x<sup>a</sup>(1−x)<sup>b</sup></code> のヤコビアン（曲線から作られるアーベル多様体）の同種因子ではありません——その族の CM 型 60 個のどれとも一致しないからです。<span class="label lean">Lean</span> 商 <code>A/μ<sub>19</sub></code> の側に降りても事情は変わりません：この商は<strong>非 Gorenstein</strong>（接空間の重み和が <code>65 ≡ 8 (mod 19)</code>）ですが Reid–Tai の age が 18 個すべて <code>&gt; 3</code> なので<strong>terminal</strong>（どちらも特異点の性質の名前）で、トーリック解消しても <code>H<sup>3</sup></code> は <code>W<sub>F</sub></code> を含んだまま変わりません。<code>μ<sub>19</sub></code> は <code>W<sub>F</sub></code> に自明に作用するので、<strong>探索は <code>μ<sub>19</sub></code> 不変な対象に限ってよい</strong>という縮約だけが残ります。<span class="label lean">Lean</span><span class="label paper">紙</span></p>
+
+<h3>⑤ 構成の道が循環する — パリティの障壁</h3>
+
+<p>最後の枝は、個別の <code>Y</code> ではなく<strong>作り方</strong>を閉じます。解消のアルバネーゼが <code>J = Alb(Ỹ) ~ A<sup>m</sup> × R</code>（<code>R</code> に <code>A</code> の因子なし）なら <code>Hom(A, R̂)⊗Q = 0</code> なので、<code>NS(J)⊗Q</code> には <code>A</code>–<code>R</code> の混合項がなく、除数類はすべて <code>A</code>-次数・<code>R</code>-次数ともに偶になります。この偶奇は積で閉じ、準同型の押し出しで保たれるので、<strong><code>α<sub>*</sub>[Ỹ]</code> が <code>NS(J)</code> の生成する部分環に入るかぎり、円柱対応の <code>(1,3)</code> Künneth 成分は 0</strong> です。</p>
+
+<p>これで<strong>一度に落ちるもの</strong>：曲線の 8 重和（Poincaré の公式）、対称積、アーベル多様体の中の完全交叉、Thom–Porteous の退化軌跡、線形系の族、平行移動の族。生き残る条件は「作る前から非除数的な代数類を持っていること」で、それは<strong>示したい命題そのもの</strong>です。<strong>ここで道は循環します。</strong><span class="label paper">紙</span></p>
+
+<hr>
+
+<div class="sec"><span class="n">07</span><h2 id="残る場所">残る場所と、標準予想が予言している向き</h2></div>
+
+<p>閉じた枝はどれも、次のどれかを使っています——<code>W</code> が豊富因子の完全交叉で切れる、<code>Y</code> が線形系から切り出される、<code>α<sub>*</sub>[Ỹ]</code> が <code>NS(J)</code> の生成する部分環に入る。残っているのはその外側の二つです。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>残る枝</th><th>いま言えること</th><th>有限の足がかり</th></tr></thead>
+<tbody>
+<tr><td><strong>(a)</strong> 特異軌跡が 7 次元で完全交叉でない（非正規、<code>c = 1</code>）</td><td>横断重複度 2 の接錐の判別式が <code>Pic(W)</code> の中で <code>2(L<sub>y</sub>|<sub>W</sub> − K<sub>W</sub>) = Δ</code> を与える。<code>Δ = 0</code> なら欠損は二重被覆の Prym の次元で、そこに <code>E</code> が現れねばならない。<code>A</code> 単純から Gauss 写像は有限で <code>ω<sub>W</sub> = det N</code> は豊富（<strong><code>N</code> 自身は豊富とは言えない</strong>）。符号の勘定で閉じるのは、イデアル層がある豊富な線束で大域生成されるという箱の中だけで、その箱はノルムが <code>2<sup>9</sup> = 512</code> 以下のとき空<span class="label paper">紙</span><span class="label lean">Lean</span></td><td>「<code>L<sub>y</sub>|<sub>W</sub> ⊗ ω<sub>W</sub><sup>−1</sup></code> が豊富でない」を Nakai–Moishezon で有限個の不等式に落とす</td></tr>
+<tr><td><strong>(b)</strong> 特異軌跡が 6 次元で、法束が分解しない</td><td><code>max</code> による挟み撃ちは法束の分解（旗）を必要とするので、そこには効かない<span class="label paper">紙</span></td><td><code>c<sub>1</sub>(N<sub>W/A</sub>)·(L<sub>a</sub>|<sub>W</sub>)<sup>5</sup></code> を上から押さえる</td></tr>
+</tbody></table></div>
+
+<h3>向きが逆であること</h3>
+
+<p>Lefschetz 標準予想は <code>ξ</code> の代数性を導きます。これを上の欠損の不等式と合わせると、標準予想は <code>A</code> について<strong>具体的で幾何的な予言</strong>をしていることになります。</p>
+
+<blockquote><p><code>A</code> は<strong>非有理特異点を持つ因子</strong>を持ち、その「有理性の欠損」の合計は <code>≥ 3</code> である（GHC(1,3) 全体まで込めれば <code>≥ 30</code>）。</p></blockquote>
+
+<p>逆に「<code>A</code> のすべての因子が正規かつ有理特異点である」を示せれば、標準予想は <code>A</code> で破れます。つまり (a) と (b) で閉じ続けることは、<strong>標準予想の反証に向かう向き</strong>の作業です。現在はどちらも条件つきでしか閉じておらず、その向きに一歩も進んではいません。</p>
+
+<hr>
+
+<div class="sec"><span class="n">08</span><h2 id="模型">もう一つの道 — 割線層の型の模型と、その境目 <code>t₃</code></h2></div>
+
+<p>§06 の道は、<code>A</code> の因子から <code>W<sub>F</sub></code> に届こうとするものでした。もう一つの入口は、<code>ξ</code> を Weil 類として見る側にあります。<code>ξ</code> は 12 次元のアーベル多様体 <code>A × E<sup>3</sup></code> の Weil 類の引き戻しで、この 12 は下限です。<code>A × E<sup>3</sup></code> は分裂 Weil 型（判別式 1）になります。<span class="label lean">Lean</span><span class="label paper">紙</span> Weil 類の代数性には Markman の割線層（secant sheaf）の方法があり、総実 3 次体による実乗法を持つ 6 次元アーベル多様体 <code>X</code> の上で、Chern 指標が<strong>割線空間</strong>に入る連接層を作ることが鍵になります。Markman の ICM 報告（以下 [RM]）の §12 は、そうした対象の型として <code>G = [O<sub>X</sub> → ν<sub>*</sub>O<sub>Z̃</sub>] ⊗ O(tΘ)</code>（<code>Z̃</code> は余次元 2 の片の非交和、<code>t</code> は捻り）を挙げています。<span class="label known">既知</span></p>
+
+<p>この節は、その型を<strong>組合せの模型</strong>に置き換えて、どこまで立つかを測った記録です。結論を先に書きます。模型の中では、設計が立つかどうかの境目が一つの代数的数 <code>t₃</code> として現れました。ただし<strong>その境目は [RM] §12 の側の何にも対応しません</strong>。この道も <code>ξ</code> の代数性には届きません。</p>
+
+<h3>模型の定義</h3>
+
+<p><code>X = B<sub>2</sub><sup>3</sup></code>（<code>B<sub>2</sub></code> は主偏極アーベル曲面）に、<code>F<sub>0</sub> = Q(θ)</code>（<code>θ<sup>3</sup> + θ<sup>2</sup> − 6θ − 7 = 0</code>、導手 19 の巡回 3 次体）による実乗法を与え、<code>q = 19</code>、<code>O = Z[θ]</code> とします。片は全正な <code>a, b ∈ O</code> の組（幾何では二つの因子の交わり <code>D<sub>a</sub> ∩ D<sub>b</sub></code>）で、重み <code>n<sub>ab</sub> ≥ 0</code> をつけて並べます。<code>ch(G)</code> が割線空間（8 次元）に入る条件は 27 本の有理数の行（独立なのは 19 本）で、次と同値です。<span class="label paper">紙</span></p>
+
+<div class="formula">Σ n<sub>ab</sub> Δ<sub>ab</sub>p = p(0)　（全ての p ∈ T<sub>t</sub>）</div>
+
+<p>ここで <code>a, b</code> を三つの実埋め込みで <code>R<sup>3</sup><sub>&gt;0</sub></code> の点と見て <code>Δ<sub>ab</sub>p = p(a+b) − p(a) − p(b) + p(0)</code>、<code>T<sub>t</sub></code> は各変数の次数が 2 以下で 8 点 <code>(t ± i√19)<sup>3</sup></code> で消える多項式の空間です。この式を満たす非負の重みを<strong>設計</strong>と呼びます。以下の「模型」はこの意味で、[RM] §12 の言明そのものではありません。</p>
+
+<p>設計が無いことの証拠は一本の多項式です。<code>q ∈ T<sub>t</sub></code> が <code>q(0) = 0</code> を満たし、全ての片で <code>Δ<sub>ab</sub>q &lt; 0</code> なら、設計の等式に入れたとき左辺は負（重みのどれかは正）、右辺は 0 で矛盾します（Farkas の形）。片は無限にあるので二つに分けます。六つの座標がすべて <code>R</code> 以下の片（<strong>箱</strong>、有限個）は整数の算術で全数を表にし、<strong>箱の外</strong>では <code>−Δq</code> を平方と非負の項の和に書いて正値性を示します。箱の外と Farkas の側は Lean、箱の表は計算、同値の辞書は紙、という分担です。</p>
+
+<h3>境目の両側</h3>
+
+<div class="keyrow">
+<div><span class="k">設計が無い（検査した各点）</span><span class="big">t ≤ 8.8886</span><span class="s">と <code>t = t₃</code><span class="label lean">Lean</span><span class="label comp">計算</span><span class="label paper">紙</span></span></div>
+<div><span class="k">境目 <code>t₃</code></span><span class="big">8.8886088117…</span><span class="s">四次の既約多項式の実根<span class="label comp">計算</span></span></div>
+<div><span class="k">設計が在る（検査した各点）</span><span class="big">t ≥ 8.888609</span><span class="s">有理数の重み<span class="label comp">計算</span><span class="label paper">紙</span></span></div>
+</div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>捻り <code>t</code></th><th>結果</th><th>札</th></tr></thead>
+<tbody>
+<tr><td><code>3, 4, 5, 6, 13/2, 7, 15/2, 31/4, 8, 33/4</code></td><td>設計は無い（箱 <code>R = 19〜103</code>）</td><td><span class="label lean">Lean</span><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+<tr><td><code>17/2, 35/4, 703/80, 879/100, 1759/200</code></td><td>設計は無い（<code>17/2</code> は箱 <code>B<sub>169</sub></code> の 32,268,541,861 対）</td><td><span class="label lean">Lean</span><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+<tr><td><code>44/5, 887/100, 8871/1000, 71/8</code></td><td>設計は無い</td><td><span class="label lean">Lean</span><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+<tr><td><code>8.88, 8.885, 8.887, 8.888, 8.8885, 8.8886</code></td><td>設計は無い（箱 <code>B<sub>80</sub></code>、Galois で減らした 121,752,610 対）</td><td><span class="label lean">Lean</span><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+<tr><td><code>t = t₃</code>（実数の母数として）</td><td>設計は無い。証明書は二段</td><td><span class="label lean">Lean</span><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+<tr><td><code>8.888609, 8.88861, 8.8887, 8.889, 8.89, 8.895, 8.899, 8.9</code></td><td>設計が在る（全正な <code>O</code> の片と有理数の重み）</td><td><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+<tr><td><code>9</code></td><td>設計が在る（27 本の等式を Lean で確認）</td><td><span class="label lean">Lean</span><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+<tr><td><code>73/8, 37/4, 19/2, 10</code></td><td>設計が在る</td><td><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+</tbody></table></div>
+
+<p>「設計は無い」の行の Lean は、箱の外の正値性と Farkas の側を閉じ、箱の表を仮定として受け取る形です（表は整数の算術で別に検査）。どれも<strong>点ごと</strong>の結果です。単調性を仮定すれば境目 <code>t*</code> は <code>[t₃, 8.888609]</code>（幅 <code>1.9·10<sup>−7</sup></code>）に入りますが、単調性は示していません。片の集合を固定した単調性は偽です。<span class="label comp">計算</span> 「<code>t* = t₃</code>」には直上の全ての <code>t</code> での設計が要り、有限個の点までしかありません。直上の設計は退化していません（退化の判定量 <code>P</code> が <code>t</code> と異なる、二経路で一致）。<span class="label comp">計算</span></p>
+
+<h3><code>t₃</code> は何か — 方法の端</h3>
+
+<div class="formula">f(t) = 140777t<sup>4</sup> − 4043858t<sup>3</sup> + 35443487t<sup>2</sup> − 89056524t − 47598822</div>
+
+<p><code>t₃</code> はこの <code>f</code> の実根 <code>8.88860881172847812…</code> です。<code>f</code> は <code>Q</code> 上既約で Galois 群は <code>S<sub>4</sub></code>、<code>(8.8885, 8.889)</code> の中の根はこれ一つです。<span class="label comp">計算</span> 区間の両端での <code>f</code> の符号は Lean で確かめています。<span class="label lean">Lean</span></p>
+
+<p><code>t₃</code> の意味は<strong>証明書の型の端</strong>です。片 <code>P<sub>2</sub> = (−2−θ+θ<sup>2</sup>, 23+3θ−3θ<sup>2</sup>)</code> と、<code>a<sub>1</sub> → ∞</code> の漸近の向きの必要条件を合わせると、<strong>全ての実数 <code>t ∈ [t₃, 14]</code> で、箱の外の実の正値性による証明書の型は存在しません</strong>。証明は <code>Q(t)</code> の上の双対の恒等式で、モーメント行列の行列式がちょうど <code>−4f</code> になります。<span class="label lean">Lean</span>（代数の核）<span class="label paper">紙</span>（漸近の必要条件）</p>
+
+<p>その手前には、方法ごとの端が並んでいました。どれも設計の境目ではなく、越えた先で別の型の証明書が立ちました。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>端</th><th>値</th><th>何の端か</th></tr></thead>
+<tbody>
+<tr><td><code>t₀</code></td><td class="n">≈ 8.7951</td><td>箱の外を一項の支配で押さえる型。片 <code>P<sub>1</sub> = (−2−θ+θ<sup>2</sup>, 18+3θ−2θ<sup>2</sup>)</code> の符号がここで変わる<span class="label comp">計算</span></td></tr>
+<tr><td><code>t₁</code></td><td class="n">8.8716489…</td><td>二項の AM–GM のずらしの型。半直線の上の <code>Δ<sub>P<sub>2</sub></sub>q</code> の零点<span class="label comp">計算</span></td></tr>
+<tr><td><code>t₂</code></td><td class="n">(8.885, 8.89)</td><td>箱の外を実の切除平面に替えた緩和。浮動小数の LP で、主張にはしない<span class="label comp">計算</span></td></tr>
+<tr><td><code>t₃</code></td><td class="n">8.8886088…</td><td>単項式 × 一次式の平方を足した型。<code>[t₃, 14]</code> でこの型は無い<span class="label lean">Lean</span><span class="label paper">紙</span></td></tr>
+</tbody></table></div>
+
+<h3>使った道具</h3>
+
+<ul>
+<li><strong>AM–GM の配分の LP</strong>：負の単項式を二項の AM–GM で吸収する配分を、変数の尺度つきの LP にして余裕を最大化する（常に実行可能）。</li>
+<li><strong>Newton 多角形</strong>：単項式の AM–GM が使えるかは、辺の上の頂点の係数の取り合いで決まる。足りない頂点が出たら、AM–GM では原理的に閉じない。</li>
+<li><strong>Gram の列生成</strong>：足りない所に「単項式 × 一次式の平方」を Gram 行列の小さいブロックとして、LP の双対で価格づけして足す（半正定値計画は使わない）。</li>
+<li><strong>モーメント行列の退化</strong>：証明書の LP の双対を無限遠の片で書くと、方法の端が「モーメント行列の行列式 = 0」に落ち、それが <code>f</code> を与える。</li>
+<li><strong>二段の証明書</strong>：<code>t = t₃</code> では一本目の多項式 <code>q*</code> が <code>P<sub>2</sub></code> の族の上でちょうど 0 になり、その面の上で二本目の多項式が効く。凸計画の facial reduction と同じ形の既知の考え方です。</li>
+</ul>
+
+<h3>橋は無い</h3>
+
+<p>模型と [RM] §12 の本文を照合すると、次のように分かれます。<span class="label paper">紙</span></p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>関係</th><th>中身</th></tr></thead>
+<tbody>
+<tr><td><strong>定義として同じ</strong></td><td>割線空間、<code>ch(G)</code> がそこに入るという形、整数／有理数の重複度</td></tr>
+<tr><td><strong>条件つきで同じ</strong></td><td>全切り離し（§12 は部分正規化）、有理な捻り、非退化、縮約の核</td></tr>
+<tr><td><strong>類比にとどまる</strong></td><td><code>X = B<sub>2</sub><sup>3</sup></code> と <code>F<sub>0</sub></code> の実乗法、片 <code>D<sub>a</sub> ∩ D<sub>b</sub></code>（§12 では類は <code>Θ</code> 一つで、一類に絞ると設計は退化する）</td></tr>
+<tr><td><strong>対応が無い</strong></td><td>実数の重み、単数で極端に捻った片、証明書の道具、<strong>境目 <code>t₃</code></strong>（§12 に連続な捻りは無く、<code>t₃</code> は <code>F<sub>0</sub></code> の元でもない）、代数性</td></tr>
+</tbody></table></div>
+
+<p><strong><code>O</code> 版は §12 の形だけを借りた組合せの模型で、§12 の主張の一般化でも反例でもありません。</strong>境目 <code>t₃</code> が決まっても、ホッジ側の言明は一つも増えません。</p>
+
+<hr>
+
+<div class="sec"><span class="n">09</span><h2 id="fermat">別の族で — Fermat 多様体の壁</h2></div>
+
+<p>ホッジ類が有限の組合せに落ちるもう一つの代表が Fermat 多様体 <code>X<sup>n</sup><sub>m</sub> : x<sub>0</sub><sup>m</sup> + … + x<sub>n+1</sub><sup>m</sup> = 0</code> です。4 次元の <code>X<sup>4</sup><sub>m</sub></code> の (2,2) 型のホッジ類は、指標 <code>a = (a<sub>0</sub>, …, a<sub>5</sub>)</code>（<code>a<sub>i</sub> ∈ Z/m ∖ {0}</code>、<code>Σa<sub>i</sub> ≡ 0</code>）のうち、全ての <code>t ∈ (Z/m)<sup>×</sup></code> で <code>Σ⟨ta<sub>i</sub>⟩ = 3m</code> となるもの（grade 3 の六つ組）で記述されます（<code>⟨x⟩</code> は <code>1</code> から <code>m−1</code> の代表）。<span class="label known">既知</span> 代数性は <code>m</code> が素数のとき（Shioda）や Aoki の定理の形の <code>m</code> で知られ、それ以外では、既知の道具——消える対、Aoki の標準元、Shioda の帰納構造、Lefschetz (1,1)——で閉じない類が残ります。ここではそれを<strong>壁</strong>と呼びます。</p>
+
+<div class="keyrow">
+<div><span class="k">調べた範囲</span><span class="big">3 ≤ m ≤ 250</span><span class="s">全ての <code>m</code>、全数<span class="label comp">計算</span></span></div>
+<div><span class="k">Galois 軌道</span><span class="big">557,511</span><span class="s">grade 3 の六つ組の軌道<span class="label comp">計算</span></span></div>
+<div><span class="k">原始的な壁の類</span><span class="big">8</span><span class="s">偶数の <code>m</code> だけ<span class="label comp">計算</span></span></div>
+<div><span class="k">束ねた壁</span><span class="big">3</span><span class="s"><code>W<sub>70</sub>・W<sub>110</sub>・W<sub>114</sub></code><span class="label comp">計算</span><span class="label known">既知</span></span></div>
+</div>
+
+<h3>全数で数える</h3>
+
+<p>各 <code>m</code> で grade 3 の六つ組を全て列挙し、Galois 軌道ごとに、分解できるか・消える対を一つ足して分解できるか・三つと三つに割れるか（<code>*</code>-分裂）を調べ、残ったものを格子 <code>S'<sub>m</sub></code> への所属で判定しました。<code>S'<sub>m</sub></code> は Aoki の格子 <code>S<sub>m</sub></code> に、その <code>m</code> の grade 2 の四つ組（Lefschetz (1,1) で無条件に代数的）を全部足したものです。<code>S'<sub>m</sub></code> の外に出た類は、この系統の並置の計算では閉じません（入ったからといって閉じるとは限らない、陰性のふるいです）。<span class="label comp">計算</span></p>
+
+<p>較正として、曲面 <code>X<sup>2</sup><sub>m</sub></code> の Picard 数（<code>m = 3, 4, 5, 6</code> で 7・20・37・86）と、既知の表（奇数 <code>21 ≤ m ≤ 199</code> の 89 水準・78,299 軌道）の全ての列を再現しています。<span class="label comp">計算</span></p>
+
+<p><code>S'<sub>m</sub></code> の外に出たのは 19 個で、小さい <code>m</code> の類の倍（膨らませ）を除いた原始的なものは、奇数の <code>m = 33</code> の 1 個と、偶数の次の 8 個です。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">m</th><th>代表（Galois 軌道の最小代表）</th><th>壁</th></tr></thead>
+<tbody>
+<tr><td class="n">70</td><td><code>(1,20,24,42,61,62)</code></td><td><code>W<sub>70</sub></code></td></tr>
+<tr><td class="n">110</td><td><code>(1,24,62,71,81,91)</code>・<code>(1,31,55,71,81,91)</code></td><td><code>W<sub>110</sub></code></td></tr>
+<tr><td class="n">114</td><td><code>(1,7,78,79,86,91)</code>・<code>(1,13,43,72,103,110)</code>・<code>(1,13,43,80,102,103)</code></td><td><code>W<sub>114</sub></code></td></tr>
+<tr><td class="n">210</td><td><code>(2,9,129,142,168,180)</code></td><td><code>W<sub>70</sub></code>（<code>3·(1,20,24,42,61,62)</code> と同じ主張）</td></tr>
+<tr><td class="n">220</td><td><code>(1,62,111,142,162,182)</code></td><td><code>W<sub>110</sub></code>（<code>m = 110</code> の 2 類の 2 倍と同じ主張）</td></tr>
+</tbody></table></div>
+
+<p>同じ主張に帰着するものを束ねると、壁は <code>W<sub>70</sub></code>・<code>W<sub>110</sub></code>・<code>W<sub>114</sub></code> の 3 個です。個数・水準・代表まで、別の方法による既知の全数調査（arXiv:2608.18134 の付録 D と付属データ）と一字一句一致しました。<strong>独立な再現であって、新しい壁ではありません。</strong><span class="label known">既知</span> <code>m = 33</code> の類は水準 66 に持ち上げると閉じます（同じ文献の結果を再現）。一方 <code>m = 70, 110, 114</code> の 6 類は、水準を 2・3・4 倍に上げたどの持ち上げでも <code>S'</code> の外に残りました。<span class="label comp">計算</span></p>
+
+<h3>壁は族をなすか</h3>
+
+<p><code>m = 33</code> の類と <code>m = 110</code> の第二の類は、どちらも <code>H ∪ {c}</code>（<code>H</code> は <code>(Z/m)<sup>×</sup></code> の位数 5 の乗法部分群、<code>c = −ΣH</code>）の形をしています。Aoki の標準元（加法的な等差数列）の乗法版にあたる形です。この形が無限の壁の源になるかを調べました。</p>
+
+<ul>
+<li>位数 <code>3, 5, 7, 9, 11</code> の <code>H</code>・<code>m ≤ 2000</code> で、この形がホッジ類になるものは 451 個。そのうち Aoki の標準元でないものは 19 個しかなく、(2,2) 型にあたる位数 5 では <code>m = 33, 62, 66, 110</code> の 4 個だけです。この形から出る壁は <code>m = 33</code> と <code>110</code> の 2 個だけでした。<span class="label comp">計算</span></li>
+<li>理由は Stickelberger の式で書けます。<code>H</code> 上で自明な奇指標の Euler 因子が消えることが条件で、<code>H</code> 上で自明な原始的な奇指標が一つでもあれば、この形はホッジ類になりません。<span class="label paper">紙</span> 197 件で判定と計算が一致しました。<span class="label comp">計算</span></li>
+<li>曲線の積と Fermat 曲面から来る (1,1) 類という二つの供給源も、<code>d ≤ 1000</code>（250 個の <code>d</code>、749 水準、六つ組 6434 万個）を全数で調べると、<code>d ∈ {12, 15, 20, 21, 28, 33, 39}</code> の 7 個で尽きました。<span class="label comp">計算</span> これは Koblitz–Rohrlich（1978）の、CM 型の一致の分類と整合します。<span class="label known">既知</span></li>
+</ul>
+
+<p>調べた範囲では、<strong>壁は有限個で、族をなして続く兆しはありません</strong>。これは計算の範囲での観察で、<code>m &gt; 250</code> で新しい壁が出ないことは示していません。壁の類の代数性も、一つも示していません。</p>
+
+<hr>
+
+<div class="sec"><span class="n">10</span><h2 id="lean">機械検査で閉じた範囲</h2></div>
+
+<p>Lean 4 で閉じたのは<strong>有限の組合せと不等式の核だけ</strong>です。ファイルは 46 本で、<code>sorry</code> は 0、<code>native_decide</code> は使っていません。各ファイルの <code>#print axioms</code> の出力（46 本の公理ログ、計 980 行）を全行確かめ、<strong>どの行も <code>propext</code>・<code>Classical.choice</code>・<code>Quot.sound</code> の部分集合</strong>でした（<code>CMHodgeLevelOne</code> は全行が <code>propext</code> のみ、<code>CMHodgeProductCurve</code> と <code>CMHodgeWeilType</code> は <code>Classical.choice</code> を使わず、どの公理にも依存しない行も 35 行あります）。表の「定理」は公理ログの行数です。</p>
+
+<p>配布物は <code>principia-hodge-cm-degenerate-2026-10-02.tar.gz</code>（sha256 <code>（記入待ち）</code>）です。</p>
+
+<h3>例外類の組合せと、<code>ξ</code> の位置づけ（§04・§05）</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>ファイル</th><th class="n">定理</th><th>何を閉じたか（主な定理名）</th></tr></thead>
+<tbody>
+<tr><td><code>CMHodgeClasses.lean</code></td><td class="n">16</td><td>奇数次元で例外類が出る最小例の組合せ（<code>phi_is_cm_type</code>・<code>T0_hodge</code>・<strong><code>T0_not_generated_by_divisors</code></strong>・<code>unique_involution</code>）</td></tr>
+<tr><td><code>CMHodgeDegenerate.lean</code></td><td class="n">14</td><td>退化かつ原始的な CM 型が 54 個、零化格子の重みが 3、余次元 3 の例外類が 6 個（<code>card_deg_prim</code>・<strong><code>weight_ge_three</code></strong>・<code>Texc_card</code>・<code>Texc_not_divisorial</code>）</td></tr>
+<tr><td><code>CMHodgeLevelOne.lean</code></td><td class="n">26</td><td>level ≤ 1 の内訳 204 = 144 + 6 + 54、分裂 Weil 型の条件（<code>level1_card</code>・<code>reciprocity_S</code>・<code>split_weil_condition_V</code>）</td></tr>
+<tr><td><code>CMHodgeProductCurve.lean</code></td><td class="n">16</td><td><code>A × E</code> の <code>H<sup>4</sup></code> の全数 51 = 36 + 9 + 6、補型の対が無いこと（<code>count31_eq</code>・<code>adm11_none</code>・<strong><code>no_complementary_pairing</code></strong>）</td></tr>
+<tr><td><code>CMHodgeWeilType.lean</code></td><td class="n">10</td><td><code>ξ</code> を 12 次元 <code>A × E<sup>3</sup></code> の Weil 類に持ち上げる組合せ、12 が下限（<code>weil_type_unique</code>・<strong><code>min_dim_twelve</code></strong>）</td></tr>
+<tr><td><code>CMHodgeDiscriminant.lean</code>・<code>CMHodgeDiscRing.lean</code></td><td class="n">11・14</td><td>分裂 Weil 型の判別式の証拠、<code>Z[θ]</code> の上での置き直し（<strong><code>detB_is_norm</code></strong>・<code>detB_is_norm_ring</code>）</td></tr>
+<tr><td><code>CMHodgeSecant.lean</code></td><td class="n">22</td><td><code>A × E<sup>3</sup></code> が <code>X × X̂</code> の形になれないこと、周期の次元（<strong><code>no_selfdual_realisation</code></strong>・<code>period_dim</code>）</td></tr>
+</tbody></table></div>
+
+<h3>因子の枝（§06・§07）</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>ファイル</th><th class="n">定理</th><th>何を閉じたか（主な定理名）</th></tr></thead>
+<tbody>
+<tr><td><code>CMHodgeDivisor.lean</code></td><td class="n">32</td><td>イデアルノルムの空き、<code>μ<sub>19</sub></code> の作用、商の age と Gorenstein 性（<code>min_ideal_norm</code>・<code>zeta_trivial_on_WF</code>・<strong><code>not_gorenstein</code></strong>・<code>ageNum_ge_58</code>）</td></tr>
+<tr><td><code>CMHodgeDivisor2.lean</code></td><td class="n">16</td><td><code>c = 3</code> の挟み撃ちの核と、巡回被覆の CM 型との比較（<strong><code>defect_core_general</code></strong>・<code>cone_forces_equal</code>・<strong><code>Stil_not_cyclic</code></strong>）</td></tr>
+<tr><td><code>CMHodgeIntersection.lean</code></td><td class="n">11</td><td><code>c = 3</code>・<code>c = 2</code> の挟み撃ちと場所勘定（<code>squeeze_three</code>・<code>squeeze_two</code>・<strong><code>places_nonneg_of_mult</code></strong>）</td></tr>
+<tr><td><code>CMHodgeNormal.lean</code></td><td class="n">19</td><td>パーマネントの正値性、<code>c = 1</code> の箱の壁、<code>W<sub>F</sub></code> のホッジ重み（<code>perm_pos</code>・<strong><code>box_forces_norm_gt</code></strong>・<code>wt_level_one</code>・<code>control_not_induced</code>）</td></tr>
+</tbody></table></div>
+
+<h3>割線層の側の有限の算術（§08 の前段）</h3>
+
+<p><code>X = B<sub>2</sub><sup>3</sup></code> の上で割線層の型の対象を組もうとするとき、指数定理・Koszul 分解・Riemann–Roch などの議論が最後に落ちる、整数と有理数の等式と不等式です。幾何そのものは入っていません。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>ファイル</th><th class="n">定理</th><th>主な定理名</th></tr></thead>
+<tbody>
+<tr><td><code>CMHodgeSheafSecant.lean</code></td><td class="n">14</td><td>直線束の直和では作れないこと（<strong><code>split_sheaf_obstruction</code></strong>・<code>pi_from_theta_W</code>）</td></tr>
+<tr><td><code>CMHodgeToddSecant.lean</code>・<code>CMHodgeIdealSecant.lean</code>・<code>CMHodgeIdealInDivisor.lean</code></td><td class="n">14・11・18</td><td>イデアル層の族の障害（<code>kt_obstruction</code>・<code>psd_obstruction</code>・<code>conditions_exceed_sections</code>）</td></tr>
+<tr><td><code>CMHodgeIntegralModel.lean</code>・<code>CMHodgeScalarWall.lean</code>・<code>CMHodgePureSquareWall.lean</code>・<code>CMHodgeOddMonomialWall.lean</code></td><td class="n">25・12・8・12</td><td>整数の模型と三つの壁（<code>deg12_required</code>・<strong><code>scalar_shared_wall</code></strong>・<code>pure_square_wall</code>・<code>odd_monomial_wall</code>）</td></tr>
+<tr><td><code>CMHodgeNonnegLift.lean</code>・<code>CMHodgeRoundingBudget.lean</code></td><td class="n">10・10</td><td>非負整数解の持ち上げと丸め（<code>nonneg_lift</code>・<code>rounding_nonneg_solution</code>）</td></tr>
+<tr><td><code>CMHodgeDegreeTen.lean</code>・<code>CMHodgeDegreeTenBudget.lean</code>・<code>CMHodgeOrderTriples.lean</code>・<code>CMHodgeGlueWindow.lean</code></td><td class="n">17・16・9・17</td><td>次数 10・12 の勘定と貼り合わせの窓（<code>cert_exact</code>・<code>budget_eq</code>・<code>Q_nonneg</code>・<code>window_nonempty</code>）</td></tr>
+<tr><td><code>CMHodgeCurveClassIntegral.lean</code>・<code>CMHodgeSecantGrading.lean</code></td><td class="n">24・17</td><td>曲線類の整数性、割線空間の階別（<code>CC_in_four_Z</code>・<code>chi_FF_closed</code>・<code>ht2_split</code>）</td></tr>
+<tr><td><code>CMHodgeEquivariance.lean</code>・<code>CMHodgeExtension.lean</code>・<code>CMHodgeRestrictionRank.lean</code>・<code>CMHodgeSupportSplit.lean</code></td><td class="n">11・13・14・17</td><td>同変化の壁、障害の次元、制限の階数（<code>card_dvd_of_invariant</code>・<code>weak_iff_ext2_eq_54</code>・<code>rank_ge_57</code>・<code>no_gluing</code>）</td></tr>
+<tr><td><code>CMHodgeSecantGraph.lean</code>・<code>CMHodgeSecondDifference.lean</code></td><td class="n">18・16</td><td>§12 型の較正と二階差分の符号（<code>twist_three</code>・<code>factor_through_zero</code>・<code>kernel_split</code>・<strong><code>no_full_separation</code></strong>）</td></tr>
+</tbody></table></div>
+
+<h3>模型の境目（§08）</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>ファイル</th><th class="n">定理</th><th>何を閉じたか（主な定理名）</th></tr></thead>
+<tbody>
+<tr><td><code>CMHodgeDesignThreshold.lean</code></td><td class="n">141</td><td>整数の重みの偶奇の障害、<code>t = 7</code> の実の緩和の設計、<code>t = 9</code> の有理数の重みの設計 27 本（<code>c2_parity_obstruction_of_even_twist</code>・<code>no_symmetric_certificate_t7_of_norm_ge_one</code>・<code>design_000</code>〜<code>design_222</code>）</td></tr>
+<tr><td><code>CMHodgeTraceThreeCertificate.lean</code></td><td class="n">21</td><td><code>t = 3</code> の試験多項式、ノルム ≥ 1 の全ての類（<code>delta_neg</code>・<strong><code>no_design</code></strong>）</td></tr>
+<tr><td><code>CMHodgeDesignT8Impossible.lean</code></td><td class="n">110</td><td><code>t = 3（対照）, 4, 5, 6, 13/2, 7, 15/2, 31/4, 8, 33/4</code>（名前空間 <code>DesignT8</code> ほか。<code>dq_neg_of_some_coord_ge</code>・<strong><code>no_design_of_box_table</code></strong>）</td></tr>
+<tr><td><code>CMHodgeDesignT17over2.lean</code></td><td class="n">11</td><td><code>t = 17/2</code>（<code>DesignT17Half.no_design_of_box_table</code>）</td></tr>
+<tr><td><code>CMHodgeDesignT35over4.lean</code></td><td class="n">83</td><td><code>t = 35/4, 703/80, 879/100, 1759/200</code>、一項の支配の半径の下界（<code>lemmaO_radius_ge_of_P1_t35over4</code>・<code>lemmaO_empty_of_P1_t9</code>・<code>no_design_of_box_table</code>）</td></tr>
+<tr><td><code>CMHodgeDesignT8p8.lean</code>・<code>CMHodgeDesignT71over8.lean</code></td><td class="n">15・5</td><td><code>t = 44/5, 887/100, 8871/1000</code> と <code>71/8</code>（<code>dq_neg_of_some_coord_ge</code>・<code>no_design_of_box_table</code>）</td></tr>
+<tr><td><code>CMHodgeDesignT888.lean</code>・<code>CMHodgeDesignT8888.lean</code>・<code>CMHodgeDesignT88886.lean</code></td><td class="n">10・15・7</td><td><code>t = 8.88, 8.885, 8.887, 8.888, 8.8885, 8.8886</code>（同じ形）</td></tr>
+<tr><td><code>CMHodgeDesignThresholdT3.lean</code></td><td class="n">14</td><td>方法の端：全ての実数 <code>t ∈ [t₃, 14]</code> で証明書の型が無い（<code>moment_det</code>・<strong><code>dP2_nonneg_of_necessary</code></strong>・<code>dP2V_nonneg_of_necessary</code>・<code>f_neg_88887</code>）</td></tr>
+<tr><td><code>CMHodgeDesignT3Point.lean</code></td><td class="n">18</td><td><code>t = t₃</code> での二段の証明書（<code>qs_mem</code>・<code>dqs_neg_of_some_coord_ge</code>・<strong><code>no_design_at_root</code></strong>）</td></tr>
+</tbody></table></div>
+
+<p><strong>何を言い、何を言っていないか。</strong>Lean に入っているのは、有限集合の数え上げ、整数の線形条件、パーマネントの正値性、実符号座標の場所勘定、多項式の正値性の証明書といった<strong>離散的な核</strong>だけです。ホッジ構造・代数的サイクル・随伴イデアル・Gysin 写像・Serre 双対・小平消滅・Grothendieck–Lefschetz・Künneth 分解・連接層・<code>Ext</code> は、<strong>どれも入っていません</strong>。それらを使う段は［紙］です。§08 の点ごとの「設計は無い」は、箱の表（整数の算術で別に検査）を仮定として受け取り、同値の辞書は紙です。したがって「<code>ξ</code> は代数的でない」も「代数的である」も、<strong>機械検査された主張ではありません</strong>。どちらも主張していません。</p>
+
+<hr>
+
+<div class="sec"><span class="n">11</span><h2 id="既知性">既知のものと、そうでないもの</h2></div>
+
+<h3>既知の定理として使ったもの</h3>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>使った事実</th><th>出典（確認の状態）</th></tr></thead>
+<tbody>
+<tr><td>CM のホッジ類は許容集合が張る</td><td>Pohlmann 1968（二次資料の逐語で確認）</td></tr>
+<tr><td>退化の指標による判定</td><td>Kubota 1965／Ribet 1980（Hazama 2003 命題 2.1 の逐語で確認。原典未取得）</td></tr>
+<tr><td>退化する単純 CM 型には例外類がある</td><td>Lenstra の定理（未公刊）。White 1993 定理 3／Yanai 2015 §3（全文取得）</td></tr>
+<tr><td>Weil 型 ⟺ 消える奇指標の位数が 2 冪。ゆえに奇数次元では Weil 型でない</td><td>Yanai 2015 定理 4.1（全文取得）</td></tr>
+<tr><td>因子が生成しない ⟺ <code>{0,±1}</code> 係数の零化元がある</td><td>White 1993 §5 命題 1（全文取得）</td></tr>
+<tr><td>支配次元と、余次元 <code>≤ N</code> への帰着</td><td>Hazama 2003 §2（逐語）。原典（2000）は未取得</td></tr>
+<tr><td><code>W<sub>F</sub></code> の定義・ホッジ性・例外性・<code>dim ≤ 5</code></td><td>Moonen–Zarhin 1998／1999（両方 PDF 取得）</td></tr>
+<tr><td>素数次元では因子の多項式</td><td>Tankeev 1983／Ribet 1983（評で確認・本文未取得）</td></tr>
+<tr><td>アーベル 4-fold の決着</td><td>Markman arXiv:2502.03415（要旨）</td></tr>
+<tr><td>一般の CM 体での割線層と、半正則性の未着手</td><td>Markman arXiv:2509.23079 §1.1・Example 11.2.7・Lemma 11.2.8（PDF 取得・逐語）</td></tr>
+<tr><td>分裂 Weil 類・絶対ホッジ・Lefschetz 標準予想からの含意</td><td>André 1992／Deligne 1982／Abdulali 1994（Milne の解説 arXiv:2010.08857 の逐語。原典未取得）</td></tr>
+<tr><td>既約テータ因子は正規かつ有理特異点、随伴イデアルの完全列</td><td>Ein–Lazarsfeld, JAMS 1997 定理 1・命題 3.1（PDF 取得・逐語）</td></tr>
+<tr><td>GHC が type IV（CM）で未解決</td><td>Vial arXiv:1803.00857v2 定理 3・Remark 3.9・定理 3.10（PDF 取得・逐語）</td></tr>
+<tr><td>Fermat 多様体のホッジ予想</td><td>Shioda, Proc. Japan Acad. 55A (1979) 定理 1・2（全文取得）</td></tr>
+<tr><td>Weil 類の代数性への割線層の方法と、§12 の対象の型</td><td>Markman arXiv:2509.23403v2 §4・§5・§11・§12（PDF 取得・逐語）</td></tr>
+<tr><td>Fermat 多様体 <code>X<sup>4</sup><sub>m</sub></code> の偶数側の壁 <code>W<sub>70</sub>・W<sub>110</sub>・W<sub>114</sub></code>（<code>m ≤ 250</code>）、<code>m = 33</code> の類が水準 66 で閉じること</td><td>Jumagulov arXiv:2608.18134 付録 D と付属データ（取得・照合）</td></tr>
+<tr><td>Fermat 多様体の帰納構造が代数的サイクルを保つこと</td><td>Shioda, Proc. Japan Acad. 55A (1979)／Shioda–Katsura, Tôhoku Math. J. 31 (1979)（全文取得・逐語）</td></tr>
+<tr><td>CM 型の一致は <code>gcd(N,6) = 1</code> なら自明なものだけ</td><td>Koblitz–Rohrlich, Canad. J. Math. 30 (1978) 定理 1・注意 2（全文取得）</td></tr>
+<tr><td>Aoki の標準元と格子 <code>S<sub>m</sub></code></td><td>Aoki 2000（原典未取得。arXiv:2608.18134 の本文で確認）</td></tr>
+</tbody></table></div>
+
+<h3>新規かどうかは分からないが、数学的にこの事実がある、と書けるもの</h3>
+
+<p class="small">既知かもしれません。文献を探した範囲では見当たらなかった、という以上のことは言えません。どれも代数性については<strong>何も言っていません</strong>。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>事実</th><th>等級</th></tr></thead>
+<tbody>
+<tr><td>「例外類は因子と <code>W<sub>F</sub></code> で生成される」がこの組合せ模型で壊れる最小次元は 8 で、その行は <code>Q</code> 上で実現する</td><td><span class="label comp">計算</span>全数</td></tr>
+<tr><td>奇数次元で例外類が出る最小は <code>g = 9</code>。<code>Q(ζ<sub>19</sub>)</code> の 512 個の CM 型のうち退化は 62 個、退化かつ原始的は 54 個で、Galois 共役までただ 1 類</td><td><span class="label lean">Lean</span><span class="label comp">計算</span></td></tr>
+<tr><td><code>d(A) = 3</code>（零化格子の <code>ℓ<sup>1</sup></code> 重みが 3）</td><td><span class="label lean">Lean</span><span class="label paper">紙</span></td></tr>
+<tr><td>余次元 3 の例外類はちょうど 6 個で <code>T<sub>k</sub> = C<sub>k</sub> ⊔ C<sub>k+1</sub></code></td><td><span class="label lean">Lean</span></td></tr>
+<tr><td><code>W<sub>F</sub>(1) ≅ H<sup>1</sup>(E)<sup>⊕3</sup></code>（<code>E</code> は <code>Q(√−19)</code> の CM 楕円曲線）</td><td><span class="label lean">Lean</span><span class="label paper">紙</span></td></tr>
+<tr><td><code>H<sup>4</sup>(A × E)</code> のホッジ類は 51 = 36 + 9 + 6 で、余次元 1 の混合項は 0</td><td><span class="label lean">Lean</span>全数</td></tr>
+<tr><td>例外部分は <code>F</code> 加群として階数 1。1 個代数的なら 6 個すべてが代数的</td><td><span class="label paper">紙</span></td></tr>
+<tr><td><code>ξ</code> が代数的 ⟺ <code>W<sub>F</sub> ⊆ N<sup>1</sup>H<sup>3</sup>(A, Q)</code>（GHC(1,3) の <code>W<sub>F</sub></code> 部分と同値）</td><td><span class="label paper">紙</span></td></tr>
+<tr><td><code>ξ</code> は明示的な 36 次元の CM 多様体の分裂 Weil 類の引き戻しで、補型の対に分解しない</td><td><span class="label lean">Lean</span><span class="label paper">紙</span></td></tr>
+<tr><td><code>H<sup>3</sup>(A)</code> の level ≤ 1 の最大部分は 204 = 144 + 6 + 54 で、54 の側は二つの非同種な 9 次元単純 CM の <code>H<sup>1</sup></code> に割れる</td><td><span class="label lean">Lean</span>全数</td></tr>
+<tr><td>主偏極が存在し、同型を除いて一意。交点数はパーマネントで、非零な nef 類はすべて豊富</td><td><span class="label paper">紙</span><span class="label comp">計算</span></td></tr>
+<tr><td>解消のアルバネーゼの欠損の不等式と、その系（テータ因子・孤立特異点は届かない）</td><td><span class="label paper">紙</span></td></tr>
+<tr><td><code>c = 3</code>・<code>c = 2</code> の完全交叉は、すべての偏極・すべての重複度で届かない</td><td><span class="label paper">紙</span><span class="label lean">Lean</span></td></tr>
+<tr><td><code>c = 1</code> のつまみ因子の等式 <code>2(L<sub>y</sub>|<sub>W</sub> − K<sub>W</sub>) = Δ</code> と、箱が空になる条件</td><td><span class="label paper">紙</span><span class="label lean">Lean</span></td></tr>
+<tr><td>除数から作る構成のパリティの障壁（円柱対応の <code>(1,3)</code> 成分が消える）</td><td><span class="label paper">紙</span></td></tr>
+<tr><td><code>A/μ<sub>19</sub></code> は非 Gorenstein かつ terminal で、降りても <code>H<sup>3</sup></code> は変わらない</td><td><span class="label lean">Lean</span><span class="label paper">紙</span></td></tr>
+<tr><td><code>ξ</code> は 12 次元 <code>A × E<sup>3</sup></code> の Weil 類の引き戻しで、12 は下限</td><td><span class="label lean">Lean</span><span class="label paper">紙</span></td></tr>
+<tr><td>割線層の型の模型で、検査した有理な各点 <code>t ≤ 8.8886</code> と <code>t = t₃</code> では設計が無い</td><td><span class="label lean">Lean</span><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+<tr><td>同じ模型で、検査した各点 <code>t ≥ 8.888609</code> では設計が在り、退化していない</td><td><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+<tr><td><code>t₃</code> は四次の既約多項式 <code>f</code>（Galois 群 <code>S<sub>4</sub></code>）の実根で、全ての実数 <code>t ∈ [t₃, 14]</code> で証明書の型が無い</td><td><span class="label lean">Lean</span><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+<tr><td>Fermat の <code>H ∪ {c}</code> の形は <code>m ≤ 2000</code> で有限個で、Stickelberger の式で判定できる</td><td><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+</tbody></table></div>
+
+<hr>
+
+<div class="sec"><span class="n">12</span><h2 id="残った">残ったこと</h2></div>
+
+<p class="small">動いた宿題の現在地は <a href="remaining.html">残っていること</a> にある。ここには現時点の未決だけを置く。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th></th><th>内容</th></tr></thead>
+<tbody>
+<tr><td><strong>言えた</strong></td><td>ホッジ類の組合せへの還元と、既知の判定の整理<span class="label known">既知</span></td></tr>
+<tr><td><strong>言えた</strong></td><td>例外類が Weil 類の外に出る最小の場所と、そこでの明示的な記述<span class="label lean">Lean</span><span class="label comp">計算</span></td></tr>
+<tr><td><strong>言えた</strong></td><td>問題が余次元 2 のホッジ類ただ一つに落ちること、その一つが分裂 Weil 類の引き戻しであること<span class="label lean">Lean</span><span class="label paper">紙</span></td></tr>
+<tr><td><strong>言えた</strong></td><td>テータ因子・二種類の完全交叉・単独の曲線・除数から作る構成の全部が届かないこと（いずれも仮定つき）<span class="label paper">紙</span><span class="label lean">Lean</span></td></tr>
+<tr><td><strong>言えた</strong></td><td>割線層の型の模型の境目が、単調性の仮定の下で <code>[t₃, 8.888609]</code> にあり、<code>t₃</code> が証明書の方法の端であること（点ごと）<span class="label lean">Lean</span><span class="label comp">計算</span><span class="label paper">紙</span></td></tr>
+<tr><td><strong>言えた</strong></td><td>Fermat 多様体 <code>X<sup>4</sup><sub>m</sub></code>（<code>m ≤ 250</code>）の壁の数え直しが既知の表と一致すること<span class="label comp">計算</span><span class="label known">既知</span></td></tr>
+<tr><td><strong>言えない</strong></td><td>ホッジ予想について何か。<code>ξ</code> が代数的かどうか。<strong>代数的サイクルは一つも構成していない</strong></td></tr>
+</tbody></table></div>
+
+<ul>
+<li><strong>閉じた枝はすべて仮定つき</strong>で、仮定の補集合が空であるとは示していません。とくにイデアル層の生成次数は <code>W</code> 固有の入力で、<code>A</code> の側から上から押さえる道具がありません（<code>K<sub>W</sub></code> に付く押さえはすべて下からです）。</li>
+<li><strong>必要条件は必要条件でしかありません。</strong>「欠損 <code>≥ 3</code>」も「つまみ因子が豊富でない」も、それを満たす対象が存在しないことを示してはいません。オイラー標数が正であることを存在の根拠にできないのと同じ形で、<strong>不等式が通ることも存在の根拠になりません</strong>——どちらの向きにも存在は決まりません。</li>
+<li><strong>既知の定理が反対側を予言しています。</strong><code>ξ</code> は絶対ホッジであることが無条件に既知で、代数性は Lefschetz 標準予想から従います。「届かない」を結論として出すには、枝の尽くしが完全でなければなりません。現在は完全ではありません。</li>
+<li><strong>反例を探すなら、より大きい側が先</strong>です。GHC(1,3) は <code>W<sub>F</sub></code>（6 次元）だけでなく残りの 54 次元も因子に台を持つことを要求していて、そちらは 9 倍大きい（欠損 <code>≥ 27</code>）。</li>
+<li><strong>模型の残り</strong>：区間版（<code>(8.8886, t₃)</code> と <code>(t₃, 8.888609)</code> の全ての点）、単調性、<code>t₃</code> の直上の設計が極端に大きな片を要することの証明。<strong>解けてもホッジ側の言明は増えません。</strong></li>
+<li><strong>§12 の本体に近い問い</strong>（有理数の重みの設計の幾何的な実現、[RM] Question 11.4 の弱い判定）は模型の LP では届かず、<code>Ext<sup>2</sup></code> の計算が要ります。</li>
+<li><strong>Fermat の壁</strong>：<code>W<sub>70</sub>・W<sub>110</sub>・W<sub>114</sub></code> の代数性は既知の道具では閉じていません。<code>m &gt; 250</code> は調べていません。</li>
+<li>未取得の一次資料：Kubota 1965 の原典、Hazama 2000 の原典、Tankeev 1983／Ribet 1983 の本文、Shioda 1981 の本文、André 1992・Deligne 1982・Abdulali 1994 の原典（解説の逐語で代用）、Aoki 2000 の原典。</li>
+</ul>
+
+<h3>この道が、本体に届かない理由</h3>
+
+<p>ここで扱ったのは<strong>一つの多様体の上の一つの類</strong>です。仮にその代数性が示せたとしても、得られるのは <code>A</code> の冪のホッジ予想（支配次元 3 の帰着を使って）であって、CM の族全体にも、まして一般の射影多様体にも及びません。逆に代数性が否定できれば標準予想の反証になりますが、そのためには残る二つの枝を<strong>無条件に</strong>閉じる必要があり、いまはどちらも条件つきです。このページが増やしたのは、<strong>閉じた道</strong>であって、開いた道ではありません。</p>
+
+<p>§08 の模型も同じです。<code>ξ</code> から割線層の方法に入るには、12 次元の <code>A × E<sup>3</sup></code> が Markman の変形の族に入ることなど、模型の外の段がまだ残っています。そのうえ模型の境目 <code>t₃</code> は [RM] §12 の側に対応するものを持たず、<code>O</code> 版は §12 の形だけを借りた模型です。模型の問いを解いても、代数的サイクルについての言明は一つも増えません。<strong>橋は無い</strong>、というのが現時点の結論です。§09 の Fermat の壁も数え直しであって、壁の類の代数性には触れていません。</p>
+
+<hr>
+
+<h2 id="文献">文献</h2>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>もの</th><th>確認の状態</th><th>出典</th></tr></thead>
+<tbody>
+<tr><td>CM のホッジ類・絶対ホッジ・分裂 Weil 類・標準予想からの含意</td><td>解説を逐語（原典未取得）</td><td>Milne, arXiv:2010.08857（André 1992／Deligne 1982／Abdulali 1994 を引く）／Pohlmann, Ann. of Math. <strong>88</strong> (1968) 161–180</td></tr>
+<tr><td>退化する CM 型と例外類、2 冪判定</td><td>全文取得</td><td>White, Compositio Math. <strong>88</strong> (1993) 123–142／Yanai, J. Théor. Nombres Bordeaux <strong>27</strong> (2015) 815–820</td></tr>
+<tr><td>退化の指標判定、支配次元</td><td>逐語（原典は未取得）</td><td>Hazama, J. Math. Sci. Univ. Tokyo <strong>10</strong> (2003) 581–598（Kubota, Trans. AMS <strong>118</strong> (1965) 113–122／Hazama, J. Alg. Geom. <strong>9</strong> (2000) 711–753 を引く）</td></tr>
+<tr><td><code>W<sub>F</sub></code> の定義と判定、<code>dim ≤ 5</code></td><td>原典（PDF）</td><td>Moonen–Zarhin, J. reine angew. Math. <strong>496</strong> (1998) 83–92／Math. Ann. <strong>315</strong> (1999) 711–733</td></tr>
+<tr><td>アーベル 4-fold の決着</td><td>要旨</td><td>Markman, arXiv:2502.03415</td></tr>
+<tr><td>一般の CM 体の割線層、半正則性</td><td>原典（PDF・逐語）</td><td>Markman, arXiv:2509.23079</td></tr>
+<tr><td>随伴イデアルとテータ因子</td><td>原典（PDF・逐語）</td><td>Ein–Lazarsfeld, J. Amer. Math. Soc. <strong>10</strong> (1997)</td></tr>
+<tr><td>一般化ホッジ予想の現状</td><td>原典（PDF・逐語）</td><td>Vial, arXiv:1803.00857v2</td></tr>
+<tr><td>素数次元の単純アーベル多様体</td><td>評のみ（本文未取得）</td><td>Tankeev, Math. USSR Izv. <strong>20</strong> (1983) 157–171／Ribet, Amer. J. Math. <strong>105</strong> (1983) 523–538</td></tr>
+<tr><td>Fermat 多様体</td><td>全文取得</td><td>Shioda, Proc. Japan Acad. <strong>55A</strong> (1979) 111–114</td></tr>
+<tr><td>割線層の方法と §12 の対象の型（[RM]）</td><td>原典（PDF・逐語）</td><td>Markman, arXiv:2509.23403v2（ICM 報告）</td></tr>
+<tr><td>Fermat 多様体の壁の全数調査</td><td>原典と付属データ</td><td>Jumagulov, arXiv:2608.18134</td></tr>
+<tr><td>Fermat 多様体の帰納構造</td><td>全文取得</td><td>Shioda–Katsura, Tôhoku Math. J. <strong>31</strong> (1979) 97–115</td></tr>
+<tr><td>CM 型の一致</td><td>全文取得</td><td>Koblitz–Rohrlich, Canad. J. Math. <strong>30</strong> (1978) 1183–1205</td></tr>
+</tbody></table></div>
+
+<p class="small">探した範囲：退化 CM 型・例外ホッジ類・一般化 Weil 類・分裂 Weil 類・随伴イデアル・一般化ホッジ予想・割線層・Fermat 多様体のホッジ類についての検索と、上の論文の参照文献。被引用の一覧は引いていません。新しさについては「探した範囲で見当たらない」より<strong>強い言い方をしていません</strong>。</p>
+
+<div class="revised"><strong>改訂</strong> 2026-09-24：新設。<br>2026-10-02：割線層の型の模型と境目 <code>t₃</code>（§08）、Fermat 多様体の壁（§09）を追加し、機械検査の表を 46 ファイルに更新。</div>
+
+</main>
+<footer class="site-foot">
+  <p class="tagline">我計算する、ゆえに我あり — 人とAIの思考を見つめる場</p>
+  <p class="small"><a href="../privacy.html">プライバシーポリシー</a> &middot; <a href="../contact.html">お問い合わせ</a></p>
+  <p class="small">&copy; 2026 computo ergo sum</p>
+</footer>
+</body>
+</html>

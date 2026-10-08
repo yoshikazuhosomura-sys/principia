@@ -1,0 +1,99 @@
+# principia / riemann-weil-form: `#print axioms` output, by module (12 modules, 73 lines).
+# Every line is a subset of [propext, Classical.choice, Quot.sound].
+
+## Principia.RiemannWeilForm.TimeBandBernstein  (5)
+'TimeBand.hasDerivAt_cosPoly' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.sq_le_energy' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.abs_le_sqrt_energy' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.deriv_energy_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.deriv_sq_le_energy' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.RiemannWeilForm.TimeBandCrossover  (7)
+'TimeBand.mul_one_sub_log_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.mul_one_sub_log_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.smoothCount_eq_of_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.crossover_rewrite' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.crossover_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.crossover_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.crossover_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.RiemannWeilForm.TimeBandTrace  (9)
+'TimeBand.compress_sub_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.trace_mul_transpose' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.trace_compress_sub_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.range_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.window_inter' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.window_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.sin_mul_sin_mul_sin' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.sin_shift_decomp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.card_gt_ge_trace_sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.RiemannWeilForm.TimeBandTrace2  (4)
+'TimeBand.cluster_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.binom_oddH_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.even_binom_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.sum_odd_choose' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.RiemannWeilForm.TimeBandTrace3  (3)
+'TimeBand.binom_oddH_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.U_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.EvOd' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.RiemannWeilForm.TimeBandTransfer  (10)
+'TimeBand.arctan_le_self' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.harmonic_measure_ge' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.rpow_exponent_loss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.min_one_exp_add_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.one_le_bandWeight_of_le_abs' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.bandWeight_shift' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.weighted_cauchy_schwarz' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.sum_geom_deficiency' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.abel_remainder_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.transfer_of_ratio' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.RiemannWeilForm.TimeBandTransfer2  (14)
+'TimeBand.termwise_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.termwise_bound_of_profile' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.arctan_le_self' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.poisson_kernel_integral' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.poisson_linear_integral' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.poisson_profile_integral' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.poisson_exponent_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.phiK_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.phiK_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.phiK_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.phiK_le_mul' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.deep_tail_negligible' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.sum_pow_ge_card_mul' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TimeBand.sum_split_at_cut' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.RiemannWeilForm.PsiComb  (7)
+'PsiComb.anti_image_width' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PsiComb.crowded_add_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PsiComb.empty_eq_crowded_add_excess' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PsiComb.excess_example_check' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PsiComb.excess_not_determine_crowded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PsiComb.strictAntiOn_of_neg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PsiComb.strictMonoOn_of_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.RiemannWeilForm.PsiPacking  (4)
+'PsiPacking.packing_card_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PsiPacking.packing_card_le_real' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PsiPacking.excluded_ge' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PsiPacking.packing_sharp' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.RiemannWeilForm.QuadraticFormSunkCount  (2)
+'SunkCount.card_le_of_form_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'SunkCount.card_eigenvalues_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.RiemannWeilForm.WeilBandSplit  (5)
+'BandSplit.schur_rank_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BandSplit.cross_bound_of_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BandSplit.complement_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BandSplit.two_block_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'BandSplit.band_split_counterexample' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+## Principia.RiemannWeilForm.HodgeIndexPositivity  (3)
+'HodgeIndex.reverse_cauchy_schwarz' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HodgeIndex.castelnuovo_severi' depends on axioms: [propext, Classical.choice, Quot.sound]
+'HodgeIndex.no_ample_of_two_negatives' depends on axioms: [propext, Classical.choice, Quot.sound]

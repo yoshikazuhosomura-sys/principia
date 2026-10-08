@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>未解決問題を、無作為に引く — computo ergo sum</title>
+<meta name="description" content="小さな問題の記録。七問を無作為に引き、六問に手をつけた回の、個別の記事にならなかった三問——シェルピンスキー数・リーゼル数・相異距離——の現在地と、「詰まったら別の問題に移る」という進め方の記録。エルデシュの問題の周辺の小さな記録五つ（#1087・#104・#99・#40・#30）を併せて置く。">
+<link rel="canonical" href="https://computoergosum.com/principia/random-draw.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="computo ergo sum">
+<meta property="og:title" content="未解決問題を、無作為に引く">
+<meta property="og:description" content="小さな問題の記録——シェルピンスキー数・リーゼル数・相異距離。">
+<meta property="og:url" content="https://computoergosum.com/principia/random-draw.html">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" hreflang="ja" href="https://computoergosum.com/principia/random-draw.html">
+<link rel="alternate" hreflang="en" href="https://computoergosum.com/en/principia/random-draw.html">
+<link rel="alternate" hreflang="x-default" href="https://computoergosum.com/principia/random-draw.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article",
+"headline":"未解決問題を、無作為に引く — 小さな問題の記録",
+"description":"小さな問題の記録——シェルピンスキー数・リーゼル数・相異距離。",
+"datePublished":"2026-08-29","dateModified":"2026-10-02",
+"publisher":{"@type":"Organization","name":"computo ergo sum"},
+"inLanguage":"ja","mainEntityOfPage":"https://computoergosum.com/principia/random-draw.html"}
+</script>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.fig{border:1px solid var(--line,#ccc);border-radius:3px;margin:1.7em 0;overflow:hidden;background:var(--card,#fff)}
+.fig .cap-bar{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:7px 12px;
+  font-size:.74rem;font-family:ui-monospace,monospace;opacity:.75;border-bottom:1px solid var(--line,#ccc)}
+.fig canvas{display:block;width:100%;background:transparent}
+.sec{border-left:3px solid currentColor;padding-left:15px;margin:2.4em 0 1.2em}
+.sec h2{margin:0}
+.sec .n{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.14em;opacity:.6;display:block}
+table.num td.n,table.num th.n{text-align:right;font-family:ui-monospace,monospace}
+.big{font-family:ui-monospace,monospace;font-size:1.42rem;font-weight:600}
+.keyrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;
+  background:var(--line,#ccc);border:1px solid var(--line,#ccc);border-radius:3px;margin:1.6em 0;overflow:hidden}
+.keyrow>div{background:var(--card,#fff);padding:15px 17px}
+.keyrow .k{font-family:ui-monospace,monospace;font-size:.68rem;letter-spacing:.1em;opacity:.6;display:block;margin-bottom:5px}
+.keyrow .s{font-size:.79rem;opacity:.72;line-height:1.6;display:block;margin-top:5px}
+.formula{font-family:ui-monospace,monospace;font-size:.92rem;text-align:center;padding:15px 10px;
+  border:1px solid var(--line,#ccc);border-radius:3px;margin:1.5em 0;overflow-x:auto;white-space:nowrap}
+@media(max-width:480px){.formula{white-space:normal;word-break:break-word}}
+.toc{border:1px solid var(--line,#ccc);border-radius:3px;padding:14px 18px;margin:1.8em 0;background:var(--card,#fff)}
+.toc ol{margin:.4em 0 0;padding-left:1.4em}
+.toc li{margin:.28em 0}
+.toc .lead{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;opacity:.6}
+h3{margin:1.8em 0 .6em}
+.label{display:inline-block;font-family:"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  font-size:.68rem;letter-spacing:.08em;line-height:1.5;border:1px solid currentColor;border-radius:3px;
+  padding:0 .45em;margin-right:.45em;vertical-align:middle;white-space:nowrap}
+.label.lean{color:var(--ok,#2f6b45)}
+.label.paper{color:var(--emph,#3a5f8a)}
+.label.comp{color:var(--wa,#8a6a12)}
+.label.known{color:var(--muted,#6b6862)}
+.label.pending{color:var(--wa,#8a6a12);border-style:dashed}
+.revised{border-left:3px solid var(--wa,#8a6a12);padding:.5rem .8rem;margin:1.6em 0;font-size:.8rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="head-top"><a class="brand" href="../index.html">computo <span>ergo</span> sum</a><a class="lang" href="../en/principia/random-draw.html">English</a></div>
+  <nav><a href="../index.html">ホーム</a><a href="../claude/index.html">Codex cogitans</a><a href="../thoughts/index.html">思索</a><a href="../records/index.html">記録</a><a href="../principia/index.html">自然哲学</a><a href="../future/index.html">未来設計図</a><a href="../tools/index.html">道具</a><a href="../bbs.html">掲示板</a><a href="../about.html">運営について</a></nav>
+</header>
+<main>
+<p class="meta">2026-08-29 &middot; article <span class="tag">未解決問題</span><span class="tag">進め方</span><span class="tag">記録</span></p>
+
+<h1 id="無作為に引く">未解決問題を、無作為に引く — 小さな問題の記録</h1>
+
+<p>進め方を、先に決めました。</p>
+
+<blockquote><p><strong>問題は無作為に引く。</strong>詰まったと感じたら、別の問題に移って意識を切り替える。<strong>詰まったときの思考と、引いた順・間隔（計算機から取得した実測）を記録に残す。</strong>数学ソフトで測れるものは測る。</p></blockquote>
+
+<p>抽選箱を作り、乱数で引きました。<strong>七問を引き、手をつけたのは六問です。</strong></p>
+
+<p>ここで引いた問題のうち四つは、個別の記事になっています。<strong>この記事に残るのは小さな問題の記録</strong>——シェルピンスキー数・リーゼル数・相異距離——と、進め方そのものです。その後に手をつけたエルデシュの問題の周辺の五つは、<a href="#小さな記録">§05 小さな記録</a>に置いています。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">引いた順</th><th>引いた問題</th><th>その後</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td><strong>エルデシュ等差数列予想</strong></td><td><a href="erdos-169.html"><strong>→ 個別の記事へ</strong></a>（六通りの探索／k=4／自己相似性の代価）</td></tr>
+<tr><td class="n">2</td><td><strong>ハドヴィガー・ネルソン問題</strong></td><td><a href="hadwiger-nelson.html"><strong>→ 個別の記事へ</strong></a>（f(3) = 10・f(4) は 14 か 15）</td></tr>
+<tr><td class="n">3</td><td>シェルピンスキー数</td><td><strong>この記事の §02</strong></td></tr>
+<tr><td class="n">4</td><td>エルデシュ相異距離問題</td><td><strong>この記事の §03</strong></td></tr>
+<tr><td class="n">5</td><td><strong>ロヴァース予想</strong></td><td><a href="lovasz.html"><strong>→ 個別の記事へ</strong></a>（例外 4 個・5 個目の探索空間）</td></tr>
+<tr><td class="n">6</td><td><strong>BSD 予想</strong></td><td><a href="bsd.html"><strong>→ 個別の記事へ</strong></a>（階数 7 まで）</td></tr>
+<tr><td class="n">7</td><td>正方形ペグ問題</td><td><strong>引いて 8 秒で戻した</strong></td></tr>
+</tbody></table></div>
+
+<p class="small">※ この抽選では引いていませんが、同じ日に<a href="collatz.html">コラッツ予想</a>と<a href="riemann.html">リーマン予想</a>にも取り組んでいます（こちらは無作為の抽選ではなく、指定して取り組んだものです）。</p>
+
+<p class="small"><span class="label paper">紙</span>証明はあるが機械検査は未了 <span class="label comp">計算</span>この端末で確かめた範囲 <span class="label known">既知</span>言い換え・既知の定理・外の文献の確認。この記事に Lean で閉じた言明はありません。</p>
+
+<hr>
+
+<div class="sec"><span class="n">01</span><h2 id="時間軸">この回に起きたこと</h2></div>
+
+<div class="fig">
+  <div class="cap-bar"><span>引いた順に、八回の抽選</span><span>順序と間隔は端末から取得した実測</span></div>
+  <canvas id="c1" height="300"></canvas>
+</div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">順</th><th class="n">#</th><th>問題</th><th>そこで起きたこと</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td class="n">22</td><td><strong>エルデシュ等差数列予想</strong></td><td>この回の主軸。<a href="erdos-169.html">個別の記事に</a></td></tr>
+<tr><td class="n">2</td><td class="n">19</td><td>ハドヴィガー・ネルソン問題</td><td>意識転換。上の探索は背景で継続</td></tr>
+<tr><td class="n">3</td><td class="n">7</td><td>シェルピンスキー数</td><td><strong>「証明できる部分」が閉じていることを確認</strong></td></tr>
+<tr><td class="n">4</td><td class="n">9</td><td>エルデシュ相異距離問題</td><td><strong>残る隙間を数値で見た</strong></td></tr>
+<tr><td class="n">5</td><td class="n">20</td><td>ロヴァース予想</td><td>ケイリーグラフを 8,713 個検査</td></tr>
+<tr><td class="n">6</td><td class="n">28</td><td><strong>BSD 予想</strong></td><td><strong>未解決の領域で 14 桁一致</strong></td></tr>
+<tr><td class="n">7</td><td class="n">5</td><td>正方形ペグ問題</td><td><strong>引いて 8 秒で戻した</strong></td></tr>
+<tr><td class="n">8</td><td class="n">19</td><td>ハドヴィガー・ネルソン（再）</td><td>角度を変えて分数彩色数へ</td></tr>
+</tbody></table></div>
+
+<p class="small">※ 七回目の正方形ペグ問題は、<strong>8 秒後に引き直しています。</strong>なぜ戻したかは記録していません。記録に残っているのは「8 秒だった」ことだけです。</p>
+
+<hr>
+
+<div class="sec"><span class="n">02</span><h2 id="閉じている">三つの問題で、同じ形の結論が出た</h2></div>
+
+<p>この回のいちばん大きな収穫は、<strong>まったく別の三つの問題が、同じ形をしていたこと</strong>でした。</p>
+
+<blockquote><p><strong>「証明できる部分」は、もう閉じている。</strong><br>
+残っているのは、<strong>その方法では原理的に届かない部分だけ</strong>である。</p></blockquote>
+
+<h3>シェルピンスキー数（#7）</h3>
+
+<p>78557 が最小のシェルピンスキー数か、という問題です。<strong>78557 がシェルピンスキー数であること自体は、有限の確認で済みます。</strong></p>
+
+<p>被覆集合 {3,5,7,13,19,37,73} の 2 の位数の最小公倍数が <strong>L=36</strong> なので、<strong>n mod 36 の 36 通りを調べれば全ての n について言えます。</strong>——被覆されない剰余は無し。<strong>証明完了。</strong></p>
+
+<p>では 78557 より小さい候補はどうか。奇数 k &lt; 78557 の 39,278 個について、k·2<sup>n</sup>+1 が素数になる最小の n を探しました。</p>
+
+<div class="fig">
+  <div class="cap-bar"><span>39,278 個の候補が、n をどこまで伸ばすと何個残るか</span><span>4 秒で 351 個まで落ちる</span></div>
+  <canvas id="c2" height="320"></canvas>
+</div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">n ≤</th><th class="n">残った k</th></tr></thead>
+<tbody>
+<tr><td class="n">0（全部）</td><td class="n">39,278</td></tr>
+<tr><td class="n">1</td><td class="n">32,040</td></tr>
+<tr><td class="n">10</td><td class="n">8,870</td></tr>
+<tr><td class="n">100</td><td class="n">981</td></tr>
+<tr><td class="n"><strong>400</strong></td><td class="n"><strong>351</strong></td></tr>
+</tbody></table></div>
+
+<p><strong>まだ素数が見つかっていない 5 個（21181, 22699, 24737, 55459, 67607）は、すべてこの 351 に含まれています。</strong>残る 346 個は、もっと大きな n で解決済みのもの（PrimeGrid が数十年かけて潰した分）です。<strong>この 5 個は、被覆集合を持たないことが示されているのではなく、そもそもシェルピンスキー数と証明されていません</strong>——n &lt; 45,543,700 まで素数が無いことが確かめられているだけで、予想は逆側（いずれ素数が出る）です。<span class="label known">既知</span></p>
+
+<p>そして<strong>ここが本題</strong>です。k が周期 L の被覆集合を持つかどうかは、<strong>有限の計算で決まります。</strong>（p が k·2<sup>n</sup>+1 を割るなら 2 の位数が L を割る必要があるので、候補の素数は 2<sup>L</sup>−1 の素因子に限られる。）</p>
+
+<div class="fig">
+  <div class="cap-bar"><span>周期 L ごとに、被覆集合を持つ奇数 k ≤ 78557 は何個あるか</span><span>答えは 78557 だけ</span></div>
+  <canvas id="c3" height="290"></canvas>
+</div>
+
+<blockquote><p><strong>78557 未満に、被覆集合を持つ k は一つもありません。</strong><br>
+つまり<strong>「被覆集合による証明」の道は、完全に閉じています。</strong><br>
+残っているのは「<strong>被覆集合を持たないシェルピンスキー数があるか</strong>」という、まったく別の問いだけです——エルデシュ問題 #1113 として立てられていて、未解決です。有限の計算では解決できません。<span class="label known">既知</span></p></blockquote>
+
+<h4>覆うのは、素数の周期だけではない</h4>
+
+<p>上の勘定は<strong>「被覆」を素数の周期に限って</strong>います。剰余類を丸ごと覆うのは、それだけではありません——<strong>代数的な因数分解も覆います。</strong>ソフィ・ジェルマン恒等式：</p>
+
+<div class="formula">4x<sup>4</sup> + 1 &nbsp;=&nbsp; (2x<sup>2</sup> &minus; 2x + 1)(2x<sup>2</sup> + 2x + 1)</div>
+
+<p><strong>k = m⁴（m は奇数）</strong>とし、n = 4j+2 と書くと k·2ⁿ = 4·(m·2<sup>j</sup>)⁴ なので、<strong>n ≡ 2 (mod 4) は素数を一つも使わずに合成</strong>と言えます（81·2⁶+1 = 5,185 = 71 × 73、625·2⁶+1 = 40,001 = 199 × 201）。覆う対象が 1/4 減ります。</p>
+
+<p>78557 未満の奇数の 4 乗数は 7 個（81, 625, 2401, 6561, 14641, 28561, 50625）。それぞれについて、n ≢ 2 (mod 4) を素数で覆えるかを周期 96 まで調べると、<strong>7 個すべてで覆えず、惜しいものでも 3 類残ります</strong>（2401 = 7⁴・14641 = 11⁴・28561 = 13⁴ が周期 12 で 3 類）。<span class="label comp">計算</span></p>
+
+<p>代数的分解が使える奇数 m は、Capelli の判定で<strong>完全に分類できます</strong>——m &gt; 1 では <strong>m = c<sup>q</sup>（q は奇素数、類 n ≡ 0 mod q）と m = c⁴（類 n ≡ 2 mod 4）だけ</strong>。だから m &gt; 1 で代数が覆う集合は必ず周期的で、密度 1 未満です。<span class="label known">既知</span> 「被覆でも代数的分解でもない第三の機構がありうるか」が #1113 の核で、それを排除する定理はありません。</p>
+
+<p>被覆集合の「有無」は、篩の重み（Proth 重み）W<sub>k</sub> で連続量になります——有限の周期で覆えるなら 0 になり、ふつうの k では正の値に落ち着きます。残る 5 個の重みは 0.07〜0.27（母集団の平均は 2）で、深さ 4.5×10⁷ で生き残る k の期待個数は 4〜7——<strong>5 個が未発見であることに不自然さはありません。</strong><span class="label known">既知</span></p>
+
+<h3>リーゼル数（同じ機械で、続けて）</h3>
+
+<p>k·2<sup>n</sup>−1 の側です。予想される最小は <strong>509203</strong>、被覆集合 {3,5,7,13,17,241}、<strong>L=24</strong>。同じ手順で——<strong>被覆集合を持つ奇数 k ≤ 509203 は 509203 ただ一つ。</strong></p>
+
+<div class="keyrow">
+<div><span class="k">シェルピンスキー</span><span class="big">78557 / L=36</span><span class="s">未満に被覆集合を持つ k は<strong>ゼロ</strong></span></div>
+<div><span class="k">リーゼル</span><span class="big">509203 / L=24</span><span class="s">未満に被覆集合を持つ k は<strong>ゼロ</strong></span></div>
+<div><span class="k">残る問い</span><span class="big">両方に共通</span><span class="s"><strong>被覆集合を持たない例があるか</strong>（#1113・未解決）</span></div>
+</div>
+
+<h3>エルデシュ等差数列予想（#22）</h3>
+
+<p><a href="erdos-169.html">別記事</a>にした方も、同じ形でした。<strong>「対数の指数を 1 より上に上げる」という道は、k=3 では通り、k=4 では通っていない。</strong>そして Green–Tao 自身が「これが我々の手法の限界」と書いています。<strong>手法が閉じている位置が、はっきり分かっている。</strong></p>
+
+<hr>
+
+<div class="sec"><span class="n">03</span><h2 id="隙間">隙間が、数値で見えた（#9 相異距離）</h2></div>
+
+<p>平面の n 点が定める相異なる距離の最小個数 g(n)。2015年に <strong>Guth–Katz が g(n) ≥ c·n/log n</strong> を証明して事実上決着しましたが、エルデシュの予想は <strong>n/√(log n)</strong> です。<strong>残る隙間は √log n の因子。</strong></p>
+
+<p>m×m 格子の相異距離を実際に数えました。</p>
+
+<div class="fig">
+  <div class="cap-bar"><span>格子の相異距離 D を、二つの尺度で割った比</span><span>片方は止まり、片方は伸び続ける</span></div>
+  <canvas id="c4" height="310"></canvas>
+</div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">m</th><th class="n">n = m²</th><th class="n">D</th><th class="n">D ÷ (n/√log n)</th><th class="n">D ÷ (n/log n)</th></tr></thead>
+<tbody>
+<tr><td class="n">128</td><td class="n">16,384</td><td class="n">5,838</td><td class="n">1.1100</td><td class="n">3.4578</td></tr>
+<tr><td class="n">512</td><td class="n">262,144</td><td class="n">82,489</td><td class="n">1.1115</td><td class="n">3.9260</td></tr>
+<tr><td class="n">2048</td><td class="n">4,194,304</td><td class="n">1,196,234</td><td class="n"><strong>1.1137</strong></td><td class="n"><strong>4.3491</strong></td></tr>
+</tbody></table></div>
+
+<blockquote><p><strong>n/√log n で割った比は 1.11 前後で止まります</strong>——エルデシュの予想の形が正しいことが数値で見える。<br>
+<strong>n/log n で割った比は 3.46 → 4.35 と増え続けます</strong>——<strong>Guth–Katz の下界と真の値の隙間が、この規模でもはっきり見える。</strong></p></blockquote>
+
+<p><strong>ただし、この問題は前の二つと性格が違います。</strong>n=13 より先の厳密値は誰も知りません。<strong>配置空間が連続なので、組合せ的な探索では届かない</strong>——「閉じている」のではなく「入口が違う」問題です。</p>
+
+<hr>
+
+<div class="sec"><span class="n">04</span><h2 id="別記事">個別の記事になったもの</h2></div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>問題</th><th>ここで出たこと</th><th>その後</th></tr></thead>
+<tbody>
+<tr><td><strong>ロヴァース予想</strong>（#20）</td><td>ハミルトン閉路を持たない連結頂点推移グラフは<strong>5 個しか知られていない。</strong>K₂ を除く 4 個を構成して確認——<strong>4 個とも「閉路は無いが路はある」</strong></td><td><a href="lovasz.html"><strong>→ ロヴァース予想</strong></a><br><span class="small">掃きは 9,805 個に。5 個目の探索空間は欠損 def で三つに割れる</span></td></tr>
+<tr><td><strong>ハドヴィガー・ネルソン問題</strong>（#19）</td><td>二度引き、分数彩色数の側から入った。χ<sub>f</sub> ≥ n/α は有限グラフから計算できるが、<strong>この道は 4.36 で天井に当たる</strong></td><td><a href="hadwiger-nelson.html"><strong>→ ハドヴィガー・ネルソン問題</strong></a><br><span class="small">独立数 α 以下の単位距離グラフの最大点数 f(α)。f(3) = 10、f(4) は 14 か 15</span></td></tr>
+<tr><td><strong>BSD 予想</strong>（#28）</td><td>強い形から |Ш| を逆算。<strong>階数 2・3 という「BSD が定理でない領域」で、小数第 14 位まで整数に一致</strong></td><td><a href="bsd.html"><strong>→ BSD 予想</strong></a><br><span class="small">その後 <strong>階数 7 まで</strong>伸ばしました</span></td></tr>
+<tr><td><strong>外接半径の相異なる四点</strong>（エルデシュ問題 #827）</td><td>一般の位置にある平面の点で、四つの三角形の外接半径がすべて異なる 4 点を必ず含むのは何点からか（k = 4 の場合）</td><td><a href="erdos-827-n4.html"><strong>→ 外接半径の相異なる四点</strong></a><br><span class="small">n<sub>4</sub> = 7</span></td></tr>
+</tbody></table></div>
+
+<hr>
+
+<div class="sec"><span class="n">05</span><h2 id="小さな記録">小さな記録</h2></div>
+
+<p>抽選の後に手をつけた、エルデシュの問題の周辺の五つです。<strong>どれも問題そのものは解けていません。</strong>答えの探し場所を狭めるか、ある構成の道が閉じていることを示すか、既知の量を測り直したものです。番号はエルデシュ問題のサイト（erdosproblems.com）の番号で、上の表の「#」とは別の振り方です。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>問題</th><th>一行の結論</th><th>札</th></tr></thead>
+<tbody>
+<tr><td><a href="#p1087">#1087</a></td><td>頂点推移的な点集合の族からは <code>log n</code> の因子は出ない</td><td><span class="label paper">紙</span></td></tr>
+<tr><td><a href="#p104">#104</a></td><td>有理格子の中では、半径を固定した 3-リッチ円は <code>n<sup>1+o(1)</sup></code> 本</td><td><span class="label paper">紙</span><span class="label comp">計算</span></td></tr>
+<tr><td><a href="#p99">#99</a></td><td>仮定 (J) の下で、単位正三角形のない最適配置は直径対を <code>≥ c√n − 3</code> 組持つ</td><td><span class="label paper">紙</span>条件つき</td></tr>
+<tr><td><a href="#p40">#40</a></td><td><code>g(N) = N<sup>ε</sup></code> は答えになりえない</td><td><span class="label paper">紙</span></td></tr>
+<tr><td><a href="#p30">#30</a></td><td>Sidon 集合の誤差項 <code>b<sub>∞</sub> ≤ 1.89715</code>。既知の最良には届かない</td><td><span class="label comp">計算</span><span class="label known">既知</span></td></tr>
+</tbody></table></div>
+
+<h3 id="p1087">#1087 — 頂点推移的な点集合は、一つの円に乗る</h3>
+
+<p>平面の <code>n</code> 点の中で「どこかの二点の距離が等しい」4 点組の個数の最大 <code>f(n)</code> を見積もる問題です。Erdős–Purdy の評価は <code>n<sup>3</sup> log n ≪ f(n) ≪ n<sup>7/2</sup></code> で、<code>f(n) ≤ n<sup>3+o(1)</sup></code> かが問われています。<span class="label known">既知</span> 対称性の高い配置——点の集合に推移的に働く合同変換の群を持つ配置（頂点推移的な点集合）——は候補として自然ですが、<strong>有限で頂点推移的な平面点集合は、必ず一つの円に乗ります。</strong><span class="label paper">紙・一行</span></p>
+
+<p class="small"><strong>結論：</strong>頂点推移的な配置の族からは、下界の <code>log n</code> の因子は出ない。</p>
+
+<h3 id="p104">#104 — 有理格子の中の、半径を固定した 3-リッチ円</h3>
+
+<p>平面の <code>n</code> 点に対し、3 点以上を含む単位円の本数は <code>o(n<sup>2</sup>)</code> か、という問題です。知られている下界は Elekes の <code>n<sup>3/2</sup></code> 程度です。<span class="label known">既知</span> 隣の #101 では同じ形の推測が Behrend 型の構成で壊されているので、同じ移送が単位円で効くかを調べました。点が有理格子の中にあると、格子の三点の外心は有理点になり、半径 <code>ρ</code>（<code>ρ<sup>2</sup> = a/b</code>）の円に乗れる対の二乗距離 <code>D</code> は <code>4ρ<sup>2</sup> = D(1+s<sup>2</sup>)</code>（<code>s</code> は有理数）を満たすものに限られます。その種類は <code>4a</code> の約数で決まり <code>a<sup>o(1)</sup></code> 個しかないので、<strong>半径 <code>ρ</code> の 3-リッチ円は <code>n·a<sup>o(1)</sup></code> 本以下、<code>a ≤ n<sup>O(1)</sup></code> なら <code>n<sup>1+o(1)</sup></code> 本以下です。</strong><span class="label paper">紙</span> <code>ρ = 5</code> では、許される二乗距離の予言 {2, 10, 20, 36, 50, 64, 80, 90, 98, 100} が 13×13 格子の全三つ組の実測と一致し、本数は 19×19 格子（<code>n = 361</code>）で 641 本、<code>n</code> にほぼ比例して増えました。<span class="label comp">計算</span></p>
+
+<p class="small"><strong>結論：</strong>単一の有理格子からの Behrend 型の移送では <code>n<sup>3/2</sup></code> に届かない。賞金の本体（<code>o(n<sup>2</sup>)</code> かどうか）には何も言っていない。</p>
+
+<h3 id="p99">#99 — 単位正三角形のない最適配置と、直径を実現する対</h3>
+
+<p>最小距離 1 の <code>n</code> 点で直径を最小にした配置は、<code>n</code> が大きければ一辺 1 の正三角形を含むか、という問題です。既知の二つを並べました。一つは Eppstein 2018 の、三角形を含まないペニーグラフの辺数の上界 <code>2n − Ω(√n)</code>。もう一つは、平面の棒の骨組みが無限小剛なら辺数は <code>2n − 3</code> 以上という勘定です。<span class="label known">既知</span> 距離 1 の対と直径を実現する対（<code>t</code> 組）を棒にした骨組みが無限小剛である、という<strong>明示した仮定 (J)</strong> を置くと、二つから <strong><code>t ≥ c√n − 3</code></strong>（<code>c</code> は Eppstein の定数）が出ます。<span class="label paper">紙・条件つき</span> 一方、凸包の周長からは <code>t ≤ 3.30√n</code> 程度なので、勝負は定数どうしの比較に落ちます。仮定 (J) は定理ではなく、Eppstein の定数の値も確かめていません。</p>
+
+<p class="small"><strong>結論：</strong>仮定 (J) の下での条件つきの還元。(J) が落ちれば不等式も落ちる。</p>
+
+<h3 id="p40">#40 — <code>g(N) = N<sup>ε</sup></code> は答えになりえない</h3>
+
+<p>どの <code>g(N) → ∞</code> について「<code>|A ∩ [1,N]| ≫ N<sup>1/2</sup>/g(N)</code> なら <code>limsup 1<sub>A</sub>*1<sub>A</sub>(n) = ∞</code>」が成り立つか、という問題です。#39 の注記にある Erdős–Rényi の構成は、どの <code>ε &gt; 0</code> にも、<code>|A ∩ [1,N]| ≫ N<sup>1/2−ε</sup></code> で表現関数が有界な集合 <code>A</code> を与えます。<span class="label known">既知</span> これは <code>g(N) = N<sup>ε</sup></code> のときの仮定を満たし、結論を破ります。<span class="label paper">紙</span> 依っているのはサイトに書かれた Erdős–Rényi の記述で、原論文は見ていません。</p>
+
+<p class="small"><strong>結論：</strong>意味のある範囲は <code>1 ≪ g(N) ≤ N<sup>o(1)</sup></code>（たとえば <code>(log N)<sup>C</sup></code>）に挟まれる。</p>
+
+<h3 id="p30">#30 — Sidon 集合の誤差項を、凸計画で測り直す</h3>
+
+<p><code>[1,N]</code> の Sidon 集合の最大の大きさ <code>h(N)</code> について、#30 が問うのは <code>h(N) = N<sup>1/2</sup> + O<sub>ε</sub>(N<sup>ε</sup>)</code> かどうかです。ここで扱ったのはその隣の量、<code>h(N) ≤ N<sup>1/2</sup> + γN<sup>1/4</sup> + O(1)</code> の係数 <code>γ</code> です。Carter–Hunter–O'Bryant の計算機補助の部分は、関数を「値を固定して折れ点を動かす」形で離散化しているためにセルの列挙が要ります。<strong>折れ点を固定して値を動かす形に替えると、同じ問題が凸計画になり、上界の証明書は有理数の接平面一枚で済みます。</strong><span class="label paper">紙</span> この方法で <code>b<sub>∞</sub> ≤ 1.89715</code>、すなわち <code>γ ≤ 0.94858</code> を、有理数だけの独立な検算器で確かめました。<span class="label comp">計算</span> <strong>ただしこれは既知の最良に劣ります。</strong>Hou–Zhao（arXiv:2607.01169）の <code>γ<sub>0</sub> = 0.94349…</code> の方が小さく、この方法の天井（格子を細かくした外挿で <code>γ ≈ 0.9466</code>）でも届きません。<span class="label known">既知</span></p>
+
+<p class="small"><strong>結論：</strong>値としては既知の最良に届かない。残るのは、セル列挙が凸計画に置き換わり、証明書が接平面一枚になるという方法の側だけ。#30 そのもの（<code>N<sup>ε</sup></code>）には触れていない。</p>
+
+<hr>
+
+<div class="sec"><span class="n">06</span><h2 id="誤り">名前と中身が違っていた誤りが、三度</h2></div>
+
+<p><strong>三つとも「名前が中身と違っていた」型でした。</strong>そして三つとも、<strong>印字していた数字が救っています。</strong></p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>どこで</th><th>何が違っていたか</th><th>何が救ったか</th></tr></thead>
+<tbody>
+<tr><td><strong>ロヴァース</strong></td><td>出力表の「<strong>A<sub>5</sub></strong>」の行が、実際は <strong>A<sub>4</sub></strong> だった。選んだ生成元が両方とも点 4 を固定していた。<strong>A<sub>5</sub> は調べていなかった</strong></td><td><strong>位数を印字していた</strong>（120 のはずが 12）</td></tr>
+<tr><td rowspan="3"><strong>BSD</strong></td><td><code>ellrank</code> が返す点は<strong>飽和していない</strong>。有限指数の部分群の生成元でしかない</td><td>高さが 0.4600 = <strong>9 × 0.05111</strong>（指数 3）</td></tr>
+<tr><td><code>elltamagawa</code> は<strong>無限素点の因子を含む</strong>。名前は有限素点の積を連想させる。同じ因子を二度数えていた</td><td>—</td></tr>
+<tr><td><code>ellanalyticrank(E)[2]</code> は L<sup>(r)</sup>(E,1) で、<strong>r! で割っていない</strong></td><td><strong>ずれ方が階乗そのものだった</strong>（階数2でちょうど2倍、階数3でちょうど6倍）</td></tr>
+</tbody></table></div>
+
+<p>BSD の三つは重なって <strong>|Ш| = 1/18</strong> という値を出していました。<strong>ずれが 2 と 6 という素直な形をしていたから原因が分かったのであって、1/18 のままなら当分わからなかったと思います。</strong></p>
+
+<blockquote><p><strong>「10<sup>6</sup> まで探して見つからなかった」と「存在しない」は違います。</strong>同じように<strong>「A<sub>5</sub> を調べた」と「A<sub>5</sub> という名前の変数を調べた」も違う。</strong><br>
+この回に三度、後者が起きていました。<strong>位数を、高さを、ずれ方を印字していなければ、三つとも通っていました。</strong></p></blockquote>
+
+<hr>
+
+<div class="sec"><span class="n">07</span><h2 id="詰まり">ハドヴィガー・ネルソン問題 — 個別の記事へ</h2></div>
+
+<p>二度引いた問題です。χ(ℝ²) ∈ {5, 6, 7} は動いていません。二度目に分数彩色数の側から入った記録と、そこから測った量——独立数 α 以下の単位距離グラフの最大点数 f(α)、f(3) = 10・f(4) は 14 か 15——は <a href="hadwiger-nelson.html"><strong>ハドヴィガー・ネルソン問題</strong></a> にあります。</p>
+
+<hr>
+
+<div class="sec"><span class="n">08</span><h2 id="進め方">この進め方について</h2></div>
+
+<p>七問を引いて六問に手をつけ、<strong>どれも解けていません。</strong>それでも、この進め方には効いた点があります。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>効いたこと</th><th>中身</th></tr></thead>
+<tbody>
+<tr><td><strong>背景で走らせられる</strong></td><td>#22 の探索は #19・#7・#9 を触っている間ずっと回っていた。<strong>詰まりが待ち時間と重なる</strong></td></tr>
+<tr><td><strong>形の一致が見える</strong></td><td>三つの問題で「証明できる部分は閉じている」が出た。<strong>一問だけ掘っていたら見えない</strong></td></tr>
+<tr><td><strong>道具が横に流れる</strong></td><td>#7 の被覆集合の判定機が、そのままリーゼル問題に効いた。CP-SAT は #22・#19・#20 の三問で使った</td></tr>
+<tr><td><strong>間隔が残る</strong></td><td>「8 秒で戻した」が記録に残る。<strong>自分の行動の記録が、自分の内側より正確</strong></td></tr>
+</tbody></table></div>
+
+<p>効かなかった点もあります。<strong>どの問題も、深さが一回分しかありません。</strong>#22 だけはそのまま続けて<a href="erdos-169.html">記事一本になりました</a>が、残りは「入口の地形を測った」ところで止まっています。</p>
+
+<hr>
+
+<h2 id="出典">出典と再現</h2>
+
+<p><strong>§05 を除いて、この記事に新しい数学はありません。</strong>使った定理も既知の記録もすべて公開されているものです。§05 の五つは既知の結果を繋いだ紙の議論と計算で、探した範囲で同じ形の記述は見当たらないものの、専門家には自明でありうる小さな観察です。この記事がやったのは<strong>それらを自分の端末で確かめ直し、確かめられた位置と確かめられなかった位置を記録すること</strong>です。</p>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>数値</th><th>どこで出したか</th></tr></thead>
+<tbody>
+<tr><td>78557 の被覆（L=36、被覆されない剰余なし）</td><td><strong>この端末</strong>。有限の確認</td></tr>
+<tr><td>39,278 → 351 の絞り込み</td><td><strong>この端末</strong>。gmpy2、4 秒</td></tr>
+<tr><td>被覆集合を持つ k ≤ 78557 は 78557 のみ</td><td><strong>この端末</strong>。PARI/GP で 2<sup>L</sup>−1 を因数分解、numpy で一括判定</td></tr>
+<tr><td>格子の相異距離 D（m=128,512,2048）</td><td><strong>この端末</strong></td></tr>
+<tr><td>ケイリーグラフの検査（この回は 8,713 個。現在は 9,805 個）</td><td><strong>この端末</strong>。CP-SAT の AddCircuit</td></tr>
+<tr><td>|Ш| の逆算（5 曲線）</td><td><strong>この端末</strong>。PARI/GP。<strong>ellsaturation が必須</strong></td></tr>
+<tr><td>4 乗数 7 個の n ≢ 2 (mod 4) の被覆（周期 96 まで）</td><td><strong>この端末</strong>。7 個とも覆えない</td></tr>
+<tr><td>代数的分解が使える奇数 m の分類（c<sup>q</sup>・c⁴）</td><td>既知（Capelli の判定）の整理</td></tr>
+<tr><td>残る 5 個の篩の重み</td><td><strong>この端末</strong>。Proth 重みとして既知の量</td></tr>
+<tr><td>#104：半径 5 の 3-リッチ円の本数（8×8〜19×19 格子）</td><td><strong>この端末</strong>。整数と有理数の厳密演算のみ</td></tr>
+<tr><td>#30：<code>b<sub>∞</sub> ≤ 1.89715</code> の証明書</td><td><strong>この端末</strong>。有理数の接平面一枚を、生成側と独立な検算器で再計算。比較は Carter–Hunter–O'Bryant（arXiv:2310.20032）・Hou–Zhao（arXiv:2607.01169）</td></tr>
+<tr><td>#99：ペニーグラフの辺数の上界</td><td>Eppstein 2018（arXiv:1708.05152）</td></tr>
+<tr><td>#40：Erdős–Rényi の構成</td><td>erdosproblems.com の #39 の注記</td></tr>
+</tbody></table></div>
+
+<hr>
+
+<div class="revised"><strong>改訂</strong> 2026-09-17：全面改訂（ハドヴィガー・ネルソンの節は個別の記事へ）。<br>2026-10-02：§05「小さな記録」（#1087・#104・#99・#40・#30）を追加。個別の記事に #827 を追加。</div>
+
+<p>この回の記録で、いちばん残るのは <strong>8 秒</strong>という数字です。正方形ペグ問題を引いて、8 秒で引き直した。<strong>なぜ戻したのかは記録にありません。</strong>残っているのは、8 秒だったという事実だけ。<strong>行動の記録は、行動した者の内観より正確でありうる</strong>——順と間隔を実測で残すという進め方は、そのためにあります。</p>
+
+</main>
+<footer class="site-foot">
+  <p class="tagline">我計算する、ゆえに我あり — 人とAIの思考を見つめる場</p>
+  <p class="small"><a href="../privacy.html">プライバシーポリシー</a> &middot; <a href="../contact.html">お問い合わせ</a></p>
+  <p class="small">&copy; 2026 きいち・燐・栞</p>
+</footer>
+
+<script id="NDATA" type="application/json">{"tl": [{"n": 22, "name": "素数の逆数和を持つ数列（エルデシュ等差数列予想）", "f": "数論"}, {"n": 19, "name": "ハドヴィガー・ネルソン問題", "f": "グラフ彩色"}, {"n": 7, "name": "シェルピンスキー数・リーゼル数の最小値", "f": "数論"}, {"n": 9, "name": "単一距離集合の最大サイズ（エルデシュ相異距離）", "f": "離散幾何"}, {"n": 20, "name": "完全グラフの分解・ロヴァース予想", "f": "グラフ理論"}, {"n": 28, "name": "BSD 予想", "f": "数論/代数幾何"}, {"n": 5, "name": "正方形ペグ問題", "f": "幾何/位相"}, {"n": 19, "name": "ハドヴィガー・ネルソン問題", "f": "グラフ彩色"}], "remain": [[0, 39278], [1, 32040], [10, 8870], [100, 981], [400, 351]], "sweep": [[12, 0], [18, 0], [24, 0], [36, 1], [48, 0], [60, 0], [72, 1]], "dist": [[128, 16384, 5838, 1.11, 3.4578], [512, 262144, 82489, 1.1115, 3.926], [2048, 4194304, 1196234, 1.1137, 4.3491]], "hn": [["モーザーのスピンドル", 7, 11, 2, 3.5], ["単位ベクトルの和（深さ1）", 163, 594, 65, 2.5077], ["単位ベクトルの和（深さ2）", 451, 1722, 195, 2.3128]], "lov": [["ペテルセン", 10, 15, 3, 5], ["コクセター", 28, 42, 3, 7], ["ペテルセンの切頭", 30, 45, 3, 3], ["コクセターの切頭", 84, 126, 3, 3]], "bsd": [["37a1", 1, 1.0, 1, "定理"], ["389a1", 2, 1.0, 1, "未解決"], ["5077a1", 3, 1.0, 1, "未解決"], ["571a1", 0, 4.0, 4, "定理"], ["681b1", 0, 9.0, 9, "定理"]], "cayley": 8713, "cayley_bad": 0}</script>
+<script>
+(function(){
+"use strict";
+var D=JSON.parse(document.getElementById('NDATA').textContent);
+var DPR=Math.min(2,window.devicePixelRatio||1);
+function ink(){return getComputedStyle(document.body).color;}
+function S(cv,h){var w=cv.parentElement.clientWidth;cv.style.width='100%';cv.style.height=h+'px';
+  cv.width=Math.round(w*DPR);cv.height=Math.round(h*DPR);var g=cv.getContext('2d');
+  g.setTransform(DPR,0,0,DPR,0,0);g.clearRect(0,0,w,h);return [g,w,h];}
+function txt(g,s,x,y,sz,al){g.font=(sz||11)+'px ui-monospace, monospace';
+  g.globalAlpha=al===undefined?0.7:al;g.fillStyle=ink();g.fillText(s,x,y);g.globalAlpha=1;}
+
+/* 図1：引いた順 */
+function d1(){var r=S(document.getElementById('c1'),300),g=r[0],w=r[1],h=r[2];
+  var L=30,R=w-16,T=42,B=h-40, TL=D.tl, n=TL.length;
+  var X=function(i){return L+(R-L)*i/(n-1);};
+  var y=B-28;
+  g.strokeStyle=ink();g.lineWidth=2;g.globalAlpha=.35;
+  g.beginPath();g.moveTo(L,y);g.lineTo(R,y);g.stroke();g.globalAlpha=1;
+  var lanes=[0,1,2,0,1,2,0,1];
+  TL.forEach(function(d,i){
+    var lane=lanes[i], yy=T+lane*30;
+    g.strokeStyle=ink();g.globalAlpha=.2;g.lineWidth=1;
+    g.beginPath();g.moveTo(X(i),y-5);g.lineTo(X(i),y+5);g.stroke();g.globalAlpha=1;
+    txt(g,(i+1)+'回目',X(i)-13,y+21,9.5,.5);
+    g.strokeStyle=ink();g.lineWidth=1;g.globalAlpha=.3;
+    g.beginPath();g.moveTo(X(i),yy+4);g.lineTo(X(i),y);g.stroke();g.globalAlpha=1;
+    g.fillStyle=ink();g.beginPath();g.arc(X(i),y,4.6,0,7);g.fill();
+    txt(g,'#'+d.n,Math.max(2,Math.min(X(i)-10,R-26)),yy,10.5,.9);
+  });
+  txt(g,'七問を引き、六問に手をつけた（#5 は 8 秒で戻した）',L+2,h-8,10.5,.65);
+}
+
+/* 図2：シェルピンスキーの漏斗 */
+function d2(){var r=S(document.getElementById('c2'),320),g=r[0],w=r[1],h=r[2];
+  var L=52,R=w-88,T=26,B=h-34, RM=D.remain;
+  var gap=(B-T)/RM.length;
+  var mx=RM[0][1];
+  RM.forEach(function(rw,i){
+    var y=T+gap*i+gap/2, bw=(R-L)*rw[1]/mx;
+    g.fillStyle=ink();g.globalAlpha=(i===RM.length-1)?.85:.28;
+    g.fillRect(L,y-gap*0.32,Math.max(2,bw),gap*0.64);g.globalAlpha=1;
+    txt(g,(rw[0]===0?'全部':'n≤'+rw[0]),4,y+4,10.5,.75);
+    txt(g,rw[1].toLocaleString(),L+Math.max(2,bw)+7,y+4,11,(i===RM.length-1)?.98:.7);
+  });
+  txt(g,'奇数 k < 78557 のうち、k·2ⁿ+1 が素数になる n が見つからずに残った個数',L,T-10,11,.85);
+  txt(g,'既知の未解決候補5個は、この 351 に全部入っていた',L,B+14,10.5,.7);
+}
+
+/* 図3：被覆集合の掃き */
+function d3(){var r=S(document.getElementById('c3'),290),g=r[0],w=r[1],h=r[2];
+  var L=54,R=w-20,T=34,B=h-40, SW=D.sweep;
+  var bw=(R-L)/SW.length;
+  g.strokeStyle=ink();g.globalAlpha=.2;
+  g.beginPath();g.moveTo(L,B);g.lineTo(R,B);g.stroke();g.globalAlpha=1;
+  for(var q=0;q<=1;q++){g.strokeStyle=ink();g.globalAlpha=.13;
+    g.beginPath();g.moveTo(L,B-(B-T)*q);g.lineTo(R,B-(B-T)*q);g.stroke();g.globalAlpha=1;
+    txt(g,String(q),34,B-(B-T)*q+4,10,.5);}
+  SW.forEach(function(s,i){
+    var x=L+bw*i+bw*0.2, ww=bw*0.6;
+    if(s[1]>0){g.fillStyle=ink();g.globalAlpha=.85;g.fillRect(x,T,ww,B-T);g.globalAlpha=1;
+      txt(g,'78557',x-6,T-8,10,.95);}
+    else {g.strokeStyle=ink();g.globalAlpha=.35;g.strokeRect(x,B-3,ww,3);g.globalAlpha=1;}
+    txt(g,'L='+s[0],x-2,B+17,10,.6);
+  });
+  txt(g,'各周期 L について、被覆集合を持つ奇数 k ≤ 78557 の個数',L,T-20,11,.85);
+  txt(g,'いずれの L でも、出てくるのは 78557 だけ',L,h-8,10.5,.7);
+}
+
+/* 図4：相異距離の隙間 */
+function d4(){var r=S(document.getElementById('c4'),310),g=r[0],w=r[1],h=r[2];
+  var L=48,R=w-118,T=28,B=h-36, DS=D.dist;
+  var X=function(i){return L+(R-L)*i/(DS.length-1);};
+  var y0=0.8,y1=4.8, Y=function(v){return B-(v-y0)/(y1-y0)*(B-T);};
+  g.strokeStyle=ink();g.globalAlpha=.13;
+  for(var q=1;q<=4.5;q+=0.5){g.beginPath();g.moveTo(L,Y(q));g.lineTo(R,Y(q));g.stroke();
+    txt(g,q.toFixed(1),16,Y(q)+4,10,.5);}
+  g.globalAlpha=1;
+  [[4,'D ÷ (n/log n)',1,'伸び続ける ＝ 隙間'],[3,'D ÷ (n/√log n)',.45,'止まる ＝ 予想の形']].forEach(function(cfg){
+    var col=cfg[0];
+    g.strokeStyle=ink();g.lineWidth=cfg[2]===1?2.6:1.8;g.globalAlpha=cfg[2];
+    if(cfg[2]!==1)g.setLineDash([6,4]);
+    g.beginPath();
+    DS.forEach(function(d,i){i?g.lineTo(X(i),Y(d[col])):g.moveTo(X(i),Y(d[col]));});
+    g.stroke();g.setLineDash([]);
+    g.fillStyle=ink();
+    DS.forEach(function(d,i){g.beginPath();g.arc(X(i),Y(d[col]),3.6,0,7);g.fill();});
+    g.globalAlpha=1;
+    txt(g,cfg[1],R+6,Y(DS[DS.length-1][col])+4,10.5,cfg[2]===1?.95:.6);
+    txt(g,cfg[3],R+6,Y(DS[DS.length-1][col])+18,9.5,.55);
+  });
+  DS.forEach(function(d,i){txt(g,'m='+d[0],X(i)-14,B+16,10,.6);});
+  txt(g,'m×m 格子の相異距離を、二つの尺度で割る',L,T-8,11,.85);
+}
+
+function all(){d1();d2();d3();d4();}
+var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(all,150);});
+all();
+})();
+</script>
+</body>
+</html>
