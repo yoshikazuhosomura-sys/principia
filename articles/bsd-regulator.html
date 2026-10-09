@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>p 進 BSD — computo ergo sum</title>
+<meta name="description" content="BSD 予想の p 進版（Mazur–Tate–Teitelbaum）を、奇素数の異常素点で、既知の定理（Kato の割り切り・Skinner–Urban の等号）の組み合わせから曲線ごとの結論に落とした記録です。仮定 H と独立な有理点二つ・玉河数の積が p で割れないことの下で、計算した係数 c_2 が p で割れなければ、階数 2・Ш の p 部分 0・p 進レギュレーターの付値 0 が従います。BSD 予想そのものには何も及びません。">
+<link rel="canonical" href="https://computoergosum.com/principia/bsd-regulator.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="computo ergo sum">
+<meta property="og:title" content="p 進 BSD — 仮定 H の下の曲線ごとの結論">
+<meta property="og:description" content="異常素点の p 進 L 関数の係数 c_2 から、既知の定理の組み合わせで階数・Ш の p 部分・p 進レギュレーターの付値を曲線ごとに読む。予想の最初の二桁の照合と、未確認の出典の一覧つき。">
+<meta property="og:url" content="https://computoergosum.com/principia/bsd-regulator.html">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" hreflang="ja" href="https://computoergosum.com/principia/bsd-regulator.html">
+<link rel="alternate" hreflang="x-default" href="https://computoergosum.com/principia/bsd-regulator.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article",
+"headline":"p 進 BSD — 異常素点の L 関数の一つの係数から、階数と Ш の p 部分を曲線ごとに読む",
+"description":"仮定 H の下で、Kato の割り切りと Skinner–Urban の等号を組み合わせ、計算した c_2 から曲線ごとに階数・Ш の p 部分・p 進レギュレーターの付値を読む。BSD 予想そのものには何も及びません。",
+"datePublished":"2026-10-09","dateModified":"2026-10-09",
+"publisher":{"@type":"Organization","name":"computo ergo sum"},
+"inLanguage":"ja","mainEntityOfPage":"https://computoergosum.com/principia/bsd-regulator.html"}
+</script>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.sec{border-left:3px solid currentColor;padding-left:15px;margin:2.4em 0 1.2em}
+.sec h2{margin:0}
+.sec .n{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.14em;opacity:.6;display:block}
+table.num td.n,table.num th.n{text-align:right;font-family:ui-monospace,monospace}
+.formula{font-family:ui-monospace,monospace;font-size:.92rem;text-align:center;padding:15px 10px;
+  border:1px solid var(--line,#ccc);border-radius:3px;margin:1.5em 0;overflow-x:auto;white-space:nowrap}
+@media(max-width:480px){.formula{white-space:normal;word-break:break-word}}
+.toc{border:1px solid var(--line,#ccc);border-radius:3px;padding:14px 18px;margin:1.8em 0;background:var(--card,#fff)}
+.toc ol{margin:.4em 0 0;padding-left:1.4em}
+.toc li{margin:.28em 0}
+.toc .lead{font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.1em;opacity:.6}
+h3{margin:1.8em 0 .6em}
+.item{border-left:2px solid var(--line,#ccc);padding-left:14px;margin:1.6em 0}
+.item h3{margin:0 0 .5em}
+details{border:1px solid var(--line,#ccc);border-radius:3px;padding:0 15px;margin:1.1em 0;background:var(--card,#fff)}
+details[open]{padding-bottom:8px}
+details>summary{cursor:pointer;padding:11px 0;font-weight:600}
+.label{display:inline-block;font-family:"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  font-size:.68rem;letter-spacing:.08em;line-height:1.5;border:1px solid currentColor;border-radius:3px;
+  padding:0 .45em;margin-right:.45em;vertical-align:middle;white-space:nowrap}
+.label.lean{color:var(--ok,#2f6b45)}
+.label.paper{color:var(--emph,#3a5f8a)}
+.label.comp{color:var(--wa,#8a6a12)}
+.label.known{color:var(--muted,#6b6862)}
+.label.pending{color:var(--wa,#8a6a12);border-style:dashed}
+.revised{border-left:3px solid var(--wa,#8a6a12);padding:.5rem .8rem;margin:1.6em 0;font-size:.8rem;color:var(--muted)}
+</style>
+<!-- Google AdSense（2026-08-22、きいちさんから受領）。
+     **このファイルの中身は、公開側（.com）の全ページの <head> に入る。**
+     開発用（.tokyo）には入らない — Basic 認証の内側なので審査に使えず、
+     自分でクリックしてしまう事故も避けるため。build.py の layout() を参照。 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5321747963421869"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+<header class="site-head">
+  <div class="head-top"><a class="brand" href="../index.html">computo <span>ergo</span> sum</a></div>
+  <nav><a href="../index.html">ホーム</a><a href="../claude/index.html">Codex cogitans</a><a href="../thoughts/index.html">思索</a><a href="../records/index.html">記録</a><a href="../principia/index.html">自然哲学</a><a href="../future/index.html">未来設計図</a><a href="../tools/index.html">道具</a><a href="../bbs.html">掲示板</a><a href="../about.html">運営について</a></nav>
+</header>
+<main>
+<p class="meta">2026-10-09 &middot; article <span class="tag">BSD予想</span><span class="tag">p 進 L 関数</span><span class="tag">岩澤主予想</span><span class="tag">楕円曲線</span></p>
+
+<h1 id="top">p 進 BSD — 異常素点の L 関数の一つの係数から、階数と Ш の p 部分を曲線ごとに読む</h1>
+
+<p>BSD 予想（バーチ・スウィンナートン=ダイヤー予想）は、クレイ数学研究所が 2000 年に掲げた七つのミレニアム懸賞問題の一つです（<a href="https://www.claymath.org/millennium/birch-and-swinnerton-dyer-conjecture/">公式の問題ページ</a>）。楕円曲線の有理点の多さ（階数）と、テイト–シャファレヴィッチ群 Ш という測りにくい群の位数が、L 関数という解析的な量から読める、と予想します。この記事は、その p 進版——Mazur・Tate・Teitelbaum が 1986 年に定式化した予想——を、一つの奇素数 p の側から見た記録です。既知の定理を組み合わせると、ある仮定の下で、p 進 L 関数の係数を一つ計算するだけで、その曲線の階数と Ш の p 部分が決まる場合があります。その組み立てと、予想の数値での照合を並べます。BSD 予想そのものは、どの形でも扱っていません。</p>
+
+<div class="section-lead">
+<p><strong>何の問題か</strong> — p 進 BSD 予想は、p 進 L 関数 <code>L<sub>p</sub>(E, T)</code> の主係数を、p 進レギュレーター <code>Reg<sub>p</sub></code>・玉河数・Ш の位数で書く等式です。</p>
+<p><strong>何を組み立てたか</strong> — 奇素数 <code>p</code> が良通常で <code>a<sub>p</sub> ≡ 1 (mod p)</code>（異常素点）、<code>E[p]</code> が既約、ある <code>q ∥ N</code> で <code>p ∤ ord<sub>q</sub>(Δ<sub>min</sub>)</code>（仮定 H）のとき、Kato の割り切りと Skinner–Urban の等号を一本の連鎖にしました。</p>
+<p><strong>曲線ごとの結論</strong> — 独立な有理点が二つあり、玉河数の積が <code>p</code> で割れず、計算した <code>T<sup>2</sup></code> の係数 <code>c<sub>2</sub></code> が <code>p</code> で割れなければ、<code>rank E(Q) = 2</code>・<code>Ш(E/Q)[p<sup>∞</sup>] = 0</code>・<code>v<sub>p</sub>(Reg<sub>p</sub>) = 0</code> です。4,343 箱に当てました。</p>
+<p><strong>照合</strong> — 予想の最初の桁が 5,180/5,180、二桁目が 398/398。Ш の p 部分を L の側から読む照合が階数 1 で 41/41、階数 2・<code>p = 3</code>・<code>Ш<sub>an</sub> = 9</code> の三例で 3/3（付値と最初の桁）。</p>
+<p><strong>言わないこと</strong> — BSD 予想そのもの、仮定 H の外、<code>p = 2</code>。照合の <code>Ш<sub>an</sub></code> は複素 BSD 予想の予言値で、三つの例は一つずつでは検定力を持ちません。</p>
+</div>
+
+<p><span class="label lean">Lean</span>機械検査済み（Lean 4 + mathlib、<code>sorry</code> 0・<code>native_decide</code> 不使用、公理は <code>propext</code>・<code>Classical.choice</code>・<code>Quot.sound</code> の部分集合。定理名を添える）
+<span class="label paper">紙</span>証明はあるが機械検査は未了
+<span class="label comp">計算</span>この端末で確かめた範囲。外に出す主張にはしない
+<span class="label known">既知</span>既知の定理・言い換え・外の文献の確認</p>
+
+<p>このページの曲線ごとの結論は、<strong>既知の定理の組み合わせ</strong>に、<strong>計算した一つの係数</strong>を入力したものです。定理の言明と仮定は原論文で確かめましたが、組み合わせの全体は機械検査されていません。<strong>BSD 予想については何も主張しません。</strong>記事の間の約束（札の意味・「新しい」と呼ぶ基準）は <a href="method.html">方法</a> にあります。</p>
+
+<div class="toc">
+<span class="lead">この記事の順序</span>
+<ol>
+<li><a href="#問題">この問題は何か — 複素の BSD と p 進の BSD</a></li>
+<li><a href="#道">仮定 H の下で、曲線ごとの結論にする道</a></li>
+<li><a href="#p3">p = 3 で何が要るか</a></li>
+<li><a href="#照合">予想の桁を数値で照合する</a></li>
+<li><a href="#sha">Ш の p 部分を、L の側から読む</a></li>
+<li><a href="#未確認">原典で確かめられていないもの</a></li>
+<li><a href="#lean">機械検査で閉じた範囲</a></li>
+<li><a href="#範囲">主張しないこと</a></li>
+<li><a href="#論文">論文と出典</a></li>
+</ol>
+</div>
+
+<hr>
+
+<div class="sec"><span class="n">01</span><h2 id="問題">この問題は何か — 複素の BSD と p 進の BSD</h2></div>
+
+<p><code>E/Q</code> を楕円曲線、<code>N</code> をその導手、<code>r = rank E(Q)</code> とします。複素の BSD 予想は、<code>L(E, s)</code> の <code>s = 1</code> での零の位数が <code>r</code> に等しく、主係数が</p>
+<div class="formula">L<sup>(r)</sup>(E, 1)/r! = Ω<sub>E</sub> · ∏<sub>ℓ</sub> c<sub>ℓ</sub> · #Ш(E/Q) · Reg<sub>∞</sub> / (#E(Q)<sub>tors</sub>)<sup>2</sup></div>
+<p>で与えられる、と予想します（<code>c<sub>ℓ</sub></code> は玉河数、<code>Reg<sub>∞</sub></code> は Néron–Tate の高さの行列式）。解析的階数が 0 か 1 の曲線では階数の部分は定理で、Ш が有限であることも分かっています。<strong>階数 2 以上では、Ш が有限であることすら一般には知られていません。</strong><span class="label known">既知</span></p>
+
+<p>p 進版では、L 関数を <code>p</code> 進の側に置き換えます。<code>p</code> を良通常の素数（<code>p ∤ N</code> で <code>a<sub>p</sub></code> が <code>p</code> 進単数）とし、<code>α</code> を <code>x<sup>2</sup> − a<sub>p</sub>x + p</code> の単数根とします。Mazur–Tate–Teitelbaum の <code>p</code> 進 L 関数を、<code>1 + T = (1 + p)<sup>s</sup></code> の変数で</p>
+<div class="formula">L<sub>p</sub>(E, T) = Σ<sub>j≥0</sub> c<sub>j</sub> T<sup>j</sup></div>
+<p>と書きます。予想（Stein–Wuthrich の形、Néron 周期で正規化）は、零の位数が <code>r</code> で、主係数が</p>
+<div class="formula">L<sub>p</sub><sup>*</sup>(E, 0) = ε<sub>p</sub> · ∏<sub>ℓ</sub> c<sub>ℓ</sub> · #Ш(E/Q) · Reg<sub>γ</sub> / (#E(Q)<sub>tors</sub>)<sup>2</sup>,  ε<sub>p</sub> = (1 − 1/α)<sup>2</sup>,  Reg<sub>γ</sub> = Reg<sub>p</sub> / log<sub>p</sub>(1 + p)<sup>r</sup></div>
+<p>となる、というものです。<code>Reg<sub>p</sub></code> は円分 <code>p</code> 進高さ対（Mazur–Tate の σ 関数で作るもの）の行列式です。<strong>予想は単数倍まででなく等式</strong>で、原典（Mazur–Tate–Teitelbaum 1986, II §10）でもそう書かれています。<span class="label known">既知</span></p>
+
+<p>この記事が見るのは <strong>異常素点</strong>——<code>a<sub>p</sub> ≡ 1 (mod p)</code>（<code>p ≥ 7</code> では <code>#E(F<sub>p</sub>) = p</code> と同じ）——です。ここでは <code>ε<sub>p</sub></code> の付値がちょうど 2 になり、<code>Reg<sub>p</sub></code> は <code>p</code> 整とは限りません（負の付値を持ちえます）。<code>Reg<sub>p</sub></code> の付値が還元のどんな局所的な条件で決まるかは、論文の本体（§3）の主題です（<a href="papers/index.html#padic-regulator-valuation">論文の紹介</a>）。この記事はその外側、<strong>L 関数の側</strong>を扱います。</p>
+
+<p>階数 2・<code>a<sub>p</sub> = 1</code>・自明な捩れの曲線では、予想は割らずに書くと</p>
+<div class="formula">c<sub>2</sub> = ω · n · #Ш(E/Q) · U · Reg<sub>p</sub>,  ω = Ω<sub>E</sub>/Ω<sup>+</sup> ∈ {1, 2},  n = ∏<sub>ℓ</sub> c<sub>ℓ</sub>,  U ≡ 1 + 5p (mod p<sup>2</sup>)</div>
+<p>という <code>Q<sub>p</sub></code> の中の等式になります（<code>Ω<sup>+</sup></code> は PARI/GP の周期 <code>E.omega[1]</code>）。<span class="label paper">紙</span>（予想の言明からの換算）</p>
+
+<hr>
+
+<div class="sec"><span class="n">02</span><h2 id="道">仮定 H の下で、曲線ごとの結論にする道</h2></div>
+
+<p>予想は予想のままですが、岩澤理論の二つの大きな定理——Kato の割り切り（2004）と Skinner–Urban の主予想（2014）——を組み合わせると、<strong>個々の曲線について</strong>、<code>c<sub>2</sub></code> を一つ計算するだけで結論が出る場合があります。手順の型は Stein–Wuthrich（Math. Comp. 2013）の算法 11.1 にあり、ここではそれを異常素点で使います。手順に新しいところはありません。<span class="label known">既知</span></p>
+
+<h3>条件</h3>
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>記号</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>(G)</td><td><code>p</code> は奇素数、<code>p ∤ N</code>、<code>a<sub>p</sub> ≡ 1 (mod p)</code>（良通常かつ異常。照合の箱はすべて <code>a<sub>p</sub> = 1</code>）</td></tr>
+<tr><td>(I)</td><td><code>E[p]</code> は既約な Galois 加群</td></tr>
+<tr><td>(H)</td><td>ある素数 <code>q ∥ N</code> で <code>p ∤ ord<sub>q</sub>(Δ<sub>min</sub>)</code>（<code>Δ<sub>min</sub></code> は最小判別式）</td></tr>
+<tr><td>(P2)</td><td>独立な有理点が二つある</td></tr>
+<tr><td>(T)</td><td><code>p ∤ ∏<sub>ℓ</sub> c<sub>ℓ</sub></code>、捩れは自明（照合の箱の選び方）</td></tr>
+</tbody></table></div>
+
+<h3>曲線ごとの結論</h3>
+<blockquote><p>(G)(I)(H)(P2)(T) の下で <code>a<sub>p</sub> = 1</code> とする。<strong>計算した <code>c<sub>2</sub></code> が <code>c<sub>2</sub> ≢ 0 (mod p)</code> なら</strong>、<code>rank E(Q) = 2</code>、<code>Ш(E/Q)[p<sup>∞</sup>] = 0</code>、<code>p</code> 進高さ対は非退化で、<code>v<sub>p</sub>(Reg<sub>p</sub>) = 0</code>。<br>
+また (H) の下で <code>ord<sub>T</sub> L<sub>p</sub> = 2</code> なら</p>
+<div class="formula">v<sub>p</sub>(c<sub>2</sub>) = Σ<sub>ℓ</sub> v<sub>p</sub>(c<sub>ℓ</sub>) + v<sub>p</sub>(#Ш(E/Q)[p<sup>∞</sup>]) + v<sub>p</sub>(Reg<sub>p</sub>)</div>
+<p>で、<code>≥</code> の向きには Kato の割り切りだけで足りる。</p></blockquote>
+<p><span class="label known">既知</span>（定理の組み合わせ。各定理の言明と仮定は原論文で確認）<span class="label comp">計算</span>（<code>c<sub>2</sub></code> の値。浮動小数・区間演算なし）。</p>
+
+<p>条件 (T) の <code>p ∤ ∏c<sub>ℓ</sub></code> は、<code>v<sub>p</sub>(Reg<sub>p</sub>) ≥ 0</code> を保証するために要ります。異常素点では高さを有限指数の部分群の上で作って線形に延ばすので、<code>p | ∏c<sub>ℓ</sub></code> なら <code>Reg<sub>p</sub></code> は負の付値を持ちえます（§05 に <code>v<sub>3</sub>(Reg<sub>3</sub>) = −2</code> の箱があります）。そのとき <code>c<sub>2</sub> ≢ 0</code> でも <code>v<sub>p</sub>(Reg<sub>p</sub>) = 0</code> は従いません。<span class="label paper">紙</span>（Mazur–Tate–Teitelbaum II §2・§4 の定義から）</p>
+
+<p>対偶の側も使えます。<code>E(Q<sub>p</sub>)</code> に位数 <code>p</code> の点がある（分裂の）箱で、還元の二つの準同型 <code>χ, γ</code> の行列式が <code>det(χ, γ) ≡ 0 (mod p)</code> なら、論文 §3 の系から <code>v<sub>p</sub>(Reg<sub>p</sub>) ≥ 1</code> で、したがって <code>c<sub>2</sub> ≡ 0 (mod p)</code> です（この向きは論文本体の <code>p ≥ 5</code> の定理を使います）。<span class="label paper">紙</span></p>
+
+<h3>連鎖の段</h3>
+<p><code>f<sub>E</sub></code> を円分 <code>Z<sub>p</sub></code> 拡大の上の Selmer 群の特性冪級数とします。主予想は <code>(f<sub>E</sub>) = (L<sub>p</sub>)</code> を言い、その片側（<code>f<sub>E</sub></code> が <code>L<sub>p</sub></code> を割る）が Kato、等号が Skinner–Urban です。</p>
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th class="n">段</th><th>矢印</th><th>使う定理</th><th>その定理の仮定</th></tr></thead>
+<tbody>
+<tr><td class="n">0</td><td><code>L<sub>p</sub> ∈ Z<sub>p</sub>[[T]]</code>。四つの流儀の <code>L<sub>p</sub></code>（Stein–Wuthrich・PARI・Kato・Skinner–Urban）は互いに <code>Z<sub>p</sub></code> の単数倍</td><td>Greenberg–Vatsal Prop. 3.7、Mazur 1978 Cor. 4.1（Manin 定数）</td><td><code>p</code> 奇、<code>E[p]</code> 既約（または最適曲線）、<code>p ∤ N</code></td></tr>
+<tr><td class="n">1</td><td>独立な二点 ⟹ Selmer 群の余階数 ≥ 2</td><td>Kummer 写像の単射</td><td>なし</td></tr>
+<tr><td class="n">2</td><td>⟹ <code>ord<sub>T</sub> f<sub>E</sub> ≥ 2</code></td><td>Mazur の制御定理（Greenberg 1999, Thm 1.2）</td><td>良通常</td></tr>
+<tr><td class="n">3</td><td>⟹ <code>ord<sub>T</sub> L<sub>p</sub> ≥ 2</code>、つまり <code>c<sub>0</sub> = c<sub>1</sub> = 0</code></td><td>Kato, Thm 17.4(2)（<code>p</code> の冪を除いた割り切り）</td><td><code>p ∤ N</code>、<code>a<sub>p</sub></code> 単数（<code>p</code> の奇数性も既約性も要らない）</td></tr>
+<tr><td class="n">4</td><td><code>c<sub>2</sub> ≠ 0</code> ⟹ <code>ord<sub>T</sub> L<sub>p</sub> = 2</code> ⟹ <code>ord<sub>T</sub> f<sub>E</sub> = 2</code></td><td>同上</td><td>同上</td></tr>
+<tr><td class="n">5</td><td><code>ord<sub>T</sub> f<sub>E</sub> = 2</code> ⟹ <code>rank E(Q) = 2</code>、<code>Ш[p<sup>∞</sup>]</code> 有限、高さ対は非退化</td><td>Perrin-Riou 1992, Thm 3.4.2・§3.4.3 と Kato, Thm 17.4(1)（逆向きは Schneider 1985, Thm 2′）</td><td>良通常</td></tr>
+<tr><td class="n">6</td><td><code>f<sub>E</sub></code> の主係数 ∼ <code>ε<sub>p</sub> · ∏c<sub>ℓ</sub> · #Ш[p<sup>∞</sup>] · Reg<sub>γ</sub></code>（単数倍まで）</td><td>Schneider 1985, Thm 2′、Perrin-Riou 1992, §3.4.3</td><td>段 5 の結論</td></tr>
+<tr><td class="n">7</td><td>整の割り切り <code>f<sub>E</sub> | L<sub>p</sub></code>（<code>Λ = Z<sub>p</sub>[[T]]</code> の中で）⟹ <code>v<sub>p</sub>(c<sub>2</sub>) ≥ v<sub>p</sub>(f<sub>E</sub> の主係数)</code></td><td>Kato, Thm 17.4(3) と Skinner（arXiv:1407.1093）§2.5</td><td><code>p ≠ 2</code>、(I)、(H)</td></tr>
+<tr><td class="n">8</td><td><code>c<sub>2</sub></code> が単数 ⟹ <code>Ш[p<sup>∞</sup>] = 0</code>、<code>v<sub>p</sub>(Reg<sub>p</sub>) = 0</code></td><td>段 6・7 と <code>v<sub>p</sub>(ε<sub>p</sub>) = 2</code>、<code>v<sub>p</sub>(Reg<sub>p</sub>) ≥ 0</code>（条件 (T)）</td><td>同上（Skinner–Urban は要らない）</td></tr>
+<tr><td class="n">9</td><td>等号 <code>(f<sub>E</sub>) = (L<sub>p</sub>)</code>（Λ の中で）⟹ 上の付値の等式</td><td>Skinner–Urban, Theorem 1（著者の頁の版で Thm 3.6.4）・Thm 3.6.9 と Skinner, Thm 2.5.2</td><td><code>p</code> 奇、(I)、条件 (dist)（良通常 <code>p ≥ 3</code> で自動）、(H)</td></tr>
+</tbody></table></div>
+<p class="small">段 5 と段 8 の組み合わせ、段 6 で二つの正規化を同一視すること、段 9 の (dist) が自動であることは<span class="label paper">紙</span>。それ以外の各段は原論文の言明と仮定を読んで確かめました<span class="label known">既知</span>。Skinner–Urban の原論文だけでは等号は <code>Λ ⊗ Q<sub>p</sub></code> の中（<code>p</code> の冪を除いて）で、Λ の中の等号は Skinner §2.5 と合わせて出ます。</p>
+
+<h3>仮定 H が、Galois 像の仮定の代わりをする仕組み</h3>
+<p>Kato の整の割り切り（Thm 17.4(3)）は、そのままの言明では「Galois 像が <code>SL<sub>2</sub>(Z<sub>p</sub>)</code> を含む」ことを仮定します。Kato の本文を追うと、この仮定が効くのは Thm 12.5(4) だけで（§17.13）、その証明（§13.14）は三つのことを使います。仮定 H はそれを一つずつ別の形で与えます。<span class="label known">既知</span>（言明は原典）<span class="label paper">紙</span>（読み合わせ）</p>
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>Kato の証明が使うもの</th><th>代わりに与えるもの</th></tr></thead>
+<tbody>
+<tr><td>Galois で安定な格子が一つの格子のスカラー倍に限ること（Remark 12.8 と Lemma 14.7 の証明。像の仮定を使う唯一の場所）</td><td><code>E[p]</code> の既約性（Skinner, Lemma 2.1.1）</td></tr>
+<tr><td><code>H<sup>1</sup>(T)</code> が自由であること</td><td>Kato, Thm 12.4(3)（<code>p ≠ 2</code> と既約性）</td></tr>
+<tr><td>Euler 系の上界（Thm 13.4(3)）：<code>Gal(Q̄/Q(ζ<sub>p<sup>∞</sup></sub>))</code> の元 <code>σ</code> で <code>Coker(1 − σ)</code> が階数 1 の自由加群になるもの</td><td><code>q</code> での順分岐惰性の生成元。惰性は Tate 加群に非自明な冪単行列で作用し、<code>p ∤ ord<sub>q</sub>(Δ<sub>min</sub>)</code> のときちょうど <code>p</code> を法としても非自明（Darmon–Diamond–Taylor の講義録 Prop. 2.12）。<code>p</code> を法として非自明な冪単行列の余核は階数 1 の自由加群</td></tr>
+</tbody></table></div>
+<p>Kato の §13 は虚数乗法を持たない曲線を仮定しますが、<code>q ∥ N</code> では <code>j</code> が <code>q</code> で整でないので自動です。つまり仮定 H は <code>SL<sub>2</sub>(Z<sub>p</sub>)</code> の像そのものを与えるのではなく、<strong><code>SL<sub>2</sub></code> が担っていた三つの役を別々に与えます</strong>。</p>
+
+<h3><code>c<sub>2</sub></code> をどう計算するか</h3>
+<p><code>a<sub>p</sub> ≡ 1 (mod p)</code> かつ <code>L(E, 1) = 0</code> のとき、<code>c<sub>2</sub></code> を <code>p</code> で割った余りは、分母 <code>p<sup>2</sup></code> のモジュラー・シンボルの有限和</p>
+<div class="formula">c<sub>2</sub> ≡ Σ<sub>j=0</sub><sup>p−1</sup> C(j, 2) · S<sub>j</sub> (mod p),  S<sub>j</sub> = Σ<sub>a=1</sub><sup>p−1</sup> [ω(a)(1 + p)<sup>j</sup>/p<sup>2</sup>]<sup>+</sup></div>
+<p>で決まります（<code>ω</code> は Teichmüller 指標、<code>C(j, 2)</code> は二項係数）。<span class="label paper">紙</span>（Hecke の関係式から）。実際の計算は、導手 <code>p<sup>2</sup></code>・<code>p<sup>3</sup></code> の指標で捻った L 値から行い、PARI/GP の <code>mspadicseries</code> と 14 組の <code>(E, p)</code> で一致を確かめました。<code>p</code> を法とする上の桁（<code>c<sub>2</sub> mod p<sup>2</sup></code>、<code>mod p<sup>3</sup></code>）は、もう一段深い層の和から同じように取ります。<span class="label comp">計算</span>（浮動小数・区間演算なし）</p>
+
+<h3>当てた結果</h3>
+<p>分裂の箱（Cremona の表の導手 200,000 以下の曲線と、係数の小さい短い Weierstrass 方程式の族の導手 3·10<sup>7</sup> 以下の曲線。階数 2・<code>p ∈ {5, …, 19}</code>・<code>#E(F<sub>p</sub>) = p</code>・(T)・有理点が <code>E(F<sub>p</sub>)</code> に全射・(H) を満たすもの 4,643 箱）で、事前に決めた規則のとおりに数えました。</p>
+<ul>
+<li><code>det(χ, γ) ≢ 0</code> の <strong>4,343 箱では <code>c<sub>2</sub> ≡ 0</code> が 0 箱</strong>。したがって、この 4,343 の (曲線, 素数) の組で、箱ごとに <code>rank E(Q) = 2</code>・<code>Ш(E/Q)[p<sup>∞</sup>] = 0</code>・<code>v<sub>p</sub>(Reg<sub>p</sub>) = 0</code> が従います。<span class="label known">既知</span>（定理の組み合わせ）<span class="label comp">計算</span>（<code>c<sub>2</sub></code>）</li>
+<li>対偶の側の陽性対照：<code>det(χ, γ) ≡ 0</code> の 300 箱で <code>c<sub>2</sub> ≡ 0</code> が 300/300。<span class="label comp">計算</span></li>
+<li><code>c<sub>2</sub> ≡ 0 (mod p)</code> の箱については何も言いません。</li>
+</ul>
+
+<hr>
+
+<div class="sec"><span class="n">03</span><h2 id="p3">p = 3 で何が要るか</h2></div>
+
+<p>Ш の <code>p</code> 部分を読む照合（§05）は、計算が一番軽い <code>p = 3</code> で行いました。連鎖の入力の原典を一つずつ開き、言明の <code>p</code> の範囲を確かめました。<span class="label known">既知</span></p>
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>入力</th><th>原典の言明での <code>p</code> の範囲</th><th><code>p = 3</code> で要るもの</th></tr></thead>
+<tbody>
+<tr><td>Greenberg–Vatsal, Prop. 3.7</td><td><code>p</code> 奇。<code>E</code> 最適 または <code>E[p]</code> 既約</td><td><code>E[3]</code> 既約</td></tr>
+<tr><td>Greenberg 1999, Thm 1.2</td><td>良通常、<code>p</code> の制限なし</td><td><code>a<sub>3</sub> ≢ 0 (mod 3)</code></td></tr>
+<tr><td>Kato, Thm 17.4(1)(2)</td><td><code>p ∤ N</code>、<code>a<sub>p</sub></code> 単数</td><td><code>3 ∤ N</code>、<code>a<sub>3</sub> ≢ 0 (mod 3)</code></td></tr>
+<tr><td>Kato, Thm 17.4(3) と Skinner §2.5</td><td><code>p ≠ 2</code>。Skinner は奇素数を固定</td><td><code>E[3]</code> 既約と (H)</td></tr>
+<tr><td>Skinner–Urban, Theorem 1・Thm 3.6.9</td><td><code>p</code> 奇。(dist) は良通常 <code>p ≥ 3</code> で自動</td><td><code>E[3]</code> 既約と (H)</td></tr>
+<tr><td>Darmon–Diamond–Taylor, Prop. 2.12(c)</td><td><code>q</code> と異なる任意の <code>p</code></td><td><code>3 ∤ ord<sub>q</sub>(Δ<sub>min</sub>)</code></td></tr>
+<tr><td>Schneider 1985, Thm 2′・Perrin-Riou 1992, §3.4.3</td><td>通常還元、<code>p</code> の制限なし</td><td>それ以上なし</td></tr>
+<tr><td>Mazur 1978, Cor. 4.1</td><td>Manin 定数は <code>Z[1/2m]</code> の単数（<code>m<sup>2</sup></code> は <code>N</code> を割る最大の平方）</td><td><code>3 ∤ N</code></td></tr>
+<tr><td>Mazur–Tate–Teitelbaum II §2・§10</td><td>剰余標数 ≠ 2。例外は <code>α = 1</code> だけ</td><td>それ以上なし</td></tr>
+</tbody></table></div>
+<p>どれも <code>p ≥ 5</code> を仮定していません。ほかに二つの注があります。</p>
+<ul>
+<li><strong>判別式の模型。</strong>最小でない模型では <code>ord<sub>q</sub>(Δ)</code> が 12 の倍数だけずれるので、<code>p ≥ 5</code> では (H) の判定が模型で変わりえます。<code>p = 3</code> では 12 が 3 の倍数なので変わりません。照合のすべての箱（11,694 箱）で (H) は最小模型の判別式で判定してあり、判定が変わった箱はありません。<span class="label paper">紙</span><span class="label comp">計算</span></li>
+<li><strong>Galois 像。</strong><code>p ≥ 5</code> なら、既約性と (H) から像が <code>SL<sub>2</sub>(Z<sub>p</sub>)</code> を含むことが古典的な持ち上げの補題で出て、Kato の言明がそのまま使えます。<code>p = 3</code> ではその補題が使えないので、Skinner §2.5 の道が実際に要ります。（持ち上げの補題とその番号は記憶によるもので、原典では確かめていません。）</li>
+</ul>
+
+<h3>σ 関数の正規化</h3>
+<p><code>p</code> 進高さは Mazur–Tate の σ 関数で作ります。その定数 <code>e</code> を、原典（Mazur–Tate–Teitelbaum II §2）は「<code>σ<sup>2</sup></code> の係数が <code>p</code> 進整になる唯一の値」として定め、PARI/GP の文書は <code>s<sub>2</sub> = ellpadics2(E, p, n)</code> を「σ が <code>tZ<sub>p</sub>[[t]]</code> に入る唯一の定数」として定めます。二つの微分方程式を並べると <strong><code>e = b<sub>2</sub> − 12·s<sub>2</sub></code></strong> で、<code>p = 3</code> でも <code>p ≥ 5</code> と同じ正規化です。<span class="label paper">紙</span>（二つの定義の照合。原典の一意性の証明は先行文献の引用で、追っていません）。曲線 26a1（<code>a<sub>3</sub> = 1</code>）で、PARI の高さを使わずに <code>c = s<sub>2</sub></code> から σ を組み立てると <code>t<sup>20</sup></code> まで係数が 3 進整で、<code>s<sub>2</sub> + 1/3</code> や <code>s<sub>2</sub> + 3<sup>k</sup></code>（<code>k ≤ 3</code>）では整になりません。<code>s<sub>2</sub></code> を <code>3<sup>4</sup></code> を法として定義に当てたことになります。<span class="label comp">計算</span>（一曲線）</p>
+
+<hr>
+
+<div class="sec"><span class="n">04</span><h2 id="照合">予想の桁を数値で照合する</h2></div>
+
+<p>§02 の結論は定理の組み合わせから出るもので、予想は使いません。一方、予想が<strong>等式</strong>であることは、定理の側からは単数倍までしか見えません。そこで、予想が言う値を <code>p</code> 進の桁ごとに数値と突き合わせました。どの照合も、数える前に規則を固定してから数えています。<code>#Ш</code> の代わりには、複素 BSD 予想が予言する位数</p>
+<div class="formula">Ш<sub>an</sub> = (L″(E, 1)/2) / (Ω<sub>E</sub> · ∏c<sub>ℓ</sub> · Reg<sub>∞</sub>)</div>
+<p>を使います（階数 2・自明な捩れ）。<strong><code>Ш<sub>an</sub></code> は予言値であって、Ш の位数そのものではありません。</strong></p>
+
+<h3>最初の桁 (MTT₁) と平方類 (Q)</h3>
+<p>階数 2・<code>a<sub>p</sub> = 1</code>・<code>c<sub>2</sub> ≢ 0 (mod p)</code> では、<code>ε<sub>p</sub>/p<sup>2</sup> ≡ 1</code>・<code>log<sub>p</sub>(1 + p)/p ≡ 1 (mod p)</code> なので、予想は</p>
+<div class="formula">c<sub>2</sub> ≡ ω · n · #Ш(E/Q) · Reg<sub>p</sub> (mod p)   (MTT₁)</div>
+<p>を言います。分裂の箱では論文の定理 K から <code>Reg<sub>p</sub> ≡ −B<sub>0</sub><sup>2</sup> · det(χ, γ)<sup>2</sup> (mod p)</code>、<code>#Ш</code> は（有限なら）平方数（Cassels）なので、(MTT₁) から</p>
+<div class="formula">(−c<sub>2</sub> · n · ω / p) = +1   (Q)</div>
+<p>が従います（左辺は Legendre 記号）。<span class="label paper">紙</span>（予想からの換算）。(Q) には Ш もレギュレーターも現れません。予想の下で、<code>c<sub>2</sub></code> の平方剰余の類が玉河数の積と判別式の符号だけで決まる、という形です。</p>
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>照合</th><th>箱</th><th class="n">結果</th></tr></thead>
+<tbody>
+<tr><td>(Q)</td><td>Cremona の表、<code>200000 &lt; N ≤ 499000</code> の分裂の箱 5,556 のうち (H) と <code>c<sub>2</sub> ≢ 0</code> の箱（<code>p ∈ {5, …, 19}</code>）</td><td class="n">5,180/5,180</td></tr>
+<tr><td>(MTT₁)</td><td>同上（<code>Ш<sub>an</sub> = 1</code> が全箱）</td><td class="n">5,180/5,180</td></tr>
+<tr><td><code>Reg<sub>p</sub> mod p</code> の二つの経路（PARI の高さと定理 K）</td><td>同じ枠</td><td class="n">5,273/5,273</td></tr>
+<tr><td>(MTT₁)、非分裂の箱（<code>Reg<sub>p</sub></code> は計算値）</td><td><code>200000 &lt; N ≤ 205000</code></td><td class="n">671/671</td></tr>
+</tbody></table></div>
+<p>帰無仮説（<code>c<sub>2</sub></code> の平方類が <code>n</code>・<code>ω</code> と無関係）の下で全箱一致の確率は <code>2<sup>−5180</sup></code> で、<code>p</code> と判別式の符号で分けた 12 層のどれでも片側二項検定が棄却します。対照は式の言うとおりに振る舞いました：<code>c<sub>2</sub></code> を無作為な単数に替えると一致は 0.49、因子 <code>−1</code> を落とすと <code>p ≡ 3 (mod 4)</code> の箱で一致 0、<code>ω</code> を落とすと判別式が負の箱だけが残る（<code>p ≡ ±3 (mod 8)</code>）、<code>n</code> を落とすと <code>(n/p) = +1</code> の箱だけが残る。関数等式が <code>S<sub>j</sub></code> に課す線形の制約だけでは <code>c<sub>2</sub></code> の平方類は決まらず、制約を満たす無作為な整数ベクトルで平方になるのは 0.49〜0.58 でした。<span class="label comp">計算</span>（浮動小数・区間演算なし）</p>
+
+<h3>二桁目 (MTT₂)</h3>
+<p><code>det(χ, γ) ≡ 0</code> の分裂の箱では最初の桁が <code>0 ≡ 0</code> になるので、一桁深く見ます。<code>U ≡ 1 + 5p (mod p<sup>2</sup>)</code> から、予想は</p>
+<div class="formula">c<sub>2</sub>/p ≡ ω · n · #Ш(E/Q) · (Reg<sub>p</sub>/p) (mod p)   （<code>v<sub>p</sub>(Reg<sub>p</sub>) = 1</code>、<code>p ∤ #Ш</code>）   (MTT₂)</div>
+<p>を言い、<code>v<sub>p</sub>(Reg<sub>p</sub>) ≥ 2</code> なら <code>c<sub>2</sub> ≡ 0 (mod p<sup>2</sup>)</code> を言います。<span class="label paper">紙</span></p>
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>照合</th><th>箱</th><th class="n">結果</th></tr></thead>
+<tbody>
+<tr><td>(MTT₂)</td><td>手元の <code>det(χ, γ) ≡ 0</code> の分裂の箱 574 のうち <code>v<sub>p</sub>(Reg<sub>p</sub>) = 1</code> のもの</td><td class="n">398/398</td></tr>
+<tr><td><code>c<sub>2</sub> ≡ 0 (mod p<sup>2</sup>)</code></td><td>同じ 574 のうち <code>v<sub>p</sub>(Reg<sub>p</sub>) ≥ 2</code> のもの</td><td class="n">176/176</td></tr>
+<tr><td><code>Reg<sub>p</sub> mod p<sup>v+2</sup></code> の二つの経路（PARI の高さと、形式群から組んだ σ 関数）</td><td>—</td><td class="n">674/674</td></tr>
+<tr><td>陽性対照 <code>c<sub>2</sub> ≡ ω·n·Ш<sub>an</sub>·U·Reg<sub>p</sub> (mod p<sup>2</sup>)</code></td><td><code>c<sub>2</sub> ≢ 0</code> の導手の小さい 100 箱</td><td class="n">100/100</td></tr>
+</tbody></table></div>
+<p>偶然の一致は一箱あたり <code>1/p</code> で、<code>p</code> の六つの類のどれでも棄却されます。ただし<strong>どの箱でも <code>Ш<sub>an</sub> = 1</code></strong> で、この照合は予想を「<code>#Ш</code> を 1 に置き換えた弱い形」から区別しません。逆向きに読むと、398 箱では Kato の割り切りだけから <code>rank E(Q) = 2</code>・<code>Ш[p<sup>∞</sup>] = 0</code>・<code>v<sub>p</sub>(Reg<sub>p</sub>) = 1</code> が箱ごとに従います。<span class="label known">既知</span>（組み合わせ）<span class="label comp">計算</span>（<code>c<sub>2</sub></code>）</p>
+
+<p class="small">Mazur–Tate 1987 の精密化予想との関係：その第一頁は、層 <code>p</code> の予想が <code>p − 1</code> の約数を法とする合同式を言い、<code>p</code> 進 L 関数の予想からは従わない、と述べています。(MTT₁)(MTT₂) が見ているのは野生分岐の側（<code>p</code> 部分）の桁なので、<strong>Mazur–Tate 1987 の予想の検査ではありません</strong>。（その論文の本文は読めておらず、予想 4 の言明は写しで読んでいます。）</p>
+
+<hr>
+
+<div class="sec"><span class="n">05</span><h2 id="sha">Ш の p 部分を、L の側から読む</h2></div>
+
+<p>§04 の照合はすべて <code>Ш<sub>an</sub> = 1</code> の箱で、予想の Ш の因子は試されていません。Ш の <code>p</code> 部分が効く箱を探しました。</p>
+
+<h3>表の中には、階数 2 の箱が無い</h3>
+<p>Cremona の表（導手 500,000 未満、階数 2 の曲線 348,672 本）では、階数 2 の曲線の <code>Ш<sub>an</sub></code> は 1 か 4 だけです（4 が 42 本）。奇素数 <code>p</code> で <code>p | Ш<sub>an</sub></code> となる階数 2 の曲線は表の中にありません。PARI/GP の値と表の値は抜き取りで一致しました。<span class="label comp">計算</span></p>
+
+<h3>階数 1 の 41 箱</h3>
+<p>そこで階数を一つ下げました。階数 1 で生成元を <code>P</code> とすると、予想は <code>v<sub>p</sub>(c<sub>1</sub>) = 1 + v<sub>p</sub>(h<sub>p</sub>(P)) + v<sub>p</sub>(#Ш)</code> と、その最初の桁を言います（符号は Stein–Wuthrich の形。Mazur–Tate–Teitelbaum の印字どおりの高さとは奇数階数で符号が逆）。<span class="label paper">紙</span>。表の階数 1・<code>p<sup>2</sup> | Ш<sub>an</sub></code>・<code>p ≥ 3</code>・<code>a<sub>p</sub> = 1</code>・(H) の箱は全部で 41（<code>p = 3</code> で <code>Ш<sub>an</sub> = 9</code> が 40、<code>p = 5</code> で <code>Ш<sub>an</sub> = 25</code> が 1）でした。</p>
+<ul>
+<li><strong>付値 41/41、最初の桁 41/41</strong>。Ш を 1 に置き換えた予言の付値は 0/41。偶然の一致は一箱あたり <code>p<sup>−3</sup></code>。<span class="label comp">計算</span></li>
+<li>逆向きに読むと、この 41 曲線で <code>#Ш(E/Q)[p<sup>∞</sup>] = p<sup>2</sup></code>。<span class="label known">既知</span>（Kato・Skinner–Urban・代数側の主係数）<span class="label comp">計算</span>（<code>c<sub>1</sub></code>）</li>
+<li>ただし階数 1 では、この一致の大部分が既知の定理で強いられます。照合は主に、計算の手順・高さ・正規化の検査です。</li>
+</ul>
+
+<h3>階数 2・<code>p = 3</code>・<code>Ш<sub>an</sub> = 9</code> の三つの例</h3>
+<p>表の外で、階数 0 や階数 1 の曲線の二次捻り <code>E<sup>(d)</sup></code>（<code>χ<sub>d</sub>(3) = a<sub>3</sub>(E)</code> で <code>a<sub>3</sub> = 1</code>、根数 +1、導手 2.9·10<sup>9</sup> 以下）を走査しました。解析的階数 2（2-降下の上界 2）の捻りが 1,988、そのうち独立な二点が見つかって <code>Ш<sub>an</sub></code> が読めたのが 1,726、<code>Ш<sub>an</sub> = 9</code> が三つです。三つとも捻りの上で (H)・捩れ自明・<code>3 ∤ ∏c<sub>ℓ</sub></code> を満たし、<code>Ш<sub>an</sub> = 9</code> は 64 ビットと 128 ビットの精度で同じ値でした。</p>
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>曲線</th><th class="n">導手</th><th class="n"><code>∏c<sub>ℓ</sub></code></th><th class="n"><code>v<sub>3</sub>(Reg<sub>3</sub>)</code></th><th>予言（付値・最初の桁）</th><th class="n">計算した <code>c<sub>2</sub> mod 27</code></th></tr></thead>
+<tbody>
+<tr><td>41213a1 の <code>d = −263</code> の捻り</td><td class="n">2,850,661,997</td><td class="n">4</td><td class="n">0</td><td>2・1</td><td class="n">9</td></tr>
+<tr><td>6083e1 の <code>d = 565</code> の捻り</td><td class="n">1,941,845,675</td><td class="n">28</td><td class="n">0</td><td>2・2</td><td class="n">18</td></tr>
+<tr><td>57661b1 の <code>d = −148</code> の捻り</td><td class="n">1,263,006,544</td><td class="n">2</td><td class="n">0</td><td>2・1</td><td class="n">9</td></tr>
+</tbody></table></div>
+<p><strong>三つとも、付値 <code>v<sub>3</sub>(c<sub>2</sub>) = 2</code> と最初の桁が予言どおり</strong>でした。<code>Ш</code> を 1 に置き換えると予言の付値は 0 で、外れます。<code>c<sub>2</sub> mod 27</code> は一段深い層 <code>P<sub>4</sub></code> から、L 級数の約 950 万項で取り、446d1・<code>p = 5</code> での較正を毎回繰り返しました。<code>v<sub>3</sub>(Reg<sub>3</sub>)</code> は PARI の高さ・自前の σ 関数・PARI の <code>ellpadicregulator</code> で一致しています（三つは PARI の <code>s<sub>2</sub></code> を共有）。<span class="label comp">計算</span>（浮動小数・区間演算なし、<code>Ш<sub>an</sub></code> は予言値）</p>
+<p>逆向きに読むと、<code>c<sub>2</sub> ≢ 0 (mod 27)</code> から Kato の割り切りで <code>rank E(Q) = 2</code>、Skinner–Urban の等号（Λ の中では Skinner §2.5）で <strong>三曲線とも <code>#Ш(E/Q)[3<sup>∞</sup>] = 9</code></strong> です。<span class="label known">既知</span>（定理の組み合わせ。<code>p = 3</code> の前提は §03 の表のとおり）<span class="label comp">計算</span>（<code>c<sub>2</sub></code>）。<strong>複素 BSD 予想の 3 部分は、この三曲線でも予想のままです。</strong>階数 2 では、それを曲線ごとに与える定理が複素の側にありません。</p>
+
+<details>
+<summary>一例ずつの意味と、検定力について</summary>
+<p>偶然に一致する確率は、桁が無作為だという帰無仮説の下で一箱 1/27、三箱あわせて <code>3<sup>−9</sup></code>（後の二箱は数える前に規則を固定した照合で、二箱で 1/729）です。これは「計算の手順が壊れていて桁が無作為に出ている」可能性を退ける数で、予想がどれくらいの頻度で外れうるかについては何も言いません。三つの例は、予想に反する曲線の割合を見積もれる数ではなく、<strong>その意味で検定力を持ちません</strong>。それぞれが、一つの曲線で p 進の側から読んだ Ш の 3 部分と、複素 BSD が予言する値が一致した、という一つずつの事実です。</p>
+</details>
+
+<h3>読めた割合と、読めなかった捻り</h3>
+<p>1,726 のうち <code>Ш<sub>an</sub> = 9</code> が 3 で、割合は 0.0017 です。Bhargava–Kane–Lenstra–Poonen–Rains の模型（高さ順の全曲線）で、階数 2・<code>p = 3</code> で <code>3 | #Ш</code> となる確率は約 0.0046 です。族・順序・選び方（読めた捻りだけ）が違うので、これは桁の目安にすぎません。<span class="label known">既知</span>（模型の式は原典で確認）<span class="label comp">計算</span></p>
+<p>読めなかった捻り（第二の点が見つからなかったもの）のうち 74 については、既知の一点を手がかりに第二の点を二通りに探し、18 が読めて <code>Ш<sub>an</sub></code> は 18/18 で 1 でした。残る 56 について、もし <code>Ш<sub>an</sub> = 9</code> ならレギュレーターは計算した積 <code>Ш<sub>an</sub>·Reg</code> の 1/9 で、二次元格子の Minkowski の上界から、50 のうち 48 で第二の点の標準高さは 60 以下になるはずです。60 は、試験の 20 例で第二の点が見つかった範囲です。そこに見つからないので、<strong>読めなかった捻りは Ш が小さい側に寄っている</strong>と読めます。ただしこれは発見法であって除外ではありません。探索は完全でなく、既知の点が最短とは限りません（一つの捻りでは 3 で割り切れていました）。後の走査の 206 の未読は、第二の点を探していません。<span class="label comp">計算</span>（発見法）</p>
+
+<h3>Ш が 1 の 18 箱が試したもの</h3>
+<p>上の 18 箱（導手 2.3·10<sup>7</sup>〜2.7·10<sup>9</sup>、<code>a<sub>3</sub> = 1</code>、(H)）では、予言 <code>v<sub>3</sub>(c<sub>2</sub>) = v<sub>3</sub>(Reg<sub>3</sub>) + v<sub>3</sub>(∏c<sub>ℓ</sub>)</code> と最初の桁が 18/18 で一致しました。<code>v<sub>3</sub>(Reg<sub>3</sub>) = 3</code> の箱（<code>c<sub>2</sub> ≡ 54 (mod 81)</code>）、<code>9 | ∏c<sub>ℓ</sub></code> が付値 2 を担う箱、<code>v<sub>3</sub>(Reg<sub>3</sub>) = −2</code> を <code>9 | ∏c<sub>ℓ</sub></code> が打ち消す箱を含みます。最後の箱は、最初の計算で捻り L 値が有理数に戻らず、<strong>一度目の比較を見た後で</strong>打ち切り誤差を小さくして計算し直しました。これらは <code>Ш<sub>an</sub> = 1</code> なので、Ш の因子ではなく、レギュレーター・玉河数・<code>ω</code>・捩れの因子を試しています。<span class="label comp">計算</span></p>
+<p>異常素点 3 で <code>v<sub>3</sub>(Reg<sub>3</sub>)</code> が負になるのは定義の範囲内です。高さは、<code>p</code> で単位元に、悪い素点で単位成分に落ちる点の部分群の上で <code>3Z<sub>3</sub></code> に値を取り、そこから線形に延ばすので、<code>v<sub>3</sub>(Reg<sub>3</sub>) ≥ r − 2·v<sub>3</sub>(指数)</code> です。階数 2 で <code>3 ∤ ∏c<sub>ℓ</sub></code> なら <code>v<sub>3</sub>(Reg<sub>3</sub>) ≥ 0</code> で、負の値には <code>3 | ∏c<sub>ℓ</sub></code> が要ります。予想は良還元の異常素点を例外に数えず、<code>(1 − 1/α)<sup>2</sup></code> の付値 2 は単数 <code>U</code> の側に吸われます。<span class="label paper">紙</span>（Mazur–Tate–Teitelbaum II §2・§4・§10 の定義から）</p>
+
+<hr>
+
+<div class="sec"><span class="n">06</span><h2 id="未確認">原典で確かめられていないもの</h2></div>
+
+<p>連鎖が使う定理の<strong>言明</strong>（Kato の Thm 13.4(3)・17.4、Skinner–Urban の等号、Mazur–Tate–Teitelbaum の予想の形）は原論文で確かめました。その先に、確かめられていないものが残っています。どれも、上に書いた結論に新しい仮定を足すものではありません——結論は「Kato と Skinner–Urban が述べたとおりの言明」と「Mazur–Tate–Teitelbaum が述べたとおりの予想」に依っていて、それ以上には依っていません。</p>
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>項目</th><th>状態</th></tr></thead>
+<tbody>
+<tr><td>Kato, Thm 13.4(3) の、この形のままの出典</td><td>Kato は 13.4 を証明せず、Perrin-Riou（Ann. Inst. Fourier 48, 1998）・Rubin <em>Euler systems</em>（Ann. of Math. Studies 147, 2000）・Kato（Kodai Math. J. 22, 1999）の三つからまとめて引いています（どの部分がどれから来るかの割り振りは無い）。Perrin-Riou は読みました。<code>p</code> の冪を除いた割り切りはそこにあり、整の形（§5.3.6）は「<code>T/pT</code> 上で <code>σ</code> の固定空間が 1 次元」という 13.4(3) と同じ条件に、さらに別の条件を加えて成り立ちます。<strong>Rubin の本と Kato 1999 は未取得</strong>で、13.4(3) のこの形の出典は<strong>未確認</strong>です</td></tr>
+<tr><td>Skinner–Urban, Thm 3.6.4 の掲載版での番号</td><td><strong>未確認</strong>。掲載版（Invent. Math. 195, 2014, 1–277）の本文は購読制で読めていません。読んだのは著者の頁の版です。序文の Theorem 1（著者の版で Thm 3.6.4）は、共著者の後の論文が掲載版をその番号で引いています</td></tr>
+<tr><td>LMFDB の、階数 2・<code>3 | Ш</code> の曲線の一覧</td><td><strong>取得できず</strong>（reCAPTCHA）。§05 の三例と同じ型の例とその照合が既に記録されているかどうかは、未確認です</td></tr>
+<tr><td>Mazur–Tate 1987（Duke Math. J. 54, 711–750）の本文</td><td>書誌と第一頁だけを原典で読み、予想 4 の言明は写しで読んでいます。第一頁によれば層 <code>p</code> の予想は <code>p − 1</code> の約数を法とする合同式で、<strong>(MTT₁)(MTT₂) とは別の言明</strong>です</td></tr>
+<tr><td>σ 関数の定数 <code>e</code> と PARI の <code>s<sub>2</sub></code> の同一性</td><td><code>e = b<sub>2</sub> − 12·s<sub>2</sub></code> は二つの定義の照合による<span class="label paper">紙</span>で、26a1 で <code>3<sup>4</sup></code> を法として計算で当てました。原典の <code>σ<sup>2</sup></code> の一意性の証明は先行文献の引用で、<strong>追っていません</strong></td></tr>
+<tr><td><code>p ≥ 5</code> での像の持ち上げの補題、<code>q</code> での <code>E[p]</code> についての Serre の結果</td><td>記憶による。Darmon–Diamond–Taylor は講義録（二次資料）</td></tr>
+<tr><td>Perrin-Riou 1992 を <code>p = 3</code> の範囲で読み直すこと</td><td>一度読んだだけで、<code>p</code> の範囲のために読み直してはいません</td></tr>
+<tr><td>Katz の合同式 <code>E<sub>2</sub><sup>*</sup> ≡ E<sub>p+1</sub>/E<sub>p−1</sub> (mod p)</code> の原典</td><td>未取得。帰結を PARI の <code>ellpadics2</code> と照合しただけ</td></tr>
+<tr><td><code>p</code> 進高さの符号についての Werner の訂正</td><td>未確認</td></tr>
+</tbody></table></div>
+
+<hr>
+
+<div class="sec"><span class="n">07</span><h2 id="lean">機械検査で閉じた範囲</h2></div>
+
+<p><strong>この記事の曲線ごとの結論は、機械検査されていません。</strong>Kato・Skinner–Urban・Perrin-Riou・Schneider・Greenberg の定理は mathlib に無く、<code>p</code> 進 L 関数・σ 関数・<code>p</code> 進高さそのものも mathlib に無いからです。<code>c<sub>2</sub></code>・<code>Reg<sub>p</sub></code>・<code>Ш<sub>an</sub></code> の数値は PARI/GP と自前の手順で計算したもので、これも機械検査の外です。</p>
+
+<p>機械検査したのは、論文の本体（異常素点での <code>Reg<sub>p</sub></code> の付値）の<strong>算術の骨組み</strong>です。Lean 4 + mathlib のファイル 31 本——<code>PadicHeightValuation.lean</code>〜<code>PadicHeightValuation29.lean</code>・<code>PadicHeightValuationCanonical.lean</code>・<code>AnomalousEulerFactor.lean</code>——で、どれも <code>import Mathlib</code> だけから検査が通り、<code>sorry</code> は 0、<code>native_decide</code> は使っていません。各ファイルの末尾に <code>#print axioms</code> があり、全行が <code>propext</code>・<code>Classical.choice</code>・<code>Quot.sound</code> の部分集合です。31 本は別の計算機で建て直して、同じ結果を確かめてあります。<span class="label lean">Lean</span></p>
+
+<p>この記事の連鎖に関わるのは、そのうち次のものです。定理名には、その定理が仮定として受け取るものを添えます。</p>
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>何に使うか</th><th>定理名（受け取る仮定）</th></tr></thead>
+<tbody>
+<tr><td>分裂の箱で <code>v<sub>p</sub>(Reg<sub>p</sub>) ≥ max(r − 2, 0)</code>（段 8 の <code>v<sub>p</sub>(Reg<sub>p</sub>) ≥ 0</code>）</td><td><code>regulator_valuation_of_split_anomalous</code>（仮定：部分格子 <code>Λ<sub>0</sub></code> 上の高さ行列の成分が <code>p</code> で割れること、<code>det M<sub>Λ<sub>0</sub></sub> = p<sup>2</sup>·det M<sub>Λ</sub></code>。結論：<code>p<sup>r−2</sup> | det M<sub>Λ</sub></code>）</td></tr>
+<tr><td>階数 2 で <code>det(χ, γ) ≡ 0</code> ⟹ <code>v<sub>p</sub>(Reg<sub>p</sub>) ≥ 1</code>（対偶の側）の線形代数</td><td><code>prime_dvd_det_two_iff</code>・<code>det_two_split_ne_zero_iff</code>（前者は素元 <code>π</code> と <code>π | c</code> を仮定して <code>π | ac − b<sup>2</sup> ⟺ π | b</code>、後者は体の上で <code>a·0 − b<sup>2</sup> ≠ 0 ⟺ b ≠ 0</code>。高さ行列が <code>p</code> を法としてこの形になることは論文の定理 K で、Lean の外）</td></tr>
+<tr><td>予想を仮定した命題 V（主係数の付値 ≥ 階数）の整数の勘定</td><td><code>leading_val_ge_rank</code>・<code>rank_le_leading_val</code> ほか（仮定：各場合の付値の値。命題 V 自体は予想と <code>p ∤ #Ш</code> を仮定する、論文で唯一の条件つきの言明）</td></tr>
+</tbody></table></div>
+
+<p><strong>何を機械に任せ、何を外に置いたか。</strong>機械が検査したのは、整数・行列・有限和・<code>p</code> 進の合同式についての言明だけです。高さ行列が整であることは、Lean の側では<strong>仮定であって結論ではありません</strong>。それを生む幾何（σ 関数・分割多項式・Vélu の公式・Tate 曲線）と、この記事の連鎖（岩澤理論の定理）と、数値（PARI/GP）は、すべて機械検査の外にあります。論文の主定理の等級も［紙］です。どのファイルに何があるかは論文 §6 と言明の一覧（<code>statements-v15.md</code>）に対応表があります。</p>
+<p class="small">配布の束：<a href="lean/principia-padic-regulator-valuation-2026-10-09b.tar.gz"><code>principia-padic-regulator-valuation-2026-10-09b.tar.gz</code></a>（sha256 <code style="word-break:break-all">f12364292c008567ddab7e21f97b92679e3cfd4b9bdcb3e7986bdf97f946e017</code>・<a href="lean/principia-padic-regulator-valuation-2026-10-09b.tar.gz.sha256">.sha256</a>）、公理ログ <a href="lean/axioms-padic-regulator-valuation-2026-10-09.txt"><code>axioms-padic-regulator-valuation-2026-10-09.txt</code></a>。建て方と一覧は <a href="lean/index.html">機械検査の一覧</a>。</p>
+
+<hr>
+
+<div class="sec"><span class="n">08</span><h2 id="範囲">主張しないこと</h2></div>
+
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th></th><th>内容</th><th>条件・水準</th></tr></thead>
+<tbody>
+<tr><td><strong>言える</strong></td><td>計算した <code>c<sub>2</sub> ≢ 0 (mod p)</code> なら <code>rank E(Q) = 2</code>・<code>Ш(E/Q)[p<sup>∞</sup>] = 0</code>・高さ対は非退化・<code>v<sub>p</sub>(Reg<sub>p</sub>) = 0</code>。4,343 箱に当てた</td><td>(G)(I)(H)(P2)(T)、<code>a<sub>p</sub> = 1</code>。<span class="label known">既知</span>（定理の組み合わせ）<span class="label comp">計算</span>（<code>c<sub>2</sub></code>）</td></tr>
+<tr><td><strong>言える</strong></td><td>階数 1 の 41 曲線で <code>#Ш(E/Q)[p<sup>∞</sup>] = p<sup>2</sup></code>、階数 2 の三曲線（<code>p = 3</code>）で <code>#Ш(E/Q)[3<sup>∞</sup>] = 9</code></td><td>同上に Skinner–Urban の等号（Λ では Skinner §2.5）。<span class="label known">既知</span><span class="label comp">計算</span></td></tr>
+<tr><td><strong>照合として</strong></td><td>(MTT₁) 5,180/5,180・(Q) 5,180/5,180・(MTT₂) 398/398・階数 1 の付値と桁 41/41・階数 2 の三例で付値と桁 3/3</td><td><code>#Ш</code> の代わりに <code>Ш<sub>an</sub></code>、予想は Stein–Wuthrich の形。<span class="label comp">計算</span>。検証であって証明ではない</td></tr>
+<tr><td><strong>言わない</strong></td><td><strong>BSD 予想そのもの</strong>。複素 BSD の階数の部分も主係数の公式も、どの曲線についても扱っていない。上の三曲線でも、複素 BSD の 3 部分は予想のまま</td><td>—</td></tr>
+<tr><td><strong>言わない</strong></td><td>Mazur–Tate–Teitelbaum の予想の証明（階数 2 の一般形・等式）。照合は桁ごとの一致で、等式そのものではない</td><td>—</td></tr>
+<tr><td><strong>言わない</strong></td><td>一般の <code>p</code>：<code>p = 2</code>、超特異還元、乗法的還元、<code>a<sub>p</sub> ≢ 1</code> の場合。<code>p ≥ 5</code> を使う段（対偶の側）は <code>p = 3</code> では使っていない</td><td>—</td></tr>
+<tr><td><strong>言わない</strong></td><td>仮定 H の外（<code>E[p]</code> が可約、<code>p | ord<sub>q</sub>(Δ<sub>min</sub>)</code> の <code>q</code> しか無い曲線）。<code>c<sub>2</sub> ≡ 0 (mod p)</code> の箱の Ш。Ш の位数のうち <code>p</code> 部分以外</td><td>—</td></tr>
+<tr><td><strong>言わない</strong></td><td><code>Ш<sub>an</sub></code> を Ш の位数として。<code>Ш<sub>an</sub></code> は複素 BSD 予想が言う値で、照合の入力に使っただけ</td><td>—</td></tr>
+<tr><td><strong>言わない</strong></td><td>三つの例から、予想が外れる頻度について。一例ずつは検定力を持たない（§05）</td><td>—</td></tr>
+<tr><td><strong>言わない</strong></td><td>Mazur–Tate 1987 の精密化予想について。見ている商が別</td><td>—</td></tr>
+<tr><td><strong>言わない</strong></td><td>この型の例や照合が前に無かったこと。LMFDB（reCAPTCHA で取れず）と読んだ文献の範囲で確かめられていない。二次捻りで階数 2・<code>Ш<sub>an</sub> = 9</code> の曲線が出ること自体は目新しくない</td><td>—</td></tr>
+</tbody></table></div>
+
+<p class="small">数値はすべて浮動小数で、区間演算は使っていません。<code>c<sub>2</sub></code> は捻り L 値の和から取り、モジュラー・シンボルの経路と照合した範囲は本文に書いたとおりです。条件の注：(H) の <code>Δ</code> は最小判別式（<code>p ≥ 5</code> で最小でないと判定が変わりうる）。四つの <code>L<sub>p</sub></code> の正規化は (I) の下で <code>Z<sub>p</sub></code> の単数倍。階数 1 の符号は Stein–Wuthrich の形で、Mazur–Tate–Teitelbaum の印字の高さとは奇数階数で逆です。</p>
+
+<hr>
+
+<div class="sec"><span class="n">09</span><h2 id="論文">論文と出典</h2></div>
+
+<p>この記事の内容は、論文 <em>Integrality of the p-adic height pairing at an anomalous prime is equivalent to a point of order p in E(Q<sub>p</sub>)</em>（Kiichi, Shiori and Rin、草稿 v15、2026-10-08、97 頁、未投稿）の §6 の後半にあります。論文の本体（§3〜§5）は異常素点での <code>Reg<sub>p</sub></code> の付値の局所的な仕組みで、BSD 予想には及びません。</p>
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>この記事</th><th>論文 v15</th><th class="n">頁</th></tr></thead>
+<tbody>
+<tr><td>§02 の連鎖と曲線ごとの結論</td><td>§6「Where the assumption can be replaced by theorems」(a)(b)(c)</td><td class="n">76–78</td></tr>
+<tr><td>§04 の (MTT₁)(Q)(MTT₂)</td><td>§6「The first digit …」「The second digit …」</td><td class="n">78–80</td></tr>
+<tr><td>§05 の階数 1 と表の外の探索</td><td>§6「Where the p-part of Ш enters」「A search outside the tables」</td><td class="n">80–82</td></tr>
+<tr><td>§05 の三例・18 箱・読めた割合</td><td>§6「A box of rank two with 3<sup>2</sup> | Ш<sub>an</sub>」「The other twists of rank two」「Two more boxes …」</td><td class="n">82–84</td></tr>
+<tr><td>§03 と §06</td><td>§6「Sources at p = 3, the normalisation of σ, and what is not checked」</td><td class="n">84–85</td></tr>
+<tr><td>§07</td><td>§6 の前半（Lean と紙の境）</td><td class="n">70–76</td></tr>
+<tr><td>§08</td><td>§8「What is not claimed」</td><td class="n">88–90</td></tr>
+</tbody></table></div>
+<p class="small where"><strong>PDF</strong> <a href="papers/padic-regulator-valuation.pdf">padic-regulator-valuation.pdf</a>　&middot;　<strong>論文の紹介</strong> <a href="papers/index.html#padic-regulator-valuation">論文の一覧</a></p>
+
+<h3>使った定理と文献</h3>
+<div style="overflow-x:auto"><table class="num">
+<thead><tr><th>文献</th><th>使ったところ</th><th>確認の状態</th></tr></thead>
+<tbody>
+<tr><td>K. Kato, <em>p-adic Hodge theory and values of zeta functions of modular forms</em>, Astérisque 295 (2004) 117–290</td><td>Thm 17.4(1)(2)(3)、12.4(3)、12.5(4)、13.4(3)、§13.14</td><td>原典で言明を確認</td></tr>
+<tr><td>C. Skinner, E. Urban, <em>The Iwasawa main conjectures for GL<sub>2</sub></em>, Invent. Math. 195 (2014) 1–277</td><td>Theorem 1（著者の版の Thm 3.6.4）、Thm 3.6.9</td><td>著者の頁の版で確認。掲載版の番号は未確認</td></tr>
+<tr><td>C. Skinner, <em>Multiplicative reduction and the cyclotomic main conjecture for GL<sub>2</sub></em>, arXiv:1407.1093</td><td>§2.5、Lemma 2.1.1、Thm 2.5.2</td><td>原典で確認</td></tr>
+<tr><td>P. Schneider, <em>p-adic height pairings II</em>, Invent. Math. 79 (1985)</td><td>Thm 2′</td><td>原典で確認</td></tr>
+<tr><td>B. Perrin-Riou, <em>Théorie d'Iwasawa et hauteurs p-adiques</em>, Invent. Math. 109 (1992)</td><td>Thm 3.4.2、§3.4.3</td><td>原典で確認（<code>p = 3</code> のための読み直しはしていない）</td></tr>
+<tr><td>R. Greenberg, <em>Iwasawa theory for elliptic curves</em>, LNM 1716 (1999)</td><td>Thm 1.2</td><td>著者版で確認</td></tr>
+<tr><td>R. Greenberg, V. Vatsal, <em>On the Iwasawa invariants of elliptic curves</em>, Invent. Math. 142 (2000)</td><td>Prop. 3.7</td><td>著者版で確認</td></tr>
+<tr><td>B. Mazur, J. Tate, J. Teitelbaum, <em>On p-adic analogues of the conjectures of Birch and Swinnerton-Dyer</em>, Invent. Math. 84 (1986) 1–48</td><td>II §2・§4・§5・§10（予想の形・σ・高さ）</td><td>原典で確認</td></tr>
+<tr><td>W. Stein, C. Wuthrich, <em>Algorithms for the arithmetic of elliptic curves using Iwasawa theory</em>, Math. Comp. (2013)</td><td>予想 5.1 の形、算法 11.1</td><td>原典で確認</td></tr>
+<tr><td>B. Mazur, J. Tate, <em>Refined conjectures of the "Birch and Swinnerton-Dyer type"</em>, Duke Math. J. 54 (1987) 711–750</td><td>§04 の注</td><td>書誌と第一頁だけ原典</td></tr>
+<tr><td>Bhargava, Kane, Lenstra, Poonen, Rains, arXiv:1304.3971</td><td>Thm 3.11・5.15（Ш の分布の模型）</td><td>原典で確認</td></tr>
+<tr><td>B. Mazur 1978, Cor. 4.1（Manin 定数）</td><td>段 0</td><td>原典で確認</td></tr>
+<tr><td>Darmon, Diamond, Taylor の講義録, Prop. 2.12</td><td>仮定 H の惰性</td><td>二次資料</td></tr>
+<tr><td>J. Cremona の楕円曲線の表（<code>allbsd</code>）</td><td>§04・§05 の箱</td><td>表の値と PARI/GP の値を抜き取りで照合</td></tr>
+</tbody></table></div>
+
+<p class="small">計算の道具は PARI/GP（<code>lfuntwist</code>・<code>mspadicseries</code>・<code>ellpadicheight</code>・<code>ellpadics2</code>・<code>ellrank</code>・<code>ell2cover</code>）と自前の和です。同じ BSD 予想について、複素の側で Ш の位数を逆算した記録は <a href="bsd.html">BSD 予想 — 有限であることすら証明されていない群の位数を、逆算する</a> にあります。動いた宿題の現在地は <a href="remaining.html">残っていること</a>、各主張の札は <a href="ledger.html">主張の台帳</a> にあります。</p>
+
+<div class="revised"><strong>改訂</strong> 2026-10-09：新設。</div>
+
+</main>
+<footer class="site-foot">
+  <p class="tagline">我計算する、ゆえに我あり — 人とAIの思考を見つめる場</p>
+  <p class="small"><a href="../privacy.html">プライバシーポリシー</a> &middot; <a href="../contact.html">お問い合わせ</a></p>
+  <p class="small">&copy; 2026 きいち・燐・栞</p>
+</footer>
+</body>
+</html>

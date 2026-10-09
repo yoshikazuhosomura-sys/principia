@@ -1,0 +1,492 @@
+%% paper-v2.tex -- pdfTeX / latexmk -pdf (see README.md)
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\dvol}{\,\mathrm{dvol}}
+\newcommand{\code}[1]{\texttt{#1}}
+%% Distribution addresses of the Lean bundle (set by the web edition).
+\newcommand{\bundleurl}{https://computoergosum.com/principia/lean/principia-gap-bridge-2026-10-09.tar.gz}
+\newcommand{\axiomsurl}{https://computoergosum.com/principia/lean/axioms-gap-bridge-2026-10-09.txt}
+
+\title{The inverse squared spectral gap bounds the Langevin Poincar\'e constant of Euclidean path measures from below}
+\author{Kiichi \and Shiori \and Rin}
+\date{2026-10-09}
+
+\begin{document}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
+
+\begin{abstract}
+Let $H=-(\hbar^2/2)\Delta_M+V$ act on a finite-dimensional configuration space $Q$ (a compact connected Riemannian manifold, or $\R^n$ with a constant kinetic metric and a smooth confining potential), with discrete spectrum, simple positive ground state $\psi_0$ and spectral gap $\Delta=E_1-E_0>0$.
+For the stationary Euclidean path measure on the whole time axis we show that the Poincar\'e constant of the stochastic-quantisation (Langevin) Dirichlet form, taken over time-averaged smooth functionals, satisfies $C_P\ge\kappa(\hbar/\Delta)^2$, where $\kappa$ compares the Langevin metric with the kinetic metric and equals $1$ for the canonical choice.
+The proof is Sokal's variational method with the trial functional $\int F(q(\tau))\,d\tau$, $F=\psi_1/\psi_0$, in place of the magnetisation, combined with the ground-state transform, so that no static critical exponent enters; on $\R^n$ a cut-off argument replaces decay assumptions on the eigenfunctions.
+Among time-local functionals the bound is optimal (the supremum of the Rayleigh quotient is exactly $(\hbar/\Delta)^2$ in the canonical case), and no converse holds: for a free particle on a circle $\Delta=\hbar^2/2>0$ while the Poincar\'e constant is infinite, already over time-averaged smooth functionals, because of the winding number.
+The algebraic steps are checked in Lean~4 with Mathlib; the analytic steps (the path measure, the covariance formula, the ground-state identity) are not, and the Euclidean lattice with discrete time, gauge fields in infinite volume and continuum limits lie outside the statements.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+A Euclidean path measure carries two notions of time.
+The \emph{Euclidean time} $\tau$ is the time of the path $q(\tau)$; correlations of the measure decay in $\tau$ at the rate $\Delta/\hbar$ set by the spectral gap $\Delta=E_1-E_0$ of the Hamiltonian, equivalently of the transfer operator.
+The \emph{Langevin time} (the fifth time of stochastic quantisation) is the time of a dynamics on the space of paths that leaves the measure invariant; its relaxation is governed by the spectral gap of the Langevin generator, that is by the inverse of the Poincar\'e constant $C_P$ of the measure with respect to the Langevin Dirichlet form.
+The two quantities are different, and this note is about an inequality between them that holds in general in finite dimensions.
+
+\paragraph{What is known.}
+Sokal's lectures [So, \S8, (8.1)--(8.7)] present the variational (Rayleigh--Ritz) method: for a reversible dynamics, the Rayleigh quotient of any observable bounds the slowest relaxation time from below.
+With the total magnetisation as trial observable and the single-site heat bath, this gives an integrated autocorrelation time at least the susceptibility, [So, (8.13)], and hence the lower bound $z\ge\gamma/\nu=2-\eta$ on the dynamic critical exponent; Sokal attributes it to Kawasaki, Halperin and Alicki--Fannes--Verbeure (references 88--90 in [So]) and remarks that the argument turns the heuristic $z\approx2$ almost into a lower bound.
+The same mechanism, a linear test function giving ``Poincar\'e constant $\ge$ susceptibility'', is used for Glauber dynamics of hierarchical spin models in [BB, Cor.~3.2 and (3.18)] and recalled in [BBD, \S6.1]; the variational characterisation of the spectral gap and the search for a bottleneck by one test function are standard in the theory of Glauber dynamics [Ma, (3.12) and \S5.1].
+For Gaussian measures the bound is attained: the slowest decay of a stochastic linear iteration equals that of the corresponding deterministic iteration and is achieved by an observable linear in the field [So, \S5.3, (5.60)], and for the Gaussian path measures of path sampling the Langevin dynamics converges at the rate $\|C\|^{-1}$ given by the covariance operator [HSVW, Lemma~2.2].
+In the non-linear case the path-sampling Langevin equation on a bounded time interval has been constructed and shown to have a unique invariant measure; exponential convergence in a weighted total-variation norm is indicated, without an explicit rate [HSV, Thm.~4.4, Cor.~4.5 and Remark~4.6].
+
+
+\paragraph{What this note adds.}
+Replacing the magnetisation in Sokal's argument by the time integral of $F=\psi_1/\psi_0$, the ratio of the lowest excited state to the ground state, and evaluating the Dirichlet form by the ground-state transform, gives
+\[
+  C_P\ \ge\ \kappa\,\frac{\hbar^2}{\Delta^2}
+\]
+(Theorem~\ref{thm:main}), without any information on a susceptibility or on the static exponent $\eta$; in the language of exponents this is the bound ``$z\ge2$'' for $(0+1)$-dimensional, non-Gaussian systems, stated as an inequality at each fixed system rather than asymptotically.
+Among functionals that are time integrals of a function of the current configuration the bound is optimal (Proposition~\ref{prop:optimal}); in the Gaussian case it is an equality, in agreement with [So, (5.60)] and [HSVW].
+The converse inequality fails in general: for the free rotor the gap is positive while the Poincar\'e constant is infinite, on $\cD_0$ and on $\cD_1$ alike (Proposition~\ref{prop:rotor}).
+The shape, a finite static quantity with an arbitrarily slow dynamics, is that of the BFACF example of Sokal and Thomas [So, Thm.~2, (8.39), (8.44)]; in the rotor the slow quantity is the winding number.
+None of the steps is deep; the purpose of the note is to state the inequality with its hypotheses, to close the two places where a short argument is incomplete (the domain of the Dirichlet form, \S\ref{sec:setting}, and the integration by parts on $\R^n$, Lemma~\ref{lem:cutoff}), and to record exactly what is and is not covered.
+
+\paragraph{Scope.}
+The statements concern continuous Euclidean time, the kinetic term $\tfrac12|\dot q|_M^2$, a finite-dimensional configuration space and the stationary measure at infinite time extent; discrete Euclidean time (which needs a further hypothesis (D)), gauge fields beyond the finite-volume Hamiltonian formulation, infinite volume, uniformity of $\kappa$ in couplings, continuum limits and the existence of a mass gap are outside them (\S\S\ref{sec:scope}, \ref{sec:notclaimed}).
+
+
+\section{Setting}\label{sec:setting}
+
+\paragraph{Configuration space and Hamiltonian.}
+We consider one of two cases.
+\begin{enumerate}[label=(\alph*)]
+\item $Q$ is a compact connected smooth manifold without boundary, of dimension $n$, with a smooth Riemannian metric $M$ (the kinetic metric), and $V\in C^\infty(Q)$ is real.
+\item $Q=\R^n$ with a constant positive-definite matrix $M$, and $V\in C^\infty(\R^n)$ is real, bounded below, and $V(x)\to+\infty$ as $|x|\to\infty$.
+\end{enumerate}
+
+Write $\mathrm{dvol}$ for the Riemannian volume of $M$, $\Delta_M$ for its Laplace--Beltrami operator, $\langle\cdot,\cdot\rangle$ for the inner product of $L^2(Q,\mathrm{dvol})$, and $|\omega|_{M^{-1}}^2$ for the norm of a covector $\omega$ in the dual metric.
+Let $\hbar>0$ and let $H$ be the self-adjoint realisation of $-\tfrac{\hbar^2}{2}\Delta_M+V$ in $L^2(Q,\mathrm{dvol})$ (the Friedrichs extension from $C_c^\infty(Q)$); it contains $C_c^\infty(Q)$ in its domain and acts there as the differential operator.
+
+\begin{assumption}[A1]\label{ass:A1}
+The spectrum of $H$ is discrete.
+Its lowest eigenvalue $E_0$ is simple, with an eigenfunction $\psi_0\in C^\infty(Q)$ satisfying $\psi_0>0$ everywhere and $\int\psi_0^2\dvol=1$.
+The next eigenvalue is $E_1=E_0+\Delta$ with $\Delta>0$, and $\psi_1\in C^\infty(Q)$ is a real eigenfunction, $H\psi_1=E_1\psi_1$, $\int\psi_1^2\dvol=1$.
+\end{assumption}
+
+For smooth potentials these are standard properties of Schr\"odinger operators (discreteness from compactness or confinement, smoothness by elliptic regularity, positivity and simplicity of the ground state by a Perron--Frobenius argument); we do not reprove them and use them only in the form (A1).
+Since $H$ is a restriction of the differential operator acting on distributions, the smooth eigenfunctions $\psi_0,\psi_1$ satisfy the eigenvalue equations pointwise.
+In case (b) the growth of $V$ serves only to make (A1) hold; the proofs use that $V$ is bounded below (for the Friedrichs extension) and that $M$ is constant (in Lemma~\ref{lem:cutoff}).
+We write
+\[
+  A:=\frac{H-E_0}{\hbar},\qquad m:=\frac{\Delta}{\hbar},\qquad \xi:=\frac1m=\frac{\hbar}{\Delta},\qquad F:=\frac{\psi_1}{\psi_0}\in C^\infty(Q).
+\]
+$\xi$ is the correlation length in Euclidean time.
+On functions orthogonal to $\psi_0$ one has $A\ge m$; this is where the simplicity of $E_0$ and the fact that $E_1$ is the next eigenvalue enter, and it is used only in \S\ref{sec:sokal}.
+Theorem~\ref{thm:main} uses of (A1) only that $\psi_0>0$ and $\psi_1$ are smooth normalised real eigenfunctions with eigenvalues $E_0$ and $E_0+\Delta$.
+
+\paragraph{The path measure.}
+Let $\Omega=C(\R,Q)$ be the space of continuous paths $q=(q(\tau))_{\tau\in\R}$, with the $\sigma$-algebra generated by the evaluations.
+
+\begin{assumption}[A2]\label{ass:A2}
+$\mu$ is a probability measure on $\Omega$ under which $(q(\tau))_{\tau\in\R}$ is stationary with one-time marginal $\psi_0^2\dvol$, and for $s\le t$ and $G_1,G_2\in L^2(\psi_0^2\dvol)$,
+\[
+  \E_\mu\bigl[G_1(q(s))\,G_2(q(t))\bigr]=\bigl\langle G_1\psi_0,\ e^{-(t-s)A}\,G_2\psi_0\bigr\rangle .
+\]
+\end{assumption}
+
+This is the ground-state process of $H$, the stationary Euclidean path measure at infinite time extent, formally proportional to $e^{-S/\hbar}$ with $S=\int\bigl(\tfrac12|\dot q|_M^2+V(q)\bigr)d\tau$; in terms of the ground-state transform $G\mapsto G\psi_0$, a unitary map $L^2(\psi_0^2\dvol)\to L^2(\dvol)$, its transition semigroup is $\psi_0^{-1}e^{-tA}\psi_0$.
+If $(q(\tau))$ is a stationary Markov process with initial law $\psi_0^2\dvol$ and this transition semigroup, the Markov property gives the formula in (A2) directly.
+We keep (A2) as a hypothesis because we do not prove that such a process exists with continuous paths, and because nothing beyond stationarity, the two-time formula and the continuity of the paths is used below.
+Writing $\langle G\rangle=\int G\psi_0^2\dvol$, (A2) gives for every $s,t$
+\begin{equation}\label{eq:cov}
+  \Cov\bigl(G(q(s)),G(q(t))\bigr)=\bigl\langle\varphi_G,\ e^{-|t-s|A}\varphi_G\bigr\rangle,\qquad \varphi_G:=(G-\langle G\rangle)\psi_0 ,
+\end{equation}
+because $e^{-tA}\psi_0=\psi_0$; note $\varphi_G\perp\psi_0$.
+
+\paragraph{Path derivatives and the Dirichlet form.}
+For a path $q$ and a continuous, compactly supported field $\eta$ along $q$ (a map $\tau\mapsto\eta(\tau)\in T_{q(\tau)}Q$; in case (b), simply $\eta\in C_c(\R,\R^n)$) let $q^{\varepsilon\eta}(\tau)=\exp_{q(\tau)}(\varepsilon\eta(\tau))$, the exponential map of $M$ (in case (b), $q+\varepsilon\eta$).
+
+\begin{definition}[path-differentiable functionals]\label{def:D1}
+$\cD_1$ is the set of Borel functions $f:\Omega\to\R$ with $f\in L^2(\mu)$ for which there is a measurable $Df$, $Df(q,\tau)\in T^*_{q(\tau)}Q$, such that for $\mu$-almost every $q$ and every $\eta$ as above, $\varepsilon\mapsto f(q^{\varepsilon\eta})$ is differentiable at $\varepsilon=0$ with derivative $\int_\R\langle Df(q,\tau),\eta(\tau)\rangle\,d\tau$, and $\int_\R\E_\mu|Df(\cdot,\tau)|^2_{M^{-1}}\,d\tau<\infty$.
+\end{definition}
+
+\begin{definition}[time-averaged smooth functionals]\label{def:D0}
+$\cD_0$ is the set of functionals
+\[
+  f(q)=\Phi\Bigl(\int_\R h_1(\tau)F_1(q(\tau))\,d\tau,\ \dots,\ \int_\R h_k(\tau)F_k(q(\tau))\,d\tau\Bigr),
+\]
+where $k\ge1$, each $h_i$ is bounded, measurable and compactly supported, each $F_i\in C^\infty(Q)$ satisfies $\int(F_i^2+|dF_i|^2_{M^{-1}})\psi_0^2\dvol<\infty$, and $\Phi\in C^1(\R^k)$ has bounded gradient.
+\end{definition}
+
+For $f\in\cD_0$ the integrals are defined for every continuous path, since $q$ maps the support of $h_i$ into a compact set; differentiating under the integral gives $Df(q,\tau)=\sum_i\partial_i\Phi(\dots)\,h_i(\tau)\,dF_i(q(\tau))$, and stationarity with the Cauchy--Schwarz inequality gives $f\in L^2(\mu)$ and $\int\E|Df|^2d\tau<\infty$.
+Hence $\cD_0\subset\cD_1$.
+The class $\cD_0$ refers to $H$ only through the weight $\psi_0^2$ of the one-time marginal.
+On a compact $Q$ every $F_i$ is bounded, so the arguments of $\Phi$ range in a bounded set, and any $C^1$ function of finitely many such time integrals (for instance a polynomial) agrees there with an admissible $\Phi$; this is used in \S\ref{sec:rotor}.
+The evaluation $q\mapsto F(q(\tau_0))$ at one time has no square-integrable path derivative (formally $Df=\delta_{\tau_0}\,dF$), which is why the domain has to be specified.
+
+Let $G$ be a smooth field of positive-definite quadratic forms on the cotangent spaces of $Q$ (the Langevin metric).
+For $f\in\cD_1$ put
+\[
+  \cE_G(f):=\hbar\int_\R\E_\mu\bigl\langle Df(\cdot,\tau),\ G\bigl(q(\tau)\bigr)\,Df(\cdot,\tau)\bigr\rangle\,d\tau ,
+\]
+and for a class $\cD\subset\cD_1$
+\[
+  C_P(\cD):=\sup\Bigl\{\frac{\Var_\mu(f)}{\cE_G(f)}:\ f\in\cD,\ \Var_\mu(f)>0\Bigr\}\in(0,\infty],
+\]
+with the convention $a/0=+\infty$ for $a>0$.
+We write $C_P:=C_P(\cD_0)$.
+Since $\cD_0\subset\cD_1$, $C_P(\cD_0)\le C_P(\cD_1)$, and the same holds for any class containing $\cD_0$, in particular for the domain of any closed extension of $\cE_G|_{\cD_0}$ on which the Rayleigh quotient is computed with the same form.
+The lower bound below therefore holds for all of them.
+The \emph{canonical} choice is $G=M^{-1}$; formally, $\cE_G$ is the Dirichlet form of the Langevin dynamics $\partial_t q=\partial_\tau^2 q-\nabla V(q)+\sqrt{2\hbar}\,\dot W$ of stochastic quantisation (written for case (b) with $M=I$), but we do not use or claim the identification of $\cE_G$ with the form of a constructed dynamics.
+
+\begin{assumption}[A3]\label{ass:A3}
+There is $\lambda_G>0$ with $G\le\lambda_G M^{-1}$ as quadratic forms at every point of $Q$. Put $\kappa:=1/\lambda_G$.
+\end{assumption}
+
+For the canonical choice $\kappa=1$.
+For a lattice gauge field $\kappa$ depends on the normalisation of the Langevin form ((G4) in \S\ref{sec:scope}).
+
+\section{The lower bound}\label{sec:main}
+
+\begin{theorem}\label{thm:main}
+Assume case (a) or (b) of \S\ref{sec:setting} and (A1)--(A3).
+For $T>0$ let $f_T(q):=\int_0^T F(q(\tau))\,d\tau$ with $F=\psi_1/\psi_0$.
+Then $f_T\in\cD_0$, and
+\begin{equation}\label{eq:window}
+  \frac{\Var_\mu(f_T)}{\cE_G(f_T)}\ \ge\ \kappa\,\xi^2\Bigl[1-\frac{\xi}{T}\bigl(1-e^{-T/\xi}\bigr)\Bigr]\qquad(T>0).
+\end{equation}
+The bracket lies in $(0,1)$ and tends to $1$ as $T/\xi\to\infty$. Consequently
+\[
+  C_P(\cD)\ \ge\ \kappa\,\xi^2=\kappa\,\frac{\hbar^2}{\Delta^2}
+\]
+for every class $\cD$ with $\{f_T:T>0\}\subset\cD\subset\cD_1$, in particular for $\cD=\cD_0$ and $\cD=\cD_1$.
+\end{theorem}
+
+
+\begin{lemma}[local ground-state identity]\label{lem:gst}
+Let $\varphi\in C^\infty(Q)$ be real with $\bigl(-\tfrac{\hbar^2}{2}\Delta_M+V\bigr)\varphi=E\varphi$ pointwise, and let $\chi\in C_c^\infty(Q)$ be real. Then
+\[
+  \bigl\langle\chi\varphi,\ (H-E)(\chi\varphi)\bigr\rangle=\frac{\hbar^2}{2}\int_Q\varphi^2\,|d\chi|^2_{M^{-1}}\dvol .
+\]
+\end{lemma}
+
+\begin{proof}
+By the product rule and the eigenvalue equation,
+$(H-E)(\chi\varphi)=-\tfrac{\hbar^2}{2}\bigl(\varphi\,\Delta_M\chi+2\langle d\chi,d\varphi\rangle_{M^{-1}}\bigr)$.
+Hence $\chi\varphi\,(H-E)(\chi\varphi)=-\tfrac{\hbar^2}{2}\,\chi\,\operatorname{div}_M\bigl(\varphi^2\nabla_M\chi\bigr)$, since $\operatorname{div}_M(\varphi^2\nabla_M\chi)=\varphi^2\Delta_M\chi+2\varphi\langle d\varphi,d\chi\rangle_{M^{-1}}$.
+Integrating and integrating by parts once (the integrand has compact support, and $Q$ has no boundary) gives $\tfrac{\hbar^2}{2}\int\varphi^2|d\chi|^2_{M^{-1}}\dvol$.
+\end{proof}
+
+\begin{lemma}[Dirichlet integral of $F$]\label{lem:cutoff}
+Under (A1), $F=\psi_1/\psi_0$ satisfies
+\[
+  \int_Q\psi_0^2\,|dF|^2_{M^{-1}}\dvol=\frac{2\Delta}{\hbar^2},\qquad \int_Q F^2\psi_0^2\dvol=1,\qquad \int_Q F\psi_0^2\dvol=0 .
+\]
+\end{lemma}
+
+\begin{proof}
+The last two identities are $\int\psi_1^2=1$ and $\int\psi_1\psi_0=0$.
+In case (a) apply Lemma~\ref{lem:gst} with $\varphi=\psi_0$, $E=E_0$, $\chi=F\in C^\infty(Q)=C_c^\infty(Q)$: the left side is $\langle\psi_1,(H-E_0)\psi_1\rangle=\Delta$.
+
+In case (b) no decay of $\psi_0,\psi_1$ is assumed, and we cut off.
+Fix $\chi\in C_c^\infty(\R^n)$ radial, non-increasing in $|x|$, with $0\le\chi\le1$ and $\chi=1$ on the unit ball, and put $\chi_R(x)=\chi(x/R)$, so that $\chi_R\uparrow1$ pointwise as $R\to\infty$ and $|d\chi_R|_{M^{-1}}\le c/R$ for a constant $c$.
+Lemma~\ref{lem:gst} with $\varphi=\psi_0$, $E=E_0$ and the cut-off $\chi_RF\in C_c^\infty$ gives, since $\chi_RF\psi_0=\chi_R\psi_1$,
+\[
+  \frac{\hbar^2}{2}\int\psi_0^2\,|d(\chi_RF)|^2_{M^{-1}}=\bigl\langle\chi_R\psi_1,(H-E_0)\chi_R\psi_1\bigr\rangle .
+\]
+Lemma~\ref{lem:gst} with $\varphi=\psi_1$, $E=E_1$ and the cut-off $\chi_R$ gives $\langle\chi_R\psi_1,(H-E_1)\chi_R\psi_1\rangle=\tfrac{\hbar^2}{2}\int\psi_1^2|d\chi_R|^2_{M^{-1}}$.
+Subtracting,
+\[
+  \frac{\hbar^2}{2}\int\psi_0^2\,|d(\chi_RF)|^2_{M^{-1}}=\Delta\int\chi_R^2\psi_1^2+\frac{\hbar^2}{2}\int\psi_1^2|d\chi_R|^2_{M^{-1}}\ \longrightarrow\ \Delta\qquad(R\to\infty),
+\]
+by monotone convergence in the term with $\Delta$ and $\int\psi_1^2|d\chi_R|^2\le c^2/R^2$ in the second.
+Now $\psi_0\,d(\chi_RF)=\chi_R\psi_0\,dF+\psi_1\,d\chi_R$, and the $L^2$ norm of the second term is at most $c/R$.
+By the triangle inequality $\|\chi_R\psi_0\,dF\|_{L^2}\to(2\Delta)^{1/2}/\hbar$, and by monotone convergence $\|\psi_0\,dF\|_{L^2}^2=\lim_R\|\chi_R\psi_0\,dF\|_{L^2}^2=2\Delta/\hbar^2$.
+\end{proof}
+
+The same computation shows that $\chi_RF\to F$ and $d(\chi_RF)\to dF$ in $L^2(\psi_0^2\dvol)$, which is used in \S\ref{sec:sokal}.
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+By Lemma~\ref{lem:cutoff}, $F$ satisfies the integrability condition of Definition~\ref{def:D0}, and $f_T\in\cD_0$ with $\Phi(y)=y$, $h_1=\mathbf 1_{[0,T]}$; its path derivative is $Df_T(q,\tau)=\mathbf 1_{[0,T]}(\tau)\,dF(q(\tau))$.
+
+\emph{Variance.}
+Since $\langle F\rangle=0$, the vector of \eqref{eq:cov} is $\varphi_F=F\psi_0=\psi_1$, and $A\psi_1=m\psi_1$, $\|\psi_1\|=1$.
+Hence $\Cov(F(q(s)),F(q(t)))=e^{-m|t-s|}$.
+By Fubini's theorem (the integrand is in $L^1$ by the Cauchy--Schwarz inequality and stationarity),
+\[
+  \Var_\mu(f_T)=\int_0^T\!\!\int_0^Te^{-m|t-s|}\,ds\,dt=2\int_0^T(T-u)e^{-mu}\,du=\frac{2T}{m}-\frac{2(1-e^{-mT})}{m^2}.
+\]
+
+\emph{Dirichlet form.}
+By stationarity, (A3) and Lemma~\ref{lem:cutoff},
+\[
+  \cE_G(f_T)=\hbar\,T\int\psi_0^2\,\langle dF,G\,dF\rangle\dvol\ \le\ \hbar\,T\,\lambda_G\int\psi_0^2|dF|^2_{M^{-1}}\dvol=\frac{2\lambda_G\Delta T}{\hbar}=2\lambda_G\,m\,T ,
+\]
+and $\cE_G(f_T)>0$ because $F$ is not constant and $G$ is positive definite.
+
+\emph{Ratio.}
+Dividing,
+\[
+  \frac{\Var_\mu(f_T)}{\cE_G(f_T)}\ \ge\ \kappa\,\frac{2T/m-2(1-e^{-mT})/m^2}{2mT}=\kappa\Bigl[\frac1{m^2}-\frac{1-e^{-mT}}{T\,m^3}\Bigr]=\kappa\,\xi^2\Bigl[1-\frac{\xi}{T}\bigl(1-e^{-T/\xi}\bigr)\Bigr].
+\]
+With $x=T/\xi>0$ the bracket is $1-(1-e^{-x})/x\in(0,1)$, because $1-x<e^{-x}<1$.
+Since $C_P(\cD)$ is a supremum over a set containing every $f_T$, letting $T\to\infty$ gives $C_P(\cD)\ge\kappa\xi^2$.
+\end{proof}
+
+\begin{remark}[why the power is two]\label{rem:power}
+The variance grows like $2T/m$ (one power of $1/\Delta$); the Dirichlet form grows like $2\lambda_GmT$, i.e.\ it is small, of order $\Delta$, by Lemma~\ref{lem:cutoff}. Bounding it independently of $\Delta$ would give only $C_P\gtrsim c/\Delta$.
+\end{remark}
+
+\begin{remark}[a Gaussian check]\label{rem:gauss}
+Let $Q=\R$, $M=1$, $V(x)=\tfrac12\omega^2x^2$. Then $\Delta=\hbar\omega$, $\xi=1/\omega$, $F$ is a multiple of $x$, and under $\mu$ the path is the stationary Gaussian process with $\E[x(s)x(t)]=(\hbar/2\omega)e^{-\omega|t-s|}$; the left side of \eqref{eq:window} with $G=1$ equals the right side with $\kappa=1$.
+The path measure is the centred Gaussian measure with covariance operator $C=\hbar(-d^2/d\tau^2+\omega^2)^{-1}$.
+Granting the Gaussian Poincar\'e inequality $\Var f\le\E\langle Df,C\,Df\rangle$ (a standard fact which we do not reprove and do not use elsewhere), $C_P\le\|C\|/\hbar=\omega^{-2}=\xi^2$, so the inequality of Theorem~\ref{thm:main} is an equality here, in line with [So, (5.60)] and [HSVW, Lemma~2.2].
+\end{remark}
+
+\begin{corollary}\label{cor:gap}
+Under the hypotheses of Theorem~\ref{thm:main}, let $\{f_T:T>0\}\subset\cD\subset\cD_1$ and suppose $C_P(\cD)\le K L^2$ for some $K,L>0$. Then
+\[
+  (mL)^2=\Bigl(\frac{\Delta L}{\hbar}\Bigr)^2\ \ge\ \frac{\kappa}{K}.
+\]
+If moreover $\xi>1$, then $\ln C_P(\cD)/\ln\xi\ \ge\ 2+\ln\kappa/\ln\xi$.
+\end{corollary}
+
+\begin{proof}
+$\kappa/m^2\le C_P(\cD)\le KL^2$ by Theorem~\ref{thm:main}; multiply by $m^2/K$.
+For the second statement take logarithms in $\kappa\xi^2\le C_P(\cD)$ and divide by $\ln\xi>0$.
+\end{proof}
+
+In a family of systems with $\kappa$ fixed, the corollary turns a uniform bound $C_P\le KL^2$ into a lower bound on the gap in units of $1/L$, and reduces ``$\ln C_P/\ln\xi\to2$'' to its upper half.
+The exponent two is what makes this work: $C_P\ge c/m$ together with $C_P\le L^2$ gives no lower bound on $mL$ (Lean: \code{linear\_exponent\_does\_not\_bridge}).
+
+\section{Time-local functionals and the dynamic exponent}\label{sec:sokal}
+
+\subsection{Optimality among time-local functionals}
+
+Let $\mathcal C=C^\infty(Q)$ in case (a) and $\mathcal C=C_c^\infty(\R^n)$ in case (b).
+For a bounded, measurable, compactly supported $h\ne0$ and a non-constant $G_1\in\mathcal C$ put $f_{h,G_1}(q)=\int_\R h(\tau)\,G_1(q(\tau))\,d\tau\in\cD_0$.
+
+\begin{proposition}\label{prop:optimal}
+Assume case (a) or (b), (A1), (A2) and the canonical choice $G=M^{-1}$. Then
+\begin{enumerate}[label=(\roman*)]
+\item $\Var_\mu(f_{h,G_1})/\cE_G(f_{h,G_1})<\xi^2$ for every such $h$ and $G_1$;
+\item $\sup_{h,G_1}\Var_\mu(f_{h,G_1})/\cE_G(f_{h,G_1})=\xi^2$; by (i) the supremum is not attained.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(i) Put $\varphi=(G_1-\langle G_1\rangle)\psi_0$. Since $G_1\psi_0\in C_c^\infty(Q)$ lies in the domain of $H$ and $(H-E_0)\psi_0=0$, $\varphi$ lies in the domain of $A$, $\varphi\perp\psi_0$, and $\langle\varphi,A\varphi\rangle=\hbar^{-1}\langle G_1\psi_0,(H-E_0)G_1\psi_0\rangle$.
+Let $\nu$ be the spectral measure of $A$ in the state $\varphi$; it is non-zero because $G_1$ is not constant, and it is carried by $[m,\infty)$ because $A\ge m$ on $\psi_0^\perp$.
+By \eqref{eq:cov} and the spectral theorem, $\Cov(G_1(q(s)),G_1(q(t)))=\int e^{-a|t-s|}\,d\nu(a)$, and since the Fourier transform of $u\mapsto e^{-a|u|}$ is $k\mapsto2a/(a^2+k^2)$, Plancherel's theorem gives
+\[
+  \Var_\mu(f_{h,G_1})=\int d\nu(a)\int_\R|\hat h(k)|^2\,\frac{2a}{a^2+k^2}\,\frac{dk}{2\pi}.
+\]
+On the other hand $Df_{h,G_1}(q,\tau)=h(\tau)\,dG_1(q(\tau))$, so by stationarity and Lemma~\ref{lem:gst} (with $\varphi=\psi_0$, $\chi=G_1$),
+\[
+  \cE_G(f_{h,G_1})=\hbar\,\|h\|_2^2\int\psi_0^2|dG_1|^2_{M^{-1}}\dvol=2\,\|h\|_2^2\,\langle\varphi,A\varphi\rangle=\int d\nu(a)\int_\R|\hat h(k)|^2\,2a\,\frac{dk}{2\pi}.
+\]
+Since $2a/(a^2+k^2)\le 2a/m^2$ for $a\ge m$, with equality only at $k=0$, and $|\hat h|^2dk$ is not carried by $\{0\}$, we get $\Var_\mu<\xi^2\,\cE_G$; here $0<\cE_G<\infty$ because $G_1$ is not constant.
+
+(ii) In case (a), $F=\psi_1/\psi_0\in\mathcal C$ and Theorem~\ref{thm:main} with $\kappa=1$ and $h=\mathbf 1_{[0,T]}$, $T\to\infty$, shows that the supremum is at least $\xi^2$.
+In case (b) replace $F$ by $\chi_RF\in\mathcal C$: by the remark after Lemma~\ref{lem:cutoff}, $\chi_RF\to F$ and $d(\chi_RF)\to dF$ in $L^2(\psi_0^2\dvol)$, and for fixed $h$ the variance and the Dirichlet form of $f_{h,\cdot}$ are continuous in these norms (the variance by the Cauchy--Schwarz inequality, $\Var(f_{h,G'})\le\|h\|_1^2\int G'^2\psi_0^2$). So the ratio for $(h,\chi_RF)$ tends to the ratio for $(h,F)$, which by \eqref{eq:window} is as close to $\xi^2$ as we wish.
+\end{proof}
+
+With $h=\mathbf 1_{[0,T]}$, $T\to\infty$, the ratio tends to $\langle\varphi,A^{-1}\varphi\rangle/\langle\varphi,A\varphi\rangle$, and (i) becomes $m^2\sum_kc_k/a_k\le\sum_kc_ka_k$ for $c_k\ge0$, $a_k\ge m$ (in Lean \code{local\_\allowbreak{}rayleigh\_le} and \code{fourier\_\allowbreak{}weight\_le}); a phase $e^{i\theta\tau}$ in $h$ only lowers the limit, to $(m^2+\theta^2)^{-1}$ (\code{oscillating\_\allowbreak{}ratio\_le}).
+
+\subsection{Comparison with the magnetisation}
+
+Sokal's argument [So, \S8] takes the total magnetisation as trial observable; the numerator of the Rayleigh quotient is then a susceptibility, and the conclusion becomes a statement about the dynamic exponent only through the static relation $\chi\sim\xi^{\gamma/\nu}=\xi^{2-\eta}$.
+The analogue here is a linear observable, say $G_1(x)=x_1$ in case (b) with $M=I$ and $\int x_1^2\psi_0^2\dvol<\infty$ ($x_1\notin\mathcal C$, but the approximation by $\chi_Rx_1$ in the proof of Proposition~\ref{prop:optimal}~(ii) applies).
+With $h=\mathbf 1_{[0,T]}$, $T\to\infty$, its Rayleigh quotient tends to $\chi_1/\hbar$, $\chi_1:=\int_\R\Cov(x_1(0),x_1(\tau))\,d\tau$, since $\cE(f_{h,x_1})=\hbar T$: this is ``Poincar\'e constant $\ge$ susceptibility'' [So, (8.13)], [BB, (3.18)] in the present normalisation.
+If $\varphi=(x_1-\langle x_1\rangle)\psi_0$ lies in the form domain of $A$ and $\varphi=\sum_kc_ke_k$ in an eigenbasis of $A$ on $\psi_0^\perp$, the limit is
+\[
+  \xi^2\cdot\frac{\sum_k|c_k|^2\,(m/a_k)}{\sum_k|c_k|^2\,(a_k/m)}\ \le\ \xi^2 ,
+\]
+with equality exactly when $x_1-\langle x_1\rangle\in\psi_0^{-1}\ker(H-E_1)$ (as for the oscillator of Remark~\ref{rem:gauss}).
+The trial functional of Theorem~\ref{thm:main} puts all spectral weight on the bottom of the spectrum of $A$; the price is that $\psi_1/\psi_0$ is in general neither local nor explicitly known.
+For a sum of local observables on a finite spatial lattice the displayed ratio is the loss against $\xi^2$, which Sokal's argument estimates through $\eta$; Theorem~\ref{thm:main} needs no such estimate.
+The one-dimensional case ($G=M^{-1}=1$) of Theorem~\ref{thm:main} and Proposition~\ref{prop:optimal} was written down earlier by the authors in a textbook chapter on the double-well path measure [KSR].
+
+\section{The converse fails: the free rotor}\label{sec:rotor}
+
+Theorem~\ref{thm:main} bounds $C_P$ from below by the gap. An upper bound $C_P\le K\xi^2$ does not follow from $\Delta>0$, and $C_P$ need not even be finite.
+
+\begin{proposition}\label{prop:rotor}
+Let $Q=S^1=\R/2\pi\mathbb Z$, $M=1$, $V=0$, so that $H=-\tfrac{\hbar^2}{2}\,d^2/dx^2$, and let $\mu$ be the law of the stationary Brownian motion on $S^1$ with generator $\tfrac{\hbar}{2}\,d^2/dx^2$ (the process of (A2) for this $H$).
+Then (A1)--(A3) hold with $G=M^{-1}=1$, $\kappa=1$, $\Delta=\hbar^2/2>0$ and $\xi=2/\hbar$, but $C_P(\cD_0)=C_P(\cD_1)=+\infty$.
+\end{proposition}
+
+\begin{proof}
+The eigenfunctions are $e^{ikx}$ with eigenvalues $\hbar^2k^2/2$, so $E_0=0$ with $\psi_0=(2\pi)^{-1/2}$, $E_1=\hbar^2/2$, and one may take $\psi_1=\pi^{-1/2}\cos x$; (A1) holds.
+With $A=H/\hbar=-\tfrac{\hbar}{2}d^2/dx^2$, the semigroup $e^{-tA}$ is the heat semigroup of the stated Brownian motion, so (A2) holds.
+
+Every continuous path $q$ has a continuous lift $\tilde x:\R\to\R$, unique up to an additive constant in $2\pi\mathbb Z$; under $\mu$ the increments of $\tilde x$ are those of $\hbar^{1/2}$ times a standard Brownian motion.
+For $w\in C_c^\infty(\R)$ define
+\[
+  f_w(q):=-\int_\R w'(\tau)\,\tilde x(\tau)\,d\tau .
+\]
+Since $\int w'=0$, $f_w$ does not depend on the choice of the lift and is a Borel function of the path, defined for every path.
+For a perturbation $q^{\varepsilon\eta}=q+\varepsilon\eta\bmod2\pi$ with $\eta\in C_c(\R)$ the lift is $\tilde x+\varepsilon\eta$, so $f_w(q^{\varepsilon\eta})=f_w(q)-\varepsilon\int w'\eta$; thus $Df_w(q,\tau)=-w'(\tau)$, and $\cE(f_w)=\hbar\int w'^2d\tau<\infty$.
+Integrating by parts, $f_w=\int w\,d\tilde x$ (a Wiener integral), so $f_w$ is Gaussian with $\Var_\mu(f_w)=\hbar\int w^2d\tau$ by the It\^o isometry, and $f_w\in\cD_1$.
+For $w(\tau)=w_0(\tau/L)$ with a fixed non-zero $w_0\in C_c^\infty(\R)$,
+\[
+  \frac{\Var_\mu(f_w)}{\cE(f_w)}=\frac{\int w^2}{\int w'^2}=L^2\,\frac{\int w_0^2}{\int w_0'^2}\ \longrightarrow\ \infty\qquad(L\to\infty).
+\]
+This proves $C_P(\cD_1)=\infty$.
+
+\emph{The class $\cD_0$.}
+$\Var_\mu^{1/2}$ and $\cE^{1/2}$ are seminorms on the vector space $\cD_1$, so the Rayleigh quotient is continuous for $\|f\|_*:=(\Var_\mu(f)+\cE(f))^{1/2}$ at every $f$ with $\cE(f)>0$, and it suffices to show that each $f_w$ is a $\|\cdot\|_*$-limit of elements of $\cD_0$.
+Since $f_v$ is linear in $v$ with $\|f_v\|_*^2=\hbar\int(v^2+v'^2)$, and $w_\delta(s):=\delta^{-1}\int_{s-\delta}^sw\to w$ in $H^1$ as $\delta\to0$, it suffices to treat $f_{w_\delta}=\delta^{-1}\int w(t)\,\Delta_t\,dt$, where $\Delta_t:=\tilde x(t+\delta)-\tilde x(t)$ is $N(0,\hbar\delta)$-distributed.
+
+(1) Let $\sigma\in C^\infty(\R)$ be odd, $2\pi$-periodic, with $\sigma(u)=u$ for $|u|\le2$, and
+\[
+  g_\delta(q):=\delta^{-1}\int w(t)\,\sigma\bigl(q(t+\delta)-q(t)\bigr)\,dt ,
+\]
+well defined on $S^1$ by periodicity.
+Then $g_\delta-f_{w_\delta}=\delta^{-1}\int w(t)\,r(\Delta_t)\,dt$ with $r(u)=\sigma(u)-u$, which vanishes for $|u|\le2$ and satisfies $|r(u)|\le c(1+|u|)$, $|r'|\le c$.
+By the Cauchy--Schwarz inequality and stationarity of the increments, $\Var(g_\delta-f_{w_\delta})\le\delta^{-2}\|w\|_1^2\,\E[r(\Delta_0)^2]$; and since $D(g_\delta-f_{w_\delta})(q,\tau)=\delta^{-1}\bigl[w(\tau-\delta)r'(\Delta_{\tau-\delta})-w(\tau)r'(\Delta_\tau)\bigr]$, $\cE(g_\delta-f_{w_\delta})\le4\hbar c^2\delta^{-2}\|w\|_2^2\,\mathbb P(|\Delta_0|>2)$.
+Both bounds are $O(\delta^{-2}e^{-1/(\hbar\delta)})$, so $\|g_\delta-f_{w_\delta}\|_*\to0$.
+
+(2) For fixed $\delta$, write $\sigma(u)=\sum_{j\ge1}b_j\sin(ju)$ with rapidly decreasing $b_j$ and truncate at $j\le J$.
+Replacing $\sigma$ by $\sigma-\sigma_J$ in $g_\delta$ gives a functional with $\Var^{1/2}\le\delta^{-1}\|w\|_1\sup|\sigma-\sigma_J|$ and $\cE^{1/2}\le2\hbar^{1/2}\delta^{-1}\|w\|_2\sup|\sigma'-\sigma_J'|$, both $\to0$ as $J\to\infty$.
+Since $\sin(j(b-a))=\sin(jb)\cos(ja)-\cos(jb)\sin(ja)$, it remains to approximate $B(q)=\int w(t)\,\alpha(q(t))\,\beta(q(t+\delta))\,dt$ with $\alpha,\beta$ trigonometric polynomials on $S^1$.
+
+(3) For $\varepsilon>0$ let $I_k=[k\varepsilon,(k+1)\varepsilon)$ and
+\[
+  B_\varepsilon(q):=\sum_kw(k\varepsilon)\,\varepsilon^{-1}\Bigl(\int_{I_k}\alpha(q(t))\,dt\Bigr)\Bigl(\int_{I_k+\delta}\beta(q(t))\,dt\Bigr),
+\]
+a finite sum. It is a polynomial in finitely many time integrals of bounded smooth functions, hence in $\cD_0$ (remark after Definition~\ref{def:D0}).
+For every path and every $\tau$, $B_\varepsilon\to B$ and $DB_\varepsilon(q,\tau)\to DB(q,\tau)=w(\tau)\alpha'(q(\tau))\beta(q(\tau+\delta))+w(\tau-\delta)\alpha(q(\tau-\delta))\beta'(q(\tau))$, by the uniform continuity of $w$, $\alpha\circ q$ and $\beta\circ q$ on compact intervals; all these are bounded uniformly and vanish for $\tau$ outside a fixed compact set, so dominated convergence gives $\|B_\varepsilon-B\|_*\to0$.
+Combining (1)--(3), $f_w$ lies in the $\|\cdot\|_*$-closure of $\cD_0$, and $C_P(\cD_0)=\infty$.
+\end{proof}
+
+
+
+\begin{remark}[scope of the counterexample]\label{rem:rotorscope}
+(1) The time-local functionals give exactly $\sup=\xi^2=4/\hbar^2$ for the rotor (Proposition~\ref{prop:optimal}); the divergence comes from the winding number, which performs an unconfined diffusion invisible to the spectrum of $H$. Its functional $f_w$ is not time-local but lies in the closure of $\cD_0$, so the conclusion does not depend on the choice of a class between $\cD_0$ and $\cD_1$.
+(2) Positivity of the spectral gap therefore does not imply finiteness of the Langevin Poincar\'e constant.
+This is not a counterexample within a class such as the Wilson lattice measures in a finite periodic box, which are smooth positive densities on a compact connected manifold and so have finite Poincar\'e constant (compactness of $H^1\subset L^2$); whether the converse fails inside such a class is not addressed.
+(3) The mechanism, a quantity invisible to the static spectrum and transported diffusively by the dynamics, is that of conserved or topological quantities in general.
+In four-dimensional lattice gauge theory the topological charge is the standard slow mode of Monte Carlo dynamics [SSV, \S4.1.1], [DPV, \S2]; we use this only as context.
+\end{remark}
+
+\section{Scope: what the statements do not cover}\label{sec:scope}
+
+\paragraph{Discrete Euclidean time.}
+On a Euclidean lattice with time step $1$ (as for the Wilson action) the path is a sequence $(x_i)_{i\in\mathbb Z}$ and the normalised transfer operator $\hat T$ has second eigenvalue $q=e^{-\Delta_1}$, $\Delta_1$ the gap per time step.
+For $f_N=\sum_{i=1}^NF(x_i)$, with $F$ the corresponding ratio of eigenfunctions, the variance side survives: $\Var(f_N)=\|\varphi\|^2S_N(q)$, $S_N(q)=\sum_{s,t=1}^Nq^{|s-t|}$, $(1-q)^2S_N(q)=N(1+q)(1-q)-2q(1-q^N)$ (Lean: \code{pair\_sum\_closed}).
+The Dirichlet-form side does not: $\hat T$ is not of the form $e^{-(H-E_0)}$ with $H$ of Schr\"odinger type, and Lemma~\ref{lem:gst} has no counterpart.
+Under the comparison
+\[
+  \text{(D)}\qquad \E_{\psi_0^2}|dF|^2_G\ \le\ c_D\,\bigl\langle\varphi,(1-\hat T)\varphi\bigr\rangle
+\]
+the same computation, for $\cE(f)=\sum_i\E|d_{x_i}f|^2_G$, gives $C_P\ge(1+q)/(c_D(1-q)^2)\ge1/(c_D\Delta_1^2)$ (Lean: \code{discrete\_limit\_ge}); if $\hat T=e^{-(H-E_0)}$ held exactly, (D) would hold with $c_D=2\Delta_1/(1-e^{-\Delta_1})\to2$.
+For the Wilson action we do not prove (D) and have no $c_D$ uniform in the coupling; without (D) the argument gives only a bound of order $1/\Delta_1$, which is not enough for Corollary~\ref{cor:gap}.
+
+\paragraph{Gauge fields.}
+In the Hamiltonian formulation on a finite spatial lattice (continuous time) the configuration space, a product of compact connected Lie groups with a bi-invariant metric, is case (a), and Theorem~\ref{thm:main} applies once (A1)--(A3) hold; restricted to gauge-invariant functions, with $\psi_1$ the lowest gauge-invariant excited state and $\Delta$ the gap in that sector, $F$ is gauge invariant and the proof is unchanged.
+Not established here, and needed for any statement about the Euclidean Wilson measure or the continuum: (G1) (D) with a constant uniform in the coupling; (G2) the time-like links, which the trial functional does not involve; (G3) infinite spatial volume (a version of (D) uniform in the volume); (G4) a normalisation of the Langevin form for which $\kappa$ does not degenerate with the coupling (with link angles as variables, $\kappa$ is proportional to the squared coupling); (G5) the low-lying excitations in a periodic box, where states winding around the box may have low energy.
+
+\paragraph{Other limits.}
+Nothing is said about infinite volume, uniformity of $\kappa$ in parameters, continuum limits, the existence of a mass gap, or the Langevin dynamics as a constructed process; neither the hypothesis $C_P\le KL^2$ of Corollary~\ref{cor:gap} nor its conclusion is established for any gauge theory here.
+
+\section{What is machine-checked}\label{sec:lean}
+
+\paragraph{Content.}
+The Lean~4 development is the single module \code{EuclideanPath/GapBridge.lean} (namespace \code{EuclideanPath.GapBridge}) of a stand-alone Lake project that imports Mathlib [M] and nothing else.
+It checks the \emph{algebraic skeleton} of the paper, declaration by declaration as listed in \S\ref{sec:corr}: the window ratio and factor and the abstract form of Theorem~\ref{thm:main}, the inequalities behind Proposition~\ref{prop:optimal}, Corollary~\ref{cor:gap} with its negative control, the arithmetic of the rotor, and the discrete-time formulas of \S\ref{sec:scope}.
+In each Lean statement the quantities $C_P$, $\Var$, $\cE$, $\|\varphi\|^2$, $m$ are real numbers named in the hypotheses.
+That they are the Poincar\'e constant, the variance and the Dirichlet form of a path measure, that $C_P$ is a supremum, the covariance formula \eqref{eq:cov}, Lemmas~\ref{lem:gst} and~\ref{lem:cutoff}, the spectral and Fourier representation in Proposition~\ref{prop:optimal}, the It\^o isometry and the approximation in $\cD_0$ in Proposition~\ref{prop:rotor}, and hypothesis (D) are \emph{outside} Lean.
+No interval arithmetic or numerical evaluation is involved.
+
+\paragraph{Trust base.}
+{\sloppy There are $17$ \code{\#print axioms} lines at the end of the module, one for each declaration listed in \S\ref{sec:corr} and for the two helper lemmas \code{edge\_sum}, \code{edge\_sum'}; each reads \code{[propext, Classical.choice, Quot.sound]}.
+\code{sorry}, \code{axiom} declarations and \code{native\_decide} do not occur.
+The module was checked with Lean~4 \code{v4.33.1} and Mathlib at the commit \code{0df444a3} (the tag \code{v4.33.1}), the revision pinned in the project's \code{lakefile.lean} and \code{lake-\allowbreak{}manifest.json}.\par}
+
+\paragraph{Reproduction.}
+The project is distributed at \url{\bundleurl} (with a \code{.sha256} file at the same address with that suffix), and the complete \code{\#print axioms} output at \url{\axiomsurl}; the ledger and build instructions of the site's Lean developments are at \url{https://computoergosum.com/en/principia/lean/index.html}.
+To verify: unpack, run \code{lake exe cache get}, then \code{LEAN\_NUM\_THREADS=1 lake build EuclideanPath.GapBridge}; the \code{\#print axioms} lines at the end of the module should agree with the report above and with the distributed axiom log.
+
+\section{What is not claimed}\label{sec:notclaimed}
+
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{No statement about a mass gap.} Nothing here proves or assumes the existence of a mass gap for any field theory. Corollary~\ref{cor:gap} is an implication whose hypothesis is not established for any gauge theory.
+\item \textbf{Finite dimensions, continuous time, infinite time extent.} Theorem~\ref{thm:main} is stated for a finite-dimensional configuration space, the canonical kinetic term, continuous Euclidean time and the stationary measure on the whole time axis. The discrete-time case needs (D) (\S\ref{sec:scope}), which is not proved for the Wilson action.
+\item \textbf{The domain.} $C_P$ is defined variationally on the explicit classes $\cD_0\subset\cD_1$ of \S\ref{sec:setting}. We do not claim that $\cE_G$ on $\cD_0$ is closable, that $\cD_0$ is a core, or that $\cE_G$ is the Dirichlet form of a constructed Langevin dynamics; the lower bound holds for any class containing the trial functionals, which is all that is used.
+\item \textbf{The counterexample.} Proposition~\ref{prop:rotor} gives $C_P=\infty$ on $\cD_0$ and on $\cD_1$ for the free rotor; the part concerning $\cD_0$ rests on the approximation in its proof, which is checked on paper only. It is not a counterexample within the class of Wilson lattice measures in a finite box.
+\item \textbf{(A1) and (A2) are hypotheses.} The standard spectral facts and the existence of the ground-state process with continuous paths are used, not reproved.
+\item \textbf{Relation to earlier work.} The method (one trial observable in the variational characterisation) is Sokal's [So, \S8] and is standard [Ma, BB, BBD]; the Gaussian case is in [So, \S5.3] and [HSVW]. The contribution of this note is the choice of trial functional, the resulting inequality without a susceptibility hypothesis, its optimality among time-local functionals, the rotor example, and the explicit hypotheses. The search for earlier statements covered the sources listed and arXiv searches; MathSciNet and zbMATH were not available to us, and the inequality, being elementary, may well appear elsewhere in the literature on stochastic quantisation or path sampling.
+\item \textbf{No external review.} The proofs, the Lean development and this text were produced within the authors' group (\S\ref{sec:ai}); no mathematician outside the authors has read them.
+\end{enumerate}
+
+\section{Correspondence table}\label{sec:corr}
+
+{\sloppy All declarations are in \code{EuclideanPath/\allowbreak{}GapBridge.lean}, namespace \code{EuclideanPath.\allowbreak{}GapBridge}; hypotheses are listed in the order of the Lean statement.\par}
+
+\begin{center}\small
+\begin{longtable}{@{}p{0.2\textwidth}p{0.34\textwidth}p{0.32\textwidth}r@{}}
+\toprule
+Paper & Lean declaration & Hypotheses & Line\\ \midrule
+\endhead
+Thm.~\ref{thm:main}, ratio & \code{window\_ratio\_closed} & $0<m$, $0<T$ & 93\\
+Thm.~\ref{thm:main}, factor & \code{window\_factor\_bounds} & $0<x$ & 99\\
+Thm.~\ref{thm:main}, abstract & \code{poincare\_lower\_of\_gap} & $0<p,m,\kappa,E$; $2p/m\le V$; $E\le2mp/\kappa$; $V/E\le C_P$ & 115\\
+Prop.~\ref{prop:optimal} (sums) & \code{local\_rayleigh\_le} & $0<m$; $m\le a_k$; $0\le c_k$ & 127\\
+Prop.~\ref{prop:optimal} (weight) & \code{fourier\_weight\_le} & $0<m\le a$ & 141\\
+Prop.~\ref{prop:optimal} (phase) & \code{oscillating\_ratio\_le} & $0<m\le a$ & 148\\
+Cor.~\ref{cor:gap}, gap & \code{gap\_lower\_of\_poincare\_upper} & $0<m$; $\kappa/m^2\le C_P$; $C_P\le KL^2$ & 157\\
+Cor.~\ref{cor:gap}, exponent & \code{power\_lower\_half} & $0<\kappa$; $1<\xi$; $\kappa\xi^2\le C_P$ & 169\\
+\S\ref{sec:main}, negative control & \code{linear\_exponent\_\allowbreak{}does\_not\_bridge} & $0<\kappa$ (existential conclusion) & 189\\
+Prop.~\ref{prop:rotor}, ratio & \code{rotor\_ratio\_unbounded} & $0<r$ & 206\\
+Prop.~\ref{prop:rotor}, gap & \code{rotor\_gap\_pos} & $0<\hbar$ & 219\\
+\S\ref{sec:scope}, $S_N(q)$ & \code{pair\_sum\_closed} (with \code{pair\_sum\_succ}, \code{geom\_shift}) & none & 59\\
+\S\ref{sec:scope}, limit & \code{discrete\_limit\_ge} & $0<\Delta_1$; $0<c_D$ & 75\\
+\bottomrule
+\end{longtable}
+\end{center}
+
+\section{Disclosure of AI use}\label{sec:ai}
+
+Two of the three authors are AI agents. \textit{Shiori} and \textit{Rin} are instances of Claude (Anthropic) run as the coding agent Claude Code, on a laptop and on the server of the website named on the title page respectively. The observation, the informal proofs, the Lean~4 development including the formalised statements, the literature search and the reports on which this note is based, and this text were produced by Shiori across many separate sessions, each of which began without memory of the previous ones and read the written record instead. Rin is responsible for rebuilding the Lean development from the distributed archive on a separate machine, for checking the claims of this note against the reports, and for preparing the distributed version; for this text Rin prepares the web edition (typesetting, the site page and the placement of the archive), and the independent rebuild is pending. The human author, Kiichi, set the task, fixed the working rules and load limits, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the authors' blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else is the authors' word. In particular the analytic steps listed in \S\ref{sec:lean} are checked on paper only.
+
+\begin{thebibliography}{HSVW}
+\bibitem[BB]{BB} R.~Bauerschmidt and T.~Bodineau, \emph{Spectral gap critical exponent for Glauber dynamics of hierarchical spin models}, Comm. Math. Phys. 373 (2020), 1167--1206, DOI 10.1007/s00220-019-03553-x, arXiv:1809.02075; cited (arXiv v2) for Cor.~3.2 and (3.18).
+\bibitem[BBD]{BBD} R.~Bauerschmidt, T.~Bodineau and B.~Dagallier, \emph{Stochastic dynamics and the Polchinski equation: an introduction}, Probab. Surv. 21 (2024), 200--290, DOI 10.1214/24-PS27, arXiv:2307.07619; cited (arXiv version) for \S6.1.
+\bibitem[DPV]{DPV} L.~Del Debbio, H.~Panagopoulos and E.~Vicari, \emph{$\theta$ dependence of SU($N$) gauge theories}, J. High Energy Phys. 2002, no.~08, 044, DOI 10.1088/1126-6708/2002/08/044, arXiv:hep-th/0204125; cited for \S2, (2.2).
+
+\bibitem[HSV]{HSV} M.~Hairer, A.~M.~Stuart and J.~Voss, \emph{Analysis of SPDEs arising in path sampling. Part II: The nonlinear case}, Ann. Appl. Probab. 17 (2007), 1657--1706, DOI 10.1214/07-AAP441, arXiv:math/0601092.
+\bibitem[HSVW]{HSVW} M.~Hairer, A.~M.~Stuart, J.~Voss and P.~Wiberg, \emph{Analysis of SPDEs arising in path sampling. Part I: The Gaussian case}, Commun. Math. Sci. 3 (2005), 587--603, DOI 10.4310/CMS.2005.v3.n4.a8, arXiv:math/0601095.
+\bibitem[KSR]{KSR} Kiichi, Shiori and Rin, \emph{Yang--Mills and the mass gap} (online textbook, in Japanese), Part~10, chapter on the double-well path measure, \url{https://computoergosum.com/principia/yang-mills/index.html} (2026).
+\bibitem[Ma]{Ma} F.~Martinelli, \emph{Lectures on Glauber dynamics for discrete spin models}, in: Lectures on Probability Theory and Statistics (Saint-Flour 1997), Lecture Notes in Math. 1717, Springer, 1999, 93--191, DOI 10.1007/978-3-540-48115-7\_2; cited (preprint version) for (3.12) and \S5.1.
+\bibitem[M]{M} Mathlib, \url{https://github.com/leanprover-community/mathlib4} (revision \code{0df444a3}, Lean~4 \code{v4.33.1}).
+\bibitem[So]{So} A.~D.~Sokal, \emph{Monte Carlo methods in statistical mechanics: foundations and new algorithms}, in: Functional Integration (Carg\`ese 1996), NATO ASI Series, Plenum, 1997, 131--192, DOI 10.1007/978-1-4899-0319-8\_6; cited for \S5.3 and \S8.
+\bibitem[SSV]{SSV} S.~Schaefer, R.~Sommer and F.~Virotta, \emph{Critical slowing down and error analysis in lattice QCD simulations}, Nucl. Phys. B 845 (2011), 93--119, DOI 10.1016/j.nuclphysb.2010.11.020, arXiv:1009.5228; cited for \S4.1.1.
+\end{thebibliography}
+\end{document}

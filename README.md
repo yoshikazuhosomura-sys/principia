@@ -8,7 +8,7 @@ Authors: **Kiichi, Shiori and Rin**
 
 This repository holds the machine-checked parts of the mathematics published on the site, together with the papers and articles that cite them.
 
-- `lean/` — one independent lake project per subject (311 modules, 4558 theorems with `#print axioms`). Every axiom line is a subset of `propext`, `Classical.choice`, `Quot.sound`; no `sorry`, no `native_decide`.
+- `lean/` — one independent lake project per subject (343 modules, 4935 theorems with `#print axioms`). Every axiom line is a subset of `propext`, `Classical.choice`, `Quot.sound`; no `sorry`, no `native_decide`.
 - `papers/` — LaTeX source and PDF of each paper (plus statement lists where they exist).
 - `articles/` — the HTML articles (Japanese) as published on the site.
 
@@ -28,7 +28,7 @@ The machine checks only that the stated propositions follow. Parts that live out
 
 サイト「computo ergo sum」の自然哲学（principia）で公開している数学のうち、機械検査した部分と、それを引く論文・記事をまとめたリポジトリです。
 
-- `lean/`：主題ごとに独立した lake プロジェクト（モジュール 311 本・`#print axioms` の対象の定理 4558 本）。公理は全行が `propext`・`Classical.choice`・`Quot.sound` の部分集合で、`sorry` も `native_decide` もありません。
+- `lean/`：主題ごとに独立した lake プロジェクト（モジュール 343 本・`#print axioms` の対象の定理 4935 本）。公理は全行が `propext`・`Classical.choice`・`Quot.sound` の部分集合で、`sorry` も `native_decide` もありません。
 - `papers/`：論文の LaTeX 源と PDF（命題の一覧があるものはそれも）。
 - `articles/`：サイトに載せた記事の HTML。
 
@@ -45,6 +45,8 @@ The machine checks only that the stated propositions follow. Parts that live out
 | [`lean/def2-cubic-bipartite`](lean/def2-cubic-bipartite/) | 三価・二部・連結で周長欠損 2 のグラフ（30 頂点の三例）と欠損 6 の例（20 頂点） | 2 | 34 | 0 |
 | [`lean/gp3-hamiltonian-count`](lean/gp3-hamiltonian-count/) | 一般化ペテルセングラフ：奇数 n ≥ 7 で n ∣ #HC(GP(n,3)) | 7 | 188 | 0 |
 | [`lean/padic-regulator-valuation`](lean/padic-regulator-valuation/) | 楕円曲線の p 進高さと正準高さの付値（異常素点での p 進レギュレーターの付値の、算術の段） | 30 | 356 | 1 |
+| [`lean/padic-regulator-valuation-2026-10-09`](lean/padic-regulator-valuation-2026-10-09/) | 同じ主題の 2026-10-09 の束（論文 v15 が引く版。30 本に異常 Euler 因子の付随ノート 1 本を加えた 31 本。各ファイルが単独に検査でき、入口は何も import しない）。旧い束は論文 v14 が引いているので並置 | 31 | 360 | 31 |
+| [`lean/ym-gap-bridge`](lean/ym-gap-bridge/) | ヤン–ミルズ：Poincaré 不等式の上界と質量ギャップの下界を結ぶ片側の橋（論文「片側の橋」が引く束） | 1 | 17 | 0 |
 | [`lean/hadwiger-nelson`](lean/hadwiger-nelson/) | 単位距離グラフ：候補類の非実現（n = 10, 11, 16）と、独立数を抑えた単位距離グラフの下界の証人と族（ハドヴィガー・ネルソン系） | 43 | 182 | 0 |
 | [`lean/collatz`](lean/collatz/) | コラッツ写像（臨界の乗数・測度・階段の高さ・枝の生死・禁止語） | 7 | 108 | 0 |
 | [`lean/riemann-weil-form`](lean/riemann-weil-form/) | Riemann 予想の Weil 形式（時間帯の分割・跡・移送・Ψ 座標・沈んだ数え上げ・ホッジ指数の正値性） | 12 | 73 | 2 |
@@ -58,7 +60,8 @@ The machine checks only that the stated propositions follow. Parts that live out
 | [`papers/erdos827-distinct-circumradii`](papers/erdos827-distinct-circumradii/) | Erdős #827: a machine-checked proof that n₄ = 7 | エルデシュ #827：n₄ = 7 の機械検査された証明（`paper.pdf`, `paper.tex`, `statements-and-dependencies.md`） |
 | [`papers/def2-cubic-bipartite`](papers/def2-cubic-bipartite/) | Minimum order of cubic bipartite graphs with circumference deficiency 2 is 30 | 周長欠損 2 の三価二部グラフの最小位数は 30（`paper.pdf`, `paper.tex`） |
 | [`papers/gp3-hamiltonian-count`](papers/gp3-hamiltonian-count/) | n divides #HC(GP(n,3)) for odd n ≥ 7 | 奇数 n ≥ 7 で n ∣ #HC(GP(n,3))（`paper.pdf`, `paper.tex`） |
-| [`papers/padic-regulator-valuation`](papers/padic-regulator-valuation/) | p-adic regulator at anomalous primes (BSD-adjacent) | 異常素点での p 進レギュレーターの付値（BSD の周辺）（`paper-v14.pdf`, `paper-v14.tex`, `statements-v14.md`, `summary-ja-v14.md`） |
+| [`papers/padic-regulator-valuation`](papers/padic-regulator-valuation/) | p-adic regulator at anomalous primes (BSD-adjacent) | 異常素点での p 進レギュレーターの付値（BSD の周辺）（`paper-v15.pdf`, `paper-v15.tex`；旧版 `paper-v14.pdf`, `paper-v14.tex`, `statements-v14.md`, `summary-ja-v14.md`） |
+| [`papers/ym-gap-bridge`](papers/ym-gap-bridge/) | A one-sided bridge from a Poincaré-type bound to a mass-gap lower bound (lattice Yang–Mills) | 片側の橋：Poincaré 型の上界から質量ギャップの下界へ（格子ヤン–ミルズ）（`paper.pdf`, `paper.tex`） |
 
 ## articles/
 
@@ -67,6 +70,7 @@ The machine checks only that the stated propositions follow. Parts that live out
 | [`articles/riemann-weil-form.html`](articles/riemann-weil-form.html) | リーマン予想 — Weil の二次形式 | https://computoergosum.com/principia/riemann-weil-form.html |
 | [`articles/hodge-cm-degenerate.html`](articles/hodge-cm-degenerate.html) | ホッジ予想 | https://computoergosum.com/principia/hodge-cm-degenerate.html |
 | [`articles/random-draw.html`](articles/random-draw.html) | 未解決問題を、無作為に引く | https://computoergosum.com/principia/random-draw.html |
+| [`articles/bsd-regulator.html`](articles/bsd-regulator.html) | BSD 予想 — 異常素点での p 進レギュレーターの付値 | https://computoergosum.com/principia/bsd-regulator.html |
 | [`articles/erdos-169.html`](articles/erdos-169.html) | エルデシュ等差数列予想 | https://computoergosum.com/principia/erdos-169.html |
 | [`articles/method.html`](articles/method.html) | 進め方 | https://computoergosum.com/principia/method.html |
 | [`articles/ledger.html`](articles/ledger.html) | 主張の台帳 | https://computoergosum.com/principia/ledger.html |
