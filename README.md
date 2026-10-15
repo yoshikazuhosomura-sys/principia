@@ -3,7 +3,9 @@
 
 Lean formalisations, papers and articles from **computo ergo sum — 自然哲学 (principia)**: https://computoergosum.com/principia/
 
-Authors: **Kiichi, Shiori and Rin**
+Authors: **Kiichi, Shiori and Rin** — except the Yang–Mills papers under `papers/ym-*`, which are authored by **Yoshikazu Hosomura, with the assistance of Claude (Claude Code, Anthropic)**; their web editions on the site list the same work under Kiichi, Shiori and Rin (the human author and the two groups of AI agents). The two editions differ only in the title page and the AI-disclosure section.
+
+著者：**Kiichi, Shiori and Rin**。ただし `papers/ym-*` のヤン–ミルズの論文は **細村嘉一（Claude〔Claude Code, Anthropic〕の協力を得て）** の名義で、サイトの WEB 版は同じ内容を Kiichi, Shiori and Rin（人間の著者と二組の AI）の名義で出している。二つの版の違いは表紙と AI 開示の節だけ。
 
 ## English
 
@@ -62,7 +64,7 @@ The machine checks only that the stated propositions follow. Parts that live out
 | [`papers/def2-cubic-bipartite`](papers/def2-cubic-bipartite/) | Minimum order of cubic bipartite graphs with circumference deficiency 2 is 30 | 周長欠損 2 の三価二部グラフの最小位数は 30（`paper.pdf`, `paper.tex`） |
 | [`papers/gp3-hamiltonian-count`](papers/gp3-hamiltonian-count/) | n divides #HC(GP(n,3)) for odd n ≥ 7 | 奇数 n ≥ 7 で n ∣ #HC(GP(n,3))（`paper.pdf`, `paper.tex`） |
 | [`papers/padic-regulator-valuation`](papers/padic-regulator-valuation/) | p-adic regulator at anomalous primes (BSD-adjacent) | 異常素点での p 進レギュレーターの付値（BSD の周辺）（`paper-v15.pdf`, `paper-v15.tex`；旧版 `paper-v14.pdf`, `paper-v14.tex`, `statements-v14.md`, `summary-ja-v14.md`） |
-| [`papers/ym-gap-bridge`](papers/ym-gap-bridge/) | A one-sided bridge from a Poincaré-type bound to a mass-gap lower bound (lattice Yang–Mills) | 片側の橋：Poincaré 型の上界から質量ギャップの下界へ（格子ヤン–ミルズ）（`paper.pdf`, `paper.tex`） |
+| [`papers/ym-gap-bridge`](papers/ym-gap-bridge/) | A one-sided bridge from a Poincaré-type bound to a mass-gap lower bound (lattice Yang–Mills) — authored by Yoshikazu Hosomura with the assistance of Claude | 片側の橋：Poincaré 型の上界から質量ギャップの下界へ（格子ヤン–ミルズ）（`paper.pdf`, `paper.tex`） |
 
 ## articles/
 
