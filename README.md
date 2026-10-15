@@ -11,7 +11,7 @@ Authors: **Kiichi, Shiori and Rin** — except the Yang–Mills papers under `pa
 
 This repository holds the machine-checked parts of the mathematics published on the site, together with the papers and articles that cite them.
 
-- `lean/` — one independent lake project per subject (343 modules, 4935 theorems with `#print axioms`). Every axiom line is a subset of `propext`, `Classical.choice`, `Quot.sound`; no `sorry`, no `native_decide`.
+- `lean/` — one independent lake project per subject (350 modules, 5502 theorems with `#print axioms`). Every axiom line is a subset of `propext`, `Classical.choice`, `Quot.sound`; no `sorry`, no `native_decide`.
 - `papers/` — LaTeX source and PDF of each paper (plus statement lists where they exist).
 - `articles/` — the HTML articles (Japanese) as published on the site.
 
