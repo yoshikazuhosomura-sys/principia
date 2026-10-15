@@ -50,6 +50,7 @@ The machine checks only that the stated propositions follow. Parts that live out
 | [`lean/padic-regulator-valuation`](lean/padic-regulator-valuation/) | 楕円曲線の p 進高さと正準高さの付値（異常素点での p 進レギュレーターの付値の、算術の段） | 30 | 356 | 1 |
 | [`lean/padic-regulator-valuation-2026-10-09`](lean/padic-regulator-valuation-2026-10-09/) | 同じ主題の 2026-10-09 の束（論文 v15 が引く版。30 本に異常 Euler 因子の付随ノート 1 本を加えた 31 本。各ファイルが単独に検査でき、入口は何も import しない）。旧い束は論文 v14 が引いているので並置 | 31 | 360 | 31 |
 | [`lean/ym-gap-bridge`](lean/ym-gap-bridge/) | ヤン–ミルズ：Poincaré 不等式の上界と質量ギャップの下界を結ぶ片側の橋（論文「片側の橋」が引く束） | 1 | 17 | 0 |
+| [`lean/ym-onelink-bakry-emery`](lean/ym-onelink-bakry-emery/) | ヤン–ミルズ：SU(2) 格子で I* のリンクを先に積分してから Bakry–Émery（星の不等式・一リンク積分・ヘッセの下界 −27β²）と、完全な族（リンクは d ≤ 4 かつ偶数周期の場合だけ・k 胞体は d ≤ 3k+1・密度 1/(2(k+1))）（論文「One-link integration」が引く束。各ファイルが単独に検査でき、入口は何も import しない） | 7 | 567 | 7 |
 | [`lean/hadwiger-nelson`](lean/hadwiger-nelson/) | 単位距離グラフ：候補類の非実現（n = 10, 11, 16）と、独立数を抑えた単位距離グラフの下界の証人と族（ハドヴィガー・ネルソン系） | 43 | 182 | 0 |
 | [`lean/collatz`](lean/collatz/) | コラッツ写像（臨界の乗数・測度・階段の高さ・枝の生死・禁止語） | 7 | 108 | 0 |
 | [`lean/riemann-weil-form`](lean/riemann-weil-form/) | Riemann 予想の Weil 形式（時間帯の分割・跡・移送・Ψ 座標・沈んだ数え上げ・ホッジ指数の正値性） | 12 | 73 | 2 |
@@ -65,6 +66,7 @@ The machine checks only that the stated propositions follow. Parts that live out
 | [`papers/gp3-hamiltonian-count`](papers/gp3-hamiltonian-count/) | n divides #HC(GP(n,3)) for odd n ≥ 7 | 奇数 n ≥ 7 で n ∣ #HC(GP(n,3))（`paper.pdf`, `paper.tex`） |
 | [`papers/padic-regulator-valuation`](papers/padic-regulator-valuation/) | p-adic regulator at anomalous primes (BSD-adjacent) | 異常素点での p 進レギュレーターの付値（BSD の周辺）（`paper-v15.pdf`, `paper-v15.tex`；旧版 `paper-v14.pdf`, `paper-v14.tex`, `statements-v14.md`, `summary-ja-v14.md`） |
 | [`papers/ym-gap-bridge`](papers/ym-gap-bridge/) | A one-sided bridge from a Poincaré-type bound to a mass-gap lower bound (lattice Yang–Mills) — authored by Yoshikazu Hosomura with the assistance of Claude | 片側の橋：Poincaré 型の上界から質量ギャップの下界へ（格子ヤン–ミルズ）（`paper.pdf`, `paper.tex`） |
+| [`papers/ym-onelink-bakry-emery`](papers/ym-onelink-bakry-emery/) | One-link integration before Bakry–Émery for SU(2) lattice Yang–Mills — an explicit strong-coupling threshold β < √(2/27) in d = 4, and complete families of links only for d ≤ 4 (machine-checked in Lean 4) — authored by Yoshikazu Hosomura with the assistance of Claude | 一リンク積分を先に行う Bakry–Émery（SU(2) 格子ヤン–ミルズ、d = 4 で β < √(2/27)、完全な族は d ≤ 4 だけ）（`paper.pdf`, `paper.tex`, `statements.md`） |
 
 ## articles/
 

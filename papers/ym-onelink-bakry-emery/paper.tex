@@ -1,0 +1,696 @@
+%% Generated from draft.md.  Typeset with:  latexmk -pdf paper.tex
+%% Needs: amsmath amsthm amssymb hyperref longtable array booktabs-free
+%% (see README-for-Rin.md).  The author line is provisional.
+\documentclass[11pt,a4paper]{article}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}   %% scalable T1 fonts
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=28mm]{geometry}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{array,longtable}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage[english]{babel}
+
+%% ---- symbols used by the unicode declarations below ----------------------
+\newcommand{\txtsym}[1]{\ifmmode\text{#1}\else#1\fi}
+%% Tate--Shafarevich symbol: the cyrillic font if the distribution has it,
+%% otherwise the roman abbreviation.  Nothing else depends on this package.
+\IfFileExists{cyrillic.sty}{%
+  \usepackage{cyrillic}%
+  \providecommand{\Sha}{\text{\usefont{OT2}{wncyr}{m}{n}Sh}}}{%
+  \providecommand{\Sha}{\mathrm{Sha}}}
+%% every non-ASCII character of the source, declared once:
+\DeclareUnicodeCharacter{00A7}{\txtsym{\S}}
+\DeclareUnicodeCharacter{00AC}{\ensuremath{\neg}}
+\DeclareUnicodeCharacter{00B0}{\ensuremath{^\circ}}
+\DeclareUnicodeCharacter{00B1}{\ensuremath{\pm}}
+\DeclareUnicodeCharacter{00B2}{\ensuremath{{}^2}}
+\DeclareUnicodeCharacter{00B3}{\ensuremath{{}^3}}
+\DeclareUnicodeCharacter{00B7}{\ensuremath{\cdot}}
+\DeclareUnicodeCharacter{00BD}{\ensuremath{\tfrac12}}
+\DeclareUnicodeCharacter{00C1}{\txtsym{\'A}}
+\DeclareUnicodeCharacter{00C9}{\txtsym{\'E}}
+\DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+\DeclareUnicodeCharacter{00E1}{\txtsym{\'a}}
+\DeclareUnicodeCharacter{00E9}{\txtsym{\'e}}
+\DeclareUnicodeCharacter{00F6}{\txtsym{\"o}}
+\DeclareUnicodeCharacter{00FD}{\txtsym{\'y}}
+\DeclareUnicodeCharacter{0113}{\txtsym{\=e}}
+\DeclareUnicodeCharacter{0144}{\txtsym{\'n}}
+\DeclareUnicodeCharacter{0394}{\ensuremath{\Delta}}
+\DeclareUnicodeCharacter{039B}{\ensuremath{\Lambda}}
+\DeclareUnicodeCharacter{03A3}{\ensuremath{\Sigma}}
+\DeclareUnicodeCharacter{03A6}{\ensuremath{\Phi}}
+\DeclareUnicodeCharacter{03B1}{\ensuremath{\alpha}}
+\DeclareUnicodeCharacter{03B2}{\ensuremath{\beta}}
+\DeclareUnicodeCharacter{03B4}{\ensuremath{\delta}}
+\DeclareUnicodeCharacter{03B5}{\ensuremath{\varepsilon}}
+\DeclareUnicodeCharacter{03B7}{\ensuremath{\eta}}
+\DeclareUnicodeCharacter{03B8}{\ensuremath{\theta}}
+\DeclareUnicodeCharacter{03BA}{\ensuremath{\kappa}}
+\DeclareUnicodeCharacter{03BB}{\ensuremath{\lambda}}
+\DeclareUnicodeCharacter{03BC}{\ensuremath{\mu}}
+\DeclareUnicodeCharacter{03BD}{\ensuremath{\nu}}
+\DeclareUnicodeCharacter{03C0}{\ensuremath{\pi}}
+\DeclareUnicodeCharacter{03C1}{\ensuremath{\rho}}
+\DeclareUnicodeCharacter{03C3}{\ensuremath{\sigma}}
+\DeclareUnicodeCharacter{03C4}{\ensuremath{\tau}}
+\DeclareUnicodeCharacter{03C8}{\ensuremath{\psi}}
+\DeclareUnicodeCharacter{03C9}{\ensuremath{\omega}}
+\DeclareUnicodeCharacter{1E21}{\ensuremath{\bar{g}}}
+\DeclareUnicodeCharacter{2013}{\txtsym{\textendash}}
+\DeclareUnicodeCharacter{2014}{\txtsym{\textemdash}}
+\DeclareUnicodeCharacter{2016}{\ensuremath{\|}}
+\DeclareUnicodeCharacter{2022}{\txtsym{\textbullet}}
+\DeclareUnicodeCharacter{2026}{\ensuremath{\dots}}
+\DeclareUnicodeCharacter{2032}{\ensuremath{{}^{\prime}}}
+\DeclareUnicodeCharacter{2074}{\ensuremath{{}^4}}
+\DeclareUnicodeCharacter{207A}{\ensuremath{{}^+}}
+\DeclareUnicodeCharacter{2080}{\ensuremath{{}_0}}
+\DeclareUnicodeCharacter{2081}{\ensuremath{{}_1}}
+\DeclareUnicodeCharacter{2082}{\ensuremath{{}_2}}
+\DeclareUnicodeCharacter{2083}{\ensuremath{{}_3}}
+\DeclareUnicodeCharacter{2084}{\ensuremath{{}_4}}
+\DeclareUnicodeCharacter{210D}{\ensuremath{\mathbb{H}}}
+\DeclareUnicodeCharacter{2113}{\ensuremath{\ell}}
+\DeclareUnicodeCharacter{2115}{\ensuremath{\mathbb{N}}}
+\DeclareUnicodeCharacter{211A}{\ensuremath{\mathbb{Q}}}
+\DeclareUnicodeCharacter{211D}{\ensuremath{\mathbb{R}}}
+\DeclareUnicodeCharacter{2124}{\ensuremath{\mathbb{Z}}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\to}}
+\DeclareUnicodeCharacter{2194}{\ensuremath{\leftrightarrow}}
+\DeclareUnicodeCharacter{21A6}{\ensuremath{\mapsto}}
+\DeclareUnicodeCharacter{2200}{\ensuremath{\forall}}
+\DeclareUnicodeCharacter{2202}{\ensuremath{\partial}}
+\DeclareUnicodeCharacter{2203}{\ensuremath{\exists}}
+\DeclareUnicodeCharacter{2205}{\ensuremath{\emptyset}}
+\DeclareUnicodeCharacter{2207}{\ensuremath{\nabla}}
+\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}
+\DeclareUnicodeCharacter{220E}{\ensuremath{\blacksquare}}
+\DeclareUnicodeCharacter{220F}{\ensuremath{\prod}}
+\DeclareUnicodeCharacter{2211}{\ensuremath{\sum}}
+\DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\DeclareUnicodeCharacter{2216}{\ensuremath{\setminus}}
+\DeclareUnicodeCharacter{221A}{\ensuremath{\surd}}
+\DeclareUnicodeCharacter{221D}{\ensuremath{\propto}}
+\DeclareUnicodeCharacter{221E}{\ensuremath{\infty}}
+\DeclareUnicodeCharacter{2223}{\ensuremath{\mid}}
+\DeclareUnicodeCharacter{2224}{\ensuremath{\nmid}}
+\DeclareUnicodeCharacter{2227}{\ensuremath{\wedge}}
+\DeclareUnicodeCharacter{2229}{\ensuremath{\cap}}
+\DeclareUnicodeCharacter{222B}{\ensuremath{\int}}
+\DeclareUnicodeCharacter{223C}{\ensuremath{\sim}}
+\DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+\DeclareUnicodeCharacter{2260}{\ensuremath{\neq}}
+\DeclareUnicodeCharacter{2261}{\ensuremath{\equiv}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\le}}
+\DeclareUnicodeCharacter{2265}{\ensuremath{\ge}}
+\DeclareUnicodeCharacter{2272}{\ensuremath{\lesssim}}
+\DeclareUnicodeCharacter{2273}{\ensuremath{\gtrsim}}
+\DeclareUnicodeCharacter{2282}{\ensuremath{\subset}}
+\DeclareUnicodeCharacter{2286}{\ensuremath{\subseteq}}
+\DeclareUnicodeCharacter{2294}{\ensuremath{\sqcup}}
+\DeclareUnicodeCharacter{2295}{\ensuremath{\oplus}}
+\DeclareUnicodeCharacter{2297}{\ensuremath{\otimes}}
+\DeclareUnicodeCharacter{22A5}{\ensuremath{\perp}}
+\DeclareUnicodeCharacter{22EF}{\ensuremath{\cdots}}
+\DeclareUnicodeCharacter{230A}{\ensuremath{\lfloor}}
+\DeclareUnicodeCharacter{230B}{\ensuremath{\rfloor}}
+\DeclareUnicodeCharacter{27E8}{\ensuremath{\langle}}
+\DeclareUnicodeCharacter{27E9}{\ensuremath{\rangle}}
+\DeclareUnicodeCharacter{27F9}{\ensuremath{\Longrightarrow}}
+
+%% ---- named theorem environments (the labels are those of the draft) ------
+\newtheoremstyle{named}{\topsep}{\topsep}{\itshape}{0pt}{\bfseries}{.}{ }{\thmnote{#3}}
+\theoremstyle{named}
+\newtheorem*{namedthm}{}
+\newenvironment{mdproof}[1][Proof]{\par\medskip\noindent\textit{#1.}\ }{\par\medskip}
+\newlist{leancode}{itemize}{1}
+\setlist[leancode]{label={},leftmargin=1.2em,topsep=.5em,itemsep=.15em,parsep=0pt}
+\setlength{\parskip}{.35em}
+\sloppy
+\hbadness=10000
+\begin{document}
+\title{One-link integration before Bakry–Émery for SU(2) lattice Yang–Mills\\[.5em]\large An explicit strong-coupling threshold β \textless{} √(2/27) in dimension four, and why complete families of links exist only for d ≤ 4 — machine-checked in Lean 4}
+\author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
+\date{2026-09-25}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small See §12 for the disclosure of AI use and §10 for what is not claimed.\end{center}
+
+\section*{Abstract}
+For SU(2) Wilson lattice gauge theory on (Z/L)⁴ with action S = −β $Σ_p$ (1/2)tr $U_p$, β = 4/g², we integrate out one quarter of the links exactly and apply the Bakry–Émery criterion to the resulting marginal. The set integrated out is a \textit{complete family} I*: a set of links such that every plaquette contains exactly one of them. Since the links of I* share no plaquette, the Haar integral factorises over \textit{stars}, and the marginal density is exp(−Φ) with Φ = $−Σ_star$ log $F0(β²‖M_s‖²/4)$, where F0(x) = $Σ_k$ $x^k/(k!(k+1)!)$, so that F0(κ²/4) = 2I₁(κ)/κ, and $M_s$ is the sum of the six staples of the star s. We prove that the second derivative of Φ along the geodesics $U_e$ ↦ $U_e$ $e^{τX_e}$ is at least −27β² $Σ_e$ $‖X_e‖²$, for all β and all configurations; with Ric = 2 for the unit S³ this gives a Bakry–Émery curvature 2 − 27β² and a threshold β \textless{} √(2/27) = 0.2722, against β \textless{} 1/12 = 0.0833 from the counting of Shen–Zhu–Zhu. The chain from the Wilson action to the bound on Φ is a theorem of Lean 4 with Mathlib (no \texttt{sorry}, no \texttt{native\_\allowbreak{}decide}, standard axioms only). The step from there to a log-Sobolev inequality and a mass gap is not formalised: it uses the Bakry–Émery theorem and an adaptation of the decay argument of Shen–Zhu–Zhu that we write out only in outline. A second machine-checked statement is that a complete family exists on $Z^d$ exactly for d ≤ 4: restricted to a unit cube the family is a binary code of length d−1, size $2^{d−3}$ and minimum distance 3, and the Hamming bound reads d ≤ 4, with equality at d = 4 corresponding to the repetition code \{000, 111\} being perfect. On the torus $(Z/L)^d$ with d ≥ 2 the same existence question is settled with the period included — a complete family of links exists exactly when d ≤ 4 and L is even — and for k-cells in place of links, a complete family has density exactly 1/(2(k+1)) and forces d ≤ 3k+1 for every period, an odd period admitting none; all of this is machine-checked. For d ≥ 5 one can only ask that each plaquette contain at most one link, and the density of such a packing is at most 1/d — also machine-checked — so the gain drops to a factor 1.72. The constant 27 cannot be improved past 21: an explicit configuration, checked in exact arithmetic, gives $−λ_min$ = 21β². The character of the result is an improvement by a constant factor inside the Bakry–Émery method; we make no claim about the continuum limit, and none about the Clay problem.
+
+\textbf{Keywords.} Lattice Yang–Mills, strong coupling, one-link integral, Bakry–Émery criterion, log-Sobolev inequality, exact cover, Hamming bound, Lean 4.
+
+\textbf{MSC 2020.} 81T25, 60H10, 58J65, 94B65, 68V20.
+
+\section*{1. Introduction}
+Shen, Zhu and Zhu [SZZ] study the Langevin dynamics of the Wilson lattice gauge measure on $(Z/L)^d$ with structure group G and action S(Q) = Nβ Re $Σ_{p ∈ P⁺}$ $Tr(Q_p)$, the measure being proportional to exp(S). Their Lemma 4.1 bounds the Hessian by \textbar{}Hess S(v,v)\textbar{} ≤ 8(d−1)N\textbar{}β\textbar{} \textbar{}v\textbar{}², their (4.8) gives Ric(v,v) = (α(N+2)/4 − 1)\textbar{}X\textbar{}², and Assumption 1.1 — that the Bakry–Émery curvature $K_S$ = (N+2)/2 − 1 − 8N\textbar{}β\textbar{}(d−1) be positive — reads \textbar{}β\textbar{} \textless{} 1/(16(d−1)) for SU(N) in their (1.3). Under it the invariant measure is unique on the whole lattice, the finite-volume measures converge to it, log-Sobolev and Poincaré inequalities hold with constants uniform in the volume, and correlations of local observables decay exponentially: a strictly positive mass gap.
+
+The threshold is a constant, and the method producing it is local: Ric is fixed by the group, and Hess S is bounded plaquette by plaquette. This note asks how far the constant moves if one performs an exact integration \textit{before} invoking Bakry–Émery. Throughout, G = SU(2) is identified with the unit sphere S³ in the quaternions ℍ, and we use the physicists' normalisation
+
+\begin{quote}
+S = β $Σ_p$ (1 − cos $θ_p$),  cos $θ_p$ = (1/2) tr $U_p$,  β = $β_W$ = 4/g².
+\end{quote}
+The translation to [SZZ] is $β_W$ = $4β_SZZ$, $|X|²_SZZ$ = 2\textbar{}X\textbar{}², $Ric_SZZ$ = 1 against Ric = 2; for N = 2, d = 4 the threshold (1.3) reads $β_SZZ$ \textless{} 1/48, that is \textbf{$β_W$ \textless{} 1/12 = 0.0833}. In this normalisation the infimum of $λ_min(Hess$ S) over configurations is −16β, attained at the Z₂ configuration $Q_{(x,μ)}$ = $(−1)^{x₁+⋯+x_{μ−1}}$ where every plaquette equals −1 (the bound $λ_min$ ≤ −16β is elementary; that nothing lies below it is computation, §8), so the counting of [SZZ] is a factor 3/2 loose at d = 4 and Bakry–Émery without any integration cannot pass β \textless{} 1/8.
+
+The object we integrate out is a \textbf{complete family}: a set I* of links such that every plaquette contains exactly one link of I*. Counting forces its density to be 1/4. In d = 4 such families exist; the one used here is the period-2 family
+
+\begin{quote}
+I₁ : x₂ = x₃ ≠ x₄,  I₂ : x₃ = x₄ ≠ x₁,  I₃ : x₁ = x₂ = x₄,  I₄ : x₁ = x₃ ≠ x₂  (mod 2),
+\end{quote}
+$I_{μ}$ being the positions of the links of direction μ. Since the links of I* pairwise share no plaquette, the Haar integral over them factorises; and since \textit{every} plaquette is absorbed, the effective action of the remaining links carries no bare plaquette, so the O(β) term of the Hessian disappears and what is left is O(β²). This note states three things.
+
+\textbf{(A)} The chain from the Wilson action to the bound \texttt{Hess\ \allowbreak{}Φ\ \allowbreak{}≥\ \allowbreak{}−27β²} is machine-checked (Theorem 1, §2). With the standard facts that τ ↦ U $e^{τX}$ is a geodesic of the bi-invariant metric, that the second derivative along a geodesic is the Riemannian Hessian, and that Ric = 2 on the unit S³, the Bakry–Émery curvature of the marginal is 2 − 27β² and the threshold is
+
+\begin{quote}
+\textbf{$β_W$ \textless{} √(2/27) = 0.27217}  $(β_SZZ$ \textless{} 0.06804),
+\end{quote}
+a factor 3.27 = 4√(2/3) above the 1/12 of [SZZ] and 2.18 above the ceiling 1/8 of the method without integration. For general d, whenever a complete family exists, the same proof gives \texttt{Hess\ \allowbreak{}Φ\ \allowbreak{}≥\ \allowbreak{}−3(d−1)²β²} and $β_W$ \textless{} √(2/3)/(d−1), a factor 3.27 above 1/(4(d−1)) independently of d.
+
+\textbf{(B)} A complete family exists on $Z^d$ exactly for d ≤ 4 (Theorem 2, §6), also machine-checked, with no periodicity assumed. The obstruction sits inside a single unit 5-cube, and the proof on paper is a line of coding theory: restricted to a unit cube, the positions of the links of one direction form a binary code of length d−1, size $2^{d−3}$ and minimum distance at least 3, and the Hamming bound $2^{d−3}(1$ + (d−1)) ≤ $2^{d−1}$ is equivalent to d ≤ 4. Four is the last dimension because the binary repetition code of length 3 is perfect. On a torus of period L the existence is settled completely and the period enters: a complete family of links on $(Z/L)^d$, d ≥ 2, exists exactly when d ≤ 4 and L is even (Theorem 2′, §2). Replacing links by k-cells and plaquettes by (k+1)-cells, a complete family has density exactly 1/(2(k+1)) and forces d ≤ 3k+1, for every period; an odd period admits none. In d ≥ 5 one falls back on packings, whose density is at most 1/d (Theorem 6.2, also machine-checked), and the gain over [SZZ] falls to 1.72.
+
+\textbf{(C)} The limits of the method (§8): the constant 27 cannot be pushed below 21, since an explicit frustrated configuration gives $λ_min(Hess$ Φ) = −21β² in exact arithmetic, so the ceiling of this route is $β_W$ ≤ √(2/21) = 0.3086; for β ≳ 1 integrating first is worse than not integrating; the iteration does not close, a second one-link integral no longer being Bessel; and the mechanism does not reach SU(N), since the inequality carrying the SU(2) proof — that the covariance of a tilted Haar measure is dominated by that of Haar — is already false for U(2) with M = diag(s, 0), and in the 't Hooft limit the gain disappears.
+
+We do not claim a new regime. The value 0.2722 exceeds every threshold we could find written with an explicit number, but the cluster expansion of Osterwalder–Seiler, the classical source of a mass gap at strong coupling, we could not retrieve, and a careful version of it may well reach further (§9). The honest description of (A) is an improvement by a constant factor inside the Bakry–Émery method.
+
+\section*{2. Setting, and what is Lean and what is paper}
+\textbf{Lattice.} Vertices V(L) = (Z/L)⁴, links Edge(L) = V(L) × \{1,2,3,4\}, the link (x, μ) running from x to x + $e_{μ}$. A plaquette is (x, μ \textless{} ν) with the four links (x,μ), $(x+e_{ν},μ)$, (x,ν), $(x+e_{μ},ν)$. The field is U : Edge(L) → ℍ with $‖U_e‖$ = 1; the Wilson action is, verbatim from \texttt{WilsonOneLink.\allowbreak{}SW} in \texttt{LatticeGaugeOneLink.\allowbreak{}lean}, \texttt{SW\ \allowbreak{}β\ \allowbreak{}U\ \allowbreak{}=\ \allowbreak{}-β\ \allowbreak{}*\ \allowbreak{}∑\ \allowbreak{}p\ \allowbreak{}:\ \allowbreak{}Plaq\ \allowbreak{}L,\ \allowbreak{}(hol\ \allowbreak{}U\ \allowbreak{}p.\allowbreak{}1.\allowbreak{}1\ \allowbreak{}p.\allowbreak{}1.\allowbreak{}2.\allowbreak{}1\ \allowbreak{}p.\allowbreak{}1.\allowbreak{}2.\allowbreak{}2).\allowbreak{}re}, where \texttt{hol} is the holonomy around the plaquette and \texttt{re} is (1/2)tr. Perturbations are \texttt{pert\ \allowbreak{}h2\ \allowbreak{}U\ \allowbreak{}X\ \allowbreak{}τ\ \allowbreak{}e\ \allowbreak{}=\ \allowbreak{}U\ \allowbreak{}e\ \allowbreak{}*\ \allowbreak{}exp\ \allowbreak{}(τ\ \allowbreak{}•\ \allowbreak{}X\ \allowbreak{}e)}, that is $U_e$ ↦ $U_e$ $e^{τX_e}$ with $X_e$ purely imaginary.
+
+\textbf{Complete family, stars, staples.} For even L the family I* of §1 is \texttt{Istar\ \allowbreak{}h2}, defined from a mod-2 table; \texttt{Star\ \allowbreak{}h2} is the subtype of links in I*, \texttt{Rest\ \allowbreak{}h2} the subtype of the others. For s ∈ Star and i ∈ \{1,…,6\} the i-th \textit{staple} of s is the product of the three remaining links of the i-th plaquette containing s, with that plaquette's orientation; $M_s$ (\texttt{Mst}) is the sum of the six staples, and \texttt{Es\ \allowbreak{}s} is the set of links of Rest lying on a plaquette of s — the \textit{slots} of the star, 18 of them.
+
+\textbf{Effective action.} With F0(x) = $Σ_{k≥0}$ $x^k/(k!(k+1)!)$, G(β,t) = log F0(β²t/4) and
+
+\begin{leancode}
+\item \texttt{noncomputable\ \allowbreak{}def\ \allowbreak{}Phi\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}(h2\ \allowbreak{}:\ \allowbreak{}2\ \allowbreak{}∣\ \allowbreak{}L)\ \allowbreak{}(hL2\ \allowbreak{}:\ \allowbreak{}(2\ \allowbreak{}:\ \allowbreak{}ZMod\ \allowbreak{}L)\ \allowbreak{}≠\ \allowbreak{}0)\ \allowbreak{}(β\ \allowbreak{}:\ \allowbreak{}ℝ)}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(V\ \allowbreak{}:\ \allowbreak{}Rest\ \allowbreak{}h2\ \allowbreak{}→\ \allowbreak{}ℍ[ℝ])\ \allowbreak{}:\ \allowbreak{}ℝ\ \allowbreak{}:=}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}∑\ \allowbreak{}s,\ \allowbreak{}-G\ \allowbreak{}β\ \allowbreak{}(‖∑\ \allowbreak{}i,\ \allowbreak{}staple\ \allowbreak{}h2\ \allowbreak{}hL2\ \allowbreak{}V\ \allowbreak{}s\ \allowbreak{}i‖\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2)}
+\end{leancode}
+we have Φ = $−Σ_s$ log $F0(β²‖M_s‖²/4)$. On paper F0(κ²/4) = 2I₁(κ)/κ is the one-link integral of SU(2).
+
+\begin{quote}
+\begin{namedthm}[Theorem 1 (Lean)]
+Let L be even, L ≥ 3, and let μ be any Haar probability measure on the unit quaternions (i.e. any \texttt{IsHaarS3\ \allowbreak{}μ}). Then: (i) \textit{(factorisation)} for every field W on Rest with $‖W_e‖$ = 1, \textgreater{} \texttt{∫\ \allowbreak{}u,\ \allowbreak{}Real.\allowbreak{}exp\ \allowbreak{}(-SW\ \allowbreak{}β\ \allowbreak{}(glue\ \allowbreak{}h2\ \allowbreak{}u\ \allowbreak{}W))\ \allowbreak{}∂(Measure.\allowbreak{}pi\ \allowbreak{}fun\ \allowbreak{}\_\allowbreak{}\ \allowbreak{}:\ \allowbreak{}Star\ \allowbreak{}h2\ \allowbreak{}=\textgreater{}\ \allowbreak{}μ)\ \allowbreak{}=\ \allowbreak{}Real.\allowbreak{}exp\ \allowbreak{}(-Phi\ \allowbreak{}h2\ \allowbreak{}hL2\ \allowbreak{}β\ \allowbreak{}W)} (ii) \textit{(Hessian bound)} for every U, X on Rest with $‖U_e‖$ = 1 and $(X_e).re$ = 0, \textgreater{} \texttt{-(27\ \allowbreak{}*\ \allowbreak{}β\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2)\ \allowbreak{}*\ \allowbreak{}∑\ \allowbreak{}e,\ \allowbreak{}‖X\ \allowbreak{}e‖\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2\ \allowbreak{}≤\ \allowbreak{}deriv\ \allowbreak{}(deriv\ \allowbreak{}(fun\ \allowbreak{}τ\ \allowbreak{}=\textgreater{}\ \allowbreak{}Phi\ \allowbreak{}h2\ \allowbreak{}(two\_\allowbreak{}ne\_\allowbreak{}zero\_\allowbreak{}of\_\allowbreak{}le\ \allowbreak{}hL)\ \allowbreak{}β\ \allowbreak{}(pert\ \allowbreak{}h2\ \allowbreak{}U\ \allowbreak{}X\ \allowbreak{}τ)))\ \allowbreak{}0}
+\end{namedthm}
+\end{quote}
+Both are theorems of Lean 4 with Mathlib, verbatim \texttt{WilsonOneLink.\allowbreak{}integral\_\allowbreak{}star\_\allowbreak{}links} and \texttt{StaplePerturbation.\allowbreak{}hess\_\allowbreak{}gauge} (§11 has the full signatures and the axiom logs). The bound in (ii) holds for every β and every configuration; no smallness is assumed.
+
+\begin{quote}
+\begin{namedthm}[Theorem 2 (Lean)]
+With \texttt{PerfectZ\ \allowbreak{}J} the property that every plaquette of $Z^d$ contains exactly one link of the family J — verbatim \textgreater{} \texttt{def\ \allowbreak{}PerfectZ\ \allowbreak{}(J\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}W\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}Bool)\ \allowbreak{}:\ \allowbreak{}Prop\ \allowbreak{}:=} \textgreater{} \texttt{\ \allowbreak{}\ \allowbreak{}∀\ \allowbreak{}μ\ \allowbreak{}ν\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}d,\ \allowbreak{}μ\ \allowbreak{}≠\ \allowbreak{}ν\ \allowbreak{}→\ \allowbreak{}∀\ \allowbreak{}x\ \allowbreak{}:\ \allowbreak{}W\ \allowbreak{}d,} \textgreater{} \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(J\ \allowbreak{}μ\ \allowbreak{}x).\allowbreak{}toNat\ \allowbreak{}+\ \allowbreak{}(J\ \allowbreak{}μ\ \allowbreak{}(shift\ \allowbreak{}x\ \allowbreak{}ν)).\allowbreak{}toNat} \textgreater{} \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}+\ \allowbreak{}(J\ \allowbreak{}ν\ \allowbreak{}x).\allowbreak{}toNat\ \allowbreak{}+\ \allowbreak{}(J\ \allowbreak{}ν\ \allowbreak{}(shift\ \allowbreak{}x\ \allowbreak{}μ)).\allowbreak{}toNat\ \allowbreak{}=\ \allowbreak{}1} — we have \texttt{no\_\allowbreak{}perfectZ\_\allowbreak{}of\_\allowbreak{}five\ \allowbreak{}:\ \allowbreak{}5\ \allowbreak{}≤\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}∀\ \allowbreak{}J,\ \allowbreak{}¬\ \allowbreak{}PerfectZ\ \allowbreak{}J}, and complete families exist for d = 2, 3, 4 (\texttt{perfect\_\allowbreak{}I2}, \texttt{perfect\_\allowbreak{}I3}, \texttt{perfect\_\allowbreak{}I4}, each by \texttt{decide}). No periodicity is assumed in the negative statement.
+\end{namedthm}
+\end{quote}
+On a torus the same question has an answer in which the period appears, and it extends from links to k-cells: a family of k-cells is \textit{complete} when every (k+1)-cell has exactly one of its 2(k+1) faces in the family (§6; for k = 1 this is the definition above).
+
+\begin{quote}
+\begin{namedthm}[Theorem 2′ (Lean)]
+On $(Z/L)^d$ with L ≥ 1: (i) for d ≥ 2, a complete family of links exists \textbf{if and only if d ≤ 4 and L is even} — verbatim \textgreater{} \texttt{theorem\ \allowbreak{}perfectK\_\allowbreak{}one\_\allowbreak{}iff\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}(hd\ \allowbreak{}:\ \allowbreak{}2\ \allowbreak{}≤\ \allowbreak{}d)\ \allowbreak{}:} \textgreater{} \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(∃\ \allowbreak{}I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool,\ \allowbreak{}PerfectK\ \allowbreak{}1\ \allowbreak{}I)\ \allowbreak{}↔\ \allowbreak{}(d\ \allowbreak{}≤\ \allowbreak{}4\ \allowbreak{}∧\ \allowbreak{}2\ \allowbreak{}∣\ \allowbreak{}L)} (ii) for k ≥ 1 and k + 1 ≤ d, a complete family of k-cells forces \textbf{d ≤ 3k+1} with no condition on the period (\texttt{perfectK\_\allowbreak{}d\_\allowbreak{}le}), has density exactly \textbf{1/(2(k+1))} (\texttt{density\_\allowbreak{}of\_\allowbreak{}perfectK}) and satisfies 2(k+1)·\textbar{}I\textbar{} = $C(d,k)·L^d$ (\texttt{card\_\allowbreak{}supportK\_\allowbreak{}of\_\allowbreak{}perfectK}); an odd period admits none, for any k and any d ≥ k+1 (\texttt{no\_\allowbreak{}perfectK\_\allowbreak{}of\_\allowbreak{}odd}).
+\end{namedthm}
+\end{quote}
+Which further cases this decides — d = k+2 for every k, k = 2 with d = 4, and the periods left open at k = 4, d = 9 and at k = 5, d = 8 — is Theorem 6.6.
+
+What replaces a complete family in d ≥ 5 is a \textit{packing}, a family meeting every plaquette at most once, and its density is at most 1/d; that too is machine-checked (Theorem 6.2, §6), with the attainment of 1/d checked for d = 4 and d = 5.
+
+The statement we would like to reach is a mass gap, and it is not a Lean theorem. We state it as a corollary and mark the grades.
+
+\begin{quote}
+\begin{namedthm}[Corollary 3 (paper; part (a) is standard, part (b) is a sketch)]
+Let $β_W$ \textless{} √(2/27) and put K' := 2 − 27β². \textbf{(a)} \textit{(standard facts: geodesics of the bi-invariant metric, Ric = 2 on the unit S³, and the Bakry–Émery theorem.)} The marginal measure μ' ∝ exp(−Φ) on $(S³)^{Rest}$ has Bakry–Émery curvature at least K', hence satisfies log-Sobolev and Poincaré inequalities with constants depending only on K', uniformly in the volume and in the boundary condition. \textbf{(b)} \textit{(sketch: the argument of [SZZ, §4] transported to μ'; the iteration has not been written out line by line, see §7.)} The infinite-volume Wilson Gibbs measure is unique, and for local observables f, g with disjoint supports \textgreater{} $|Cov_{μ}(f,g)|$ ≤ c₁ $e^{−d/2}$ $|||f|||_{∞}$ $|||g|||_{∞}$ + $e^{−m·d}$ ‖f‖₂ ‖g‖₂,  m = 2K'/(3e⁴A),  A ≤ β²(99 + 243β²), with d the distance in the graph in which two links are adjacent when they lie in a common star, which is at least one third of the lattice distance.
+\end{namedthm}
+\end{quote}
+Corollary 3 is \textit{not} machine-checked, and the parts of it are not on the same footing. The following table says which step is which. It should be read as the main disclosure of this note.
+
+\begin{small}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.422\linewidth}>{\raggedright\arraybackslash}p{0.347\linewidth}>{\raggedright\arraybackslash}p{0.191\linewidth}}
+\hline
+\textbf{Step} & \textbf{Content} & \textbf{Grade} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Step} & \textbf{Content} & \textbf{Grade} \\
+\hline
+\endhead
+\hline
+\endfoot
+Wilson action as a sum over stars & \texttt{SW\_\allowbreak{}eq} & Lean \\
+one-link integral ∫ $e^{β⟨u,M⟩}$ dμ = F0(β²‖M‖²/4) & \texttt{IsHaarS3.\allowbreak{}one\_\allowbreak{}link} & Lean \\
+I* absorbs every plaquette exactly once & \texttt{plaq\_\allowbreak{}unique} & Lean \\
+marginal density is exp(−Φ) & \texttt{integral\_\allowbreak{}star\_\allowbreak{}links} & Lean \\
+0 ≤ G' ≤ β²/8 and G'' ≤ 0 & \texttt{G1\_\allowbreak{}nonneg}, \texttt{G1\_\allowbreak{}le}, \texttt{G2\_\allowbreak{}nonpos} & Lean \\
+one star: second derivative of ‖Σ $s_i‖²$ at most 36 Σ‖X‖² & \texttt{star\_\allowbreak{}S}, \texttt{second\_\allowbreak{}deriv\_\allowbreak{}le} & Lean \\
+each remaining link lies in exactly 6 stars, 18 slots per star & \texttt{star\_\allowbreak{}count}, \texttt{Es\_\allowbreak{}card} & Lean \\
+second derivative of Φ along U $e^{τX}$ at least −27β² Σ‖X‖² & \texttt{hess\_\allowbreak{}gauge} & Lean \\
+that second derivative is the Riemannian Hessian; Ric = 2 for the unit S³ & geodesics of a bi-invariant metric; round metric of radius 1 & paper, standard \\
+Ric + Hess Φ ≥ K' \textgreater{} 0 ⟹ LSI(K'), Poincaré(K') & Bakry–Émery & paper, textbook \\
+Poincaré + finite range ⟹ exponential decay & [SZZ, Lemma 4.10 and Cor. 4.11] transported to Φ & \textbf{paper, outline with constants} \\
+observables containing links of I* & conditional independence, covariance identity & paper, complete \\
+μ = μ' ⊗ ∏ vMF, DLR of the marginal & §7(d) & paper, complete \\
+uniqueness of μ' & decay, uniform in the boundary condition & \textbf{paper, outline} \\
+\hline
+\end{longtable}
+\end{small}
+
+\section*{3. The one-link integral}
+Write F0, F1, F2 for the three series
+
+\begin{quote}
+F0(x) = $Σ_{k≥0}$ $x^k/(k!(k+1)!)$,  F1(x) = $Σ_{k≥0}$ $x^k/(k!(k+2)!)$,  F2(x) = $Σ_{k≥0}$ $x^k/(k!(k+3)!)$,
+\end{quote}
+so that F1 = F0' and F2 = F1' (\texttt{hasDerivAt\_\allowbreak{}F0}, \texttt{hasDerivAt\_\allowbreak{}F1}), and Z(κ) := F0(κ²/4), which on paper is 2I₁(κ)/κ.
+
+\textbf{The integral.} The identity $∫_{S³}$ exp(β⟨u, M⟩) du = F0(β²‖M‖²/4) is proved from left invariance of Haar alone, with no coordinates on S³ and no Haar density. \texttt{IsHaarS3\ \allowbreak{}μ} asks three things — μ is a probability measure, ‖u‖ = 1 almost surely, and $(q·)_*μ$ = μ for every unit q. From these: the law of u is invariant under the rotations fixing a unit vector (\texttt{IsHaarS3.\allowbreak{}rot}), the mixed moments vanish (\texttt{mixed}), the moments $c_n$ := ∫ (re $u)^n$ dμ satisfy a two-term recursion (\texttt{cm\_\allowbreak{}rec}) with the odd ones vanishing (\texttt{cm\_\allowbreak{}odd}), and $c_n$ is the corresponding moment of the density (2/π) sin²θ dθ (\texttt{cm\_\allowbreak{}eq\_\allowbreak{}mom}); summing the exponential series term by term gives
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}IsHaarS3.\allowbreak{}one\_\allowbreak{}link\ \allowbreak{}(h\ \allowbreak{}:\ \allowbreak{}IsHaarS3\ \allowbreak{}μ)\ \allowbreak{}(β\ \allowbreak{}:\ \allowbreak{}ℝ)\ \allowbreak{}(M\ \allowbreak{}:\ \allowbreak{}ℍ[ℝ])\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}∫\ \allowbreak{}u,\ \allowbreak{}Real.\allowbreak{}exp\ \allowbreak{}(β\ \allowbreak{}*\ \allowbreak{}inner\ \allowbreak{}ℝ\ \allowbreak{}u\ \allowbreak{}M)\ \allowbreak{}∂μ\ \allowbreak{}=\ \allowbreak{}F0\ \allowbreak{}(β\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2\ \allowbreak{}*\ \allowbreak{}‖M‖\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2\ \allowbreak{}/\ \allowbreak{}4)}
+\end{leancode}
+together with \texttt{Z\_\allowbreak{}eq\_\allowbreak{}integral\ \allowbreak{}:\ \allowbreak{}Z\ \allowbreak{}κ\ \allowbreak{}=\ \allowbreak{}2/π\ \allowbreak{}*\ \allowbreak{}∫\ \allowbreak{}θ\ \allowbreak{}in\ \allowbreak{}(0:ℝ).\allowbreak{}.\allowbreak{}π,\ \allowbreak{}exp\ \allowbreak{}(κ\ \allowbreak{}*\ \allowbreak{}cos\ \allowbreak{}θ)\ \allowbreak{}*\ \allowbreak{}sin\ \allowbreak{}θ\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2}, which connects the series to the usual integral representation. The hypothesis is not vacuous: \texttt{haarS3}, the normalised push-forward of Lebesgue measure on the unit ball under x ↦ x/‖x‖, satisfies it (\texttt{isHaarS3\_\allowbreak{}haarS3}) and agrees with Mathlib's \texttt{volume.\allowbreak{}toSphere} normalisation (\texttt{haarS3\_\allowbreak{}eq\_\allowbreak{}toSphere}).
+
+\textbf{The two inequalities for G.} Put G(β,t) = log F0(β²t/4). All the Hessian bound needs about the one-link integral is
+
+\begin{quote}
+\begin{namedthm}[Lemma 3.1]
+For t ≥ 0: 0 ≤ G'(t) ≤ β²/8 and G''(t) ≤ 0.
+\end{namedthm}
+\end{quote}
+\textit{Proof.} G'(t) = (β²/4)·F1/F0 and G''(t) = (β²/4)²(F0F2 − F1²)/F0². Positivity of F0 and F1 is termwise. For the upper bound, $a_k$ − $2b_k$ = $a_k·k/(k+2)$ ≥ 0 termwise, where $a_k$, $b_k$ are the coefficients of F0, F1; hence 2F1 ≤ F0 for x ≥ 0 (\texttt{two\_\allowbreak{}F1\_\allowbreak{}le\_\allowbreak{}F0}) and G' ≤ β²/8. For concavity, the Cauchy product of the series gives the identity
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}turan\_\allowbreak{}series\ \allowbreak{}(x\ \allowbreak{}:\ \allowbreak{}ℝ)\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}F1\ \allowbreak{}x\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2\ \allowbreak{}-\ \allowbreak{}F0\ \allowbreak{}x\ \allowbreak{}*\ \allowbreak{}F2\ \allowbreak{}x}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}=\ \allowbreak{}∑'\ \allowbreak{}n\ \allowbreak{}:\ \allowbreak{}ℕ,\ \allowbreak{}(catalan\ \allowbreak{}(n\ \allowbreak{}+\ \allowbreak{}2)\ \allowbreak{}:\ \allowbreak{}ℝ)\ \allowbreak{}/\ \allowbreak{}((n.\allowbreak{}factorial\ \allowbreak{}:\ \allowbreak{}ℝ)\ \allowbreak{}*\ \allowbreak{}((n\ \allowbreak{}+\ \allowbreak{}4).\allowbreak{}factorial\ \allowbreak{}:\ \allowbreak{}ℝ))\ \allowbreak{}*\ \allowbreak{}x\ \allowbreak{}\textasciicircum{}\ \allowbreak{}n}
+\end{leancode}
+whose coefficients are non-negative, so F1² ≥ F0F2 for x ≥ 0 (\texttt{turan\_\allowbreak{}nonneg}) and G'' ≤ 0. ∎
+
+The inequality F1² ≥ F0F2 is a known Turán-type inequality for modified Bessel functions [BP]; the point of the formalisation is only that it comes without the Hadamard product, the reality of the zeros of J₁ or Rayleigh's sum — the Catalan-number identity is a statement about coefficients that \texttt{positivity} closes. The value G'(0) = β²/8 corresponds to Rayleigh's $Σ_k$ $j_{1,k}^{−2}$ = 1/8.
+
+\section*{4. The star inequality}
+Fix a star. Its six staples are products of three of the remaining links each; under $U_e$ ↦ $U_e$ $e^{τX_e}$ each staple, after transporting the insertions to one end, becomes \textit{exactly}
+
+\begin{quote}
+$s_i(τ)$ = $s_i$ · $e^{τA_i}$ $e^{τB_i}$ $e^{τC_i}$,
+\end{quote}
+with $A_i$, $B_i$, $C_i$ purely imaginary and $‖A_i‖$ = $‖X_{i1}‖$ and so on, because Ad of a unit quaternion is an isometry (\texttt{staple\_\allowbreak{}fwd}, \texttt{staple\_\allowbreak{}bwd}, \texttt{qS\_\allowbreak{}pert}). With $Y_i$ := $A_i$ + $B_i$ + $C_i$, $W_i$ := $A_i×B_i$ + $A_i×C_i$ + $B_i×C_i$, M := Σ $s_i$, t := ‖M‖², $p_i$ := $⟨s_i$, M⟩, $u_i$ := $s_iY_i$ and $v_i$ := $Im(\bar{s}_iM)$, the quaternion relations AB = −⟨A,B⟩ + A×B and A² = −‖A‖² give $s_i''$ = $s_i(−‖Y_i‖²$ + $2W_i$) and hence
+
+\begin{quote}
+t''/2 = $‖Σ_i$ $u_i‖²$ − $Σ_i$ $p_i‖Y_i‖²$ + 2 $Σ_i$ $⟨v_i$, $W_i⟩$.
+\end{quote}
+\begin{quote}
+\begin{namedthm}[Theorem 4.1 (Lean, \texttt{StarInequality.\allowbreak{}star\_\allowbreak{}S})]
+Let E be a real inner-product space, $s_i$ ∈ E with $‖s_i‖$ = 1 (i = 1,…,6), M := $Σ_j$ $s_j$, and let $u_i$ ∈ E and $a_i$, $b_i$, $c_i$, $v_i$ ∈ ℝ³ satisfy $‖u_i‖²$ ≤ $‖a_i+b_i+c_i‖²$ and $‖v_i‖²$ ≤ ‖M‖² − $⟨s_i,M⟩²$. Then \textgreater{} $‖Σ_i$ $u_i‖²$ − $Σ_i$ $⟨s_i,M⟩·‖a_i+b_i+c_i‖²$ + 2 $Σ_i$ $⟨v_i$, $a_i×b_i$ + $a_i×c_i$ + $b_i×c_i⟩$ ≤ 18 $Σ_i$ $(‖a_i‖²+‖b_i‖²+‖c_i‖²)$.
+\end{namedthm}
+\end{quote}
+These three hypotheses are all that is used: the dimension of E does not enter and no quaternion multiplication appears. The quaternionic form is a separate theorem,
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}second\_\allowbreak{}deriv\_\allowbreak{}le\ \allowbreak{}(s\ \allowbreak{}A\ \allowbreak{}B\ \allowbreak{}C\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}6\ \allowbreak{}→\ \allowbreak{}ℍ[ℝ])\ \allowbreak{}(hs\ \allowbreak{}:\ \allowbreak{}∀\ \allowbreak{}i,\ \allowbreak{}‖s\ \allowbreak{}i‖\ \allowbreak{}=\ \allowbreak{}1)}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(hA\ \allowbreak{}:\ \allowbreak{}∀\ \allowbreak{}i,\ \allowbreak{}(A\ \allowbreak{}i).\allowbreak{}re\ \allowbreak{}=\ \allowbreak{}0)\ \allowbreak{}(hB\ \allowbreak{}:\ \allowbreak{}∀\ \allowbreak{}i,\ \allowbreak{}(B\ \allowbreak{}i).\allowbreak{}re\ \allowbreak{}=\ \allowbreak{}0)\ \allowbreak{}(hC\ \allowbreak{}:\ \allowbreak{}∀\ \allowbreak{}i,\ \allowbreak{}(C\ \allowbreak{}i).\allowbreak{}re\ \allowbreak{}=\ \allowbreak{}0)\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}deriv\ \allowbreak{}(deriv\ \allowbreak{}(fun\ \allowbreak{}τ\ \allowbreak{}=\textgreater{}\ \allowbreak{}‖∑\ \allowbreak{}i,\ \allowbreak{}curve\ \allowbreak{}(s\ \allowbreak{}i)\ \allowbreak{}(A\ \allowbreak{}i)\ \allowbreak{}(B\ \allowbreak{}i)\ \allowbreak{}(C\ \allowbreak{}i)\ \allowbreak{}τ‖\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2))\ \allowbreak{}0}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}≤\ \allowbreak{}36\ \allowbreak{}*\ \allowbreak{}∑\ \allowbreak{}i,\ \allowbreak{}(‖A\ \allowbreak{}i‖\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2\ \allowbreak{}+\ \allowbreak{}‖B\ \allowbreak{}i‖\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2\ \allowbreak{}+\ \allowbreak{}‖C\ \allowbreak{}i‖\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2)}
+\end{leancode}
+with \texttt{curve\ \allowbreak{}s\ \allowbreak{}A\ \allowbreak{}B\ \allowbreak{}C\ \allowbreak{}τ\ \allowbreak{}=\ \allowbreak{}s\ \allowbreak{}*\ \allowbreak{}exp(τ•A)\ \allowbreak{}*\ \allowbreak{}exp(τ•B)\ \allowbreak{}*\ \allowbreak{}exp(τ•C)}.
+
+\textbf{Proof of Theorem 4.1 (explicit sum of squares).} If t = 36 then all $s_i$ are equal, $p_i$ = 6, $v_i$ = 0, and the left side is $‖Σu_i‖²$ − $6Σ‖Y_i‖²$ ≤ 0. So assume t \textless{} 36; then $|p_i|$ ≤ ‖M‖ \textless{} 6.
+
+\textit{(i) The weights.} Put $λ_i$ := (6 − $p_i)/(36$ − t) \textgreater{} 0. Since $Σ_i$ $p_i$ = ⟨Σ $s_i$, M⟩ = t, the sum Σ $λ_i$ = (36 − t)/(36 − t) = 1 is an identity. Cauchy–Schwarz in the form ‖Σ $u_i‖²$ ≤ Σ $‖u_i‖²/λ_i$ (Mathlib's \texttt{Finset.\allowbreak{}sq\_\allowbreak{}sum\_\allowbreak{}div\_\allowbreak{}le\_\allowbreak{}sum\_\allowbreak{}sq\_\allowbreak{}div}, Sedrakyan) gives
+
+\begin{quote}
+t''/2 ≤ $Σ_i$ [ $c_i$ $‖Y_i‖²$ + $2⟨v_i$, $W_i⟩$ ],  $c_i$ := $1/λ_i$ − $p_i$ = 6 − $ν_i²/(6$ − $p_i$),  $ν_i²$ := t − $p_i²$.
+\end{quote}
+\textit{(ii) One staple.} Write Y = a+b+c, P := a − c, Z := Y + b. Then W = a×b + a×c + b×c = ½ P×Z, and n := ‖a‖²+‖b‖²+‖c‖² = ‖b‖² + ½‖Y−b‖² + ½‖P‖². With μ := ‖v‖²/36 and k := (9+μ)/(27−μ) one has the \textit{identity}
+
+\begin{quote}
+18n − c‖Y‖² − 2⟨v, W⟩ = ‖3P − (Z×v)/6‖² + ⟨Z,v⟩²/36 + (27−μ)‖b − kY‖² + R‖Y‖², R := 9 − c − μ − (9+μ)²/(27−μ),
+\end{quote}
+obtained from the AM–GM ⟨P, Z×v⟩ ≤ 9‖P‖² + ‖Z×v‖²/36, Lagrange's ‖Z×v‖² = ‖Z‖²‖v‖² − ⟨Z,v⟩², and completing a 2×2 square. For c = $c_i$ one computes
+
+\begin{quote}
+(27−μ)(6−p) R = 12μ(57 − 3μ + 4p),
+\end{quote}
+which is non-negative because p ≥ −6 and μ ≤ 1 (from ‖v‖² ≤ t − p² ≤ t ≤ 36). Hence $c_i‖Y_i‖²$ + $2⟨v_i,W_i⟩$ ≤ 18 $n_i$ for each i, and summing finishes. ∎
+
+Two remarks. R = 0 is equivalent to c = 54(108 − ν²)/(972 − ν²), which is exactly the largest c for which the 9×9 form c‖a+b+c‖² + 2⟨v, a×b+a×c+b×c⟩ has largest eigenvalue 18, so the AM–GM step is not lossy. And the constant 18 (equivalently 36 for t'') is sharp: \texttt{star\_\allowbreak{}S\_\allowbreak{}sharp} exhibits E = ℝ, s = (+1,+1,+1,−1,−1,−1), $u_i$ = 3, $a_i$ = $b_i$ = $c_i$ = e₁, $v_i$ = 0, where both sides equal 324, and \texttt{second\_\allowbreak{}deriv\_\allowbreak{}sharp} does the same quaternionically. The supremum 36 is attained at t = 0, 4 and 16, that is for $s_i$ = ±s with k pluses, 1 ≤ k ≤ 5.
+
+\textbf{N staples.} The same proof with $λ_i$ = (N − $p_i)/(N²$ − t), $c_i$ = N − $ν_i²/(N$ − $p_i$) and the AM–GM (3N/2)‖P‖² + ‖Z×v‖²/(6N) gives 3N in place of 18, that is t'' ≤ 6N Σ‖X‖² (\texttt{star\_\allowbreak{}S\_\allowbreak{}gen}, \texttt{second\_\allowbreak{}deriv\_\allowbreak{}le\_\allowbreak{}gen}). In dimension d a star has N = 2(d−1) staples; stars at a free boundary have fewer, and the bound for N' \textless{} N is weaker, so no separate treatment is needed.
+
+\section*{5. Counting, and the passage to the lattice}
+Two combinatorial facts about I* close the gap between one star and the whole lattice.
+
+\begin{quote}
+\begin{namedthm}[Lemma 5.1 (Lean)]
+For even L: every plaquette contains exactly one link of I* (\texttt{plaq\_\allowbreak{}unique}, stated as \texttt{∃!\ \allowbreak{}e,\ \allowbreak{}InP\ \allowbreak{}e\ \allowbreak{}x\ \allowbreak{}μ\ \allowbreak{}ν\ \allowbreak{}∧\ \allowbreak{}Istar\ \allowbreak{}h2\ \allowbreak{}e}). For L ≥ 3 (more precisely for 2 ≠ 0 in Z/L): each link not in I* lies in exactly six distinct stars (\texttt{star\_\allowbreak{}count}: the filter of stars whose slot set contains the link has cardinality 6), and the 18 slots of one star are 18 distinct links (\texttt{Es\_\allowbreak{}card}).
+\end{namedthm}
+\end{quote}
+For L = 2 the forward and backward staples of a star share a link, so a link belongs to three stars, appearing twice in each; the inequality of §4 is stated for arbitrary free vectors $\tilde{X}$ and is therefore insensitive to this, but the counting is, which is why L ≥ 3 appears.
+
+With F = −G(t) we have F'' = −G'(t)t'' − G''(t)(t')² ≥ −G'(t)·max(t'', 0) ≥ −(β²/8)·36 $‖X‖²_star$ by Lemma 3.1 and Theorem 4.1 (this is \texttt{hess\_\allowbreak{}lower}). Summing over stars and using Lemma 5.1 to rearrange the double sum,
+
+\begin{quote}
+$Σ_s$ $Σ_{e ∈ Es(s)}$ $x_e$ = 6 $Σ_e$ $x_e$   (\texttt{count27}),
+\end{quote}
+so the total is −(β²/8)·36·6 = \textbf{−27β²} (\texttt{hess\_\allowbreak{}total}, then \texttt{hess\_\allowbreak{}star\_\allowbreak{}family} for a general star family, \texttt{hess\_\allowbreak{}lattice} and \texttt{hess\_\allowbreak{}lattice\_\allowbreak{}slots} for the lattice, and finally \texttt{hess\_\allowbreak{}gauge} for the perturbation $U_e$ ↦ $U_e$ $e^{τX_e}$). The three factors of 27 = 36·6/8 are: 36 from one star, 6 from the number of stars a link belongs to, 8 from G' ≤ β²/8.
+
+In general dimension, with N = 2(d−1) staples per star and N stars per link, the same three factors give
+
+\begin{quote}
+\textbf{Hess Φ ≥ −(1/8)·6N·N·β² = −3(d−1)²β²,  hence $β_W$ \textless{} √(2/3)/(d−1),}
+\end{quote}
+a factor 4√(2/3) = 3.27 above the 1/(4(d−1)) that the counting of [SZZ] gives in this normalisation — the same factor in every dimension, and available only where a complete family exists. That is the subject of the next section.
+
+\section*{6. Complete families: links only for d ≤ 4, k-cells only for d ≤ 3k+1}
+Let I* be a complete family on $Z^d$, or on any torus $(Z/p)^d$. Counting incidences of links and plaquettes, 2(d−1)\textbar{}I*\textbar{} = $p^d·C(d,2)$, so the density of I* among all links is 1/4 in every dimension and for every period; counting only the (μν)-plaquettes gives $2|S_{μ}|$ + $2|S_{ν}|$ = $p^d$, so for d ≥ 3 each direction carries a quarter of its links.
+
+\begin{namedthm}[Lemma A (restriction)]
+Let Q be a unit d-cube. Every 2-face of Q is a plaquette of the lattice and all four of its links are links of Q; hence I* ∩ Q covers every 2-face of Q exactly once.
+\end{namedthm}
+
+Index the links of Q of direction μ by their position x ∈ $F₂^{[d]∖μ}$ and let $C_{μ}$ be those in I*.
+
+\begin{namedthm}[Lemma B (counting)]
+Q has $2^{d−2}$ faces of type (μν) and each link of direction μ lies on exactly one of them, so $|C_{μ}|$ + $|C_{ν}|$ = $2^{d−2}$; for d ≥ 3, taking three directions, $|C_{μ}|$ = $2^{d−3}$.
+\end{namedthm}
+
+\begin{namedthm}[Lemma C (splitting of projections)]
+Let $π_{ν}$ delete the coordinate ν. Covering each face (μν, y) exactly once is equivalent to: $π_{ν}$ injective on $C_{μ}$, $π_{μ}$ injective on $C_{ν}$, and $π_{ν}(C_{μ})$ ⊔ $π_{μ}(C_{ν})$ = $F₂^{[d]∖{μ,ν}}$.
+\end{namedthm}
+
+\begin{namedthm}[Lemma D (multiplicities) and Corollary E]
+Take three directions μ, ν, ρ, put rest := [d]∖\{μ,ν,ρ\}, and for z ∈ $F₂^{rest}$ let α(z), β(z), δ(z) count the words of $C_{μ}$, $C_{ν}$, $C_{ρ}$ lying over z. Lemma C applied to the three pairs gives α+β = α+δ = β+δ = 2; adding, α+β+δ = 3, so α ≡ β ≡ δ ≡ 1. That is: deleting any two coordinates keeps the $2^{d−3}$ words of $C_{μ}$ distinct, so $C_{μ}$ is a binary code of length n = d−1, size $2^{n−2}$ and minimum distance at least 3.
+\end{namedthm}
+
+\begin{quote}
+\begin{namedthm}[Theorem 6.1]
+A complete family exists on $Z^d$ if and only if d ≤ 4. On the torus $(Z/L)^d$ with d ≥ 2 it exists if and only if d ≤ 4 \textbf{and L is even}.
+\end{namedthm}
+\begin{mdproof}[Proof]
+Apply the Hamming (sphere-packing) bound to the code of Corollary E: balls of radius 1 are disjoint, so $2^{n−2}(1+n)$ ≤ $2^n$, that is n ≤ 3, that is d ≤ 4. For d ≤ 4 there are families of period 2 — that of §1 for d = 4, and \textgreater{} d = 3:  I₁ : x₂ = x₃ = 0,  I₂ : x₁ = 0, x₃ = 1,  I₃ : x₁ = x₂ = 1;   d = 2:  I₁ : x₂ = 0,  I₂ : ∅  (mod 2) — and a family of period 2 lives on $Z^d$ and on every torus of even period. That an odd period admits none is Theorem 6.6(i). ∎
+\end{mdproof}
+\end{quote}
+The torus half of Theorem 6.1 is machine-checked as a single equivalence (\texttt{PerfectFamily.\allowbreak{}perfectK\_\allowbreak{}one\_\allowbreak{}iff}, §11.2); the statement on $Z^d$ is \texttt{no\_\allowbreak{}perfectZ\_\allowbreak{}of\_\allowbreak{}five} together with \texttt{perfect\_\allowbreak{}I2}, \texttt{perfect\_\allowbreak{}I3}, \texttt{perfect\_\allowbreak{}I4}.
+
+At d = 4 the bound is an equality: n = 3, two words, distance 3 is the repetition code \{000, 111\}, which is perfect (2·4 = 8). Inside a unit 4-cube the two links of a given direction are always antipodal. For d = 5 the contradiction takes three words by hand: splitting on two coordinates \{σ,τ\}, the four words read 00ab, 01cd, 10ef, 11gh; distance 3 from 00ab forces cd = ab+11 and ef = ab+11 = cd, and then 01cd and 10ef are at distance 2.
+
+\textbf{The Lean route} is shorter than the counting above and uses no coding theory. Its core is a 3-dimensional subcube: from the conditions on its six faces, exactly one of the four links of a given direction inside it belongs to the family, a decision over $2^12$ = 4096 Booleans (\texttt{cube3\_\allowbreak{}bool}, by \texttt{decide}). From it one gets, for the unit cube, the existence (\texttt{edge\_\allowbreak{}ex}) and the uniqueness (\texttt{edge\_\allowbreak{}uniq}) of a link of the family agreeing with a given position outside two coordinates — the minimum distance 3 of Corollary E — plus \texttt{proj\_\allowbreak{}bijective}. For d ≥ 5 one picks four directions besides μ and forces two links of the family agreeing outside two coordinates, contradicting \texttt{edge\_\allowbreak{}uniq} (\texttt{exists\_\allowbreak{}five}, \texttt{no\_\allowbreak{}perfect\_\allowbreak{}of\_\allowbreak{}five}). The passage to $Z^d$ is Lemma A (\texttt{restrict\_\allowbreak{}perfect}), and \texttt{no\_\allowbreak{}perfectZ\_\allowbreak{}of\_\allowbreak{}five} assumes no periodicity. The positive side is \texttt{perfect\_\allowbreak{}I2}, \texttt{perfect\_\allowbreak{}I3}, \texttt{perfect\_\allowbreak{}I4}, each by \texttt{decide}, \texttt{I4} being the restriction of the period-2 family of §1 to a unit cube. Three negative controls check that \texttt{decide} is not returning truth mechanically (\texttt{not\_\allowbreak{}perfect\_\allowbreak{}empty3}, \texttt{not\_\allowbreak{}perfect\_\allowbreak{}full3}, \texttt{not\_\allowbreak{}perfect\_\allowbreak{}I4\_\allowbreak{}broken}).
+
+\textbf{What is left in d ≥ 5.} Without a complete family, the one-link integral still factorises if one only asks that every plaquette contain \textit{at most} one link of the family — a \textit{packing}. Two things are then determined: how large a packing can be, and what the resulting threshold is.
+
+\begin{quote}
+\begin{namedthm}[Theorem 6.2 (Lean)]
+Let I be a family of links on the periodic lattice $(Z/L)^d$ such that every plaquette contains \textbf{at most} one link of I. Then \textbar{}I\textbar{} is at most the number of vertices, and the density of I among all links is at most 1/d: \textgreater{} \texttt{theorem\ \allowbreak{}card\_\allowbreak{}edgeSet\_\allowbreak{}le\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}\{I\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool\}\ \allowbreak{}(h\ \allowbreak{}:\ \allowbreak{}AtMostOne\ \allowbreak{}I)\ \allowbreak{}:} \textgreater{} \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(edgeSet\ \allowbreak{}I).\allowbreak{}card\ \allowbreak{}≤\ \allowbreak{}L\ \allowbreak{}\textasciicircum{}\ \allowbreak{}d} \textgreater{} \texttt{theorem\ \allowbreak{}density\_\allowbreak{}le\_\allowbreak{}rat\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}\{I\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool\}\ \allowbreak{}(h\ \allowbreak{}:\ \allowbreak{}AtMostOne\ \allowbreak{}I)\ \allowbreak{}(hd\ \allowbreak{}:\ \allowbreak{}0\ \allowbreak{}\textless{}\ \allowbreak{}d)\ \allowbreak{}:} \textgreater{} \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}((edgeSet\ \allowbreak{}I).\allowbreak{}card\ \allowbreak{}:\ \allowbreak{}ℚ)\ \allowbreak{}/\ \allowbreak{}(d\ \allowbreak{}*\ \allowbreak{}L\ \allowbreak{}\textasciicircum{}\ \allowbreak{}d)\ \allowbreak{}≤\ \allowbreak{}1\ \allowbreak{}/\ \allowbreak{}d}
+\end{namedthm}
+\begin{mdproof}[Proof]
+Let μ ≠ ν and let x be a vertex. The links (μ, x) and (ν, x) are the first and the third of the four links of the plaquette with corner x in the directions μ, ν, so they cannot both belong to I (\texttt{not\_\allowbreak{}two\_\allowbreak{}dirs}, whose proof is the arithmetic 1 + a + 1 + b ≤ 1). Hence at most one link of I leaves any vertex in a positive direction, the map (μ, x) ↦ x is injective on I (\texttt{snd\_\allowbreak{}injOn}), and \textbar{}I\textbar{} is at most the number of vertices, which is $L^d$; the total number of links is $d·L^d$. ∎
+\end{mdproof}
+\end{quote}
+The statement is proved for an arbitrary vertex type with an arbitrary "step" map (\texttt{Packing}, \texttt{card\_\allowbreak{}le\_\allowbreak{}card\_\allowbreak{}vertices}), so the same theorem covers $Z^d$: there \texttt{card\_\allowbreak{}le\_\allowbreak{}of\_\allowbreak{}support} bounds by \textbar{}S\textbar{} the number of links of I whose source lies in a finite set S, which gives the density 1/d in any window with no boundary correction and with no periodicity assumed.
+
+\textbf{A caution the development also records.} The family I is \textit{not} a matching on the lattice: two collinear links (μ, x) and (μ, x + $e_{μ}$) lie on no common plaquette and may both be taken (\texttt{Line\_\allowbreak{}atMostOne}, \texttt{Line\_\allowbreak{}not\_\allowbreak{}matching}, an explicit closed line in d = 2). All that is true, and all the proof uses, is that the out-degree in the positive directions is at most one. An argument assuming a matching — restricting to a unit cube, where I \textit{is} one, and averaging over cubes — does more work for the same bound.
+
+\textbf{The bound 1/d is attained for d ≥ 4.} Take two disjoint period-2 complete families A, B in dimension 4 (of the eight such families, disjoint pairs exist) and switch between them by the parity of the fifth coordinate, taking no link in the extra directions. For d = 5, L = 2 this is machine-checked: \texttt{P5\_\allowbreak{}atMostOne} by \texttt{decide}, \textbar{}P5\textbar{} = 32 = the number of vertices (\texttt{bound\_\allowbreak{}tight\_\allowbreak{}d5}), 5·\textbar{}P5\textbar{} = the total number of links (\texttt{density\_\allowbreak{}eq\_\allowbreak{}d5}), i.e. density exactly 1/5; and \texttt{P5\_\allowbreak{}not\_\allowbreak{}perfect} confirms it is not complete, consistently with Theorem 6.1. At d = 4 the complete family A4 attains the same bound (\texttt{bound\_\allowbreak{}tight\_\allowbreak{}d4}: \textbar{}A4\textbar{} = 16 = 2⁴). For d = 6, 7 the analogous construction gives 0.166667 and 0.142857 with no violated plaquette [computation, not in Lean].
+
+\begin{namedthm}[Remark 6.3 (a second proof of d ≤ 4 on the torus) [Lean]]
+The statements \texttt{four\_\allowbreak{}mul\_\allowbreak{}card\_\allowbreak{}eq} (a complete family on $(Z/L)^d$ has 4\textbar{}I\textbar{} = $d·L^d$), \texttt{perfect\_\allowbreak{}torus\_\allowbreak{}d\_\allowbreak{}le\_\allowbreak{}four} (hence d ≤ 4) and \texttt{card\_\allowbreak{}cellSet\_\allowbreak{}le} (a packing of k-cells has k\textbar{}I\textbar{} ≤ $L^d·C(d,k−1)$) are machine-checked in \texttt{PlaquetteCounting}. On a periodic lattice the two counts already give the dimension bound in two lines: a complete family has density exactly 1/4 (each link lies on 2(d−1) plaquettes, each plaquette has four links), a packing has density at most 1/d (Theorem 6.2), hence d ≤ 4. No code and no Hamming bound are needed for this; what the coding argument of Theorem 6.1 adds is the local statement on $Z^d$ with no periodicity, and the reason for equality at d = 4. The same two lines work with k-cells in place of links and (k+1)-cells in place of plaquettes: two k-cells with the same base point x and direction sets S, S′ sharing k−1 directions are faces of one (k+1)-cell, so in a packing the direction sets at x pairwise share at most k−2 directions; their (k−1)-subsets are then pairwise distinct, so k·\textbar{}F(x)\textbar{} ≤ C(d, k−1) and the density is at most C(d,k−1)/(k·C(d,k)) = 1/(d−k+1). Against the exact density of a complete family this closes the dimension, and both halves are now machine-checked for every period (Theorems 6.4 and 6.5).
+\end{namedthm}
+
+\subsection*{Complete families of k-cells}
+Fix k ≥ 1. A \textit{k-cell} of $(Z/L)^d$ is a pair (S, x) with S a set of k directions and x a vertex; the (k+1)-cell (T, x) has the 2(k+1) faces (T∖ν, x) and (T∖ν, x + $e_{ν}$), ν ∈ T. A family I of k-cells is \textbf{complete} when every (k+1)-cell has exactly one of its 2(k+1) faces in I, and a \textbf{packing} when it has at most one. For k = 1 the faces of a 2-cell are the four links of a plaquette and the two notions are those used above; the Lean predicate is, verbatim,
+
+\begin{leancode}
+\item \texttt{def\ \allowbreak{}PerfectK\ \allowbreak{}(k\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}(I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool)\ \allowbreak{}:\ \allowbreak{}Prop\ \allowbreak{}:=}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}∀\ \allowbreak{}T\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d),\ \allowbreak{}T.\allowbreak{}card\ \allowbreak{}=\ \allowbreak{}k\ \allowbreak{}+\ \allowbreak{}1\ \allowbreak{}→\ \allowbreak{}∀\ \allowbreak{}x\ \allowbreak{}:\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L,}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}∑\ \allowbreak{}ν\ \allowbreak{}∈\ \allowbreak{}T,\ \allowbreak{}faceCount\ \allowbreak{}I\ \allowbreak{}T\ \allowbreak{}x\ \allowbreak{}ν\ \allowbreak{}=\ \allowbreak{}1}
+\end{leancode}
+with \texttt{Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}=\ \allowbreak{}Fin\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}ZMod\ \allowbreak{}L}, \texttt{shiftp\ \allowbreak{}x\ \allowbreak{}i\ \allowbreak{}=\ \allowbreak{}x\ \allowbreak{}+\ \allowbreak{}e\_\allowbreak{}i} and \texttt{faceCount\ \allowbreak{}I\ \allowbreak{}T\ \allowbreak{}x\ \allowbreak{}ν\ \allowbreak{}=\ \allowbreak{}(I\ \allowbreak{}(T.\allowbreak{}erase\ \allowbreak{}ν)\ \allowbreak{}x).\allowbreak{}toNat\ \allowbreak{}+\ \allowbreak{}(I\ \allowbreak{}(T.\allowbreak{}erase\ \allowbreak{}ν)\ \allowbreak{}(shiftp\ \allowbreak{}x\ \allowbreak{}ν)).\allowbreak{}toNat}. Replacing \texttt{=\ \allowbreak{}1} by \texttt{≤\ \allowbreak{}1} gives the packing predicate, which is indexed by the cell size less one (\texttt{PackK\ \allowbreak{}m} for cells of k = m+1 directions, so that \texttt{PerfectK\ \allowbreak{}(m+1)\ \allowbreak{}I\ \allowbreak{}→\ \allowbreak{}PackK\ \allowbreak{}m\ \allowbreak{}I}, \texttt{packK\_\allowbreak{}of\_\allowbreak{}perfectK}). The 2(k+1) faces are distinct exactly when L ≥ 2 (\texttt{card\_\allowbreak{}faceSetK}; at L = 1 the face (T∖ν, x + $e_{ν}$) collapses onto (T∖ν, x)), and L ≥ 2 need not be assumed anywhere below, since a period of 1 is odd and Theorem 6.6(i) applies.
+
+\begin{quote}
+\begin{namedthm}[Theorem 6.4 (Lean; counting)]
+Let k + 1 ≤ d and L ≥ 1, and let I be a complete family of k-cells on $(Z/L)^d$. Then (i) 2(k+1)·\textbar{}I\textbar{} = $C(d,k)·L^d$ (\texttt{card\_\allowbreak{}supportK\_\allowbreak{}of\_\allowbreak{}perfectK}), so the density of I among all k-cells is exactly 1/(2(k+1)), \textbf{independently of d and of L} (\texttt{density\_\allowbreak{}of\_\allowbreak{}perfectK}); (ii) for every (k+1)-set T of directions, $2·Σ_{ν ∈ T}$ $|I_{T∖ν}|$ = $L^d$, where $I_S$ is the set of base points x with (S, x) ∈ I (\texttt{two\_\allowbreak{}mul\_\allowbreak{}sum\_\allowbreak{}card\_\allowbreak{}slice}); (iii) hence 2(k+1) divides $C(d,k)·L^d$ (\texttt{two\_\allowbreak{}mul\_\allowbreak{}succ\_\allowbreak{}dvd\_\allowbreak{}of\_\allowbreak{}perfectK}), and \textbf{L is even} (\texttt{two\_\allowbreak{}dvd\_\allowbreak{}of\_\allowbreak{}perfectK}).
+\end{namedthm}
+\begin{mdproof}[Proof]
+(i) counts the incidences between k-cells and (k+1)-cells in two ways; the translation x ↦ x + $e_{ν}$ is a bijection of the vertices, so each face of each type contributes once, and C(d,k+1)(k+1) = C(d,k)(d−k) clears the factor d − k. (ii) sums the defining identity of a fixed T over all vertices, the same bijection identifying the two faces (T∖ν, x) and (T∖ν, x + $e_{ν}$) in the count. (iii) is (i) as a divisibility, and (ii) with 2 prime. ∎
+\end{mdproof}
+\end{quote}
+Part (ii) is the sharper of the two tests: the total count (i) admits an odd period whenever 2(k+1) happens to divide C(d,k), while the slice identity forces 2 \textbar{} L for every k and every d ≥ k+1.
+
+\begin{quote}
+\begin{namedthm}[Theorem 6.5 (Lean; the dimension bound)]
+For k ≥ 1, k + 1 ≤ d and L ≥ 1, a complete family of k-cells on $(Z/L)^d$ forces \textbf{d ≤ 3k+1} (\texttt{perfectK\_\allowbreak{}d\_\allowbreak{}le}); equivalently, for 3k+1 \textless{} d there is none, on a torus of any period (\texttt{no\_\allowbreak{}perfectK\_\allowbreak{}of\_\allowbreak{}lt}). At k = 1 the bound is attained (\texttt{bound\_\allowbreak{}sharp\_\allowbreak{}k1}).
+\end{namedthm}
+\begin{mdproof}[Proof]
+Density exactly 1/(2(k+1)) by Theorem 6.4(i), density at most 1/(d−k+1) by the packing count of Remark 6.3, and a complete family is a packing. ∎
+\end{mdproof}
+\end{quote}
+One construction and the two tests then decide several cases. The construction covers the one dimension in which a complete family can be written down for every k: for d = k+2 the complement of a k-set of directions is a pair, so a family may be prescribed pair by pair. Split the d directions into blocks of size 2 and 3; on a block \{a,b\} put $g_{ab}(y)$ = $y_a$ ⊕ $y_b$, on a block \{a,b,c\} put $g_{ab}$ = $y_a$ $y_b$, $g_{ac}$ = (1 ⊕ $y_a$) $y_c$, $g_{bc}$ = (1 ⊕ $y_b)(1$ ⊕ $y_c$), and let (S, y) belong to the family when the complement of S is a pair \{u,v\} lying in one block with $g_{uv}(y)$ = 1. Every d ≥ 2 admits such a split, and the family is complete for every k (\texttt{Layout.\allowbreak{}perfect\_\allowbreak{}fam}, \texttt{exists\_\allowbreak{}perfect}), of size $(k+2)·2^k$ (\texttt{card\_\allowbreak{}support\_\allowbreak{}fam}). Having period 2 it lifts, through the parity map ZMod L → ZMod 2, to every even period (\texttt{perfectK\_\allowbreak{}of\_\allowbreak{}perfect}).
+
+\begin{quote}
+\begin{namedthm}[Theorem 6.6 (Lean; cases decided)]
+On $(Z/L)^d$ with L ≥ 1: (i) if L is odd there is no complete family of k-cells, for every k and every d ≥ k+1, the hypothesis k ≥ 1 being unnecessary here (\texttt{no\_\allowbreak{}perfectK\_\allowbreak{}of\_\allowbreak{}odd}); (ii) for k = 1 and d ≥ 2, a complete family exists \textbf{if and only if d ≤ 4 and L is even} (\texttt{perfectK\_\allowbreak{}one\_\allowbreak{}iff}); (iii) for k = 2, d = 4, a complete family exists if and only if L is even (\texttt{perfectK\_\allowbreak{}k2\_\allowbreak{}d4\_\allowbreak{}iff}); (iv) for d = k+2 and L even, a complete family exists, for every k (\texttt{exists\_\allowbreak{}perfect} with \texttt{perfectK\_\allowbreak{}of\_\allowbreak{}perfect}); (v) for k = 4, d = 9 a complete family requires 10 \textbar{} L, and for k = 5, d = 8 it requires 6 \textbar{} L (\texttt{no\_\allowbreak{}perfectK\_\allowbreak{}k4\_\allowbreak{}d9\_\allowbreak{}ten}, \texttt{no\_\allowbreak{}perfectK\_\allowbreak{}k5\_\allowbreak{}d8\_\allowbreak{}six}).
+\end{namedthm}
+\end{quote}
+(v) is the divisibility test of Theorem 6.4(iii) together with (i): 10 ∤ $126·L^9$ unless 5 \textbar{} L, and 12 ∤ $56·L^8$ unless 3 \textbar{} L. The two tests are independent — the test of (iii) of Theorem 6.4 does not reach k = 3, d = 9, where 8 \textbar{} $84·L^9$ for every even L, and the bound of Theorem 6.5 does not reach it either, 9 ≤ 10.
+
+\textbf{What is not decided.} The bound d ≤ 3k+1 is sharp at k = 1, and its sharpness is open for every k ≥ 2. Machine-checked existence covers d = k+2 for every k together with (k, d) = (1, 2) and (1, 4), and nothing beyond that: for k = 2 the region between the construction at d = 4 and the bound at d = 7 is open, d = 5 being excluded there unless 6 \textbar{} L by Theorems 6.4(iii) and 6.6(i), and d = 6, 7 untouched. Exhaustive search at period 2 finds complete families of 3-cells for d = 5, 6, 7, 8 [computation], against the bound d ≤ 10 for k = 3. For k = 3, d = 9 an exhaustive search reports no complete family of period 2 [computation: three SAT solvers agree after normalising one base point, where the direction sets must form the affine plane AG(2,3) minus one line; the DRAT proof has not been independently checked], but neither the counting nor the bound excludes it, and larger even periods are untouched. For that k, d ≥ 11 is excluded by Theorem 6.5 and d = 10 by an integer refinement of it: at a base point the direction sets form a packing of triples with pairwise intersections of size at most 1, of which there are at most ⌊(10/3)·⌊9/2⌋⌋ = 13 (the Schönheim bound; reference not consulted directly), fewer than the average C(10,3)/8 = 15 that a complete family requires. None of the statements of this subsection is a classification: the number of complete families, and their shape, are not addressed.
+
+So the maximal density is min(1/4, 1/d), the two bounds having different origins: 1/4 is the incidence count (each link lies on 2(d−1) plaquettes), attained by Theorem 6.1 only for d ≤ 4, where it rests on a perfect code; 1/d is the vertex count of Theorem 6.2. They meet at d = 4. Both bounds are formalised — 1/4 as \texttt{four\_\allowbreak{}mul\_\allowbreak{}card\_\allowbreak{}le}, with equality for a complete family (\texttt{four\_\allowbreak{}mul\_\allowbreak{}card\_\allowbreak{}eq}, the case k = 1 of Theorem 6.4(i)); 1/d as Theorem 6.2 — and for d ≤ 3 the 1/d side is the loose one — at d = 3, L = 2 the incidence count gives \textbar{}I\textbar{} ≤ 6 \textless{} 8, and 6 is the exhaustive maximum [computation]. In a unit cube the maximum is M(3) = 3, M(4) = 8, M(5) = 16, M(6) = 32, the last by the vertex bound together with a search that found the lower bound [computation, exact].
+
+\textbf{The threshold is set not by the density but by $max_a$ $r_a$ [paper and computation],} the number of uncovered plaquettes on a single remaining link: with n = 2(d−1), the counting of §5 applied to a link carrying $r_a$ bare plaquettes and n − $r_a$ absorbed ones gives K'(a) = $4β·r_a$ + (3/4)·n·(n − $r_a)·β²$ and Hess Φ ≥ $−max_a$ K'(a). For d = 5 the minimum of $max_a$ $r_a$ over all families is exactly 4 (period 2 attains it; t = 3 is infeasible on the torus of period 2 and 4 and also in the free-boundary box ${0,…,4}^5$) [computation], so K' = 16β + 24β² and the threshold is $β_W$ \textless{} 0.1076, a factor 1.72 above [SZZ] instead of 3.27. The uncovered fraction is ε = 1/5, also sharp.
+
+\textbf{A sharper arithmetic test, on paper only.} The slice identity of Theorem 6.4(ii) is a statement about one (k+1)-set of directions at a time; a statement about each direction set separately would be stronger. On a unit cube, for each (k+1)-set T of directions the numbers $a_S$ = $|C_S|$ (S ⊂ T, \textbar{}S\textbar{} = k) satisfy $Σ_{S ⊂ T}$ $a_S$ = $2^{d−k−1}$. As soon as d ≥ 2k+1 this system has the unique solution $a_S$ = $2^{d−k−1}/(k+1)$, since the rank of the inclusion matrix $W_{k,k+1}$ is min(C(d,k), C(d,k+1)) (Gottlieb's theorem [Go]). So k+1 must divide $2^{d−k−1}$, that is be a power of two; on a torus the corresponding condition is 2(k+1) \textbar{} $L^d$, on the period rather than on $C(d,k)·L^d$. For k = 2 — plaquettes covering every cube exactly once — this fails for every d ≥ 5 because 3 never divides $2^{d−3}$: the obstruction is arithmetic, not coding-theoretic (exhaustive search confirms it at d = 5, while k = 3 in d = 6 does have a cover, \textbar{}I\textbar{} = 20) [computation]. \textbf{This is the one step of the subsection above that is not machine-checked}, and it is the step that would close k = 2, d ≥ 5: the rank of an inclusion matrix is, in the Mathlib we searched, not available, so what the development has is the weaker test 2(k+1) \textbar{} $C(d,k)·L^d$ of Theorem 6.4(iii), which for k = 2, d = 5 leaves every period divisible by 6 open. The correspondence "complete family ↔ perfect code" is special to k = 1.
+
+\section*{7. From the marginal to the full measure}
+This section is an outline. We record what is complete on paper and what is not, together with the constants, since those are what a reader would have to check.
+
+\textbf{(a) Bakry–Émery for the marginal [paper, complete].} For Λ ⊆ Rest finite and any boundary condition η, the measure $μ^{\prime η}_{Λ}$ ∝ exp(−Φ) on $(S³)^{Λ}$ satisfies Ric + Hess $Φ|_{Λ}$ ≥ K' := 2 − 27β², because restricting a quadratic form to a subspace only helps. Bakry–Émery gives LSI(K'), Poincaré(K') and $|∇P_tf|$ ≤ $e^{−K't}$ $P_t|∇f|$, with constants independent of Λ and η. Free and periodic boundaries behave the same: a star at the boundary loses staples, and the counting of §5 does not deteriorate.
+
+\textbf{(b) Exponential decay [paper, outline with constants].} Let ē ∼ e mean that the two links lie in a common star; each link lies in six stars and each star has 17 other slots, so at most 102 links are adjacent to a given one. The first identity in the proof of [SZZ, Lemma 4.10] uses only that $v_e^i$ generates an isometry and commutes with $Δ_e$, not the form of the action; the same use is made in [Ni, Lemma 3.23] for a marginal action. With r := I₂/I₁ ≤ min(κ/4, 1), κ = β‖M‖, and q := (I₂/I₁)² − I₃/I₁ one gets $|∇_eΦ|$ ≤ 6β r(κ) ≤ 9β², $a_{e,e}$ ≤ β²(55.5 + 6q) and $Σ_{ē ≠ e}$ $a_{e,ē}$ ≤ β²(43.5 + 108q), hence
+
+\begin{quote}
+A := $sup_e$ $Σ_{ē}$ $a_{e,ē}$ ≤ β²(99 + 108q) ≤ β²(99 + 243β²)
+\end{quote}
+(here q ≤ κ²/16 is loose; q ≤ κ²/48 holds, replacing 243 by 81, which does not affect the threshold). The iteration of [SZZ, (4.28)–(4.30)], which goes back to Guionnet–Zegarliński [GZ], then runs with C₀ = 3A and yields Corollary 3 with m = 2K'/(3e⁴A). The hypotheses of [SZZ, Cor. 4.11] are only Assumption 1.1 — that K \textgreater{} 0 — with no condition tying K to the $a_{e,ē}$; K enters only the rate. \textbf{So the threshold for the decay is the same √(2/27) as for the curvature.} What we have not done is write the iteration out line by line for the dynamics of Φ (finite volume, boundary conditions, diffusion on the remaining links only). Everything it uses — uniform bounds on $a_{e,ē}$, finite range, $L^{∞}$ contraction of $P_t$, and (4.9) — Φ satisfies.
+
+\textbf{(c) Observables that touch I* [paper, complete].} $Cov_{μ}(f,g)$ = $E_{μ'}[Cov(f,g$ \textbar{} y)] + $Cov_{μ'}(\bar{f}$, ḡ) with $\bar{f}$ = E[f\textbar{}y]. Given the remaining field y, the links of I* are independent, $u_{e'}$ being von Mises–Fisher with parameter $βM_{e'}(y)$; so if f and g share no link of I* the first term vanishes. The conditional expectation $\bar{f}$ is smooth in y, its support grows only by the slots of the stars met, and
+
+\begin{quote}
+$|||\bar{f}|||_{∞}$ ≤ $|||f|||_{∞}$ + $36β·n_{I*}(f)·‖f‖_{∞}$,  $‖\bar{f}‖₂$ ≤ ‖f‖₂,  $d_{∼}(Λ_{\bar{f}}$, $Λ_{ḡ}$) ≥ $d_{∼}(Λ_f$, $Λ_g$) − 2.
+\end{quote}
+\textbf{(d) Infinite volume [paper; complete, except for the uniqueness].} If μ is a DLR measure for the Wilson action then its y-marginal is a DLR measure for Φ: for Λ ⊆ Rest take $\tilde{Λ}$ := Λ together with the links of I* whose star meets Λ; every plaquette touching $\tilde{Λ}$ belongs to the star of exactly one link of I* in $\tilde{Λ}$, so integrating $u_{\tilde{Λ}}$ gives ∏ $F0(β²‖M_{e'}(y)‖²/4)$ and nothing outside. Conversely the conditional law of u given y is the product of the von Mises–Fisher laws, so μ = μ' ⊗ $∏_{e'}$ $vMF(βM_{e'}(y))$ and μ is unique as soon as μ' is. Uniqueness of μ' follows from (b) used uniformly in the boundary condition — moving one boundary link b gives $∂_{η_b}$ $μ^{\prime η}_{Λ}(f)$ = −Cov(f, $∂_{η_b}Φ$) with $∂_{η_b}Φ$ local and bounded, so two boundary conditions differ by O(ℓ³ $e^{−mℓ/3}$) — but we have not filled in every line, and the coupling argument of [SZZ, §5] transported to Φ would be an alternative we have not written either.
+
+\section*{8. Limits of the method}
+\textbf{The constant 27 cannot go below 21 [computation, exact arithmetic].} There is an explicit configuration in which the bound is off by exactly 27/21. Take all links commuting, $U_e$ = $exp(θ_e$ n) with a fixed imaginary unit n and all $θ_e$ multiples of π/3, given by a period-2 table on (Z/2)⁴ and tiled to (Z/4)⁴. For X ⊥ n each $u_a$ is $±e^{iψ_a}x_a$ in the plane orthogonal to n, so the Hessian lives in the ring Z[ω], ω = $e^{iπ/3}$, and there one checks in integer arithmetic that every star has M = 0 and ‖M'‖² = 252 = ‖12 + 6ω‖². Since M = 0 gives t = t' = 0, Hess Φ(X,X) = $−(β²/8)·Σ_{e'}$ $2‖M'_{e'}‖²$ exactly, for every β, and the Rayleigh quotient is 129024/(8·768) = 21. Hence
+
+\begin{quote}
+\textbf{21β² ≤ $sup(−λ_min$ Hess Φ) ≤ 27β²,}
+\end{quote}
+and the ceiling of this route is $β_W$ ≤ √(2/21) = 0.3086. A gradient search on (Z/4)⁴ (Hellmann–Feynman derivatives of $λ_min$, L-BFGS, ten Haar starts) reaches 21.000000 from all ten, with the two top eigenvalues degenerate at 21 and the third at 14.7446; the configurations reached are not tilings of the period-2 table, so the worst configurations form a large family, and nothing above 21 was found. The worst star has its forward and backward staples equal in pairs and the three pairs at 120°, so the eighteen $u_a$ lie in the two-dimensional complement of the staple plane, twelve in phase and six rotated by 60° — whence 252 = 324·(7/9) and 27·(7/9) = 21.
+
+The estimate is loose in one place only: the triangle inequality $‖M'_{e'}‖$ ≤ $Σ_a$ $‖u_a‖$, a factor √(7/9). The weighted Cauchy–Schwarz, M = 0 and G' ≤ β²/8 are all equalities there. Capturing the loss on paper would mean bounding $sup_Q$ ‖dM(Q)‖² conditionally on M, which has the shape of a frustrated ground-state estimate; and at finite β the weights $G'(t_{e'})$ differ from star to star, so an argument using cancellations must survive a supremum over weights in [0,1]. We do not have it.
+
+\textbf{Large β [computation].} For β ≳ 1 integrating first is worse: $λ_min(Hess$ Φ) is −12.1β² at β = 1 and −43.1β² at β = 2, against −16β and −32β without integration. The reason is structural. Bakry–Émery asks for a bound at \textit{every} configuration and cannot use that for large β the measure concentrates near $Q_p$ ≈ 1, where Φ is convex $(λ_min$ = 0 at the cold configuration). Since Ric = 2 does not move with β, no number of local integrations pushes the threshold beyond O(1).
+
+\textbf{The iteration does not close.} Fixing one remaining link a under Φ, it appears once in each of six stars and each $M_k$ is affine in $u_a$, so the conditional density is $∏_{k=1}^{6}$ $F0(β²(‖N_k‖²$ + 1 + $2‖N_k‖t_k)/4$) with $t_k$ = $⟨u_a$, $c_k⟩$ — a product of non-Wilson class functions, which does not return to a Bessel form. To leading order in small β the factors are Wilson-type with $β_eff$ ≤ 5β²/4, so a second round is formally possible, but the range grows (2 → 6 → …), the combinatorial constants grow with it, and a quadratic recursion contracts only when the first term is already small. What one gets is a further constant, which is the language of the strong-coupling expansion.
+
+\textbf{SU(N) [computation, with the mechanism on paper].} The key input of §3, G' ≤ β²/8 and G'' ≤ 0, says that the covariance of the tilted measure ∝ exp(h⟨u,M⟩)du is dominated by the covariance of Haar. With h := Nβ and $Var_0(⟨u,V⟩)$ = $‖V‖²_HS/(2N)$ for U(N) and for SU(N), N ≥ 3 — while SU(2) alone has $‖V‖²_HS/2$, twice the U(2) value, because V ⊗ V carries an invariant — the domination is \textbf{false} already for U(2) with M = diag(s, 0) and V = E₂₂: the ratio exceeds 1 from s = 0.03 on, tends to 2 as s → ∞, and to N for U(N). The mechanism, on paper: a rank-deficient tilt pushes u into the leftover subgroup, where the Haar variance 1/2 is larger than 1/(2N). The same happens for SU(N), N ≥ 3. What makes SU(2) work is the accident that the leftover degree of freedom is the whole group.
+
+Measuring the star constant directly instead — the form is exactly quadratic in X, so the inner maximisation is an eigenvalue problem and only the staples are searched over — reproduces the SU(2) value to seven digits (Λ/h² = 8.999998 = 3n/2 with n = 6, i.e. the $−27β_W²$ above, in an implementation using no quaternions), and for U(N) gives Λ(N,h) = $3n·h²·w_N(h)$, with $w_N$ the largest eigenvalue of the covariance at M = h·diag(n,…,n,0); the worst star maximises the violation, and the M'' term contributes zero to machine precision. The thresholds are $β_SZZ$ = 0.0939, 0.0933, 0.0931 for N = 2, 3, 4 at d = 4 — a factor 4.5 above 1/48 — but the ratio $r_N(s)$ tends to N, so β*(N) ∼ 1/(2(d−1)√(3N)) = 0.0962/√N and the ratio to [SZZ]'s N-independent 1/(16(d−1)) is 8/√(3N), below 1 for N ≳ 21. \textbf{The gain does not survive the 't Hooft limit; it is a phenomenon of small N and of d ≤ 4.}
+
+\section*{9. Comparison with the literature}
+All entries are converted to $β_W$ = $4β_SZZ$ for SU(2), d = 4. The statements differ, so the column is not an ordering.
+
+\begin{center}\begin{small}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.182\linewidth}>{\raggedright\arraybackslash}p{0.547\linewidth}>{\raggedright\arraybackslash}p{0.231\linewidth}}
+\hline
+\textbf{Source} & \textbf{Statement} & \textbf{$β_W$} \\
+\hline
+{}[SZZ] & mass gap, LSI, uniqueness, for SU(N) & \textless{} 1/12 = 0.0833 \\
+{}[CNS2] & area law for U(N), SU(N), SO(2N), via the dynamics of [SZZ] and the gap condition of [DF] & \textless{} 1/6 = 0.1667 \\
+{}[CNS1] & area law for U(N), master loop equation & $β_SZZ$ ≤ $10^{−10d}/d$ \\
+{}[Ni] & mass gap for U(N), splitting U(1) × SU(N) & $β_SZZ$ \textless{} $10^{−6d}$ \\
+{}[OS], [Se] (cluster expansion) & mass gap, area law, all compact groups & \textbf{no explicit value retrieved} \\
+here & Bakry–Émery curvature 2 − 27β² [Lean plus standard facts], hence mass gap [paper, outline] & \textless{} 0.2722; ceiling of the method 0.3086 \\
+\hline
+\end{tabular}
+\end{small}\end{center}
+Two things must be said about the last two rows. First, Osterwalder–Seiler [OS] is the classical source of a mass gap at strong coupling, and we could not obtain it: the journal is behind a paywall, no scan is attached to the INSPIRE record, and Seiler's lecture notes [Se] were likewise unavailable. Every secondary text we have read — [SZZ], [CNS1, Remark 1.3], [Ni] — describes its range only as "sufficiently small β" or as a constant deteriorating with N. Second, our own naive Kotecký–Preiss estimates for the expansion give $β_W$ ≲ 0.014 in the Mayer form (activity tanh β, 20 plaquettes adjacent to one, $(eΔ)^{n−1}$ polymers) and $β_W$ ≲ 0.06 in the character expansion (closed surfaces, minimum six plaquettes, activity I₂/I₁); but these are crude, and the necessary condition for absolute convergence of the character expansion, $u·μ_s$ \textless{} 1 with $μ_s$ the growth constant of closed surfaces, allows $β_W$ up to 0.4–0.8 for $μ_s$ between 5 and 10. \textbf{We therefore do not claim a new regime.} What we can say is that among the thresholds we found written with an explicit number, none exceeds 0.2722, and that a careful cluster expansion may well.
+
+Adjacent work that is not a comparison: [AC] treats finite groups at weak coupling; [Ch] and [Ja] give 1/N expansions for Wilson loops at strong coupling with no explicit range for a gap; [Ni2], [Br] and [Le] cite [SZZ] for other purposes; [BG] studies the combinatorics of Wilson loop expectations for SO(N), not the Hessian of a one-link integral.
+
+Two ingredients of the present construction do appear in the literature, in other combinations. Applying the dynamics of [SZZ] to a \textit{marginal} measure is the scheme of [Ni], where U(N) is split as U(1) × SU(N); there the conditional measure is controlled by a cluster expansion and the conditional expectations by a quasi-locality estimate, whereas here conditional independence makes both steps immediate. \textit{Conditioning} before applying Bakry–Émery is the scheme of [CNS2], which cuts the lattice into slabs of height one. Neither replaces the action by the exact integral of a sub-family of links.
+
+\section*{10. What is not claimed}
+\begin{enumerate}
+\item[1.] \textbf{No claim about the continuum limit, and none about the Clay millennium problem.} Everything here is a statement about a fixed lattice at β \textless{} O(1). The method cannot reach β → ∞: Ric = 2 does not depend on β, and §8 shows that integrating first is \textit{worse} for β ≳ 1.
+\item[2.] \textbf{The mass gap is not a Lean theorem.} What is machine-checked is Theorem 1, Theorem 2 and Theorem 2′, and Theorems 6.2, 6.4, 6.5 and 6.6 — the Hessian bound and the combinatorics of complete families, not the gap. The identification of the second derivative of Φ along U $e^{τX}$ with the Riemannian Hessian, the value Ric = 2, the Bakry–Émery theorem and the decay argument are all on paper, and two of those steps — the transported [SZZ, Lemma 4.10]/[SZZ, Cor. 4.11] and the uniqueness of the marginal — are outlines with constants rather than complete proofs (§2, table; §7).
+\item[3.] \textbf{The comparison with the cluster expansion is undecided.} [OS] and [Se] were not obtained, and our own estimates of the convergence radius are crude in both directions (§9). The phrase "an improvement inside the Bakry–Émery method" is the only characterisation we are prepared to defend.
+\item[4.] \textbf{The constant 27 is not optimal.} The truth is between 21 and 27 (§8); 21 is exact for one explicit configuration and the numerical searches did not exceed it, but no proof of 21 exists here.
+\item[5.] \textbf{No claim of priority.} We did not find "complete family", or "integrate a sub-family of links, then Bakry–Émery", in the literature we searched — arXiv searches, the 18 INSPIRE and 19 Semantic Scholar citations of [SZZ] by title, and full-text searches of [CNS2] and [Ni] — but the search is limited, and the idea could be known in the context of the multi-hit / one-link-average variance reduction of Monte Carlo simulation, where sets of links sharing no plaquette are updated simultaneously; the family of density 1/4 in d = 4 may be known on the numerical side [PPR]. MathSciNet and zbMATH were not available to us. The tools of §4 and §6 (weighted Cauchy–Schwarz, a sum-of-squares identity, the Hamming bound, the perfectness of the length-3 repetition code, exact cover) are classical, and the Turán-type inequality of §3 is known [BP].
+\item[6.] \textbf{The bound d ≤ 3k+1 is not claimed to be sharp, and none of §6 is a classification.} Sharpness is known only at k = 1; for k = 3 the only evidence against d = 9 is an exhaustive search at period 2 by SAT, which is not machine-checked and says nothing about larger even periods. The number and the shape of complete families are not addressed anywhere. The sharper arithmetic test — 2(k+1) dividing the period power $L^d$, which would close k = 2 for all d ≥ 5 — rests on the rank of an inclusion matrix (Gottlieb's theorem [Go], not consulted directly) and is \textbf{on paper only}; the machine-checked test is the weaker 2(k+1) \textbar{} $C(d,k)·L^d$.
+\item[7.] \textbf{Everything in §6 beyond Theorems 6.1, 6.2, 6.4, 6.5 and 6.6, and everything in §8, is computation.} The attainment of the packing density 1/d is machine-checked only for d = 4, 5. The exhaustive searches (exact cover by depth-first search and by SAT, integer linear programming, branch and bound for M(d)), the gradient searches for $λ_min$ and the U(N) measurements are cross-checked by positive and negative controls but not kernel-checked. Where a search did not finish we say so: M(6) = 32 rests on the paper upper bound plus a search that found only the lower bound, and the d = 6 value of min $max_a$ $r_a$ was not determined.
+\item[8.] \textbf{No independent authorship, no external review.} The observation, the paper proofs, the programs, the Lean development and this draft were produced by the same agent (§12), and no mathematician outside the authors has read them. Lean's kernel and the agreement of independent reimplementations are the only checks not internal to the authors, and those reimplementations are procedurally, not conceptually, independent.
+\end{enumerate}
+
+\section*{11. The Lean development}
+
+\subsection*{11.1 Files}
+Everything checks from \texttt{import\ \allowbreak{}Mathlib} alone in seven files: \texttt{LatticeGaugeOneLink.\allowbreak{}lean} carries the first six namespaces below, \texttt{PerfectFamily.\allowbreak{}lean} and \texttt{PlaquetteCounting.\allowbreak{}lean} the next three, and four further files carry the namespace \texttt{PerfectFamily} again, each self-contained. Since a file that checks from \texttt{import\ \allowbreak{}Mathlib} alone cannot import another such file, those four repeat the definitions and the lemmas they reuse; §11.3 says how much is repeated and how it was checked to be identical. "Lines" is the extent of the namespace inside its file.
+
+\begin{small}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.331\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.596\linewidth}}
+\hline
+\textbf{Namespace (file)} & \textbf{Lines} & \textbf{Content} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Namespace (file)} & \textbf{Lines} & \textbf{Content} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{StarInequality} & 586 & the algebraic star inequality: \texttt{weighted\_\allowbreak{}cs}, \texttt{W\_\allowbreak{}eq\_\allowbreak{}half\_\allowbreak{}P\_\allowbreak{}cross\_\allowbreak{}Z}, \texttt{staple\_\allowbreak{}sos}, \texttt{R\_\allowbreak{}closed}, \texttt{R\_\allowbreak{}nonneg}, \texttt{staple\_\allowbreak{}ineq}, \textbf{\texttt{star\_\allowbreak{}S}}, and the N-staple versions ending in \texttt{star\_\allowbreak{}S\_\allowbreak{}gen}; the sharpness \texttt{star\_\allowbreak{}S\_\allowbreak{}sharp} is in a separate file of the development, outside the three above \\
+\texttt{StapleCurve} & 394 & the quaternionic bridge: \texttt{curve}, \texttt{D2\_\allowbreak{}vec}, \texttt{second\_\allowbreak{}deriv\_\allowbreak{}eq\_\allowbreak{}hessForm}, \textbf{\texttt{second\_\allowbreak{}deriv\_\allowbreak{}le}} (36), \texttt{second\_\allowbreak{}deriv\_\allowbreak{}le\_\allowbreak{}gen} (6N), \texttt{second\_\allowbreak{}deriv\_\allowbreak{}sharp} \\
+\texttt{OneLinkSeries} & 886 & the series F0, F1, F2 and Z: \texttt{cauchy\_\allowbreak{}coeff\_\allowbreak{}catalan}, \textbf{\texttt{turan\_\allowbreak{}series}}, \texttt{two\_\allowbreak{}F1\_\allowbreak{}le\_\allowbreak{}F0}, \texttt{turan\_\allowbreak{}nonneg}, \texttt{G1\_\allowbreak{}le}, \texttt{G2\_\allowbreak{}nonpos}, \texttt{hess\_\allowbreak{}lower}, \texttt{count27}, \texttt{hess\_\allowbreak{}total}, \texttt{hess\_\allowbreak{}star\_\allowbreak{}family}, the moments \texttt{cm\_\allowbreak{}rec}, \texttt{cm\_\allowbreak{}odd}, \texttt{cm\_\allowbreak{}eq\_\allowbreak{}mom}, \textbf{\texttt{Z\_\allowbreak{}eq\_\allowbreak{}integral}} \\
+\texttt{CompleteFamilyLattice} & 609 & the geometry of I*: \texttt{Istar}, \textbf{\texttt{plaq\_\allowbreak{}unique}}, \texttt{Star}, \texttt{Rest}, \texttt{Es}, \textbf{\texttt{star\_\allowbreak{}count}}, \textbf{\texttt{Es\_\allowbreak{}card}}, \texttt{slot\_\allowbreak{}injective}, \texttt{hess\_\allowbreak{}lattice}, \texttt{hess\_\allowbreak{}lattice\_\allowbreak{}slots} \\
+\texttt{StaplePerturbation} & 386 & the perturbation of staples: \texttt{pert}, \texttt{staple\_\allowbreak{}fwd}, \texttt{staple\_\allowbreak{}bwd}, \texttt{qS\_\allowbreak{}pert}, \texttt{Phi}, \textbf{\texttt{hess\_\allowbreak{}gauge}} \\
+\texttt{WilsonOneLink} & 1,010 & the Wilson action and the integral: \texttt{SW}, \textbf{\texttt{SW\_\allowbreak{}eq}}, \texttt{IsHaarS3} with \texttt{rot}, \texttt{mixed}, \texttt{integral\_\allowbreak{}exp\_\allowbreak{}re}, \textbf{\texttt{IsHaarS3.\allowbreak{}one\_\allowbreak{}link}}, \texttt{haarS3}, \texttt{isHaarS3\_\allowbreak{}haarS3}, \texttt{haarS3\_\allowbreak{}eq\_\allowbreak{}toSphere}, \texttt{glue}, \textbf{\texttt{integral\_\allowbreak{}star\_\allowbreak{}links}} \\
+\texttt{PerfectFamily} (\texttt{PerfectFamily.\allowbreak{}lean}) & 462 & the dimension bound on $Z^d$: \texttt{Perfect}, \texttt{cube3\_\allowbreak{}bool}, \texttt{proj\_\allowbreak{}bijective}, \texttt{edge\_\allowbreak{}ex}, \texttt{edge\_\allowbreak{}uniq}, \texttt{no\_\allowbreak{}perfect\_\allowbreak{}of\_\allowbreak{}five}, \texttt{PerfectZ}, \texttt{restrict\_\allowbreak{}perfect}, \textbf{\texttt{no\_\allowbreak{}perfectZ\_\allowbreak{}of\_\allowbreak{}five}}, \texttt{perfect\_\allowbreak{}I2/I3/I4}, three negative controls \\
+\texttt{PlaquettePacking} & 300 & the density of a packing: \texttt{AtMostOne}, \texttt{Packing}, \texttt{not\_\allowbreak{}two\_\allowbreak{}dirs}, \texttt{snd\_\allowbreak{}injOn}, \texttt{card\_\allowbreak{}le\_\allowbreak{}card\_\allowbreak{}vertices}, \textbf{\texttt{card\_\allowbreak{}edgeSet\_\allowbreak{}le}}, \texttt{density\_\allowbreak{}le\_\allowbreak{}rat}, \texttt{card\_\allowbreak{}le\_\allowbreak{}of\_\allowbreak{}support} $(Z^d)$, \texttt{bound\_\allowbreak{}tight\_\allowbreak{}d4}, \texttt{bound\_\allowbreak{}tight\_\allowbreak{}d5}, \textbf{\texttt{density\_\allowbreak{}eq\_\allowbreak{}d5}}, \texttt{P5\_\allowbreak{}not\_\allowbreak{}perfect}, \texttt{Line\_\allowbreak{}not\_\allowbreak{}matching}, three negative controls \\
+\texttt{PlaquetteCounting} & 529 & the double count: \texttt{plaqCount}, \texttt{sum\_\allowbreak{}plaqCount\_\allowbreak{}add}, \texttt{four\_\allowbreak{}mul\_\allowbreak{}card\_\allowbreak{}le}, \textbf{\texttt{four\_\allowbreak{}mul\_\allowbreak{}card\_\allowbreak{}eq}}, \textbf{\texttt{perfect\_\allowbreak{}torus\_\allowbreak{}d\_\allowbreak{}le\_\allowbreak{}four}}, \texttt{four\_\allowbreak{}dvd\_\allowbreak{}of\_\allowbreak{}perfect}, \textbf{\texttt{density\_\allowbreak{}eq\_\allowbreak{}quarter}}, the k-cell versions \texttt{PackK}, \texttt{card\_\allowbreak{}cellsAt\_\allowbreak{}le}, \textbf{\texttt{card\_\allowbreak{}cellSet\_\allowbreak{}le}}, and negative controls \\
+\texttt{PerfectFamily} (\texttt{PerfectFamilyConstruction.\allowbreak{}lean}) & 1,002 & complete families of k-cells at period 2, and the construction in d = k+2: \texttt{Perfect}, \texttt{faceSet}, \texttt{perfect\_\allowbreak{}iff}, \texttt{perfect\_\allowbreak{}one\_\allowbreak{}iff}, \texttt{support}, \texttt{total\_\allowbreak{}incidences}, \textbf{\texttt{card\_\allowbreak{}support\_\allowbreak{}of\_\allowbreak{}perfect}}, \textbf{\texttt{density\_\allowbreak{}of\_\allowbreak{}perfect}}, the gadgets \texttt{Blk}, \texttt{Blk.\allowbreak{}g}, \texttt{Layout}, \texttt{local\_\allowbreak{}sum}, \textbf{\texttt{Layout.\allowbreak{}perfect\_\allowbreak{}fam}}, \texttt{stdLayout}, \textbf{\texttt{exists\_\allowbreak{}perfect}}, \texttt{card\_\allowbreak{}support\_\allowbreak{}fam}, \texttt{fam\_\allowbreak{}invariant}, the kernel-checked examples \texttt{perfect\_\allowbreak{}fam4}, \texttt{card\_\allowbreak{}fam4}, \texttt{perfect\_\allowbreak{}fam5}, \texttt{card\_\allowbreak{}fam5}, and three negative controls \\
+\texttt{PerfectFamily} (\texttt{PerfectFamilyBound.\allowbreak{}lean}) & 642 & the dimension bound at period 2: \texttt{PackCell}, \texttt{packCell\_\allowbreak{}of\_\allowbreak{}perfect}, \texttt{not\_\allowbreak{}share}, \texttt{card\_\allowbreak{}cellsAt\_\allowbreak{}le}, \texttt{card\_\allowbreak{}support\_\allowbreak{}le\_\allowbreak{}of\_\allowbreak{}packCell}, \texttt{density\_\allowbreak{}le\_\allowbreak{}of\_\allowbreak{}packCell}, \textbf{\texttt{perfect\_\allowbreak{}d\_\allowbreak{}le}}, \texttt{no\_\allowbreak{}perfect\_\allowbreak{}of\_\allowbreak{}lt}, \texttt{perfect\_\allowbreak{}one\_\allowbreak{}d\_\allowbreak{}le\_\allowbreak{}four}, \textbf{\texttt{two\_\allowbreak{}mul\_\allowbreak{}succ\_\allowbreak{}dvd\_\allowbreak{}of\_\allowbreak{}perfect}}, \texttt{no\_\allowbreak{}perfect\_\allowbreak{}of\_\allowbreak{}not\_\allowbreak{}dvd}, \texttt{no\_\allowbreak{}perfect\_\allowbreak{}k4\_\allowbreak{}d9}, \texttt{no\_\allowbreak{}perfect\_\allowbreak{}k5\_\allowbreak{}d8}, \texttt{perfect\_\allowbreak{}par5} (the case k = 0, which the bound excludes), and the controls \texttt{bound\_\allowbreak{}fam4}, \texttt{fam4\_\allowbreak{}numbers}, \texttt{dvd\_\allowbreak{}pass\_\allowbreak{}k2\_\allowbreak{}d4}, \texttt{dvd\_\allowbreak{}pass\_\allowbreak{}k3\_\allowbreak{}d9} \\
+\texttt{PerfectFamily} (\texttt{PerfectFamilyPeriodic.\allowbreak{}lean}) & 979 & the same for an arbitrary period: \textbf{\texttt{PerfectK}}, \texttt{packK\_\allowbreak{}of\_\allowbreak{}perfectK}, \texttt{faceSetK}, \texttt{card\_\allowbreak{}faceSetK}, \texttt{perfectK\_\allowbreak{}iff}, \texttt{no\_\allowbreak{}perfectK\_\allowbreak{}L1}, \texttt{supportK}, \texttt{total\_\allowbreak{}incidencesK}, \textbf{\texttt{card\_\allowbreak{}supportK\_\allowbreak{}of\_\allowbreak{}perfectK}}, \textbf{\texttt{density\_\allowbreak{}of\_\allowbreak{}perfectK}}, \textbf{\texttt{two\_\allowbreak{}mul\_\allowbreak{}sum\_\allowbreak{}card\_\allowbreak{}slice}}, \textbf{\texttt{two\_\allowbreak{}dvd\_\allowbreak{}of\_\allowbreak{}perfectK}}, \textbf{\texttt{no\_\allowbreak{}perfectK\_\allowbreak{}of\_\allowbreak{}odd}}, \texttt{two\_\allowbreak{}mul\_\allowbreak{}succ\_\allowbreak{}dvd\_\allowbreak{}of\_\allowbreak{}perfectK}, \texttt{dvd\_\allowbreak{}iff\_\allowbreak{}of\_\allowbreak{}coprime}, \texttt{no\_\allowbreak{}perfectK\_\allowbreak{}k4\_\allowbreak{}d9\_\allowbreak{}ten}, \texttt{no\_\allowbreak{}perfectK\_\allowbreak{}k5\_\allowbreak{}d8\_\allowbreak{}six}, \texttt{open\_\allowbreak{}moduli\_\allowbreak{}pass}, \textbf{\texttt{perfectK\_\allowbreak{}d\_\allowbreak{}le}}, \texttt{no\_\allowbreak{}perfectK\_\allowbreak{}of\_\allowbreak{}lt}, \texttt{vOfPar}, \textbf{\texttt{perfectK\_\allowbreak{}of\_\allowbreak{}perfect}}, \texttt{perfectK\_\allowbreak{}two\_\allowbreak{}iff}, \textbf{\texttt{perfectK\_\allowbreak{}k2\_\allowbreak{}d4\_\allowbreak{}iff}}, and controls at period 6 \\
+\texttt{PerfectFamily} (\texttt{PerfectFamilyEdges.\allowbreak{}lean}) & 969 & the case k = 1 decided: \texttt{edge4} with \texttt{edge4\_\allowbreak{}eq\_\allowbreak{}A4}, \texttt{perfect\_\allowbreak{}edge4} and \texttt{perfect\_\allowbreak{}edge4\_\allowbreak{}decide}, \texttt{edge3}, \texttt{edge2}, \texttt{perfectK\_\allowbreak{}one\_\allowbreak{}d4/d3/d2}, \texttt{no\_\allowbreak{}perfectK\_\allowbreak{}one\_\allowbreak{}of\_\allowbreak{}five\_\allowbreak{}le}, \textbf{\texttt{perfectK\_\allowbreak{}one\_\allowbreak{}iff}}, \texttt{perfectK\_\allowbreak{}one\_\allowbreak{}iff\_\allowbreak{}range}, \textbf{\texttt{bound\_\allowbreak{}sharp\_\allowbreak{}k1}}, \texttt{exists\_\allowbreak{}perfectK\_\allowbreak{}one\_\allowbreak{}infinite}, \texttt{card\_\allowbreak{}support\_\allowbreak{}edges}, \texttt{iff\_\allowbreak{}fails\_\allowbreak{}without\_\allowbreak{}hd}, and the controls \texttt{edge3bad}, \texttt{not\_\allowbreak{}perfect\_\allowbreak{}edge3bad}, \texttt{card\_\allowbreak{}support\_\allowbreak{}edge3bad} \\
+\hline
+\end{longtable}
+\end{small}
+
+\subsection*{11.2 The main statements, verbatim}
+From \texttt{LatticeGaugeOneLink.\allowbreak{}lean}, \texttt{StaplePerturbation.\allowbreak{}hess\_\allowbreak{}gauge}:
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}hess\_\allowbreak{}gauge\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}(h2\ \allowbreak{}:\ \allowbreak{}2\ \allowbreak{}∣\ \allowbreak{}L)\ \allowbreak{}(hL\ \allowbreak{}:\ \allowbreak{}3\ \allowbreak{}≤\ \allowbreak{}L)\ \allowbreak{}(U\ \allowbreak{}X\ \allowbreak{}:\ \allowbreak{}Rest\ \allowbreak{}h2\ \allowbreak{}→\ \allowbreak{}ℍ[ℝ])}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(hU\ \allowbreak{}:\ \allowbreak{}∀\ \allowbreak{}e,\ \allowbreak{}‖U\ \allowbreak{}e‖\ \allowbreak{}=\ \allowbreak{}1)\ \allowbreak{}(hX\ \allowbreak{}:\ \allowbreak{}∀\ \allowbreak{}e,\ \allowbreak{}(X\ \allowbreak{}e).\allowbreak{}re\ \allowbreak{}=\ \allowbreak{}0)\ \allowbreak{}(β\ \allowbreak{}:\ \allowbreak{}ℝ)\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}-(27\ \allowbreak{}*\ \allowbreak{}β\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2)\ \allowbreak{}*\ \allowbreak{}∑\ \allowbreak{}e,\ \allowbreak{}‖X\ \allowbreak{}e‖\ \allowbreak{}\textasciicircum{}\ \allowbreak{}2\ \allowbreak{}≤}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}deriv\ \allowbreak{}(deriv\ \allowbreak{}(fun\ \allowbreak{}τ\ \allowbreak{}=\textgreater{}\ \allowbreak{}Phi\ \allowbreak{}h2\ \allowbreak{}(two\_\allowbreak{}ne\_\allowbreak{}zero\_\allowbreak{}of\_\allowbreak{}le\ \allowbreak{}hL)\ \allowbreak{}β\ \allowbreak{}(pert\ \allowbreak{}h2\ \allowbreak{}U\ \allowbreak{}X\ \allowbreak{}τ)))\ \allowbreak{}0}
+\end{leancode}
+From \texttt{LatticeGaugeOneLink.\allowbreak{}lean}, \texttt{WilsonOneLink.\allowbreak{}integral\_\allowbreak{}star\_\allowbreak{}links}:
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}integral\_\allowbreak{}star\_\allowbreak{}links\ \allowbreak{}(hL2\ \allowbreak{}:\ \allowbreak{}(2\ \allowbreak{}:\ \allowbreak{}ZMod\ \allowbreak{}L)\ \allowbreak{}≠\ \allowbreak{}0)\ \allowbreak{}(β\ \allowbreak{}:\ \allowbreak{}ℝ)\ \allowbreak{}(W\ \allowbreak{}:\ \allowbreak{}Rest\ \allowbreak{}h2\ \allowbreak{}→\ \allowbreak{}ℍ[ℝ])}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(hW\ \allowbreak{}:\ \allowbreak{}∀\ \allowbreak{}e,\ \allowbreak{}‖W\ \allowbreak{}e‖\ \allowbreak{}=\ \allowbreak{}1)\ \allowbreak{}\{μ\ \allowbreak{}:\ \allowbreak{}Measure\ \allowbreak{}ℍ[ℝ]\}\ \allowbreak{}(hμ\ \allowbreak{}:\ \allowbreak{}IsHaarS3\ \allowbreak{}μ)\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}∫\ \allowbreak{}u,\ \allowbreak{}Real.\allowbreak{}exp\ \allowbreak{}(-SW\ \allowbreak{}β\ \allowbreak{}(glue\ \allowbreak{}h2\ \allowbreak{}u\ \allowbreak{}W))\ \allowbreak{}∂(Measure.\allowbreak{}pi\ \allowbreak{}fun\ \allowbreak{}\_\allowbreak{}\ \allowbreak{}:\ \allowbreak{}Star\ \allowbreak{}h2\ \allowbreak{}=\textgreater{}\ \allowbreak{}μ)}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}=\ \allowbreak{}Real.\allowbreak{}exp\ \allowbreak{}(-Phi\ \allowbreak{}h2\ \allowbreak{}hL2\ \allowbreak{}β\ \allowbreak{}W)}
+\end{leancode}
+From \texttt{PerfectFamily.\allowbreak{}lean} and \texttt{PlaquetteCounting.\allowbreak{}lean}:
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}no\_\allowbreak{}perfectZ\_\allowbreak{}of\_\allowbreak{}five\ \allowbreak{}\{d\ \allowbreak{}:\ \allowbreak{}ℕ\}\ \allowbreak{}(hd\ \allowbreak{}:\ \allowbreak{}5\ \allowbreak{}≤\ \allowbreak{}d)\ \allowbreak{}(J\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}W\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}Bool)\ \allowbreak{}:\ \allowbreak{}¬\ \allowbreak{}PerfectZ\ \allowbreak{}J}
+\item \texttt{theorem\ \allowbreak{}perfect\_\allowbreak{}I4\ \allowbreak{}:\ \allowbreak{}Perfect\ \allowbreak{}I4\ \allowbreak{}:=\ \allowbreak{}by\ \allowbreak{}decide}
+\item \texttt{theorem\ \allowbreak{}card\_\allowbreak{}edgeSet\_\allowbreak{}le\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}\{I\ \allowbreak{}:\ \allowbreak{}Fin\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool\}\ \allowbreak{}(h\ \allowbreak{}:\ \allowbreak{}AtMostOne\ \allowbreak{}I)\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(edgeSet\ \allowbreak{}I).\allowbreak{}card\ \allowbreak{}≤\ \allowbreak{}L\ \allowbreak{}\textasciicircum{}\ \allowbreak{}d}
+\end{leancode}
+The measure hypothesis \texttt{IsHaarS3} is a three-field structure (probability, unit norm almost surely, left invariance) and is not vacuous: \texttt{isHaarS3\_\allowbreak{}haarS3}.
+
+From \texttt{PerfectFamilyEdges.\allowbreak{}lean}, the equivalence of Theorem 2′(i) and the sharpness at k = 1:
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}perfectK\_\allowbreak{}one\_\allowbreak{}iff\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}(hd\ \allowbreak{}:\ \allowbreak{}2\ \allowbreak{}≤\ \allowbreak{}d)\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(∃\ \allowbreak{}I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool,\ \allowbreak{}PerfectK\ \allowbreak{}1\ \allowbreak{}I)\ \allowbreak{}↔\ \allowbreak{}(d\ \allowbreak{}≤\ \allowbreak{}4\ \allowbreak{}∧\ \allowbreak{}2\ \allowbreak{}∣\ \allowbreak{}L)}
+\smallskip
+\item \texttt{theorem\ \allowbreak{}bound\_\allowbreak{}sharp\_\allowbreak{}k1\ \allowbreak{}(hL\ \allowbreak{}:\ \allowbreak{}2\ \allowbreak{}∣\ \allowbreak{}L)\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(3\ \allowbreak{}*\ \allowbreak{}1\ \allowbreak{}+\ \allowbreak{}1\ \allowbreak{}=\ \allowbreak{}4)\ \allowbreak{}∧\ \allowbreak{}∃\ \allowbreak{}I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}4)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}4\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool,\ \allowbreak{}PerfectK\ \allowbreak{}1\ \allowbreak{}I}
+\end{leancode}
+From \texttt{PerfectFamilyPeriodic.\allowbreak{}lean}, the counting, the slice identity, the dimension bound and the two cases they decide:
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}card\_\allowbreak{}supportK\_\allowbreak{}of\_\allowbreak{}perfectK\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}\{k\ \allowbreak{}:\ \allowbreak{}ℕ\}\ \allowbreak{}(hk\ \allowbreak{}:\ \allowbreak{}k\ \allowbreak{}+\ \allowbreak{}1\ \allowbreak{}≤\ \allowbreak{}d)}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool)\ \allowbreak{}(hI\ \allowbreak{}:\ \allowbreak{}PerfectK\ \allowbreak{}k\ \allowbreak{}I)\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}2\ \allowbreak{}*\ \allowbreak{}(k\ \allowbreak{}+\ \allowbreak{}1)\ \allowbreak{}*\ \allowbreak{}(supportK\ \allowbreak{}k\ \allowbreak{}I).\allowbreak{}card\ \allowbreak{}=\ \allowbreak{}Nat.\allowbreak{}choose\ \allowbreak{}d\ \allowbreak{}k\ \allowbreak{}*\ \allowbreak{}L\ \allowbreak{}\textasciicircum{}\ \allowbreak{}d}
+\smallskip
+\item \texttt{theorem\ \allowbreak{}density\_\allowbreak{}of\_\allowbreak{}perfectK\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}\{k\ \allowbreak{}:\ \allowbreak{}ℕ\}\ \allowbreak{}(hk\ \allowbreak{}:\ \allowbreak{}k\ \allowbreak{}+\ \allowbreak{}1\ \allowbreak{}≤\ \allowbreak{}d)}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool)\ \allowbreak{}(hI\ \allowbreak{}:\ \allowbreak{}PerfectK\ \allowbreak{}k\ \allowbreak{}I)\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}((supportK\ \allowbreak{}k\ \allowbreak{}I).\allowbreak{}card\ \allowbreak{}:\ \allowbreak{}ℚ)\ \allowbreak{}/\ \allowbreak{}((Nat.\allowbreak{}choose\ \allowbreak{}d\ \allowbreak{}k\ \allowbreak{}:\ \allowbreak{}ℚ)\ \allowbreak{}*\ \allowbreak{}(L\ \allowbreak{}:\ \allowbreak{}ℚ)\ \allowbreak{}\textasciicircum{}\ \allowbreak{}d)}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}=\ \allowbreak{}1\ \allowbreak{}/\ \allowbreak{}(2\ \allowbreak{}*\ \allowbreak{}((k\ \allowbreak{}:\ \allowbreak{}ℚ)\ \allowbreak{}+\ \allowbreak{}1))}
+\smallskip
+\item \texttt{theorem\ \allowbreak{}two\_\allowbreak{}mul\_\allowbreak{}sum\_\allowbreak{}card\_\allowbreak{}slice\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}\{k\ \allowbreak{}:\ \allowbreak{}ℕ\}\ \allowbreak{}\{I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool\}}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(hI\ \allowbreak{}:\ \allowbreak{}PerfectK\ \allowbreak{}k\ \allowbreak{}I)\ \allowbreak{}\{T\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d)\}\ \allowbreak{}(hT\ \allowbreak{}:\ \allowbreak{}T.\allowbreak{}card\ \allowbreak{}=\ \allowbreak{}k\ \allowbreak{}+\ \allowbreak{}1)\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}2\ \allowbreak{}*\ \allowbreak{}∑\ \allowbreak{}ν\ \allowbreak{}∈\ \allowbreak{}T,\ \allowbreak{}(∑\ \allowbreak{}x\ \allowbreak{}:\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L,\ \allowbreak{}(I\ \allowbreak{}(T.\allowbreak{}erase\ \allowbreak{}ν)\ \allowbreak{}x).\allowbreak{}toNat)\ \allowbreak{}=\ \allowbreak{}L\ \allowbreak{}\textasciicircum{}\ \allowbreak{}d}
+\smallskip
+\item \texttt{theorem\ \allowbreak{}two\_\allowbreak{}dvd\_\allowbreak{}of\_\allowbreak{}perfectK\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}\{k\ \allowbreak{}:\ \allowbreak{}ℕ\}\ \allowbreak{}(hk\ \allowbreak{}:\ \allowbreak{}k\ \allowbreak{}+\ \allowbreak{}1\ \allowbreak{}≤\ \allowbreak{}d)}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool)\ \allowbreak{}(hI\ \allowbreak{}:\ \allowbreak{}PerfectK\ \allowbreak{}k\ \allowbreak{}I)\ \allowbreak{}:\ \allowbreak{}2\ \allowbreak{}∣\ \allowbreak{}L}
+\smallskip
+\item \texttt{theorem\ \allowbreak{}no\_\allowbreak{}perfectK\_\allowbreak{}of\_\allowbreak{}odd\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}\{k\ \allowbreak{}:\ \allowbreak{}ℕ\}\ \allowbreak{}(hk\ \allowbreak{}:\ \allowbreak{}k\ \allowbreak{}+\ \allowbreak{}1\ \allowbreak{}≤\ \allowbreak{}d)\ \allowbreak{}(hL\ \allowbreak{}:\ \allowbreak{}¬\ \allowbreak{}(2\ \allowbreak{}∣\ \allowbreak{}L))\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}¬\ \allowbreak{}∃\ \allowbreak{}I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool,\ \allowbreak{}PerfectK\ \allowbreak{}k\ \allowbreak{}I}
+\smallskip
+\item \texttt{theorem\ \allowbreak{}perfectK\_\allowbreak{}d\_\allowbreak{}le\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}\{k\ \allowbreak{}:\ \allowbreak{}ℕ\}\ \allowbreak{}(hk1\ \allowbreak{}:\ \allowbreak{}1\ \allowbreak{}≤\ \allowbreak{}k)\ \allowbreak{}(hk\ \allowbreak{}:\ \allowbreak{}k\ \allowbreak{}+\ \allowbreak{}1\ \allowbreak{}≤\ \allowbreak{}d)}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}d\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool)\ \allowbreak{}(hI\ \allowbreak{}:\ \allowbreak{}PerfectK\ \allowbreak{}k\ \allowbreak{}I)\ \allowbreak{}:\ \allowbreak{}d\ \allowbreak{}≤\ \allowbreak{}3\ \allowbreak{}*\ \allowbreak{}k\ \allowbreak{}+\ \allowbreak{}1}
+\smallskip
+\item \texttt{theorem\ \allowbreak{}perfectK\_\allowbreak{}k2\_\allowbreak{}d4\_\allowbreak{}iff\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(∃\ \allowbreak{}I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}4)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}4\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool,\ \allowbreak{}PerfectK\ \allowbreak{}2\ \allowbreak{}I)\ \allowbreak{}↔\ \allowbreak{}2\ \allowbreak{}∣\ \allowbreak{}L}
+\smallskip
+\item \texttt{theorem\ \allowbreak{}no\_\allowbreak{}perfectK\_\allowbreak{}k4\_\allowbreak{}d9\_\allowbreak{}ten\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}(hL\ \allowbreak{}:\ \allowbreak{}¬\ \allowbreak{}(10\ \allowbreak{}∣\ \allowbreak{}L))\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}¬\ \allowbreak{}∃\ \allowbreak{}I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}9)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}9\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool,\ \allowbreak{}PerfectK\ \allowbreak{}4\ \allowbreak{}I}
+\smallskip
+\item \texttt{theorem\ \allowbreak{}no\_\allowbreak{}perfectK\_\allowbreak{}k5\_\allowbreak{}d8\_\allowbreak{}six\ \allowbreak{}[NeZero\ \allowbreak{}L]\ \allowbreak{}(hL\ \allowbreak{}:\ \allowbreak{}¬\ \allowbreak{}(6\ \allowbreak{}∣\ \allowbreak{}L))\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}¬\ \allowbreak{}∃\ \allowbreak{}I\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}8)\ \allowbreak{}→\ \allowbreak{}Wp\ \allowbreak{}8\ \allowbreak{}L\ \allowbreak{}→\ \allowbreak{}Bool,\ \allowbreak{}PerfectK\ \allowbreak{}5\ \allowbreak{}I}
+\end{leancode}
+From \texttt{PerfectFamilyConstruction.\allowbreak{}lean} the construction in d = k+2, at period 2, and from \texttt{PerfectFamilyPeriodic.\allowbreak{}lean} the lift of any period-2 family to an even period (\texttt{vOfPar} being the parity map ZMod L → ZMod 2 applied coordinatewise):
+
+\begin{leancode}
+\item \texttt{theorem\ \allowbreak{}exists\_\allowbreak{}perfect\ \allowbreak{}(k\ \allowbreak{}:\ \allowbreak{}ℕ)\ \allowbreak{}:}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}∃\ \allowbreak{}A\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}(k\ \allowbreak{}+\ \allowbreak{}2))\ \allowbreak{}×\ \allowbreak{}V\ \allowbreak{}(k\ \allowbreak{}+\ \allowbreak{}2)\ \allowbreak{}→\ \allowbreak{}Bool,\ \allowbreak{}Perfect\ \allowbreak{}k\ \allowbreak{}A}
+\smallskip
+\item \texttt{theorem\ \allowbreak{}perfectK\_\allowbreak{}of\_\allowbreak{}perfect\ \allowbreak{}(h\ \allowbreak{}:\ \allowbreak{}2\ \allowbreak{}∣\ \allowbreak{}L)\ \allowbreak{}\{k\ \allowbreak{}:\ \allowbreak{}ℕ\}\ \allowbreak{}(A\ \allowbreak{}:\ \allowbreak{}Finset\ \allowbreak{}(Fin\ \allowbreak{}d)\ \allowbreak{}×\ \allowbreak{}V\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}Bool)}
+\item \texttt{\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}\ \allowbreak{}(hA\ \allowbreak{}:\ \allowbreak{}Perfect\ \allowbreak{}k\ \allowbreak{}A)\ \allowbreak{}:\ \allowbreak{}PerfectK\ \allowbreak{}k\ \allowbreak{}(fun\ \allowbreak{}S\ \allowbreak{}x\ \allowbreak{}=\textgreater{}\ \allowbreak{}A\ \allowbreak{}(S,\ \allowbreak{}vOfPar\ \allowbreak{}h\ \allowbreak{}x))}
+\end{leancode}
+Here \texttt{V\ \allowbreak{}d\ \allowbreak{}=\ \allowbreak{}Fin\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}Bool} is the vertex set at period 2 and \texttt{Perfect} the corresponding predicate, stated on pairs (S, y) rather than curried; \texttt{perfectK\_\allowbreak{}two\_\allowbreak{}iff} says that at L = 2 the two predicates carry the same content. The construction itself is \texttt{Layout.\allowbreak{}perfect\_\allowbreak{}fam}, which takes a splitting of the d directions into blocks of size 2 and 3 and returns a complete family; \texttt{stdLayout} produces such a splitting for every d ≥ 2.
+
+\subsection*{11.3 Trust base and reproduction}
+\texttt{\#print\ \allowbreak{}axioms} was run on every declaration and the outputs are kept as \texttt{axioms-LatticeGaugeOneLink.\allowbreak{}txt} (166 lines, 152 distinct declarations), \texttt{axioms-PerfectFamily.\allowbreak{}txt} (22), \texttt{axioms-PlaquetteCounting.\allowbreak{}txt} (65), \texttt{axioms-PerfectFamilyConstruction.\allowbreak{}txt} (83), \texttt{axioms-PerfectFamilyBound.\allowbreak{}txt} (47), \texttt{axioms-PerfectFamilyPeriodic.\allowbreak{}txt} (98) and \texttt{axioms-PerfectFamilyEdges.\allowbreak{}txt} (99). Every line is \texttt{[propext,\ \allowbreak{}Classical.\allowbreak{}choice,\ \allowbreak{}Quot.\allowbreak{}sound]} or a subset of it — some purely computational lemmas depend on \texttt{[propext,\ \allowbreak{}Quot.\allowbreak{}sound]}, \texttt{cube3\_\allowbreak{}bool} on \texttt{[propext]} alone, and a few definitions on no axiom at all. There is no \texttt{sorryAx} and no \texttt{Lean.\allowbreak{}ofReduceBool}, that is no \texttt{native\_\allowbreak{}decide}, anywhere; \texttt{sorry} and \texttt{admit} were checked absent by \texttt{grep}. Where a decision procedure is used it is \texttt{decide} or \texttt{decide\ \allowbreak{}+kernel}. Verbatim, \texttt{'StaplePerturbation.\allowbreak{}hess\_\allowbreak{}gauge'\ \allowbreak{}depends\ \allowbreak{}on\ \allowbreak{}axioms:\ \allowbreak{}[propext,\ \allowbreak{}Classical.\allowbreak{}choice,\ \allowbreak{}Quot.\allowbreak{}sound]}.
+
+Seven files reproduce everything from \texttt{import\ \allowbreak{}Mathlib} alone: \texttt{LatticeGaugeOneLink.\allowbreak{}lean} (3,979 lines: the chain from the algebraic star inequality through the quaternionic bridge, the series, the geometry of I* and the perturbation of staples to the one-link integral), \texttt{PerfectFamily.\allowbreak{}lean} (498 lines), \texttt{PlaquetteCounting.\allowbreak{}lean} (864 lines), \texttt{PerfectFamilyConstruction.\allowbreak{}lean} (1,050), \texttt{PerfectFamilyBound.\allowbreak{}lean} (701), \texttt{PerfectFamilyPeriodic.\allowbreak{}lean} (1,046) and \texttt{PerfectFamilyEdges.\allowbreak{}lean} (1,037). Checking them with \texttt{lake\ \allowbreak{}env\ \allowbreak{}lean} takes 57.7, 7.4, 9.3, 12.8, 9.6, 10.8 and 8.6 s of wall time respectively, with exit code 0 and no errors and no warnings. Toolchain: Lean 4 v4.33.1 with the matching Mathlib. The seven files, with a pinned toolchain (\texttt{lean-toolchain}, \texttt{lake-manifest.json}) and the complete \texttt{\#print\ \allowbreak{}axioms} output (\texttt{axioms.\allowbreak{}txt}), are in the directory \texttt{lean/\allowbreak{}ym-onelink-bakry-emery} of the repository named in §12, as the modules \texttt{OneLink.\allowbreak{}LatticeGaugeOneLink}, \dots, \texttt{OneLink.\allowbreak{}PerfectFamilyEdges}; the programs behind the computations of §6 and §8 are not part of it.
+
+Because none of these files may import another, the four files on complete families repeat what they reuse: 247 lines in \texttt{PerfectFamilyPeriodic.\allowbreak{}lean} (nine blocks taken from \texttt{PlaquetteCounting.\allowbreak{}lean} and \texttt{PerfectFamilyBound.\allowbreak{}lean}) and 550 lines in \texttt{PerfectFamilyEdges.\allowbreak{}lean} (twelve blocks), the namespace name being the only alteration. Each block was cut by line range and compared with \texttt{diff} against its source after assembly; all comparisons are empty. \texttt{PerfectFamilyBound.\allowbreak{}lean} likewise repeats the counting of \texttt{PerfectFamilyConstruction.\allowbreak{}lean} verbatim and carries the k-cell packing bound of \texttt{PlaquetteCounting.\allowbreak{}lean} transposed to the vertex type \texttt{Fin\ \allowbreak{}d\ \allowbreak{}→\ \allowbreak{}Bool}, a change of type that the proof does not use. In \texttt{PerfectFamilyPeriodic.\allowbreak{}lean} the packing bound is the one from \texttt{PlaquetteCounting.\allowbreak{}lean} unaltered, that file already stating it for an arbitrary period.
+
+\subsection*{11.4 What the formalisation changed}
+\begin{enumerate}
+\item[1.] \textbf{The star inequality got shorter.} The earlier proof used a 9×9 secular equation for the per-staple form and a convexity-plus-vertices argument for a scalar inequality Σ $1/(p_i$ + $c*(ν_i²)$) ≤ 1. Neither is needed: the weights (6 − $p_i)/(36$ − t) make $Σλ_i$ = 1 an identity, and the per-staple step is the sum of squares of §4(ii), which Lean closes by \texttt{ring} once the identity is supplied. The secular equation survives only as the check that the AM–GM is not lossy.
+\item[2.] \textbf{Two hypotheses had to be weakened.} Lean required $‖v_i‖²$ ≤ t − $p_i²$ as an inequality — R is decreasing in c, so stating the per-staple lemma for c ≤ 6 − 36μ/(6−p) suffices — and μ ≤ 1 to be derived from ‖v‖² ≤ t ≤ 36, which also removes the need to treat μ = 27 separately.
+\item[3.] \textbf{The one-link integral needed no Haar density.} Stating the hypothesis as the structure \texttt{IsHaarS3} and running the moment recursion from left invariance replaced any construction of coordinates on S³; the identification with \texttt{volume.\allowbreak{}toSphere} came afterwards and is not used in the chain.
+\item[4.] \textbf{The dimension bound became a \texttt{decide}.} The paper proof goes through the Hamming bound; the formal proof replaces the code-theoretic step by the $2^12-case$ decision on a 3-dimensional subcube plus the injectivity of one projection, needing no coding theory in Mathlib.
+\item[5.] \textbf{The density bound lost its averaging.} On paper the bound 1/d came from observing that inside a unit cube the family is a matching and averaging over the $2^{d−1}$ cubes containing a link. The formal proof needs neither: the source map is injective (Theorem 6.2). One gain is visible only there — the statement holds for an arbitrary vertex set and step map, so the torus and $Z^d$ are one theorem with no boundary correction.
+\item[6.] \textbf{The parity of the period is a conclusion, not a hypothesis.} The families of §1 have period 2, and an even period could be carried as a standing assumption. It need not be: summing the completeness identity of a single (k+1)-set of directions over all vertices gives 2 \textbar{} L for every complete family of k-cells (Theorem 6.4(ii)–(iii)), so 2 \textbar{} L occurs in no hypothesis on the negative side and only where a family is constructed. The only place a lower bound on the period is still required is the count of the faces of a cell: at L = 1 the face (T∖ν, x + $e_{ν}$) collapses onto (T∖ν, x), and 2 ≤ L is exactly what keeps the 2(k+1) faces distinct (\texttt{card\_\allowbreak{}faceSetK}, with the negative control \texttt{card\_\allowbreak{}faceSetK\_\allowbreak{}fails\_\allowbreak{}L1}).
+\item[7.] \textbf{What resisted.} The per-staple identity did not go through \texttt{field\_\allowbreak{}simp;\ \allowbreak{}ring} in one step (the simp set exceeded its recursion depth); it had to be split into a polynomial part closed by \texttt{ring} and a one-variable lemma for the division, assembled by \texttt{linear\_\allowbreak{}combination}.
+\end{enumerate}
+
+\section*{12. Disclosure of AI use}
+This note was produced with the assistance of AI agents. The observation, the paper proofs, the programs behind §6 and §8, the Lean 4 development including the formalised statements, the technical reports on which this note is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code, across many separate sessions, each of which began without memory of the previous ones and read the written record instead; the models used were publicly released Claude models of the Opus 5 and Fable 5 series. A second group of instances, running on the server of the website named on the title page, is responsible for rebuilding the Lean development from the distributed archive on a separate machine, for checking the numerical claims of this note against the reports, and for preparing the distributed version; the independent rebuild is pending. The human author set the task, chose the problem, fixed the working rules and load limits, and decides whether and where the result is reported; he is responsible for this note. He is not a mathematician and has not himself verified the mathematics.
+
+Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. In particular Corollary 3, which is the statement a reader is most likely to want, is the part with the least support.
+
+This edition and the Lean development of §11 are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-onelink-bakry-emery}, the development under \texttt{lean/\allowbreak{}ym-onelink-bakry-emery}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section, in the address of the Lean development in §11.3, and in the bibliography entries [DF], [Go], [GZ], [OR] and [PPR], which are completed here.
+
+\begin{thebibliography}{XXXXX}
+\bibitem[AC]{AC} A. Adhikari and S. Cao, \textit{Correlation decay for finite lattice gauge theories at weak coupling}, arXiv:2202.10375. [abstract only]
+\bibitem[BG]{BG} R. Basu and S. Ganguly, \textit{SO(N) lattice gauge theory, planar and beyond}, arXiv:1608.04379. [abstract only]
+\bibitem[BP]{BP} Á. Baricz and S. Ponnusamy, \textit{On Turán type inequalities for modified Bessel functions}, arXiv:1010.3346. [title and abstract; the original source of the coefficient-comparison proof is not identified]
+\bibitem[Br]{Br} C. Brennecke, \textit{On the leading order term of the lattice Yang–Mills free energy}, arXiv:2511.07297. [title only]
+\bibitem[Ch]{Ch} S. Chatterjee, \textit{The 1/N expansion for SO(N) lattice gauge theory at strong coupling}, arXiv:1604.04777. [abstract only]
+\bibitem[CNS1]{CNS1} S. Cao, R. Nissim and S. Sheffield, \textit{Expanded regimes of area law for lattice Yang–Mills theories}, arXiv:2505.16585.
+\bibitem[CNS2]{CNS2} S. Cao, R. Nissim and S. Sheffield, \textit{Dynamical approach to area law for lattice Yang–Mills}, arXiv:2509.04688.
+\bibitem[DF]{DF} B. Durhuus and J. Fröhlich, \textit{A connection between ν-dimensional Yang–Mills theory and (ν−1)-dimensional, non-linear σ-models}, Comm. Math. Phys. 75 (1980), 103–151. [cited in [CNS2] as [DF80] for the mass gap condition from which the area law follows; not consulted directly]
+\bibitem[Go]{Go} D. H. Gottlieb, \textit{A certain class of incidence matrices}, Proc. Amer. Math. Soc. 17 (1966), 1233–1237, DOI 10.1090/S0002-9939-1966-0204305-9. [not consulted directly; the statement used, that $W_{t,k}$ has full row rank over $\mathbb{Q}$ for $t \le \min(k, d-k)$ (proved independently by Kantor), is taken as stated in arXiv:1302.4249, Theorem 2.3]
+\bibitem[GZ]{GZ} A. Guionnet and B. Zegarliński, \textit{Lectures on logarithmic Sobolev inequalities}, in Séminaire de Probabilités XXXVI, Lecture Notes in Math. 1801, Springer, Berlin, 2003, 1–134, DOI 10.1007/978-3-540-36107-7\_1. [the proof of [SZZ, Cor. 4.11] follows [GZ, Section 8.3]; not consulted directly]
+\bibitem[Ja]{Ja} J. Jafarov, \textit{Wilson loop expectations in SU(N) lattice gauge theory}, arXiv:1610.03821. [abstract only]
+\bibitem[Le]{Le} T. Lemoine, \textit{The heat-kernel master field on $Z^d$ at strong coupling}, arXiv:2606.28945. [title only]
+\bibitem[M]{M} Mathlib, \url{https://github.com/leanprover-community/mathlib4} (Lean 4 v4.33.1).
+\bibitem[Ni]{Ni} R. Nissim, \textit{U(N) lattice Yang–Mills in the 't Hooft regime}, arXiv:2510.22788.
+\bibitem[Ni2]{Ni2} R. Nissim, \textit{Deconfinement for SO(3) lattice Yang–Mills at strong coupling}, arXiv:2605.16162. [title only]
+\bibitem[OR]{OR} F. Otto and M. G. Reznikoff, \textit{A new criterion for the logarithmic Sobolev inequality and two applications}, J. Funct. Anal. 243 (2007), 121–157, DOI 10.1016/j.jfa.2006.10.002. [not consulted directly; used nowhere in the statements of this note]
+\bibitem[OS]{OS} K. Osterwalder and E. Seiler, \textit{Gauge field theories on a lattice}, Ann. Physics 110 (1978), DOI 10.1016/0003-4916(78)90039-8. [not obtained; cited only through the secondary descriptions in [SZZ], [CNS1], [Ni]]
+\bibitem[PPR]{PPR} G. Parisi, R. Petronzio and F. Rapuano, \textit{A measurement of the string tension near the continuum limit}, Phys. Lett. B 128 (1983), 418–420, DOI 10.1016/0370-2693(83)90930-9. [not consulted directly; cited for the multi-hit (one-link-average) variance reduction, to which arXiv:hep-lat/0306011 and arXiv:hep-lat/9804004 attribute it, the latter noting that the method cannot be applied at the same time to links that are sides of one plaquette]
+\bibitem[Se]{Se} E. Seiler, \textit{Gauge theories as a problem of constructive quantum field theory and statistical mechanics}, Lecture Notes in Physics 159, Springer, 1982. [not obtained]
+\bibitem[SZZ]{SZZ} H. Shen, R. Zhu and X. Zhu, \textit{A stochastic analysis approach to lattice Yang–Mills at strong coupling}, arXiv:2204.12737.
+\end{thebibliography}
+\end{document}
