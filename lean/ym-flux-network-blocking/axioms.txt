@@ -1,0 +1,111 @@
+# axioms of principia-ym-flux-network-blocking-2026-10-15 — 12 files; all declarations depend only on propext, Classical.choice, Quot.sound (or on no axioms)
+
+# CoarseFaceFourTorusTags.lean (record shipped with the paper)
+'CoarseFaceFourTorusTags.bianchi' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CoarseFaceFourTorusTags.flux_mem_tags' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CoarseFaceFourTorusTags.flux_linearIndependent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CoarseFaceFourTorusTags.six_le_finrank_tags' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CoarseFaceFourTorusTags.disjoint_range_tags' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CoarseFaceFourTorusTags.finrank_ker_d2_ge' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# CoarseFaceHodgeSplit.lean (record shipped with the paper)
+'CoarseFaceHodgeSplit.range_sup_tags' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CoarseFaceHodgeSplit.disjoint_range_tags' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CoarseFaceHodgeSplit.finrank_ker_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CoarseFaceHodgeSplit.decomp_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CoarseFaceHodgeSplit.norm_sq_add_harmonic' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeAllFacesBlocking.lean (record shipped with the paper)
+'LatticeGauge.AllFacesBlocking.sq_sum_fin_four_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.AllFacesBlocking.block_energy_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.AllFacesBlocking.fine_energy_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.AllFacesBlocking.equal_split_ratio' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.AllFacesBlocking.smooth_ratio' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.AllFacesBlocking.quartic_expand' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeAveragedBlockFlowLedger.lean (record shipped with the paper)
+'LatticeGauge.AveragedBlockFlow.affine_iter' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.AveragedBlockFlow.affine_dist' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.AveragedBlockFlow.tail_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.AveragedBlockFlow.tail_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.AveragedBlockFlow.axis_flow_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.AveragedBlockFlow.axis_flow_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.AveragedBlockFlow.cone_series' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeBlockCovarianceLedger.lean (record shipped with the paper)
+'LatticeGauge.BlockCovariance.cone_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockCovariance.cone_chain_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockCovariance.growth_ledger' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockCovariance.inverse_decay' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockCovariance.face_sum_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockCovariance.four_split_quartic_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockCovariance.even_split_quartic' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeFluxNetwork.lean (record shipped with the paper)
+'LatticeGauge.FluxNetwork.sum_pow_four_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.FluxNetwork.ratio_le_max' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.FluxNetwork.pow_four_sum_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.FluxNetwork.ratio_ge_of_unit_flux' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.FluxNetwork.energy_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.FluxNetwork.thomson_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.FluxNetwork.thomson_attained' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.FluxNetwork.minimizer_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.FluxNetwork.constraint_midpoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.FluxNetwork.quad_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.FluxNetwork.chain_one_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeQuarticConeNormLedger.lean (record shipped with the paper)
+'LatticeGauge.QuarticConeNorm.ratio_sandwich' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticConeNorm.ledger' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticConeNorm.transfer' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticConeNorm.cone_b_to_a' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticConeNorm.stein_floor' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeQuarticRowColumnBound.lean (record shipped with the paper)
+LatticeGaugeQuarticRowColumnBound.lean:107:48: warning: Variable name `hc` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hc
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+'LatticeGauge.QuarticRowColumn.weighted_quartic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticRowColumn.row_quartic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticRowColumn.schur_quartic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticRowColumn.representative_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticRowColumn.cone_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticRowColumn.cone_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeQuarticSplitTriangle.lean (record shipped with the paper)
+'LatticeGauge.QuarticSplit.titu_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticSplit.quartic_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticSplit.quartic_triangle' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.QuarticSplit.class_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeTailTypeClassification.lean (record shipped with the paper)
+'LatticeGaugeTailTypeClassification.flat_weighted_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeTailTypeClassification.flat_weighted_unbounded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeTailTypeClassification.exp_weighted_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeTailTypeClassification.power_sum_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeTailTypeClassification.power_sum_unbounded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeTailTypeClassification.power_sum_unbounded_borderline' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+
+# LatticeGaugeToeplitzTailSplit.lean (record shipped with the paper)
+'LatticeGaugeToeplitzTailSplit.split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeToeplitzTailSplit.split_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeToeplitzTailSplit.tail_sum_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeToeplitzTailSplit.tailPart_sum_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeToeplitzTailSplit.qform_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeToeplitzTailSplit.cform_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeToeplitzTailSplit.flatQ_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeToeplitzTailSplit.flat_row_sum_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeToeplitzTailSplit.flatQ_ge' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeToeplitzTailSplit.flat_not_uniform_geometric' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeWeightedTailBound.lean (record shipped with the paper)
+'LatticeGaugeWeightedTailBound.weighted_geom_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeWeightedTailBound.weighted_geom_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeWeightedTailBound.weighted_tail_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeWeightedTailBound.linear_prefactor_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeWeightedTailBound.weighted_sum_uniform_linear' depends on axioms: [propext, Classical.choice, Quot.sound]

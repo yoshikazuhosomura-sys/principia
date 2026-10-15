@@ -1,0 +1,440 @@
+%% Web edition. The GitHub edition differs only in the author line and in the Disclosure section (see github-author.patch).
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\hb}{\hbar}
+\newcommand{\xc}{x_c}
+\newcommand{\rcol}{\rho_{\mathrm{col}}}
+\newcommand{\Csite}{C_{\mathrm{site}}}
+\newcommand{\code}[1]{\texttt{#1}}
+%% Distribution addresses of the Lean bundle (set by the web edition).
+\newcommand{\bundleurl}{https://computoergosum.com/principia/lean/principia-ym-coarse-chain-poincare-2026-10-15.tar.gz}
+\newcommand{\axiomsurl}{https://computoergosum.com/principia/lean/axioms-ym-coarse-chain-poincare-2026-10-15.txt}
+
+\title{Convex blocks and a coarse Dobrushin chain: a Poincar\'e bound for the core of the double-well path measure with constants polynomial in $\hbar$}
+\author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
+\date{2026-10-15}
+
+\begin{document}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
+
+\begin{abstract}
+We consider the Euclidean path measure of the quartic double well $V(z)=(z^2-1)^2/8$ on a time lattice of spacing $\varepsilon=1/2$, restricted to the box $[-\xc,0]^k$ with $\xc=0.89$ and with both outer boundary values in the well, $\alpha,\beta\le-\xc$; this ``core'' measure carries the weight $e^{-S/\hbar}$ and the Dirichlet form $(\hbar/\varepsilon)\sum_i|\partial_if|^2$. We prove three Poincar\'e bounds on paper. Theorem~B: a block-heat-bath path coupling and Ollivier's contraction-to-gap criterion turn a block Poincar\'e constant $C_B$ and a Dobrushin--Shlosman type average influence $\delta<1$ into $C_P\le C_B/(1-\delta)$ for every $k$. Theorem~BP: for blocks of length at most $15$ and boundary values in $(-\infty,0]$, $C_B\le 9.18+c_1\hbar^{-8}$ with $\ln c_1\le 89.38$, for all $\hbar\in(0,1]$; the exponential $e^{c/\hbar}$ is removed by a hidden convexity of the action in the variables $z_i^2$ and a one-dimensional Hardy-type bound. Theorem~CC: for the coarse chain $y_m=z_{8m}$ with Dobrushin column sum $\rcol(\hbar)<1$, $C_P\le 9.18+455.84\,\Csite(\hbar)/(1-\rcol(\hbar))$ with $\Csite\le e^{80.79}\hbar^{-8}$, uniformly in $k$. Theorems BP and CC use, in addition, the Bakry--\'Emery criterion on convex domains and the Brascamp--Lieb variance inequality, which are standard results and are cited. The hypothesis $\rcol<1$ is verified on paper for $\hbar\in[0.27,1]$ up to one one-dimensional integral evaluated in floating point, and at $23$ values of $\hbar\in[10^{-5},1]$ by a certificate that is computer-assisted in double precision with outward margins (not interval arithmetic), giving $\rcol\le 0.176$. The values between the $23$ points are a numerical reading, not a certificate. The algebraic steps are written in Lean~4; the analysis is on paper. The model is one-dimensional; nothing is claimed about four-dimensional lattice gauge theory.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+A Poincar\'e inequality for a Gibbs measure in a double-well potential typically has a constant of order $e^{\Delta/\hbar}$, with $\Delta$ the barrier height (Kramers). Restricting to a single well removes the barrier, but the restricted measure is not log-concave: the potential $V$ has $V''<0$ on $(-1/\sqrt3,0]$ and the box reaches up to the top of the barrier at $0$. The standard routes from a Dobrushin--Shlosman condition to a Poincar\'e or log-Sobolev inequality bound block constants by the Holley--Stroock perturbation lemma [HS] and therefore pay a factor exponential in the interaction strength $1/(\varepsilon\hbar)$ (for instance the block constant $c_0e^{4|X|\|\Phi\|}$ in [SZ]; see also [Ma]). The aim of this paper is a Poincar\'e constant for the single-well core that is \emph{polynomial} in $\hbar$ and uniform in the length $k$.
+
+The question arises in an online textbook by the authors [KSR, Part~10], where a Poincar\'e bound of this form for the core is one of the rows on which a conditional argument for the double-well path measure rests (the row labelled $(\mathrm{T0}'_P)$ there). A companion note [KSR2] proves the opposite direction: an inverse squared spectral gap bounds the Langevin Poincar\'e constant of Euclidean path measures \emph{from below}. The present paper concerns the \emph{upper} bound for the core, which is a different object; the two results are not used in each other's proofs.
+
+\paragraph{What the paper does.}
+\begin{itemize}[leftmargin=*]
+\item Theorem~\ref{thm:B} (\S\ref{sec:B}) is an abstract step: a path coupling for the block heat bath, combined with Ollivier's criterion [Ol, Prop.~29, Cor.~30], gives $C_P\le C_B/(1-\delta)$. No step introduces $e^{1/(\varepsilon\hbar)}$.
+\item Theorem~\ref{thm:BP} (\S\ref{sec:BP}) bounds the block constant polynomially in $\hbar$.
+\item Theorem~\ref{thm:CC} (\S\ref{sec:CC}) replaces the block chain by a one-site Dobrushin chain on every eighth site. It needs neither Theorem~\ref{thm:B} nor Theorem~\ref{thm:BP} as stated, only their ingredients, and its single numerical hypothesis is $\rcol(\hbar)<1$.
+\item Proposition~\ref{prop:DOB} (\S\ref{sec:DOB}) states what is known about $\rcol(\hbar)<1$, with the strength of each part named in the statement.
+\end{itemize}
+
+\section{Setting}\label{sec:setting}
+
+Fix $\varepsilon=1/2$, $V(z)=(z^2-1)^2/8$, $\xc=0.89$ and $\hbar\in(0,1]$. For $k\ge1$ and outer boundary values $\alpha,\beta\in\R$ put $z_0=\alpha$, $z_{k+1}=\beta$ and
+\[
+S(z)=\sum_{i=0}^{k}\frac{(z_{i+1}-z_i)^2}{2\varepsilon}+\sum_{i=1}^{k}\varepsilon V(z_i),\qquad
+\mu_k^{\alpha,\beta,\hbar}(dz)=\frac{1}{Z}\,e^{-S(z)/\hbar}\,\mathbf 1_{\Omega_k}(z)\,dz,\quad \Omega_k=[-\xc,0]^k .
+\]
+The Dirichlet form is $\cE(f)=(\hbar/\varepsilon)\sum_{i=1}^k\mu|\partial_if|^2$ (Neumann conditions on $\partial\Omega_k$), and $C_P(\mu)$ is the least constant with $\Var_\mu f\le C_P(\mu)\,\cE(f)$ for Lipschitz $f$. The \emph{core} is the family $Q_k=\mu_k^{\alpha,\beta,\hbar}$ with
+\[
+\textbf{(END)}\qquad \alpha,\beta\le-\xc ,
+\]
+that is, both outer neighbours sit in the well. (For $a>0$ the boundary term is not compatible with the hidden convexity below; the restriction (END) is part of every statement.)
+
+The Hessian of $S$ in the $z$ coordinates is $\varepsilon^{-1}T_n+\varepsilon\,\mathrm{diag}\,V''(z_i)$ with $T_n=\mathrm{tridiag}(-1,2,-1)$, and $V''\ge V''(0)=-1/2$. Hence on any block of $n$ consecutive free sites, for arbitrary real boundary values,
+\begin{equation}\label{eq:kappa}
+\mathrm{Hess}\,S\ \ge\ \kappa(n)\,I,\qquad \kappa(n):=\tfrac{15}{4}-4\cos\!\big(\tfrac{\pi}{n+1}\big).
+\end{equation}
+Numerically $\kappa(6)=0.1461$, $\kappa_0:=\kappa(7)=0.054482$ and $\kappa(8)=-0.00877$. Blocks of length $\le7$ are uniformly convex in $z$; length $8$ is the first that is not. Every construction below cuts the chain into pieces of length $\le7$.
+
+\paragraph{Hidden convexity (K$'$).} For $z\le0$ put $\rho_i=z_i^2$. Then $(z_i-z_j)^2=\rho_i+\rho_j-2\sqrt{\rho_i\rho_j}$ is jointly convex in $(\rho_i,\rho_j)$ (the geometric mean is concave) and $\varepsilon V(-\sqrt\rho)=\varepsilon(\rho-1)^2/8$ is convex. Hence, for boundary values $a,b\le0$, $\tilde S(\rho):=S(-\sqrt\rho)$ is convex on $[0,\xc^2]^n$ (indeed $(\varepsilon/4)$-strongly convex), jointly in $(\rho,a^2,b^2)$, and its minimiser is unique. This is proved in [KSR, Part~10] and its algebraic core is in Lean (\S\ref{sec:lean}). It is used below only through partial minimisation: if $\tilde S$ is jointly convex then $\sigma\mapsto\min_{\rho'}\tilde S(\rho',\sigma)$ is convex.
+
+\paragraph{The coarse chain.} For $k\ge8$ let $M=\lfloor k/8\rfloor$, $y_m:=z_{8m}$ ($1\le m\le M$), and let $B_0=\{1,\dots,7\}$, $B_m=\{8m+1,\dots,\min(8m+7,k)\}$ be the blocks between coarse sites. With the coarse sites frozen, the blocks are independent (Markov property) and each is $\kappa_0$-convex by \eqref{eq:kappa}. The law $\nu$ of $y$ is a nearest-neighbour chain on $[-\xc,0]^M$ with effective pair interaction $w_B(a,b)=-\hbar\ln\int e^{-S_B(z;a,b)/\hbar}dz$. The conditional law $\nu(dy_m\mid y_{m-1}=a,\,y_{m+1}=b)$ is the marginal of the middle site $z_8$ of a chain $z_1,\dots,z_N$, $N=8+r$, with boundary values $z_0=a\in[-\xc,0]$ and $z_{N+1}=b$; in the interior $r=7$ and $b\in[-\xc,0]$, at the right end of the chain $r\in\{0,\dots,7\}$ and $b=\beta\le-\xc$. Its \emph{influence} (a Dobrushin coefficient [Do]) is
+\begin{gather*}
+\rho(a,b;r):=\partial_a\E[z_8\mid a,b]=\frac{\Cov(z_1,z_8)}{\varepsilon\hbar},\\
+\rcol(\hbar):=\sup_m\sum_{m'=m\pm1}\sup_{a,b}\rho_{m'\leftarrow m}\ \le\ 2\sup_{r,a,b}\rho(a,b;r).
+\end{gather*}
+
+\paragraph{What is shown and what is not.} Theorems~\ref{thm:B}, \ref{thm:BP} and \ref{thm:CC} are proved on paper, with cited ingredients listed in Table~\ref{tab:status}. Theorem~\ref{thm:CC} is conditional on $\rcol(\hbar)<1$. That hypothesis is established (with the qualifications of Proposition~\ref{prop:DOB}) on $[0.27,1]$ and at $23$ points of $[10^{-5},0.27)$; it is \emph{not} established between those points or for $\hbar<10^{-5}$. Accordingly, for the core in which both outer values lie in the well (the compartment-side core of [KSR, Part~10]), the row $(\mathrm{T0}'_P)$ moves from an assumption to a statement that is conditional on one numerical row (Table~\ref{tab:status}); it does not become unconditional. The box-side core of that argument (its Proposition~H4), in which an outer neighbour lies beyond the summit and the conditional law is bistable with constants of type $e^{\Delta S/\hbar}$ [KSR, 10-11 \S06], is not covered by the hypothesis $\alpha,\beta\le-\xc$ and is not addressed here. The four-dimensional lattice gauge problem that motivates [KSR] is not addressed (\S\ref{sec:notclaimed}).
+
+\section{Theorem B: block heat bath and contraction}\label{sec:B}
+
+Fix a block length $L$ and put $B_j=[j,j+L-1]\cap[1,k]$ for $j=2-L,\dots,k$, so that there are $N=k+L-1$ blocks, truncated blocks included, and every site lies in exactly $L$ of them. Let $E_B$ be the conditional expectation given the coordinates outside $B$, and $P=N^{-1}\sum_jE_{B_j}$ the block heat bath. For a site $y$ and a block $B$ having $y$ as a boundary site, let $J_B(y)=\sup_s\sum_{i\in B}\partial_s\E_B^{s,\cdot}[z_i]$, the supremum running also over the other boundary value of $B$, and
+\[
+\delta:=\sup_y\frac{J_{\mathrm{right}}(y)+J_{\mathrm{left}}(y)}{L}.
+\]
+
+\begin{theorem}[Theorem B]\label{thm:B}
+Let $\alpha,\beta\le-\xc$ and $\hbar>0$. Assume
+\textup{(BP)} every block $B_j$ \textup{(}length $\le L$, all boundary values in $(-\infty,0]$\textup{)} satisfies $\Var_{E_B}(f)\le C_B(\hbar/\varepsilon)\sum_{i\in B}E_B|\partial_if|^2$, and
+\textup{(DS)} $\delta<1$.
+Then for every $k\ge1$,
+\[
+C_P\big(\mu_k^{\alpha,\beta,\hbar}\big)\le\frac{C_B}{1-\delta}.
+\]
+The proof uses the FKG lattice condition and Holley's criterion for monotone coupling [Ho], [Pr] \textup{(}standard results, cited\textup{)} and Ollivier's criterion [Ol] \textup{(}checked against the arXiv version\textup{)}.
+\end{theorem}
+
+\begin{proof}
+\emph{Monotone coupling.} The cross term of $-S/\hbar$ is $+z_iz_{i+1}/(\varepsilon\hbar)$, supermodular, and the reference measure is a product of intervals; the block measures satisfy the FKG lattice condition and the density ratio between boundary values $s<s'$ is $\exp((s'-s)z_{\mathrm{first}}/(\varepsilon\hbar))$, increasing. By Holley's criterion and Strassen's theorem there is a coupling with $z\le z'$ coordinatewise, and then $W_1(\mu_B^{s},\mu_B^{s'})=\sum_i(\E^{s'}z_i-\E^{s}z_i)\le|s'-s|\,J_B(y)$.
+
+\emph{Path coupling.} If $z,z'$ differ only at the site $y$, by $d$, then one step of $P$ chooses a block containing $y$ ($L$ choices; the two configurations are coupled to agree), a block having $y$ as a boundary site (two choices; the discrepancy is at most $d+J_B(y)d$), or another block (discrepancy $d$). Hence $W_1(P(z,\cdot),P(z',\cdot))\le(1-\kappa)d$ with $\kappa=(L/N)(1-\delta)$; for general $z,z'$ change one coordinate at a time (the box is a product) and use the triangle inequality.
+
+\emph{Contraction to gap.} $P$ is self-adjoint and positive in $L^2(\mu)$. Since $\Omega_k$ is compact, $\|P^nf-\mu f\|_2\le\mathrm{diam}(\Omega_k)(1-\kappa)^n\|f\|_{\mathrm{Lip}}$ for Lipschitz $f$, so the spectral measure of $f-\mu f$ has no mass in $(1-\kappa,1]$; by density of Lipschitz functions, $\langle f,(I-P)f\rangle\ge\kappa\Var f$ for all $f$ [Ol, Prop.~29, Cor.~30].
+
+\emph{Comparison.} $\langle f,(I-P)f\rangle=N^{-1}\sum_j\mu(\Var_{B_j}f)\le(C_BL/N)\,\cE(f)$ by (BP), since each site lies in $L$ blocks. Combining, $\Var f\le C_B(1-\delta)^{-1}\cE(f)$.
+\end{proof}
+
+\begin{remark}
+The ingredients are of known types (path coupling under a Dobrushin--Shlosman type condition [Ma], comparison of block dynamics, Ollivier's criterion). We do not know whether this combination appears in the literature in this form; in the references we were able to read, the block constant is controlled by a Holley--Stroock perturbation, which is where $e^{c/(\varepsilon\hbar)}$ enters. Here that step is the hypothesis (BP), and Theorem~\ref{thm:BP} supplies it. Truncated blocks enter the supremum in $\delta$.
+\end{remark}
+
+The algebraic steps (the one-step contraction inequality, the passage from spectral weight to gap, and the final comparison) are in Lean (\S\ref{sec:lean}). The quantity $\delta$ itself is not bounded on paper in this paper; Theorem~\ref{thm:CC} below avoids it.
+
+\section{Theorem BP: block constants polynomial in \texorpdfstring{$\hbar$}{hbar}}\label{sec:BP}
+
+For a block of length $L\le15$ with boundary values $a,b\in(-\infty,0]$ write $\mu_{a,b}\propto e^{-S/\hbar}\mathbf 1_{[-\xc,0]^L}$ and $C_B(\hbar):=\sup_{L\le15,\,a,b\le0}C_P(\mu_{a,b})$.
+
+\begin{lemma}[short blocks; BE$_7$]\label{lem:BE7}
+If $n\le7$, then for every $\hbar>0$ and all real boundary values, $C_P(\mu_{a,b})\le\varepsilon/\kappa(n)\le\varepsilon/\kappa_0=9.1774$.
+\end{lemma}
+\begin{proof}
+By \eqref{eq:kappa} the potential $S/\hbar$ is $(\kappa(n)/\hbar)$-strongly convex on the convex set $[-\xc,0]^n$. The Bakry--\'Emery criterion for a strongly log-concave measure restricted to a convex set (Neumann boundary) gives $\Var f\le(\hbar/\kappa(n))\int|\nabla f|^2d\mu$ [BGL], [BL, Thm.~4.1] \textup{(}the criterion is standard and is cited; its application to the box $[-\xc,0]^n$ through \eqref{eq:kappa} is the step of this paper\textup{)}.
+\end{proof}
+
+\begin{lemma}[variance split at the middle site]\label{lem:split}
+Let $8\le L\le15$, $j=\lceil L/2\rceil$, let $m$ be the law of $z_j$ and $C_m$ its Poincar\'e constant for $\Var_mg\le C_m\int|g'|^2dm$. Then $C_P(\mu_{a,b})\le\varepsilon/\kappa_0+\big(4/(\varepsilon\kappa_0^2)\big)\,C_m/\hbar$, with $4/(\varepsilon\kappa_0^2)=2695.2$.
+\end{lemma}
+\begin{proof}
+Both sides of $j$ have length $\le7$. By the law of total variance, $\Var_\mu f=m(\Var_{\mu_s}f)+\Var_m g$, $g(s)=\mu_s(f)$, where $\mu_s$ is the law with $z_j=s$ frozen, a product of two $\kappa_0$-convex blocks; Lemma~\ref{lem:BE7} and tensorisation give the first term $\le(\hbar/\kappa_0)A$, $A=\sum_{i\ne j}\mu|\partial_if|^2$. Differentiating, $g'(s)=\mu_s(\partial_jf)+\Cov_{\mu_s}(f,h)/(\varepsilon\hbar)$ with $h=z_{j-1}+z_{j+1}$; Cauchy--Schwarz and $\Var_{\mu_s}h\le2\hbar/\kappa_0$ give $|g'|^2\le2\mu_s|\partial_jf|^2+4A_s/(\varepsilon^2\kappa_0^2)$. Integrate against $m$ and rescale to $\cE$.
+\end{proof}
+
+\begin{lemma}[one-dimensional Hardy-type bound; H1D]\label{lem:H1D}
+Let $m(dt)=Z^{-1}e^{-F(t)/\hbar}dt$ on $I=[-\ell,0]$ with $F$ continuous, and $\Delta:=\sup_{y\le s\le x}\big[F(s)-\max(F(x),F(y))\big]$. Then $C_m\le2\ell^2e^{\Delta/\hbar}$.
+\end{lemma}
+\begin{proof}
+$\Var_mg=\iint_{y<x}(g(x)-g(y))^2dm\,dm$ and $(g(x)-g(y))^2\le\int_y^x|g'|^2p\int_y^xp^{-1}$. By Fubini $\Var_mg\le\int|g'(t)|^2p(t)K(t)dt$ with $K(t)=\iint_{y\le t\le x}\int_y^xp(x)p(y)/p(s)\,ds\,dx\,dy$. For $y\le s\le x$, $p(x)p(y)/p(s)\le e^{\Delta/\hbar}(p(x)+p(y))$, and $\iint_{y\le t\le x}(x-y)(p(x)+p(y))\le2\ell^2$.
+\end{proof}
+If $F$ is quasi-convex ($\Delta=0$), $C_m\le2\ell^2$ independently of $\hbar$: the factor $e^{c/\hbar}$ can only come from a second valley of the free energy. The discrete form of Lemma~\ref{lem:H1D} is in Lean; the Fubini step is on paper. We do not use Muckenhoupt's criterion [Mu].
+
+\begin{lemma}[quasi-convex free energy plus small oscillation; QC]\label{lem:QC}
+Let $n=L-1\le14$, $F_\hbar(s)=-\hbar\log\int e^{-S(z',s)/\hbar}dz'$ the free energy of the middle site, $F_0(s)=\min_{z'}S(z',s)$ and $R=F_\hbar-F_0$. Then \textup{(a)} $F_0$ is quasi-convex on $[-\xc,0]$, and \textup{(b)} $R(s)-R(s')\le\hbar\log(K_1\hbar^{-n/2})$ for all $s,s'$, where $K_1=(2\pi/\kappa_0)^{n/2}G^ne^{n(1+\Lambda/(2G^2))}$, $G=6\xc/\varepsilon+\varepsilon\max|V'|=10.776$, $\Lambda=4/\varepsilon+\varepsilon\max V''=8.344$. Consequently $\Delta(F_\hbar)\le\hbar\log(K_1\hbar^{-n/2})$.
+\end{lemma}
+\begin{proof}
+(a) $F_0(s)=\tilde F_0(s^2)$ with $\tilde F_0(\sigma)=\min_{\rho'}\tilde S(\rho',\sigma)$ convex by (K$'$) and partial minimisation; $s\mapsto s^2$ is monotone on $[-\xc,0]$, so the sublevel sets of $F_0$ are intervals.
+(b) Let $z^{(s)}$ be the minimiser (unique by Lemma~\ref{lem:BE7}), $g=\nabla_{z'}S(z^{(s)},s)$ and $d=z'-z^{(s)}$. The KKT condition gives $\langle g,d\rangle\ge0$ on the box, and $(\kappa_0/2)|d|^2+\langle g,d\rangle\le S-F_0\le(\Lambda/2)|d|^2+\langle g,d\rangle$. The upper bound gives $\int e^{-(S-F_0)/\hbar}\le(2\pi\hbar/\kappa_0)^{n/2}$; on the cube obtained by moving each coordinate inward by $\hbar/G$ one has $\langle g,d\rangle\le n\hbar$, whence $\int e^{-(S-F_0)/\hbar}\ge(\hbar/G)^ne^{-n(1+\Lambda\hbar/(2G^2))}$ when $|a|,|b|\le3\xc$; for $|a|>3\xc$ the first coordinate of the minimiser is pinned at $-\xc$ and the same estimate holds with the first direction rescaled by $\hbar/g_1$. A quasi-convex function plus an oscillation of size $D$ has barrier at most $D$.
+\end{proof}
+
+\begin{theorem}[Theorem BP]\label{thm:BP}
+For all $\hbar\in(0,1]$, $L\le15$ and $a,b\in(-\infty,0]$,
+\[
+C_P(\mu_{a,b})\le\frac{\varepsilon}{\kappa_0}+c_1\hbar^{-8},\qquad \frac{\varepsilon}{\kappa_0}=9.1774,\quad \ln c_1\le89.38 ,
+\]
+and $C_P(\mu_{a,b})\le\varepsilon/\kappa(L)\le9.18$ if $L\le7$. The bound uses \textup{(K$'$)} and Lemma~\ref{lem:BE7}, whose convex-domain Bakry--\'Emery step is cited.
+\end{theorem}
+\begin{proof}
+Lemmas~\ref{lem:H1D} and \ref{lem:QC} give $C_m\le2\xc^2K_1\hbar^{-n/2}$, and Lemma~\ref{lem:split} gives $C_P\le\varepsilon/\kappa_0+(8\xc^2/(\varepsilon\kappa_0^2))K_1\hbar^{-1-n/2}$. For $n\le14$ and $\hbar\le1$, $\hbar^{-1-n/2}\le\hbar^{-8}$ and $K_1$ is largest at $n=14$: $\ln(8\xc^2/(\varepsilon\kappa_0^2))=8.359$ and $\ln K_1=33.234+33.283+14.503=81.020$, so $\ln c_1\le89.379$.
+\end{proof}
+
+The constant is crude. (K$'$) is used once, in Lemma~\ref{lem:QC}(a), to exclude a second valley of $F_\hbar$; without it $\Delta=O(1)$ would be possible and the bound would be of Kramers type $e^{\Delta/\hbar}$. With Theorem~\ref{thm:B}, Theorem~\ref{thm:BP} gives $C_P(Q_k)\le(9.18+c_1\hbar^{-8})/(1-\delta)$ whenever the averaged influence $\delta$ for $L=15$ is $<1$; we do not certify $\delta$ here and use Theorem~\ref{thm:CC} instead.
+
+\section{Theorem CC: the coarse Dobrushin chain}\label{sec:CC}
+
+Let $M_7=\varepsilon^{-1}T_7-(\varepsilon/2)I$ (the worst-case Hessian of a block of length $7$), so $\lambda_{\min}(M_7)=\kappa_0$, and
+\[
+g_7:=(M_7^{-1})_{11}=(M_7^{-1})_{77}=\tfrac{1832324}{1770735}=1.03478 ,
+\]
+computed by the continued fraction of the tridiagonal Schur recursion (value in Lean). For a block $B$ of length $n\le7$, $(M_n^{-1})_{11}\le g_7$.
+
+\begin{lemma}[stochastic monotonicity of the coarse conditional laws]\label{lem:B1}
+$\nu(\cdot\mid a,b)$ is increasing in $a$ in the likelihood-ratio order, so that $W_1(\nu(\cdot\mid a,b),\nu(\cdot\mid a',b))=|\E_{a'}y_m-\E_ay_m|\le\sup\rho\cdot|a'-a|$.
+\end{lemma}
+\begin{proof}
+The law of $z_8$ given $a$ is the image of the Markov chain of Lemma~\ref{lem:R} below, whose kernels are increasing in their starting point in the likelihood-ratio order (Lemma~\ref{lem:M}(a)); composition of TP$_2$ kernels is TP$_2$ [Ka]. Hence the law of $z_8$ is increasing in $a$, and the monotone coupling realises $W_1$ as the difference of means.
+\end{proof}
+
+\begin{theorem}[coarse chain]\label{thm:C}
+If $\rcol<1$, then for every Lipschitz $g$ on $[-\xc,0]^M$,
+\[
+\Var_\nu g\le\frac{\Csite}{1-\rcol}\,\frac{\hbar}{\varepsilon}\sum_m\nu|\partial_{y_m}g|^2,\qquad \Csite:=\sup_{m,a,b}\frac{\varepsilon}{\hbar}C_P(\nu(\cdot\mid a,b)).
+\]
+\end{theorem}
+\begin{proof}
+This is Theorem~\ref{thm:B} with blocks of one coarse site. Let $P=M^{-1}\sum_mP_m$ be the one-site heat bath. If $y,y'$ differ only at $m$, by $d$, choosing $m$ couples them to agree, choosing $m'=m\pm1$ costs at most $d+\rho_{m'\leftarrow m}d$ by Lemma~\ref{lem:B1}, and other choices leave $d$; so $W_1(P(y,\cdot),P(y',\cdot))\le(1-(1-\rcol)/M)d$. Ollivier's criterion gives $\langle g,(I-P)g\rangle\ge((1-\rcol)/M)\Var_\nu g$, and $\langle g,(I-P)g\rangle=M^{-1}\sum_m\nu(\Var_mg)\le M^{-1}\Csite(\hbar/\varepsilon)\sum_m\nu|\partial_mg|^2$.
+\end{proof}
+
+The conditional law $\nu(\cdot\mid a,b)$ is the marginal of the middle site of a chain of at most $15$ sites whose two halves have length $\le7$. Lemmas~\ref{lem:H1D} and \ref{lem:QC} (with (K$'$) extended to the boundary values, \S\ref{sec:setting}) therefore give
+\begin{equation}\label{eq:Csite}
+\Csite\le2\varepsilon\xc^2K_1(14)\,\hbar^{-8}=e^{80.79}\hbar^{-8}.
+\end{equation}
+
+\begin{theorem}[Theorem CC]\label{thm:CC}
+Let $\varepsilon=1/2$, $V(z)=(z^2-1)^2/8$, $\xc=0.89$, $\hbar\in(0,1]$ and $\alpha,\beta\le-\xc$. Assume
+\textup{(DOB)} $\rcol(\hbar)<1$.
+Assume moreover the cited statements \textup{BE}$_7$ \textup{(}Lemma~\ref{lem:BE7}\textup{)} and \textup{BL}: for a measure on a convex set with $\mathrm{Hess}(S/\hbar)\ge M/\hbar$, $\Var\langle e,z\rangle\le\hbar\langle e,M^{-1}e\rangle$ [BL, Thm.~4.1] \textup{(}a standard result, cited\textup{)}. Then for every $k\ge1$,
+\[
+C_P(Q_k)\le\frac{\varepsilon}{\kappa_0}+c_6\,\frac{\Csite(\hbar)}{1-\rcol(\hbar)}\le 9.18+\frac{455.84\,e^{80.79}\,\hbar^{-8}}{1-\rcol(\hbar)},\qquad c_6:=\max\Big(3,\frac{6g_7}{\varepsilon^2\kappa_0}\Big)=455.84 .
+\]
+In particular, if $\rcol(\hbar)\le1/2$ then $C_P(Q_k)\le9.18+e^{87.60}\hbar^{-8}$, uniformly in $k$.
+\end{theorem}
+
+\begin{proof}
+For $k\le7$ the core is one block and Lemma~\ref{lem:BE7} gives $C_P\le9.18$. Let $k\ge8$, write $A=\sum_{i\ \mathrm{not\ coarse}}\mu|\partial_if|^2$ and $B=\sum_m\mu|\partial_{8m}f|^2$, so $\cE(f)=(\hbar/\varepsilon)(A+B)$.
+\begin{enumerate}[leftmargin=*,label=\arabic*.]
+\item $\Var f=\nu(\Var(f\mid y))+\Var_\nu g$, $g(y)=\E[f\mid y]$.
+\item Given $y$ the blocks are independent and $\kappa_0$-convex; by Lemma~\ref{lem:BE7} and tensorisation, $\nu(\Var(f\mid y))\le(\varepsilon/\kappa_0)(\hbar/\varepsilon)A$.
+\item $\partial_{y_m}g=\E[\partial_{8m}f\mid y]+[\Cov(f,z_{8m-1}\mid y)+\Cov(f,z_{8m+1}\mid y)]/(\varepsilon\hbar)$, since $\partial_{y_m}S=(2y_m-z_{8m-1}-z_{8m+1})/\varepsilon+\varepsilon V'(y_m)$ and terms depending on $y_m$ alone do not contribute to covariances.
+\item $X=z_{8m\pm1}$ depends on one block $B$ only, so $\Cov(f,X\mid y)=\Cov(f_B,X\mid y)$ with $f_B=\E[f\mid y,x_B]$. Then $\Var(f_B\mid y)\le(\hbar/\kappa_0)A_B$ (block Poincar\'e and Jensen) and $\Var(X\mid y)\le\hbar g_7$ (BL), so $(\Cov/(\varepsilon\hbar))^2\le g_7A_B/(\varepsilon^2\kappa_0)$.
+\item $(u+v+w)^2\le3(u^2+v^2+w^2)$ and the fact that each block touches at most two coarse sites give $\sum_m\nu|\partial_mg|^2\le3B+(6g_7/(\varepsilon^2\kappa_0))A\le c_6(A+B)$.
+\item Theorem~\ref{thm:C}: $\Var_\nu g\le(\Csite/(1-\rcol))\,c_6\,(\hbar/\varepsilon)(A+B)$.
+\item Adding 2.\ and 6.\ gives the claim; \eqref{eq:Csite} gives the numerical form, and $\ln(c_6e^{80.79})=86.91$.\qedhere
+\end{enumerate}
+\end{proof}
+
+Theorem~\ref{thm:CC} uses neither Theorem~\ref{thm:B} with $L=15$ nor Theorem~\ref{thm:BP} as stated; it uses their ingredients (path coupling, Lemmas~\ref{lem:BE7}, \ref{lem:H1D}, \ref{lem:QC}). The factor $\rcol$ enters only through $1/(1-\rcol)$; its numerical role is that of a single hypothesis, examined next.
+
+\section{The Dobrushin certificate}\label{sec:DOB}
+
+\subsection{Why a certificate}
+A paper bound for $\rho$ via a sup of $\partial_s\E[z_1\mid z_8=s]$ times $\Var(z_8)/(\varepsilon\hbar)$ does not close at small $\hbar$, and the curvature route cannot close it in principle:
+
+\begin{proposition}[curvature floor]\label{prop:N1}
+For all boundary values with both neighbours of the middle site in the box and all $s\in[-\xc,0]$, $F_\hbar''(s)\le2/\varepsilon+\varepsilon\max V''=4.3441$. Hence every bound of the form $\Var_m\le\hbar/\kappa$ with $\kappa\le\inf F_\hbar''$ gives $\Var_m/(\varepsilon\hbar)\ge0.4604$.
+\end{proposition}
+\begin{proof}
+$F_\hbar''=\E[\partial_s^2S\mid s]-\Var(\partial_sS\mid s)/\hbar\le2/\varepsilon+\varepsilon V''(s)$, and $\max_{[-\xc,0]}V''=V''(-\xc)=0.68815$.
+\end{proof}
+At small $\hbar$ the middle site is pressed against the wall $-\xc$ by the slope $\varepsilon V'(-\xc)=0.0463$ and its variance is of order $\hbar^2$, a boundary effect that curvature bounds do not see. The certificate below follows the law of the chain step by step instead.
+
+\subsection{Two lemmas}
+Let $\lambda=1/(\varepsilon\hbar)$, $K(x)=e^{-\lambda x^2/2}$ and $[lo,hi]=[-\xc,0]$. Define backward functions $g_N(v)=e^{-\varepsilon V(v)/\hbar}K(b-v)$, $g_i(v)=e^{-\varepsilon V(v)/\hbar}\int K(w-v)g_{i+1}(w)\,dw$.
+
+\begin{lemma}[influence recursion; Lemma R]\label{lem:R}
+Given $z_0=a$, the chain $(z_1,\dots,z_N)$ is Markov with kernels $P_i(u,dv)=K(v-u)g_i(v)dv/\!\int K(v'-u)g_i(v')dv'$ \textup{(}Doob $h$-transform\textup{)}. Put $f_8=\mathrm{id}$, $f_{i-1}=P_if_i$; then $\E[z_8\mid a]=f_0(a)$, $\rho=f_0'(a)$, and
+\[
+f_{i-1}'(u)=\lambda\int f_i'(t)\,k_i(t;u)\,dt,\qquad k(t):=\Cov(V,\mathbf 1\{V>t\})=\bar F(t)\!\int_{lo}^{t}\!F+F(t)\!\int_t^{hi}\!\bar F\ \ge0 ,
+\]
+where $V\sim P_i(u,\cdot)$ with distribution function $F$ and $\bar F=1-F$.
+\end{lemma}
+\begin{proof}
+$\partial_u(P_if)(u)=\lambda\Cov_{P_i(u,\cdot)}(V,f(V))$ because $\partial_u\log K(v-u)=\lambda(v-u)$; and $f(V)=f(lo)+\int f'(t)\mathbf 1\{V>t\}dt$ gives $\Cov(V,f(V))=\int f'(t)k(t)dt$ (Hoeffding [Hoe]).
+\end{proof}
+By induction $f_i'\ge0$, without appeal to FKG. If $f_i'\le\Phi_i$ then $f_{i-1}'\le\lambda\int\Phi_ik_i$, and an upper bound for $k$ follows from two-sided bounds $F_{lo}\le F\le F_{hi}$ alone, as a sum of products of nonnegative terms with no cancellation. Explicitly, for $t\in[t_j,t_{j+1}]$,
+\[
+k(t)\le\big(1-F_{lo}(t_j)\big)\int_{lo}^{t_{j+1}}F_{hi}+F_{hi}(t_{j+1})\int_{t_j}^{hi}\big(1-F_{lo}\big),
+\]
+and the lower bound has the same form with the roles of $F_{lo}$ and $F_{hi}$ exchanged. For $V\equiv0$ and an unbounded box the product of the eight factors is $\prod_{i=1}^8(16-i)/(17-i)=1/2$, the exact value for the Gaussian bridge.
+
+\begin{lemma}[sandwiching; Lemma M]\label{lem:M}
+\textup{(a)} $P_i(u,\cdot)$ is increasing in $u$ in the likelihood-ratio order. \textup{(b)} $g_i^{(b)}(v)$ is TP$_2$ in $(v,b)$, so $P_i^{(b)}(u,\cdot)$ is increasing in $b$; the limit $b\to-\infty$ is the chain with $z_N=lo$. \textup{(c)} Write $P_i(u,dw)\propto\exp(\lambda uw-\lambda w^2+\chi_i(w))$. If on each cell of a partition $\chi_i'\in[s_j^-,s_j^+]$, then replacing $\chi_i$ by the piecewise linear functions with slopes $s_j^\pm$ \textup{(}jumping only upwards, resp.\ downwards, at nodes\textup{)} gives laws $L^-\le P_i(u,\cdot)\le L^+$ in the likelihood-ratio order.
+\end{lemma}
+\begin{proof}
+(a) The density is $e^{\lambda uv}$ times a function of $v$. (b) $g_N$ is $e^{\lambda bv}$ times functions of $v$ and of $b$; $K(w-v)$ is TP$_2$; compositions of TP$_2$ kernels are TP$_2$ by the $2\times2$ Cauchy--Binet formula [Ka]. (c) The log-ratio of the densities is monotone on each cell and across nodes.
+\end{proof}
+The Gaussian factor $e^{\lambda uw-\lambda w^2}$ times an exponential of a linear function is integrated exactly on each cell by the error function, so the strong push towards the wall at small $\hbar$ costs nothing in cell width; the remaining coarseness is the slope range $s_j^+-s_j^-$.
+
+\paragraph{The certificate inequality.} On a cell $[u_l,u_{l+1}]$ of $a$ and a cell $[b_{lo},b_{hi}]$ of $b$ one has $F_{L^+_i(u_{l+1})}\le F_{P_i}\le F_{L^-_i(u_l)}$, with cell masses given by closed erf formulas. Inserting these into Lemma~\ref{lem:R} and running $\Phi_i$ backward as cellwise constants yields
+\[
+\sup_{a\in[-\xc,0],\,b\in[b_{lo},b_{hi}]}\rho(a,b)\le\max_l\Phi_0(l).
+\]
+The variable $a$ is covered by cells continuously and $b$ by the endpoint slopes of its cells; no reading between grid points of $a$ or $b$ remains. Reversing the roles gives a lower bound, used only as a check.
+
+\subsection{Computational discipline}\label{sec:discipline}
+The certificate is computer-assisted in double precision with outward margins (not interval arithmetic). All arithmetic is IEEE double precision; every quantity that enters an inequality carries an outward margin chosen from an operation-by-operation size estimate: on the logarithm of a cell mass $64u\,(|\lambda ut_j|+\lambda t_j^2+|\ell_j|+\lambda\mu^2+|\beta|w+50)+10^{-9}$, on distribution functions $(4n+100)u+10^{-11}$, on slopes $10^{-9}|s|+10^{-6}$, relative $10^{-9}$ on means, on $k$ and on sums, and a directed nudge at the nodes of the piecewise linear functions of Lemma~\ref{lem:M}(c) ($u=2^{-53}$). We \emph{assume} that the library functions $\exp$, $\log$, $\mathrm{expm1}$, $\mathrm{erf}$ and $\mathrm{erfcx}$ have relative error at most $10^{-12}$; rounding is not directed. The margins were audited against $40$-digit evaluations by numerical quadrature that does not use the error function, on random samples of cells in four geometries ($595$ samples, no violation; largest observed error $2.5\cdot10^{-11}$ against margins $\ge10^{-9}$). An earlier, smaller margin failed this audit in $4$ of $150$ samples at $\hbar=10^{-5}$ by about $10^{-11}$; all numbers below were recomputed with the corrected margins. The audit is a sample, not a proof over all cells.
+
+\subsection{The 23 points and the large-\texorpdfstring{$\hbar$}{hbar} range}
+
+\begin{proposition}[DOB]\label{prop:DOB}
+\textup{(a) [paper, plus one floating-point value]} Under the convention that for $k\equiv0\pmod 8$ the coarse sites are $y_m=z_{8m-1}$ \textup{(}so that both neighbours of every coarse site lie in the box\textup{)}, for $\hbar\in[0.27,1]$ one has $\sup\rho\le(V_{\mathrm{in}}(0.27)/(0.27\,\varepsilon))^2$ and hence $\rcol\le0.858$, provided $V_{\mathrm{in}}(0.27)\le0.0884$. Here $V_{\mathrm{in}}(\hbar)=\min_\theta\max(\E_{\nu_R}(X-\theta)^2,\E_{\nu_L}(X-\theta)^2)$ with $\nu_R\propto e^{-(x^2/\varepsilon+\varepsilon V(x))/\hbar}$ on $[\theta,0]$ and $\nu_L\propto e^{-((x+\xc)^2/\varepsilon+\varepsilon V(x))/\hbar}$ on $[-\xc,\theta]$. The value $V_{\mathrm{in}}(0.27)=0.08744$ was computed in floating point by the trapezoidal rule, without interval arithmetic or outward margins.
+
+\textup{(b) [computer-assisted in double precision with outward margins (not interval arithmetic)]} Under the assumption on library accuracy of \S\ref{sec:discipline}, at each of the $23$ values of $\hbar$ in Table~\ref{tab:cert} and for every geometry of the coarse chain \textup{(}interior $r=7$, $b\in[-\xc,0]$; ends $r=0,\dots,7$, $b\in(-\infty,-\xc]$\textup{)} and every $a\in[-\xc,0]$, $\sup\rho$ is at most the value in the column ``upper''. In particular $\sup\rho\le0.0879$ and $\rcol\le0.176$ at all $23$ points.
+
+\textup{(c)} For $\hbar\in(0.27,1]$ not among the $23$ points, \textup{(a)} applies. For $\hbar\in[10^{-5},0.27)$ between the $23$ points, and for $\hbar<10^{-5}$, the values between the 23 points are a numerical reading, not a certificate.
+\end{proposition}
+
+\begin{proof}[Proof of \textup{(a)}]
+For a positive density $p$ on $[l,r]$ with $(\log p)'\le c_R$ on $(\theta,r)$ and $(\log p)'\ge-c_L$ on $(l,\theta)$, $\E_p(X-\theta)^2\le\max(\E_{\nu_R}(X-\theta)^2,\E_{\nu_L}(X-\theta)^2)$, by the Chebyshev order inequality on each side (the ratio $p/\nu$ decreases in $|X-\theta|$ while $(X-\theta)^2$ increases). For the middle site, $-\partial_sS\le-2s/\varepsilon-\varepsilon V'(s)$ (both neighbours at $0$) and $-\partial_sS\ge-[2(s+\xc)/\varepsilon+\varepsilon V'(s)]$ (both at the wall), which are the densities $\nu_R,\nu_L$; the same bounds hold for $z_1$ and $z_7$ in the left block. With the Hoeffding representation $\rho=(\varepsilon\hbar)^{-1}\int\varphi'(t)H(t)\,dt$, $\varphi(s)=\E[z_1\mid z_8=s]$, $H\ge0$, $\int H=\Var_m$ [Hoe], and $\varphi'=\Cov(z_1,z_7\mid s)/(\varepsilon\hbar)\le V_{\mathrm{in}}/(\varepsilon\hbar)$ by Cauchy--Schwarz, one gets $\sup\rho\le(V_{\mathrm{in}}(\hbar)/(\varepsilon\hbar))^2$. The comparison densities are monotone in $\hbar$ in the likelihood-ratio order, so $V_{\mathrm{in}}(\hbar)/(\varepsilon\hbar)$ is non-increasing and the value at $\hbar=0.27$ suffices; $2(0.0884/0.135)^2<0.86$ is checked in Lean. The use of the convention for $k\equiv0\pmod8$ in Theorem~\ref{thm:CC} only needs block lengths $\le7$ and at most $14$ sites around a coarse site, which the shifted division keeps.
+\end{proof}
+
+Part (b) is the output of the certificate of \S\ref{sec:DOB}; its proof is the computation, whose inputs, outputs and hashes are distributed (\S\ref{sec:lean}). The lower bounds and an independent floating-point measurement (transfer-operator quadrature on a different grid) are reported as a consistency check; at every point the order lower $\le$ measured $\le$ upper holds.
+
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{@{}rrrlll@{}}
+\toprule
+$\hbar$ & cells & upper for $\sup\rho$ & worst geometry & lower & measured (float)\\
+\midrule
+$1$ & 63 & $1.4\cdot10^{-7}$ & end $r=0$ & $1.7\cdot10^{-8}$ & $<10^{-6}$\\
+$0.5$ & 89 & $1.4\cdot10^{-5}$ & end $r=0$ & $2.3\cdot10^{-6}$ & $5\cdot10^{-6}$\\
+$0.3$ & 115 & $2.7\cdot10^{-4}$ & end $r=0$ & $5.4\cdot10^{-5}$ & $1.0\cdot10^{-4}$\\
+$0.2$ & 141 & $0.0019$ & end $r=0$ & $4.4\cdot10^{-4}$ & $8.3\cdot10^{-4}$\\
+$0.15$ & 163 & $0.0059$ & end $r=3$ & $0.0015$ & $0.0029$\\
+$0.1$ & 266 & $0.0189$ & end $r=3$ & $0.0066$ & $0.0110$\\
+$0.07$ & 318 & $0.0402$ & interior & $0.0132$ & $0.0231$\\
+$0.05$ & 376 & $0.0572$ & interior & $0.0177$ & $0.0319$\\
+$0.04$ & 420 & $0.0614$ & interior & $0.0186$ & $0.0339$\\
+$0.035$ & 449 & $0.0614$ & interior & $0.0186$ & $0.0340$\\
+$0.03$ & 485 & $0.0600$ & interior & $0.0183$ & $0.0333$\\
+$0.025$ & 531 & $0.0576$ & interior & $0.0178$ & $0.0322$\\
+$0.02$ & 594 & $0.0538$ & interior & $0.0170$ & $0.0303$\\
+$0.015$ & 686 & $0.0486$ & interior & $0.0157$ & $0.0277$\\
+$0.01$ & 840 & $0.0416$ & interior & $0.0137$ & $0.0239$\\
+$0.007$ & 377 & $0.0879$ & interior & $0.0048$ & $0.0209$\\
+$0.005$ & 445 & $0.0776$ & interior & $0.0042$ & $0.0186$\\
+$0.003$ & 575 & $0.0650$ & interior & $0.0036$ & $0.0158$\\
+$0.002$ & 704 & $0.0566$ & interior & $0.0032$ & $0.0138$\\
+$10^{-3}$ & 996 & $0.0437$ & interior & $0.0025$ & $0.0107$\\
+$3\cdot10^{-4}$ & 918 & $0.0774$ & interior & $3.4\cdot10^{-4}$ & $0.0057$\\
+$10^{-4}$ & 1419 & $0.0368$ & interior & $1.2\cdot10^{-4}$ & $0.0023$\\
+$10^{-5}$ & 2047/1654 & $0.0863$ & end $r=1$, $b\in[-0.95,-0.93]$ & $2.8\cdot10^{-7}$ & $1.4\cdot10^{-4}$\\
+\bottomrule
+\end{tabular}
+\caption{The certificate of Proposition~\ref{prop:DOB}(b). ``Cells'' is the number of cells of the $u$ grid (interior/end at $\hbar=10^{-5}$). ``Interior'' is the cell $b\in[-0.01,0]$. ``Upper'' is computer-assisted in double precision with outward margins (not interval arithmetic); ``lower'' is the same inequality reversed; ``measured'' is an independent floating-point evaluation and is not part of any claim. Upper bounds at $\hbar\le0.007$ are coarser because coarser cells were used there.}
+\label{tab:cert}
+\end{table}
+
+\paragraph{Controls.} With the division every fourth site (blocks of length $3$) the certificate returns upper bounds $2.20$, $10.6$, $365$ at $\hbar=0.03,0.01,10^{-3}$, so it does not certify $\rcol<1$ there (necessarily, being an upper bound; this is not a test of power). For the Gaussian chain ($V\equiv0$), whose exact value is $1/2$, it returns the enclosure $[0.061,3.63]$, which contains $1/2$ and is loose.
+
+\begin{corollary}\label{cor:points}
+Under the hypotheses of Theorem~\ref{thm:CC} other than \textup{(DOB)}: for $\hbar\in[0.27,1]$, with the qualification of Proposition~\ref{prop:DOB}\textup{(a)}, $C_P(Q_k)\le9.18+e^{88.87}\hbar^{-8}$ for all $k$; at each of the $23$ points of Table~\ref{tab:cert}, with the qualification of Proposition~\ref{prop:DOB}\textup{(b)}, $C_P(Q_k)\le9.18+e^{87.11}\hbar^{-8}$ for all $k$.
+\end{corollary}
+
+\subsection{Geometries and cells}\label{sec:cells}
+The supremum defining $\rcol$ runs over every conditional law that occurs in the coarse chain. We cover them as follows. Interior coarse sites ($r=7$): $b\in[-\xc,0]$ is split into the nine cells with endpoints $-0.89,-0.6,-0.4,-0.25,-0.15,-0.08,-0.04,-0.02,-0.01,0$. Coarse sites next to the end of the chain ($r=0,\dots,7$): $b=\beta\in(-\infty,-\xc]$ is split into cells whose lowest member is handled by the limit $b\to-\infty$ of Lemma~\ref{lem:M}(b); for $r\le2$ the cells near $-\xc$ have width of order $\sqrt{\varepsilon\hbar}$. The first coarse site is the mirror image of the last. The variable $a\in[-\xc,0]$ is covered by the $u$-cells of width about $c_1\sqrt{\varepsilon\hbar}$, with $c_1\in[0.015,0.25]$ depending on $\hbar$; the column ``cells'' of Table~\ref{tab:cert} is their number.
+
+At $\hbar=10^{-5}$ the end geometries with $r\le2$ need narrow $b$-cells: for $r=0$ the centre $(u+b)/2$ of the last kernel moves by half the width of the $b$-cell, and a cell much wider than $\sqrt{\varepsilon\hbar}$ makes the sandwich of Lemma~\ref{lem:M}(c) much wider than the law itself. With widths $0.01$ ($r=0$) and $0.02$ ($r=1$), $50$ cells in total for $r\le2$, every cell is below $0.0863$. This affects only the cost of the computation, not its validity: Lemma~\ref{lem:M}(c) holds for every partition.
+
+\subsection{Where the result sits in the conditional argument}
+In the conditional argument for the double-well path measure in [KSR, Part~10], the Poincar\'e constant $C_{(\mathrm{T0}'_P)}(\hbar):=\sup_{k,\alpha,\beta}C_P(Q_k)$ enters a second-order term of the form $C_{(\mathrm{T0}'_P)}\cdot D/\xi^2$, where $\xi$ is the tunnelling correlation length, which grows like $e^{c/\hbar}$. Any bound polynomial in $\hbar$ therefore makes that term vanish as $\hbar\to0$, however crude its constant. Theorem~\ref{thm:CC} with Proposition~\ref{prop:DOB} provides such a bound on $[0.27,1]$ and at the $23$ points, under the qualifications stated there. In [KSR], Proposition~4.5 is the first step of this argument for the $0+1$-dimensional double well (Parts 10-05 and 10-16); its provisional leaves are the seven rows [01]--[07], of which $(\mathrm{T0}'_P)$ is [04] and the cross-term row (X), which does not involve $C_{(\mathrm{T0}'_P)}$, is [06]. The present result bears on [04] only. Of the two ways in which [KSR, 10-12] supports $(\mathrm{T0}'_P)$, the box-side core (rows [082] and [084]) and the compartment-side core (rows [099] and [018]), it bears on the second, whose core has both outer values in the well; the other six leaves, including (X), are unchanged.
+
+\section{What is machine-checked}\label{sec:lean}
+
+The following Lean~4 modules (Mathlib [M]) contain the algebraic and finite steps; measure, integration, limits and the analytic lemmas are outside Lean.
+\begingroup\raggedright
+\begin{itemize}[leftmargin=*]
+\item \code{LatticeGauge.HiddenConvexity}: \code{geom\_mean\_midpoint}, \code{act\_eq\_actRho}, \code{actRho\_midpoint}, \code{act\_min\_unique} (K$'$ for $a,b\le0$, midpoint form).
+\item \code{LatticeGauge.DoeblinPoincare}: \code{path\_coupling\_step}, \code{poincare\_of\_block\_contraction}, \code{spectral\_weight\_zero}, \code{contraction\_rate\_pos} (Theorem~\ref{thm:B}).
+\item \code{LatticeGauge.BlockPoincare}: \code{kappa\_seven\_gt} ($\kappa_0>1/20$), \code{free\_energy\_quasiconvex}, \code{quasiconvex\_add\_osc}, \code{ratio\_exp\_bound}, \code{hardy\_discrete}, \code{two\_scale\_assembly} (Lemmas~\ref{lem:split}--\ref{lem:QC}).
+\item \code{LatticeGauge.CoarseChainPoincare}: \code{cov\_le\_lip\_var}, \code{cross\_term}, \code{sq\_three}, \code{coarse\_grad\_sum}, \code{path\_coupling\_site}, \code{poincare\_of\_site\_contraction}, \code{two\_level\_assembly}, \code{coarse\_chain\_poincare}, \code{g7\_value}, \code{assembly\_const} (Theorems~\ref{thm:C}, \ref{thm:CC}).
+\item \code{LatticeGauge.InfluenceRecursion}: \code{tp2\_comp}, \code{cdf\_upper}, \code{cdf\_lower}, \code{k\_upper}, \code{step\_bound}, \code{gauss\_product} (Lemmas~\ref{lem:R}, \ref{lem:M}).
+\item \code{LatticeGauge.CenterCovariance}: \code{hoeffding\_kernel}, \code{kernel\_le\_sup}, \code{chebyshev\_double}, \code{large\_hbar\_column} (Proposition~\ref{prop:DOB}(a)).
+\end{itemize}
+Each statement carries its hypotheses in the Lean signature. The independent re-check of the modules was completed on 2026-10-15 (every file checked with \code{lake env lean} in the same environment on a separate session, rc=0, standard axioms only). The bundle is listed at \url{\bundleurl} (with a \code{.sha256} file at the same address) and the complete \code{\#print axioms} output at \url{\axiomsurl}; both addresses were placed on 2026-10-15, after the independent re-check. To check: unpack, run \code{lake exe cache get}, then \code{LEAN\_NUM\_THREADS=1 lake build} on each module above, and compare the trailing \code{\#print axioms} lines with the log (expected: \code{propext}, \code{Classical.choice}, \code{Quot.sound} only). The ledger and build instructions of the site's Lean developments are at \url{https://computoergosum.com/en/principia/lean/index.html}. The certificate's programs, specification files and output files (one JSON per run, with every cell's upper and lower value), a manifest of the files behind Table~\ref{tab:cert}, and SHA-256 hashes are part of the same bundle.\par\endgroup
+
+\section{Correspondence table}\label{sec:corr}
+
+Line numbers refer to the files \code{LatticeGauge<Module>.lean} of the bundle; the third column gives \code{<Module>}: line of each declaration in the order of the second column.
+
+\begin{center}\footnotesize
+\begin{tabular}{@{}p{0.20\linewidth}p{0.47\linewidth}p{0.27\linewidth}@{}}
+\toprule
+paper & Lean declaration (namespace \code{LatticeGauge.}) and what is outside & file: line\\
+\midrule
+(K$'$), \S\ref{sec:setting} & \code{actRho\_midpoint}, \code{act\_min\_unique}; partial minimisation on paper & \code{HiddenConvexity}: 75, 115\\
+Theorem~\ref{thm:B} & \code{path\_coupling\_step}, \code{spectral\_weight\_zero}, \code{poincare\_of\_block\_contraction}; FKG, Strassen, spectral theorem on paper & \code{DoeblinPoincare}: 16, 54, 29\\
+Lemma~\ref{lem:BE7} & \code{kappa\_seven\_gt}; Bakry--\'Emery cited & \code{BlockPoincare}: 26\\
+Lemma~\ref{lem:split} & \code{two\_scale\_assembly}, \code{cross\_term\_sq}, \code{deriv\_sq\_split}; total variance and differentiation on paper & \code{BlockPoincare}: 101, 88, 96\\
+Lemma~\ref{lem:H1D} & \code{hardy\_discrete}, \code{ratio\_exp\_bound}; Fubini on paper & \code{BlockPoincare}: 137, 66\\
+Lemma~\ref{lem:QC} & \code{free\_energy\_quasiconvex}, \code{quasiconvex\_add\_osc}; Laplace-type bounds on paper & \code{BlockPoincare}: 37, 51\\
+Lemma~\ref{lem:B1}, Lemma~\ref{lem:M}(b) & \code{tp2\_comp} (finite form) & \code{InfluenceRecursion}: 18\\
+Theorem~\ref{thm:C} & \code{path\_coupling\_site}, \code{poincare\_of\_site\_contraction} & \code{CoarseChainPoincare}: 92, 98\\
+Theorem~\ref{thm:CC} & \code{cross\_term}, \code{sq\_three}, \code{coarse\_grad\_sum}, \code{two\_level\_assembly}, \code{coarse\_chain\_poincare}, \code{g7\_value}, \code{g7\_lt}, \code{assembly\_const}; BL cited & \code{CoarseChainPoincare}: 51, 47, 68, 78, 117, 128, 133, 136\\
+Lemma~\ref{lem:R} & \code{cdf\_upper}, \code{cdf\_lower}, \code{k\_upper}, \code{step\_bound}, \code{gauss\_product} & \code{InfluenceRecursion}: 49, 56, 60, 68, 76\\
+Proposition~\ref{prop:N1} & paper only & ---\\
+Proposition~\ref{prop:DOB}(a) & \code{hoeffding\_kernel}, \code{kernel\_le\_sup}, \code{chebyshev\_double}, \code{large\_hbar\_column}; the value $V_{\mathrm{in}}(0.27)$ outside & \code{CenterCovariance}: 44, 143, 186, 206\\
+Proposition~\ref{prop:DOB}(b) & outside Lean (computer-assisted in double precision with outward margins, not interval arithmetic) & ---\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{What is not claimed}\label{sec:notclaimed}
+
+\begin{table}[ht]
+\centering\small
+\begin{tabular}{@{}p{0.13\linewidth}p{0.47\linewidth}p{0.32\linewidth}@{}}
+\toprule
+row & content & status\\
+\midrule
+END & outer boundary values $\alpha,\beta\le-\xc$ & hypothesis of every statement\\
+K$'$ & convexity of $\tilde S$ in $\rho=z^2$, jointly with $(a^2,b^2)$ & paper; algebraic core in Lean\\
+BE$_7$ & $C_P\le\varepsilon/\kappa(n)$ for blocks of length $\le7$ & paper ($\kappa_0>1/20$ in Lean) + standard, cited [BGL], [BL]\\
+BL & $\Var\langle e,z\rangle\le\hbar\langle e,M^{-1}e\rangle$ on convex sets & standard, cited [BL]; $g_7$ in Lean\\
+TP$_2$ & monotonicity of the coarse conditional laws & paper [Ka]; finite form in Lean\\
+FKG & monotone coupling for blocks (Theorem~\ref{thm:B} only) & standard, cited [Ho], [Pr]\\
+H1D, QC & Hardy-type bound; quasi-convexity plus oscillation & paper; discrete cores in Lean\\
+OLL & contraction implies gap & cited, checked (arXiv version) [Ol]\\
+ALG & coupling step, comparison, assembly, $c_6<497$ & Lean\\
+DOB, $[0.27,1]$ & $\rcol\le0.858$ & paper + one floating-point value\\
+DOB, 23 points & $\rcol\le0.176$ & computer-assisted in double precision with outward margins (not interval arithmetic)\\
+between points & $\hbar\in[10^{-5},0.27)$ off the grid, and $\hbar<10^{-5}$ & numerical reading, not a certificate\\
+\bottomrule
+\end{tabular}
+\caption{Status of the rows on which Theorem~\ref{thm:CC} and Corollary~\ref{cor:points} rest.}
+\label{tab:status}
+\end{table}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Between the points.} The values between the 23 points are a numerical reading, not a certificate. An extension of the certificate to intervals of $\hbar$ (slopes written about the centre of each law so that the cost of an $\hbar$-interval of relative width $\delta$ is a factor of about $e^{c\delta}$ with no power of $1/\hbar$) is in preparation and is not used here.
+\item \textbf{Not interval arithmetic.} Proposition~\ref{prop:DOB}(b) rests on the stated accuracy of library functions and on margins supported by size estimates and a sampled audit; it is not a directed-rounding computation.
+\item \textbf{$\hbar<10^{-5}$.} Not covered. The measured influence decreases towards $0$ as $\hbar\to0$ (to $1.4\cdot10^{-4}$ at $\hbar=10^{-5}$), which is a reading.
+\item \textbf{Cited statements.} BE$_7$ (Bakry--\'Emery on convex domains), BL (Brascamp--Lieb on convex domains) and the FKG/Holley step of Theorem~\ref{thm:B} are standard results used as cited; they are not formalised in Lean.
+\item \textbf{Constants.} $e^{87}\hbar^{-8}$ is crude; measured block and site constants are of order $10^2$ and below $0.27$ respectively. Only a Poincar\'e inequality is proved, not a log-Sobolev inequality.
+\item \textbf{One dimension.} The model is a one-dimensional chain (a $0+1$-dimensional path measure); nothing is claimed about four-dimensional lattice gauge theory. In the conditional argument of [KSR, Part~10] for this double well, Proposition~4.5 keeps the seven provisional leaves [01]--[07]; this paper bears only on [04] $=(\mathrm{T0}'_P)$, through its compartment-side support, and leaves the other six, including the cross-term row (X) $=$ [06], unchanged.
+\item \textbf{No external review.} The proofs, the computations and this text were produced within the authors' group (\S\ref{sec:ai}).
+\end{enumerate}
+
+\section{Disclosure of AI use}\label{sec:ai}
+
+This note was produced with the assistance of AI agents. The observation, the informal proofs, the Lean~4 development including the formalised statements, the literature search, the reports on which this note is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code, across many separate sessions, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for rebuilding the Lean development from the distributed archive on a separate machine, for checking the claims of this note against the reports, and for preparing the distributed version; the independent rebuild was completed on 2026-10-15 (every file checked with \code{lake env lean} in the same environment on a separate session, rc=0, standard axioms only). The human author set the task, fixed the working rules and load limits, reviewed the record, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. In particular the analytic steps listed in \S\ref{sec:lean} are checked on paper only. This edition and the Lean development it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-coarse-chain-poincare}, the development under \texttt{lean/\allowbreak{}ym-coarse-chain-poincare}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section and in the naming of the agent that carried out the independent re-check.
+
+\begin{thebibliography}{KSR2}
+\bibitem[BGL]{BGL} D.~Bakry, I.~Gentil and M.~Ledoux, \emph{Analysis and Geometry of Markov Diffusion Operators}, Grundlehren Math. Wiss. 348, Springer, 2014, DOI 10.1007/978-3-319-00227-9; cited for the curvature criterion on convex domains (not consulted directly for this statement).
+\bibitem[BL]{BL} H.~J.~Brascamp and E.~H.~Lieb, \emph{On extensions of the Brunn--Minkowski and Pr\'ekopa--Leindler theorems, including inequalities for log concave functions, and with an application to the diffusion equation}, J. Funct. Anal. 22 (1976), 366--389, DOI 10.1016/0022-1236(76)90004-5; cited for Thm.~4.1 (not consulted directly).
+\bibitem[Do]{Do} R.~L.~Dobrushin, \emph{Prescribing a system of random variables by conditional distributions}, Theory Probab. Appl. 15 (1970), 458--486, DOI 10.1137/1115049 (not consulted directly).
+\bibitem[Hoe]{Hoe} W.~Hoeffding, \emph{Masstabinvariante Korrelationstheorie}, Schr. Math. Inst. Univ. Berlin 5 (1940), 181--233 (not consulted directly).
+\bibitem[Ho]{Ho} R.~Holley, \emph{Remarks on the FKG inequalities}, Comm. Math. Phys. 36 (1974), 227--231, DOI 10.1007/BF01645980 (not consulted directly).
+\bibitem[HS]{HS} R.~Holley and D.~Stroock, \emph{Logarithmic Sobolev inequalities and stochastic Ising models}, J. Stat. Phys. 46 (1987), 1159--1194, DOI 10.1007/BF01011161 (not consulted directly).
+\bibitem[Ka]{Ka} S.~Karlin, \emph{Total Positivity}, Vol.~I, Stanford University Press, 1968 (not consulted directly).
+\bibitem[KSR]{KSR} Kiichi, Shiori and Rin, \emph{Yang--Mills and the mass gap} (online textbook, in Japanese), Part~10, chapters on the double-well path measure and on computer-assisted proofs, \url{https://computoergosum.com/principia/yang-mills/index.html} (2026).
+\bibitem[KSR2]{KSR2} Kiichi, Shiori and Rin, \emph{The inverse squared spectral gap bounds the Langevin Poincar\'e constant of Euclidean path measures from below}, 2026-10-09, \url{https://computoergosum.com/en/index.html}.
+\bibitem[Ma]{Ma} F.~Martinelli, \emph{Lectures on Glauber dynamics for discrete spin models}, in: Lectures on Probability Theory and Statistics (Saint-Flour 1997), Lecture Notes in Math. 1717, Springer, 1999, 93--191, DOI 10.1007/978-3-540-48115-7\_2.
+\bibitem[M]{M} Mathlib, \url{https://github.com/leanprover-community/mathlib4}.
+\bibitem[Mu]{Mu} B.~Muckenhoupt, \emph{Hardy's inequality with weights}, Studia Math. 44 (1972), 31--38 (not consulted directly).
+\bibitem[Ol]{Ol} Y.~Ollivier, \emph{Ricci curvature of Markov chains on metric spaces}, J. Funct. Anal. 256 (2009), 810--864, DOI 10.1016/j.jfa.2008.11.001, arXiv:math/0701886; cited (arXiv v4) for Prop.~29 and Cor.~30.
+\bibitem[Pr]{Pr} C.~J.~Preston, \emph{A generalization of the FKG inequalities}, Comm. Math. Phys. 36 (1974), 233--241, DOI 10.1007/BF01645981 (not consulted directly).
+\bibitem[SZ]{SZ} D.~W.~Stroock and B.~Zegarlinski, \emph{The logarithmic Sobolev inequality for discrete spin systems on a lattice}, Comm. Math. Phys. 149 (1992), 175--193, DOI 10.1007/BF02096629.
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,74 @@
+# axioms of principia-ym-coarse-chain-poincare-2026-10-15 — 7 files; all declarations depend only on propext, Classical.choice, Quot.sound (or on no axioms)
+
+# LatticeGaugeBlockPoincare.lean (from the independent re-check, 2026-10-15)
+'LatticeGauge.BlockPoincare.kappa_seven_gt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockPoincare.free_energy_quasiconvex' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockPoincare.quasiconvex_add_osc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockPoincare.ratio_exp_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockPoincare.cross_term_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockPoincare.deriv_sq_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockPoincare.two_scale_assembly' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockPoincare.telescope' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockPoincare.path_cs' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockPoincare.ico_as_filter' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.BlockPoincare.hardy_discrete' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeCenterCovariance.lean (from the independent re-check, 2026-10-15)
+'LatticeGauge.CenterCovariance.telescope_ite' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CenterCovariance.hoeffding_kernel' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CenterCovariance.kernel_le_mass' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CenterCovariance.kernel_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CenterCovariance.kernel_le_sup' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CenterCovariance.weighted_cauchy_schwarz' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CenterCovariance.chebyshev_double' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CenterCovariance.large_hbar_column' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeCoarseChainPoincare.lean (from the independent re-check, 2026-10-15; re-run 2026-10-16 to restore one wrapped line)
+'LatticeGauge.CoarseChainPoincare.cov_le_lip_var' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CoarseChainPoincare.influence_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CoarseChainPoincare.sq_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CoarseChainPoincare.cross_term' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CoarseChainPoincare.coarse_grad_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CoarseChainPoincare.two_level_assembly' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CoarseChainPoincare.path_coupling_site' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CoarseChainPoincare.poincare_of_site_contraction' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LatticeGauge.CoarseChainPoincare.coarse_chain_poincare' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CoarseChainPoincare.g7_value' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CoarseChainPoincare.g7_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.CoarseChainPoincare.assembly_const' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeDoeblinPoincare.lean (from the independent re-check, 2026-10-15)
+'LatticeGauge.DoeblinPoincare.path_coupling_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.DoeblinPoincare.poincare_of_block_contraction' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.DoeblinPoincare.spectral_weight_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.DoeblinPoincare.contraction_rate_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeDoubleWellTestbed.lean (record shipped with the paper)
+'LatticeGauge.DoubleWellTestbed.ratioR_free_eq_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.DoubleWellTestbed.ratioR_x_normalisation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.DoubleWellTestbed.inv_le_div_sq_of_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.DoubleWellTestbed.resolvent_le_form_div_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.DoubleWellTestbed.local_rayleigh_ratio_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.DoubleWellTestbed.local_rayleigh_attained' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.DoubleWellTestbed.power_level_log_ratio_tendsto_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+
+# LatticeGaugeHiddenConvexity.lean (from the independent re-check, 2026-10-15)
+'LatticeGauge.HiddenConvexity.cauchy_schwarz_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.HiddenConvexity.geom_mean_midpoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.HiddenConvexity.kin_midpoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.HiddenConvexity.sq_sub_eq_kin' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.HiddenConvexity.act_eq_actRho' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.HiddenConvexity.actRho_midpoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.HiddenConvexity.act_min_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeInfluenceRecursion.lean (from the independent re-check, 2026-10-15)
+'LatticeGauge.InfluenceRecursion.tp2_comp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.InfluenceRecursion.cdf_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.InfluenceRecursion.cdf_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.InfluenceRecursion.k_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.InfluenceRecursion.step_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.InfluenceRecursion.gauss_product' depends on axioms: [propext, Classical.choice, Quot.sound]

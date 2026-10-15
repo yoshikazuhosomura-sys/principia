@@ -1,0 +1,86 @@
+# axioms of principia-ym-one-row-renormalisation-2026-10-15 — 7 files; all declarations depend only on propext, Classical.choice, Quot.sound (or on no axioms)
+
+# LatticeGaugeClassResidualTelescoping.lean (record shipped with the paper)
+'LatticeGaugeClassResidualTelescoping.telescoping_residual' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeClassResidualTelescoping.telescoping_residual_multi' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LatticeGaugeClassResidualTelescoping.geometric_part_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeClassResidualTelescoping.inv_sq_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeClassResidualTelescoping.inv_sq_sum_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeClassResidualTelescoping.uniform_deviation' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+[exited with code 0]
+
+# LatticeGaugeFourPlaquetteChain.lean (record shipped with the paper)
+'LatticeGaugeFourPlaquetteChain.sum_pair_reindex' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFourPlaquetteChain.four_plaquette_weight' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFourPlaquetteChain.four_plaquette_constrained' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFourPlaquetteChain.tree_identity_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFourPlaquetteChain.tree_lower_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFourPlaquetteChain.tree_attained_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFourPlaquetteChain.shape_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFourPlaquetteChain.tree_identity_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFourPlaquetteChain.shape_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeFundAdjointRefit.lean (record shipped with the paper)
+'LatticeGaugeFundAdjointRefit.refit_solution' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFundAdjointRefit.refit_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFundAdjointRefit.rho_of_ratio' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFundAdjointRefit.tree_quadratic_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFundAdjointRefit.tree_value_at_saddle' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFundAdjointRefit.image_rho' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFundAdjointRefit.image_gap' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeFundAdjointRefit.image_one_loop_D' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeHeatKernelFourPlaquette.lean (record shipped with the paper)
+'LatticeGaugeHeatKernelFourPlaquette.conv_assoc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHeatKernelFourPlaquette.conv_delta_left' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHeatKernelFourPlaquette.conv_delta_right' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHeatKernelFourPlaquette.convPow_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHeatKernelFourPlaquette.convPow_two_mul' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHeatKernelFourPlaquette.sum_pair_reindex' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHeatKernelFourPlaquette.four_plaquette_of_semigroup' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LatticeGaugeHeatKernelFourPlaquette.four_plaquette_convPow' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugePrefactorFlowFixedPoint.lean (record shipped with the paper)
+'LatticeGaugePrefactorFlowFixedPoint.step_k2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugePrefactorFlowFixedPoint.step_k2_heat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugePrefactorFlowFixedPoint.step_k2_fixed_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugePrefactorFlowFixedPoint.step_k2_contract' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugePrefactorFlowFixedPoint.fixed_point_general' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugePrefactorFlowFixedPoint.fixed_point_k3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugePrefactorFlowFixedPoint.fixed_point_k4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugePrefactorFlowFixedPoint.half_sub_gamma_star' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugePrefactorFlowFixedPoint.transverse_hessian' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugePrefactorFlowFixedPoint.convolution_prefactor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugePrefactorFlowFixedPoint.rem_shape_geometric' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugePrefactorFlowFixedPoint.ratio_coefficient' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeRatioTwoCriterion.lean (record shipped with the paper)
+'LatticeGaugeRatioTwoCriterion.kappa_a_of_ibp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeRatioTwoCriterion.kappa_ab_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeRatioTwoCriterion.ratio_two_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeRatioTwoCriterion.ratio_eq_two_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeRatioTwoCriterion.one_loop_D' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeRatioTwoCriterion.one_loop_D_u1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeRatioTwoCriterion.gamma_family_one_loop_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeRatioTwoCriterion.fund_adj_one_loop_root' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeRatioTwoCriterion.no_pointwise_sqrt_one_loop' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeShapeRemainderUniform.lean (record shipped with the paper)
+'LatticeGaugeShapeRemainderUniform.uv_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeShapeRemainderUniform.stays_in_box' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeShapeRemainderUniform.pow_sub_pow_norm_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeShapeRemainderUniform.saddle_ratio_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeShapeRemainderUniform.saddle_ratio_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeShapeRemainderUniform.keff_half_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeShapeRemainderUniform.cov_eigen' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeShapeRemainderUniform.first_order_at_fixed_point' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LatticeGaugeShapeRemainderUniform.quadratic_shape_coefficient' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

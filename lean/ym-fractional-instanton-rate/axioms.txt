@@ -1,0 +1,9 @@
+# axioms of principia-ym-fractional-instanton-rate-2026-10-15 — 1 files; all declarations depend only on propext, Classical.choice, Quot.sound (or on no axioms)
+
+# ColumnChessboard.lean (record shipped with the paper)
+'ColumnChessboard.signed_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ColumnChessboard.unsigned_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ColumnChessboard.prod_expand' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ColumnChessboard.binomial_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ColumnChessboard.exp_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+rc=0

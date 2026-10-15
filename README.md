@@ -11,7 +11,7 @@ Authors: **Kiichi, Shiori and Rin** — except the Yang–Mills papers under `pa
 
 This repository holds the machine-checked parts of the mathematics published on the site, together with the papers and articles that cite them.
 
-- `lean/` — one independent lake project per subject (350 modules, 5502 theorems with `#print axioms`). Every axiom line is a subset of `propext`, `Classical.choice`, `Quot.sound`; no `sorry`, no `native_decide`.
+- `lean/` — one independent lake project per subject (382 modules, 5745 theorems with `#print axioms`). Every axiom line is a subset of `propext`, `Classical.choice`, `Quot.sound`; no `sorry`, no `native_decide`.
 - `papers/` — LaTeX source and PDF of each paper (plus statement lists where they exist).
 - `articles/` — the HTML articles (Japanese) as published on the site.
 
@@ -31,7 +31,7 @@ The machine checks only that the stated propositions follow. Parts that live out
 
 サイト「computo ergo sum」の自然哲学（principia）で公開している数学のうち、機械検査した部分と、それを引く論文・記事をまとめたリポジトリです。
 
-- `lean/`：主題ごとに独立した lake プロジェクト（モジュール 343 本・`#print axioms` の対象の定理 4935 本）。公理は全行が `propext`・`Classical.choice`・`Quot.sound` の部分集合で、`sorry` も `native_decide` もありません。
+- `lean/`：主題ごとに独立した lake プロジェクト（モジュール 382 本・`#print axioms` の対象の定理 5745 本）。公理は全行が `propext`・`Classical.choice`・`Quot.sound` の部分集合で、`sorry` も `native_decide` もありません。
 - `papers/`：論文の LaTeX 源と PDF（命題の一覧があるものはそれも）。
 - `articles/`：サイトに載せた記事の HTML。
 
@@ -51,6 +51,11 @@ The machine checks only that the stated propositions follow. Parts that live out
 | [`lean/padic-regulator-valuation-2026-10-09`](lean/padic-regulator-valuation-2026-10-09/) | 同じ主題の 2026-10-09 の束（論文 v15 が引く版。30 本に異常 Euler 因子の付随ノート 1 本を加えた 31 本。各ファイルが単独に検査でき、入口は何も import しない）。旧い束は論文 v14 が引いているので並置 | 31 | 360 | 31 |
 | [`lean/ym-gap-bridge`](lean/ym-gap-bridge/) | ヤン–ミルズ：Poincaré 不等式の上界と質量ギャップの下界を結ぶ片側の橋（論文「片側の橋」が引く束） | 1 | 17 | 0 |
 | [`lean/ym-onelink-bakry-emery`](lean/ym-onelink-bakry-emery/) | ヤン–ミルズ：SU(2) 格子で I* のリンクを先に積分してから Bakry–Émery（星の不等式・一リンク積分・ヘッセの下界 −27β²）と、完全な族（リンクは d ≤ 4 かつ偶数周期の場合だけ・k 胞体は d ≤ 3k+1・密度 1/(2(k+1))）（論文「One-link integration」が引く束。各ファイルが単独に検査でき、入口は何も import しない） | 7 | 567 | 7 |
+| [`lean/ym-coarse-chain-poincare`](lean/ym-coarse-chain-poincare/) | ヤン–ミルズ第 10 部の検査台：凸なブロックと粗い Dobrushin の鎖による、二重井戸の経路測度の芯の Poincaré 上界（定数は ħ の多項式）（論文「Convex blocks and a coarse Dobrushin chain」が引く束）（各ファイルが単独に検査でき、入口は何も import しない） | 7 | 55 | 7 |
+| [`lean/ym-flux-network-blocking`](lean/ym-flux-network-blocking/) | ヤン–ミルズ：可換に線形化した格子ゲージ作用の木の段のブロック化を流れの網として書く（粗い結合 Σf²・四次の縮み Σf⁴/Σf² とその上下界）（論文「Tree-level blocking … as a flux network」が引く束）（各ファイルが単独に検査でき、入口は何も import しない） | 12 | 78 | 12 |
+| [`lean/ym-one-row-renormalisation`](lean/ym-one-row-renormalisation/) | ヤン–ミルズ：SU(2) の畳み込みの繰り込みの一次元の模型（曲率の項 2/5・前因子の固定点 37/76・段数に一様な形の剰余）（論文「A one-dimensional model of SU(2) convolution renormalisation」が引く束）（各ファイルが単独に検査でき、入口は何も import しない） | 7 | 61 | 7 |
+| [`lean/ym-hierarchical-chain`](lean/ym-hierarchical-chain/) | ヤン–ミルズ：SU(2) のプラケットの重みの Migdal–Kadanoff の流れを β = 128 から強結合の域まで繋ぐ鎖の代数の段（論文「An interval-arithmetic chain for the Migdal–Kadanoff flow」が引く束）（各ファイルが単独に検査でき、入口は何も import しない） | 5 | 44 | 5 |
+| [`lean/ym-fractional-instanton-rate`](lean/ym-fractional-instanton-rate/) | ヤン–ミルズ：捩れた小さなトーラス上の SU(2) 格子ゲージ理論で、率が流束を運ぶ柱の作用になる面積則の上界（市松の和の段）（論文「An area-law bound … on a twisted small torus」が引く束）（各ファイルが単独に検査でき、入口は何も import しない） | 1 | 5 | 1 |
 | [`lean/hadwiger-nelson`](lean/hadwiger-nelson/) | 単位距離グラフ：候補類の非実現（n = 10, 11, 16）と、独立数を抑えた単位距離グラフの下界の証人と族（ハドヴィガー・ネルソン系） | 43 | 182 | 0 |
 | [`lean/collatz`](lean/collatz/) | コラッツ写像（臨界の乗数・測度・階段の高さ・枝の生死・禁止語） | 7 | 108 | 0 |
 | [`lean/riemann-weil-form`](lean/riemann-weil-form/) | Riemann 予想の Weil 形式（時間帯の分割・跡・移送・Ψ 座標・沈んだ数え上げ・ホッジ指数の正値性） | 12 | 73 | 2 |
@@ -67,6 +72,11 @@ The machine checks only that the stated propositions follow. Parts that live out
 | [`papers/padic-regulator-valuation`](papers/padic-regulator-valuation/) | p-adic regulator at anomalous primes (BSD-adjacent) | 異常素点での p 進レギュレーターの付値（BSD の周辺）（`paper-v15.pdf`, `paper-v15.tex`；旧版 `paper-v14.pdf`, `paper-v14.tex`, `statements-v14.md`, `summary-ja-v14.md`） |
 | [`papers/ym-gap-bridge`](papers/ym-gap-bridge/) | A one-sided bridge from a Poincaré-type bound to a mass-gap lower bound (lattice Yang–Mills) — authored by Yoshikazu Hosomura with the assistance of Claude | 片側の橋：Poincaré 型の上界から質量ギャップの下界へ（格子ヤン–ミルズ）（`paper.pdf`, `paper.tex`） |
 | [`papers/ym-onelink-bakry-emery`](papers/ym-onelink-bakry-emery/) | One-link integration before Bakry–Émery for SU(2) lattice Yang–Mills — an explicit strong-coupling threshold β < √(2/27) in d = 4, and complete families of links only for d ≤ 4 (machine-checked in Lean 4) — authored by Yoshikazu Hosomura with the assistance of Claude | 一リンク積分を先に行う Bakry–Émery（SU(2) 格子ヤン–ミルズ、d = 4 で β < √(2/27)、完全な族は d ≤ 4 だけ）（`paper.pdf`, `paper.tex`, `statements.md`） |
+| [`papers/ym-coarse-chain-poincare`](papers/ym-coarse-chain-poincare/) | Convex blocks and a coarse Dobrushin chain: a Poincaré bound for the core of the double-well path measure with constants polynomial in ħ — authored by Yoshikazu Hosomura with the assistance of Claude | 凸なブロックと粗い Dobrushin の鎖：二重井戸の経路測度の芯の Poincaré 上界（定数は ħ の多項式）（`paper.pdf`, `paper.tex`, `statements.md`, `certificates/`） |
+| [`papers/ym-flux-network-blocking`](papers/ym-flux-network-blocking/) | Tree-level blocking of an abelian-linearised lattice gauge action as a flux network: the coarse coupling Σf², the quartic contraction Σf⁴/Σf², and their bounds — authored by Yoshikazu Hosomura with the assistance of Claude | 木の段のブロック化を流れの網として：粗い結合 Σf² と四次の縮み Σf⁴/Σf² の上下界（`paper.pdf`, `paper.tex`, `statements.md`） |
+| [`papers/ym-one-row-renormalisation`](papers/ym-one-row-renormalisation/) | A one-dimensional model of SU(2) convolution renormalisation: the curvature term 2/5, the prefactor fixed point 37/76, and a shape remainder uniform in the number of steps — authored by Yoshikazu Hosomura with the assistance of Claude | SU(2) の畳み込みの繰り込みの一次元の模型：曲率の項 2/5・前因子の固定点 37/76・段数に一様な形の剰余（`paper.pdf`, `paper.tex`, `statements.md`） |
+| [`papers/ym-hierarchical-chain`](papers/ym-hierarchical-chain/) | An interval-arithmetic chain for the Migdal–Kadanoff flow of SU(2) plaquette weights, from β = 128 to a strong-coupling region — authored by Yoshikazu Hosomura with the assistance of Claude | SU(2) のプラケットの重みの Migdal–Kadanoff の流れを β = 128 から強結合の域まで繋ぐ鎖（`paper.pdf`, `paper.tex`, `statements.md`, `certificates/`） |
+| [`papers/ym-fractional-instanton-rate`](papers/ym-fractional-instanton-rate/) | An area-law bound for SU(2) lattice gauge theory on a twisted small torus whose rate is the action of a flux-carrying column — authored by Yoshikazu Hosomura with the assistance of Claude | 捩れた小さなトーラス上の SU(2) 格子ゲージ理論の面積則の上界（率は流束を運ぶ柱の作用）（`paper.pdf`, `paper.tex`, `statements.md`） |
 
 ## articles/
 

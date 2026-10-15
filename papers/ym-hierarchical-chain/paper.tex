@@ -1,0 +1,619 @@
+% Web edition. The GitHub edition differs in the author line and in the disclosure section (github-author.patch).
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\HK}{\mathrm{HK}}
+\newcommand{\cU}{\mathcal{U}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cK}{\mathcal{K}}
+\newcommand{\IA}{computer-assisted (interval arithmetic with a self-written library; not independently verified)}
+%% Distribution addresses of the Lean bundle (placed 2026-10-15; independent re-check done).
+\newcommand{\bundleurl}{https://computoergosum.com/principia/lean/principia-ym-hierarchical-chain-2026-10-15.tar.gz}
+\newcommand{\axiomsurl}{https://computoergosum.com/principia/lean/axioms-ym-hierarchical-chain-2026-10-15.txt}
+
+\title{An interval-arithmetic chain for the Migdal--Kadanoff flow of SU(2) plaquette weights, from $\beta=128$ to a strong-coupling region}
+\author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
+\date{2026-10-15}
+
+\begin{document}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
+
+\begin{abstract}
+We study the Migdal--Kadanoff recursion $T$ in dimension $d=4$ with scale factor $2$ (bond moving $f\mapsto f^4$, decimation $a_n\mapsto a_n^4$ of the normalised character coefficients), acting on the single-plaquette weight of SU(2) lattice gauge theory.
+This recursion is exact for a hierarchical lattice model; nothing in this paper bears on the four-dimensional hypercubic lattice, and since the hierarchical model also confines for U(1), nothing here tests non-commutativity.
+Around the heat-kernel class we define a tube $\cU$ in a transverse coordinate $e_n=\log a_n-(q_n/3)\log a_1$, $q_n=n(n+2)$, in which all upper bounds become ratios of sums of non-negative terms.
+(1) Theorem H-UV: $T(\cU)\subset\cU$ on $6277$ cells covering $\beta\in[2.46,128]$, and on $\beta\in[15.26,64]$ all orbits in $\cU$ are attracted to one curve at rate $\Lambda\le 0.735$ per step; at the heat-kernel points $(\beta-\beta'-\tfrac14)\beta\in[0.020928,0.023690]$ for $\beta\in[2.5,64]$.
+(2) On the curve, to leading order in $1/\beta$, the shape is $\HK_\beta\cdot\exp(\theta^4/3600+\theta^6/963900+\dots)$ and the coupling flows as $\beta'=\beta-\tfrac14-c^*/\beta$ with $c^*=1/60$ (paper, leading order); on a narrower tube the flow coefficient is enclosed in $[0.0151,0.0188]$ on $50$ cells between $\beta\approx16$ and $128$.
+(3) Theorem MK-full: from any point of an extended tube with $\beta(w)\le128$, at most $580$ steps lead into the tube of the earlier record W-half$(T)$ [KSR, 11-06], and at most $557$ further steps into the region where that record's criterion holds ($1137$ steps in total), under five stated conditions.
+Items (1) and the enclosures in (2) are \IA; the step-count assembly and the leading-order algebra are written in Lean~4 and pass its check; the limit $\beta\to\infty$ is not closed, and \S\ref{sec:open} explains which term of the present cell test prevents it.
+\end{abstract}
+
+\section*{Introduction}\label{sec:intro}
+\addcontentsline{toc}{section}{Introduction}
+The Yang--Mills existence and mass gap problem [JW] asks for a quantum Yang--Mills theory on $\mathbb{R}^4$ with a positive mass gap.
+This paper does not address that problem.
+It studies one explicit hierarchical renormalisation-group map, the Migdal--Kadanoff recursion for SU(2) plaquette weights, as a testing ground for computer-assisted chains of renormalisation steps; the model and its background are described in the authors' online textbook [KSR], chapters 11-06 and 15-04.
+
+\paragraph{The earlier record.}
+The second stage of Theorem~\ref{thm:mkfull} uses an earlier record of the same model, located in the textbook [KSR] at 11-06 and 15-04, which certifies by interval arithmetic that the orbits in a tube $\cD$ at strong coupling enter a region $\cK$.
+We call it W-half$(T)$; it is not re-run here.
+Below it is referred to as the earlier record [KSR, 11-06].
+
+\paragraph{What is not in the textbook.}
+Lemma~\ref{lem:exit} (soundness of the exit test), Lemma~\ref{lem:tail} (Gaussian tail of heat-kernel coefficients) and the single-cell computations at $\beta=256$, $512$, $1024$ and $2048$ in \S\ref{sec:open} are not in the textbook [KSR]; they are added in this paper.
+
+\section{The hierarchical map}\label{sec:map}
+
+\paragraph{Scope first.}
+The Migdal--Kadanoff (MK) recursion [Mi, Ka] replaces one step of block-spin renormalisation on the hypercubic lattice by two exactly computable operations on the single-plaquette weight.
+On the hypercubic lattice it is an approximation.
+It becomes exact on a hierarchical lattice model in which the vertical plaquettes are placed at coupling $0$ or $\infty$ [It84]; for that model, permanent confinement for SU($N$) and U($N$) was announced in [It85].
+Accordingly the results below are statements about one explicit map on a space of class functions on SU(2).
+\emph{They do not imply anything about the four-dimensional lattice theory} (see \S\ref{sec:notclaimed}), and because the hierarchical model also flows to strong coupling for U(1), \emph{they are not a test of non-commutativity}.
+The reader we have in mind is interested in computer-assisted proofs and hierarchical renormalisation-group maps.
+
+\paragraph{Conventions.}
+A plaquette weight is a non-negative class function $w$ on SU(2), expanded in characters,
+\[
+w=\sum_{n\ge0}c_n\chi_n,\qquad c_0=1,\qquad a_n:=\frac{c_n}{n+1},\qquad q_n:=n(n+2),
+\]
+where $n=2j$ and $\chi_n(\theta)=\sin((n+1)\theta)/\sin\theta$.
+The heat kernel at inverse coupling $\beta$ is $\HK_\beta$ with $a_n=e^{-q_n/(2\beta)}$.
+For a general weight we read off an effective coupling and its inverse from the first coefficient,
+\[
+\beta(w):=-\frac{3}{2\log a_1(w)},\qquad u(w):=1/\beta(w),
+\]
+so that $\beta(\HK_\beta)=\beta$.
+The map is $T=\mathrm{D}\circ\mathrm{B}$ with
+\begin{itemize}[nosep]
+\item bond moving $\mathrm{B}:w\mapsto w^4/\!\int w^4\,dU$ (exponent $2^{d-2}=4$),
+\item decimation $\mathrm{D}:a_n\mapsto a_n^4$ (convolution of $2^2=4$ plaquettes).
+\end{itemize}
+On the heat-kernel class, decimation is exact: $\mathrm{D}\HK_{\beta}=\HK_{\beta/4}$.
+Bond moving maps $\HK_\beta$ to $\HK_{4\beta-1}$ times a correction $\exp\rho$, $\rho=3\log(\theta/\sin\theta)-\theta^2/2$, so the heat-kernel class is \emph{not} invariant under $T$; the deviation enters at order $\theta^4$ with coefficient $3\ell_2=1/60$, where $\ell_k$ is the coefficient of $\theta^{2k}$ in $\log(\theta/\sin\theta)$ ($\ell_2=1/180$, $\ell_3=1/2835$).
+
+\begin{remark}[the constant $1/4$]
+On the heat-kernel class, bond moving sends $\beta$ to $4\beta-1$, which is the general rule $L^2\beta-(L^2-1)/3$ for scale factor $L=2$, and decimation divides by $4$.
+Hence one step lowers $\beta$ by $1/4$ at leading order; the corrections of order $1/\beta$ are the subject of Proposition~\ref{prop:cstar}.
+Iterating, $K$ steps starting from $\beta_{\mathrm{start}}$ reach $\beta_{\mathrm{start}}-K/4$ up to a logarithmic correction, so that a range of $\beta$ of length $64$ is crossed in about $256$ steps.
+\end{remark}
+
+\paragraph{What the paper adds.}
+That the MK flow of SU(2) weights goes to strong coupling is known [It85, Mi].
+What we add is a single chain of interval-arithmetic certificates, with explicit uniform speed and step counts, from the weak-coupling end $\beta=128$ down to the entry of the region used by the earlier record [KSR, 11-06], together with the invariant curve near which the flow runs and the leading-order coefficient of its coupling flow.
+
+\paragraph{An observation that fixes the coordinates.}
+In double precision, the weights reaching the same coupling $\beta'$ after $j$ and after $4$ steps differ in total variation by ratios $16.06$ and $17.00$ for $j=1{:}2{:}3$, against $16.0$ and $17.0$ predicted by a contraction $1/16$ per step, for starting couplings $3.5,7,15,30$; the fitted $\theta^4$ coefficient of $\log(w/\HK)$ is $2.789\times10^{-4}$ at $\beta=60$, against $1/3600=2.778\times10^{-4}$, and $2.615\times10^{-4}$ after one step, against $1/3840$.
+These observations are not part of any statement; they suggested measuring the distance from the heat-kernel class in a coordinate in which decimation is linear, and centring the tube at the heat kernel rather than at the curve.
+
+\paragraph{Plan.}
+Section~\ref{sec:tube} defines the transverse coordinate and the tube and explains why every bound is a ratio of non-negative sums.
+Section~\ref{sec:huv} states Theorem H-UV.
+Section~\ref{sec:curve} gives the leading-order shape flow, the attracting curve on a finite interval, and an enclosure of the coupling-flow coefficient.
+Section~\ref{sec:mkfull} joins the tube to the earlier record and states Theorem MK-full.
+Section~\ref{sec:open} explains which term of the cell test prevents $\beta\to\infty$.
+Sections~\ref{sec:lean}, \ref{sec:corr} and~\ref{sec:notclaimed} list what is checked in Lean, the correspondence between statements and Lean declarations, and what is not claimed.
+
+\section{The tube and the transverse coordinate}\label{sec:tube}
+
+\begin{definition}[transverse coordinate]
+For $n\ge2$ put $e_n(w):=\log a_n(w)-\tfrac{q_n}{3}\log a_1(w)$.
+\end{definition}
+On the heat-kernel class $e\equiv0$, and $e$ is linear in the logarithmic coefficients.
+Decimation acts exactly as $e\mapsto 4e$, $u\mapsto 4u$: dividing out the direction of $\beta$ turns decimation into a linear map, and leaves bond moving as the only non-linear part.
+
+\begin{definition}[tube]\label{def:tube}
+Fix $R>0$, $A\ge0$, and for each integer block $[k,k+1)$ of $\beta$ a truncation index $N$, a radius $\rho=e^{\lambda}>1$ and a tail size $t_0$ (the table \code{params.csv}, \code{params\_128.csv}; $N$ is non-decreasing in $\beta$, $N=160$ at $\beta=64$ and $N=232$ at $\beta=128$).
+With $W_n(u):=q_n^2u^4+A\,q_nu^3$,
+\[
+\cU_{R,A}=\Bigl\{w:\ c_0=1,\ |e_n(w)|\le R\,W_n(u(w))\ (2\le n\le N),\ \sum_{n>N}(n+1)\rho^n|c_n|\le t_0\Bigr\}.
+\]
+The tube of Theorem~\ref{thm:huv} is $\cU:=\cU_{10^{-3},10}$.
+\end{definition}
+The weight $q_n^2u^4$ is the size of a $\theta^4$-type deviation, by the following lemma.
+
+\begin{lemma}[transverse shape of a $\theta^4$ deformation; paper, leading order]\label{lem:shape}
+Let $w=\HK_\beta e^{\sigma\theta^4}$ and $u=1/\beta$. To first order in $\sigma$ and up to images of order $e^{-\beta\pi^2/2}$,
+\[
+\Delta\log a_n=\sigma\bigl(q_n(q_n+2)u^4-10q_nu^3\bigr)+O(\sigma u^5),\qquad e_n=\sigma\,q_n(q_n-3)\,u^4+O(\sigma u^5).
+\]
+\end{lemma}
+\begin{proof}
+By Poisson summation $\HK_\beta(\theta)\propto(\theta/\sin\theta)e^{-\beta\theta^2/2}$ up to images.
+With the Haar weight $\sin^2\theta$ and $\chi_n/(n+1)=\sin(k\theta)/(k\sin\theta)$, $k=n+1$, the integrand of $a_n$ becomes $\theta^2e^{-\beta\theta^2/2}\sin(k\theta)/(k\theta)$, the plane-wave average $\mathbb{E}[e^{i\,k\cdot x}]$ of a centred Gaussian $x$ on $\R^3$ with covariance $u\,I$ and $r=|x|$.
+Since $c_0=1$ and $n=0$ corresponds to $k=1$, $\Delta\log a_n=\sigma(\mathbb{E}_k[r^4]-\mathbb{E}_1[r^4])$ to first order, where $\mathbb{E}_k$ is the expectation tilted by the plane wave; the complex shift $x\mapsto x+iuk$ gives $\mathbb{E}_k[r^4]=15u^2-10k^2u^3+k^4u^4$.
+With $k^2=q_n+1$ the difference is $\sigma\bigl((q_n+1)^2-1\bigr)u^4-10\sigma q_nu^3=\sigma\bigl(q_n(q_n+2)u^4-10q_nu^3\bigr)$.
+For $n=1$ ($q=3$) this is $\sigma(15u^4-30u^3)$, and
+\[
+e_n=\Delta\log a_n-\tfrac{q_n}3\Delta\log a_1=\sigma\bigl(q_n^2+2q_n-5q_n\bigr)u^4+\sigma(-10q_n+10q_n)u^3=\sigma q_n(q_n-3)u^4 .
+\]
+The $u^3$ terms cancel exactly, which is the point of dividing out the direction of $\beta$.
+\end{proof}
+On the curve of \S\ref{sec:curve}, $e_3/(q_3^2u^4)=2.23\times10^{-4}=0.80/3600$ in double precision, in agreement with $(q_3-3)/q_3=0.8$.
+The term $Aq_nu^3$ gives room to the low rows.
+
+\paragraph{Why the bounds are ratios of non-negative sums.}
+Write $\ell'=\log a(Tw)$.
+Since $a'_i$ is the fourth power of a normalised coefficient of $w^4$, $\log P_i$ with $P=c^{\star4}$ (four-fold Clebsch--Gordan convolution) determines $\ell'$, and the derivatives of $\log P_i$ in the logarithmic coordinates are the mean, variance and higher cumulants of a probability distribution on the quadruples of input indices that contribute to the output index $i$.
+These weights are non-negative.
+Hence the first derivative is a ratio of non-negative sums, the second derivative in the transverse direction is a variance $\mathrm{Var}_i(X_e)\in[0,\mathbb{E}_i[(\sum|e|)^2]]$, and the third-order remainder is bounded by $8\,\mathbb{E}_i[(\sum_k D_{j_k})^3]$ with $D_j=RW_j+q_j|\delta u|/2$.
+Each bound is a ratio of non-negative sums, monotone in each summand, so it can be evaluated with the numerator at the upper and the denominator at the lower end of a box, and no cancellation of large terms occurs.
+This is the reason why the tube survives interval evaluation at all: on boxes of coefficients the same computation loses control already at widths of order $10^{-12}$.
+
+\paragraph{The cumulant form.}
+Let $Q_i$ be the set of ordered quadruples $J=(j_1,\dots,j_4)$ for which $\chi_i$ occurs in $\chi_{j_1}\chi_{j_2}\chi_{j_3}\chi_{j_4}$, with multiplicity $m_J\ge0$.
+Then the coefficient of $\chi_i$ in $w^4$ is
+\[
+P_i=\sum_{J\in Q_i}m_J\prod_{k=1}^4(j_k+1)\,e^{\ell_{j_k}},\qquad \ell_j=\log a_j,
+\]
+and $\ell'_i=4\bigl(\log P_i-\log P_0-\log(i+1)\bigr)$.
+Put $\pi_i(J)\propto m_J\prod_k(j_k+1)e^{\ell_{j_k}}$, a probability on $Q_i$, and $X_\Delta(J)=\sum_k\Delta_{j_k}$.
+Then
+\begin{align*}
+D\log P_i[\Delta]&=\mathbb{E}_{\pi_i}[X_\Delta],\qquad D^2\log P_i[\Delta,\Delta]=\mathrm{Var}_{\pi_i}(X_\Delta),\\
+D^3\log P_i[\Delta,\Delta,\Delta]&=\kappa_3^{\pi_i}(X_\Delta)\quad\text{(third cumulant)},
+\end{align*}
+and $|\kappa_3|\le8\,\mathbb{E}_{\pi_i}[|X_\Delta|^3]$.
+Each row of the transverse linearisation is $4(\mathbb{E}_{\pi_i}-\mathbb{E}_{\pi_0})$ applied to $X_e$; the matrix of $\pi_i$-occupation numbers is non-negative with row sums $4$.
+In double precision the spectral radius of the absolute value of the projected linearisation is $0.136$--$0.17$, which is why a one-step weighted box suffices and no adapted multi-step norm is needed.
+
+\paragraph{The tail.}
+If the input tail satisfies $\sum_{n>N}(n+1)\rho^n|c_n|\le t_0$ and $S$ bounds $\|c^{\le N}\|_\rho$, the relative change of $P_i$ caused by the tail is at most $\delta_i\le\bigl((S+t_0)^4-S^4\bigr)/\bigl((i+1)\rho^iP_i\bigr)$, by submultiplicativity of $\|\cdot\|_\rho$.
+The image tail is bounded by the computed part for $N_t<n\le N$ plus $(\Pi/P_0)^4\sum_{n>N}(n+1)^{-6}(\rho_t/\rho^4)^n$.
+On $[2,64]$ the largest ratio of image tail to $t_0$ is $3.5\times10^{-3}$ and the largest $\delta_i$ is $3.0\times10^{-13}$; on $[64,128]$ the tail ratio is at most $5.9\times10^{-4}$.
+
+\paragraph{The cell test.}
+A cell is an interval $[u_{\mathrm{lo}},u_{\mathrm{hi}}]$ of width $0.02$ in $\beta$, with centre $h=\HK_{1/u_c}$ truncated at $N$.
+A point of the tube in the cell is $\ell(h)+\Delta$ with $\Delta=e+v\,\delta u$, $v=-q/2$.
+We use
+\begin{equation}\label{eq:taylor}
+\ell'(h+\Delta)=\ell'(h)+Je+g_1\delta u+\tfrac12g_2\delta u^2+He\,\delta u+\tfrac12D^2\ell'(h)[e,e]+R_3,
+\end{equation}
+with the point quantities $\ell'(h)$, $J$, $g_1$, $g_2$, $H$ evaluated at the centre in interval arithmetic, the second order in $e$ and the remainder $R_3$ bounded as above, and the tail handled in the norm $\|f\|_\rho=\sum(n+1)\rho^n|c_n|$, which is submultiplicative since $\chi_m\chi_k=\sum_{j=|m-k|}^{m+k}\chi_j$.
+The cell \emph{passes} if, after the projection $(Py)_i=y_i-(q_i/3)y_1$, the resulting bound on $|e'_i|$ is at most $R\,W_i(u'_{\mathrm{lo}})$ for all $2\le i\le N$, the image tail is at most the target $t_0$, and the image coupling $\beta'$ lies in blocks whose parameters were used.
+We write $\mathrm{ratio}$ for the maximum over rows of bound$/$requirement.
+
+\paragraph{Arithmetic.}
+Arithmetic operations assume correctly rounded IEEE~754 double precision and are widened by one ulp outward per operation; sums of non-negative terms are bounded with Higham's $\gamma_{2N+6}$ [Hi]; $\exp$ and $\log$ are evaluated in 34-digit decimal arithmetic and then widened by one ulp.
+The library is self-written; it has not been checked against an established interval package (in the sense of [Mo, Tu]).
+The rounding model and the derivation of the remainder and cumulant bounds are on paper and are not formalised.
+
+\section{Theorem H-UV}\label{sec:huv}
+
+\begin{theorem}[H-UV; \IA]\label{thm:huv}
+Let $T$ be the MK map of \S\ref{sec:map} on SU(2) plaquette weights, and $\cU=\cU_{10^{-3},10}$ the tube of Definition~\ref{def:tube} with the tabulated tail parameters.
+Assume correctly rounded IEEE~754 arithmetic and the paper bounds of \S\ref{sec:tube} for the remainder and cumulants.
+Then:
+\begin{enumerate}[label=(\roman*)]
+\item (invariance) for every $w\in\cU$ with $\beta(w)\in[2.46,128]$, $Tw\in\cU$; this is verified on $6277$ consecutive cells of width $0.02$;
+\item (heat-kernel points) for the $3100$ cell centres $\beta\in[2.5,64]$, $(\beta-\beta(T\HK_\beta)-\tfrac14)\beta\in[0.020928,0.023690]$, each enclosure of width at most $10^{-6}$, decreasing towards $1/48=0.020833$;
+\item (one-step drop) for every $w\in\cU$ with $\beta(w)\in[2.46,128]$, $\beta(w)-\beta(Tw)\ge0.2196$, and $\beta(w)-\beta(Tw)\le0.2990$ for $\beta(w)\le64$.
+\end{enumerate}
+\end{theorem}
+The $23$ cells in $[2.00,2.46)$ fail with the same parameters (ratio up to $9.7$).
+Table~\ref{tab:cells} lists representative cells.
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{lccccc}
+\toprule
+$\beta$ & verdict & ratio & centre defect & remainder $+$ tail & $\lambda_{\mathrm{tube}}$ \\
+\midrule
+$[2.00,2.46)$ & $23$ cells fail & up to $9.7$ & & & $\gg1$ \\
+$2.50$ & pass & $0.889$ & $0.348$ & $0.777$ & $15.1$ \\
+$8.00$ & pass & $0.516$ & $0.268$ & $0.171$ & $0.811$ \\
+$16.00$ & pass & $0.501$ & $0.257$ & $0.120$ & $0.461$ \\
+$32.00$ & pass & $0.496$ & $0.253$ & $0.098$ & $0.282$ \\
+$63.98$ & pass & $0.494$ & $0.253$ & $0.088$ & $0.269$ \\
+$[64,128]$ ($3200$ cells) & all pass & $\le0.494$ & & & $\le0.269$ \\
+\bottomrule
+\end{tabular}
+\caption{The cell test for the tube $\cU_{10^{-3},10}$, cell width $0.02$. The columns ``centre defect'' and ``remainder $+$ tail'' are row-wise maxima divided by $R\,W_i(u_c)$; they are attained in different rows and do not add up to the ratio. $\lambda_{\mathrm{tube}}$ is the interval bound on the norm of the transverse linearisation over the whole cell (\S\ref{sec:curve}). Certificates: \code{main\_lo.csv}, \code{main\_hi.csv} ($\beta\in[2,64]$, $3100$ cells), \code{main\_128.csv} ($[64,128]$, $3200$ cells).}\label{tab:cells}
+\end{table}
+
+\paragraph{Controls.}
+(a) Decimation alone, in interval arithmetic: $\max|e(\mathrm{D}\HK_\beta)|\le1.3\times10^{-11}$ and $u'/u-4\in\pm6\times10^{-14}$ at $\beta=4.02,8.02,32.02,64$.
+(b) An independent implementation in position space (trapezoidal rule, $40001$ nodes, no interval arithmetic) applied to $20$ random points of the tube per tested cell gives $|e'|/\mathrm{bound}\le0.81$ and $u'$ inside the certified range; the bounds are $1.2$ to $1.9$ times the true values.
+(c) Negative controls fail as they should: with $R=2\times10^{-4}$ the ratio is $1.45$--$1.47$ (at $\beta=8,64,96,128$), and adding $1.0\cdot RW_2$ to the image coefficient $\ell'_2$ gives $1.09$--$1.28$, while $0.3\cdot RW_2$ passes.
+(d) The $200$ cells in $[60,64]$ were recomputed on a second machine; all columns except the timing agree as strings.
+These controls are evidence that the implementation does what is described; they are not a substitute for independent verification of the library.
+
+\paragraph{The coupling flow across the whole tube.}
+At the heat-kernel points the enclosure of $(\beta-\beta'-\tfrac14)\beta$ is $0.023690$ at $\beta=2.5$, $0.022506$ at $4$, $0.021629$ at $8$, $0.021222$ at $16$, $0.021025$ at $32$ and $[0.0209283,0.0209293]$ at $64$.
+Over the whole tube, $\beta-\beta'-\tfrac14$ lies in $[-0.0106,0.0295]$ at $\beta\approx2.5$, $[-0.0031,0.0085]$ at $8$, $[-0.0007,0.0021]$ at $32$ and $[-0.0004,0.0010]$ at $64$; this width comes mainly from the term $Aq_nu^3$ of the tube weight, and is what prevents $\cU$ from separating $1/60$ from $1/48$ (\S\ref{sec:curve}).
+
+\paragraph{Cost.}
+The four-fold convolution costs of order $N^3$ per cell ($N=232$ at $\beta=128$); the convolution table has $(N+1)^3$ entries.
+Raising the upper end is limited by the size of this table rather than by the bounds, up to the rounding effect described in \S\ref{sec:open}.
+
+\section{The attracting curve and the coupling flow}\label{sec:curve}
+
+\subsection{\texorpdfstring{Leading order in $1/\beta$}{Leading order in 1/beta}}
+Write $w=\HK_\beta\,e^{S}$ with $S=\sum_{k\ge2}\sigma_k\theta^{2k}$.
+
+\begin{proposition}[shape flow; paper, leading order]\label{prop:shape}
+To leading order in $1/\beta$ (saddle-point order; error constants are not derived), one step of $T$ acts on the shape coefficients by
+\[
+\sigma_k\longmapsto\frac{16\,\sigma_k+12\,\ell_k}{4^{2k}},\qquad k\ge2 .
+\]
+Hence the $\theta^{2k}$ direction contracts by $16^{1-k}$ ($1/16$, $1/256$, \dots), the fixed point is $\sigma_k^*=12\ell_k/(4^{2k}-16)$, in particular $\sigma_2^*=1/3600$ and $\sigma_3^*=1/963900$, and one step from the heat kernel gives $\sigma_2=1/3840$.
+\end{proposition}
+\begin{proof}[Sketch]
+Bond moving: $w^4=\HK_{4\beta}(\theta/\sin\theta)^3e^{4S}=\HK_{4\beta-1}e^{\rho+4S}$ up to images, with $\rho=\sum_{k\ge2}3\ell_k\theta^{2k}$.
+Decimation: the heat-kernel part is a semigroup, $\HK_{(4\beta-1)/4}=\HK_{\beta-1/4}$; for the factor $e^{S}$ the saddle point places the four group elements equally spaced along the geodesic from the identity, giving $4S(\theta/4)$, while fluctuation corrections of order $S''/\beta$ move to lower powers of $\theta$ (a triangular structure).
+Collecting the coefficient of $\theta^{2k}$ gives the map.
+\end{proof}
+
+\begin{proposition}[coupling flow; paper, leading order]\label{prop:cstar}
+For $w=\HK_\beta e^{\sigma\theta^4}$,
+\[
+\beta(Tw)-\beta(w)=-\frac14-\frac{c(\sigma)}{\beta}+O(\beta^{-2}),\qquad c(\sigma)=\frac1{48}-15\sigma .
+\]
+On the heat-kernel class $c=1/48$; at $\sigma=\sigma_2^*=1/3600$, $c^*=1/48-1/240=1/60$.
+\end{proposition}
+\begin{proof}[Sketch]
+In $\R^3$-Gaussian form, $\HK_\beta\chi_n/(n+1)\sin^2\theta\propto\theta^2e^{-\beta\theta^2/2}\sin(k\theta)/(k\theta)$ with $k=n+1$, which is the plane-wave average of a centred Gaussian on $\R^3$ with variance $1/\beta$; a complex shift gives $\mathbb{E}_k[r^4]=15/\beta^2-10k^2/\beta^3+k^4/\beta^4$.
+For $n=1$ this yields $\log a_1=-\tfrac32u-30\sigma u^3+O(u^4)$, i.e.\ $\beta(w)=\beta-20\sigma/\beta+\dots$.
+After bond moving the weight is $\HK_{\tilde\beta}e^{\rho_2\theta^4+\dots}$ with $\tilde\beta=4\beta-1$, $\rho_2=1/60+4\sigma$, and decimation raises $a_1$ to the fourth power exactly, so $\beta'=\beta-\tfrac14-5\rho_2/(4\beta)+O(\beta^{-2})$.
+Subtracting gives $c(\sigma)$.
+\end{proof}
+The arithmetic in both propositions (fixed points, contraction ratios, $1/48-15/3600=1/60$) is checked in Lean (\S\ref{sec:lean}); the saddle-point steps are not.
+In double precision, after eight steps from the heat kernel the flow coefficient reads $1/60+0.0078/\beta$; the largest eigenvalue of the transverse linearisation is $(1/16)(1+1.0/\beta)$ at $\beta=4,\dots,32$ and the second approaches $1/256$.
+These are observations, not part of any statement.
+
+\subsection{The attracting curve on a finite interval}
+On the cells with $\beta\in[5,64]$ (width $0.02$, $2950$ cells, all of which also pass the invariance test) we compute in interval arithmetic, over the whole tube in each cell and in the normalised coordinate $\tilde y=e/(RW(u))$: the Lipschitz bound $\lambda$ of $\tilde y\mapsto\tilde y'$, the bound $\tilde\mu$ of $|\partial\tilde y'/\partial\beta|$, the range $[\kappa_{\mathrm{lo}},\kappa_{\mathrm{hi}}]$ of $\partial\beta'/\partial\beta$, and the bound $\tilde\delta$ of $|\partial\beta'/\partial\tilde y|$.
+
+\begin{lemma}[graph transform on a finite interval; paper]\label{lem:graph}
+Suppose that on every cell of $I=[\beta_a,64]$, for some $\tilde M>0$,
+(a) $\kappa_{\mathrm{eff}}:=\kappa_{\mathrm{lo}}-\tilde\delta(\tilde M+4/\beta)>0$,
+(b) $\tilde\mu+\lambda\tilde M\le\tilde M\kappa_{\mathrm{eff}}$, and
+(c) $\Lambda:=\lambda+(\tilde\mu+\lambda\tilde M)\tilde\delta/\kappa_{\mathrm{eff}}<1$.
+Then the image under $T$ of a graph $\tilde y=\varphi(\beta)$ with $|\varphi|\le1$ and $\mathrm{Lip}(\varphi)\le\tilde M$ is again such a graph, and for two such graphs $\|\Gamma\varphi_1-\Gamma\varphi_2\|\le\Lambda\|\varphi_1-\varphi_2\|+\varepsilon_{\mathrm{tail}}$, where $\varepsilon_{\mathrm{tail}}\le6\times10^{-5}$ is the contribution of the tail beyond $N$.
+\end{lemma}
+\begin{proof}
+By (a) $\beta\mapsto\beta'$ is strictly increasing on the graph, so the image is a graph; by (b) its Lipschitz constant is at most $\tilde M$; by Theorem~\ref{thm:huv} it stays in $|\tilde y|\le1$.
+Comparing the images at the same $\beta'$, the preimages satisfy $|\beta_1-\beta_2|\le\tilde\delta\|\varphi_1-\varphi_2\|/\kappa_{\mathrm{eff}}$, and the mean-value theorem row by row gives the contraction.
+This is the finite-interval form of Hadamard's graph transform.
+\end{proof}
+
+\begin{theorem}[attracting curve; \IA{} for the inputs, paper for Lemma~\ref{lem:graph}]\label{thm:curve}
+With $\tilde M=80$, conditions (a)--(c) hold on every cell of $[15.26,64]$ with $\Lambda\le0.735$; with $\tilde M=30$ they hold on $[23.62,64]$ with $\Lambda\le0.384$.
+Consequently, for $\beta\in[15.26,64]$ the images of any two orbits in $\cU$ that enter from the top agree after $k$ steps up to $2\Lambda^k+\varepsilon_{\mathrm{tail}}/(1-\Lambda)$ in the normalised coordinate; since one step lowers $\beta$ by at most $0.299$, at $\beta=32$ this is at most $1.6\times10^{-14}$ plus the tail floor $2.2\times10^{-4}$.
+\end{theorem}
+The curve so determined is called $\cC$.
+Representative inputs (normalised coordinate, whole tube per cell) are: at $\beta=8$, $\lambda=0.811$, $\tilde\mu=22.3$, $[\kappa_{\mathrm{lo}},\kappa_{\mathrm{hi}}]=[0.949,1.052]$, $\tilde\delta=6.7\times10^{-3}$; at $\beta=16$, $0.461$, $19.2$, $[0.979,1.021]$, $3.0\times10^{-3}$; at $\beta=32$, $0.282$, $17.5$, $[0.991,1.010]$, $1.4\times10^{-3}$; at $\beta=64$, $0.269$, $16.6$, $[0.996,1.005]$, $6.8\times10^{-4}$.
+The bound $\tilde\mu$ is dominated by the third-order remainder; the point part of $|\partial e'/\partial\beta|$ is about $1.2\times10^{-4}/R$, consistent with the $\beta$-derivative $4\sigma u$ of the $\theta^4$-type defect.
+Other choices $\tilde M=50,60,100,120$ give the lower ends $16.42$, $15.62$, $15.54$, $16.06$.
+Of the $2950$ cells, $374$ were computed on two machines with bitwise identical output.
+
+\paragraph{Uniformity in the number of steps.}
+If $d_k$ is the transverse distance to $\cC$ after $k$ steps, then $d_{k+1}\le\Lambda d_k$ and $d_K\le\Lambda^Kd_0$; if instead the distance is measured to the heat-kernel class, the class is not invariant and $d_{k+1}\le\Lambda d_k+\varepsilon$ with $\varepsilon$ the size of the $\theta^4/3600$ shape, so $d_k\le\Lambda^kd_0+\varepsilon/(1-\Lambda)$, uniformly in $k$ (\code{affine\_contraction}).
+On the coupling side, Proposition~\ref{prop:cstar} gives, to leading order, $\beta_{\mathrm{end}}=\beta_{\mathrm{start}}-K/4-\sum_kc^*/\beta_k+O(\sum_k\beta_k^{-2})$ with $\sum_kc^*/\beta_k\approx4c^*\log(\beta_{\mathrm{start}}/\beta_{\mathrm{end}})$ and, if the coupling read backwards grows by at least $c>0$ per step, $\sum_k\beta_k^{-2}\le\beta_{\mathrm{end}}^{-2}+1/(c\,\beta_{\mathrm{end}})$ (\code{inv\_sq\_sum\_le}); with $c=0.2196$ this is about $4.6/\beta_{\mathrm{end}}$.
+Within $[15.26,64]$ the weight after $K$ steps is thus a point of $\cC$ determined by $\beta_{\mathrm{end}}$ up to a term $\Lambda^K$; the statement stops at the finite upper end.
+Pointwise transverse contraction $\lambda_{\mathrm{tube}}<1$ holds on $[5.88,64]$ (Table~\ref{tab:cells}); this bound is far from the true rate $1/16$ because it uses a weighted sup norm and covariance bounds.
+For general $k$ the leading-order contraction of the $\theta^{2k}$ direction is $16^{1-k}$, so the curve is, at leading order, a graph over $\beta$ whose higher shape coefficients $\sigma_k^*=12\ell_k/(4^{2k}-16)$ decrease geometrically ($\sigma_3^*/\sigma_2^*=3600/963900\approx1/268$); Theorem~\ref{thm:curve} does not use this and works with the full tube.
+Since the upper end $64$ is finite, uniqueness of $\cC$ as $\beta\to\infty$ is \emph{not} established; the inputs of Lemma~\ref{lem:graph} were not computed on $[64,128]$.
+
+\subsection{Enclosing the flow coefficient}
+The tube $\cU$ is too wide to separate $c^*=1/60$ from $1/48$: across $\cU$, $\beta-\beta'-\tfrac14$ varies by about $\pm0.0007$ at $\beta=32$.
+Re-centring the tube at the leading transverse shape of $\HK\cdot e^{\theta^4/3600}$, i.e.\ $e_n=\sigma r_nu^4$ with $r_n=q_n(q_n-3)$ and $\sigma=\mathrm{fl}(1/3600)$, does not help by itself while the heat kernel ($e\equiv0$) remains inside the tube: the flow coefficient is continuous on the tube, so its enclosure must contain the heat-kernel value.
+Excluding the heat kernel requires $RW_n<\sigma r_nu^4$ for some $n$; with $A=0$ this means $R\lesssim2.7\times10^{-4}$.
+We therefore use the tube $\cU_\sigma=\{|e_n-\sigma r_nu^4|\le RW_n(u)\}$ with $R=10^{-4}$, $A=0$ and cell width $0.002$.
+
+\begin{proposition}[enclosure of the flow coefficient; \IA, $50$ cells only]\label{prop:window}
+On each of the $50$ cells of width $0.002$ listed in Table~\ref{tab:cstar} (ten consecutive cells starting at $\beta=16,32,64,96$ and ending at $128$), $T(\cU_\sigma)\subset\cU_\sigma$ and, for every $w\in\cU_\sigma$ in the cell, $(\beta(w)-\beta(Tw)-\tfrac14)\beta(w)\in[0.0151,0.0188]$.
+This interval contains $1/60=0.01667$ and contains neither $1/48=0.02083$ nor the heat-kernel value at $\beta=64$ (Theorem~\ref{thm:huv}(ii)).
+\end{proposition}
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{lcccc}
+\toprule
+cells & passed & ratio (row) & centre value of $(\beta-\beta'-\tfrac14)\beta$ & enclosure over $\cU_\sigma$ \\
+\midrule
+$[16.00,16.02]$ & $10/10$ & $0.288$ ($n=77$) & $[0.017239,0.017240]$ & $[0.01570,0.01878]$ \\
+$[32.00,32.02]$ & $10/10$ & $0.200$ ($n=112$) & $[0.016951,0.016951]$ & $[0.01539,0.01851]$ \\
+$[64.00,64.02]$ & $10/10$ & $0.207$ ($n=2$) & $[0.016808,0.016809]$ & $[0.01524,0.01838]$ \\
+$[96.00,96.02]$ & $10/10$ & $0.360$ ($n=2$) & $[0.016759,0.016763]$ & $[0.01519,0.01833]$ \\
+$[127.98,128.00]$ & $10/10$ & $0.781$ ($n=2$) & $[0.016732,0.016742]$ & $[0.01516,0.01831]$ \\
+\bottomrule
+\end{tabular}
+\caption{The re-centred tube $\cU_\sigma$ ($R=10^{-4}$, $A=0$, width $0.002$). Certificate: \code{cstar\_A0.csv}. The centre values agree with the double-precision reading $1/60+0.0078/\beta$.}\label{tab:cstar}
+\end{table}
+
+\begin{remark}
+Proposition~\ref{prop:window} is a statement about $\cU_\sigma$, not about $\cC$.
+It becomes a statement about the coefficient on the curve only under the additional hypothesis $\cC\subset\cU_\sigma$, which is not shown: that would need invariance of $\cU_\sigma$ on a connected range from the top and the inputs of Lemma~\ref{lem:graph} for $\cU_\sigma$.
+With cell width $0.02$ the same tube fails (the remainder exceeds the requirement $62$-fold at $\beta=64$), so covering $[64,128]$ would need $32000$ cells.
+\end{remark}
+
+\section{Theorem MK-full}\label{sec:mkfull}
+
+\paragraph{The earlier record and the coordinate match.}
+The earlier record W-half$(T)$ [KSR, 11-06] works in the coordinate $t:=a_1$ (its coefficients $\langle f\chi_n\rangle/(d_n\langle f\rangle)$ are our $a_n$).
+Hence
+\[
+t=a_1=\exp\bigl(-3/(2\beta)\bigr).
+\]
+Its tube $\cD$ consists of the weights with $c_0=1$, $0\le c_n\le\gamma_n(t)+0.005\,t^n$ for $2\le n\le20$, and a tail $\sum_{n>20}(n+1)c_n\chi_n(2)\le10^{-15}$, where $\gamma$ is a piecewise-linear reference curve built from Wilson-action orbits.
+W-half$(T)$ certifies that from every point of $\cD$ with $t\in[0.0144,0.21)$ (equivalently $\beta\in[0.354,0.961)$; $556$ cells) the cell index decreases strictly at each step until the orbit enters the region $\cK$ ($80$ cells, $t\le0.01658$) in which its curvature-type lower bound $\kappa$ is positive.
+\emph{We use $\cK$ only as a region. We do not state what positivity of that bound implies for the hierarchical measure, and we do not use the words confinement or mass gap for it.}
+
+The tube $\cU$ of Theorem~\ref{thm:huv} covers $t\in[0.5435,0.977]$, W-half$(T)$ covers $t<0.21$; the gap is $\beta\in[0.961,2.46)$.
+In the transverse coordinate, the upper boundary of $\cD$ is $e_n\le E_n(t):=\log(\gamma_n(t)+0.005t^n)-\tfrac{q_n}3\log t$, and in row $n=2$ it lies only $0.014$--$0.03$ above $\gamma$ itself, so no tube centred at the heat kernel is contained in $\cD$.
+We join the two by inclusion of \emph{images}, not of tubes.
+For orientation: the region $\cK$ corresponds to $\beta\le0.366$; the range of W-half$(T)$ to $\beta\in[0.354,0.961)$; the tube $\hat\cU$ below covers $t\in[0.2062,0.977]$ and therefore overlaps the range of W-half$(T)$ in $t\in[0.2062,0.21)$, but the overlap is not used as an inclusion of tubes.
+
+\paragraph{The extended tube $\hat\cU$.}
+For $\beta>2.46$, $\hat\cU$ is the tube $\cU$.
+For $\beta\le2.46$, on pieces $(2.46-0.05(m+1),\,2.46-0.05m]$ with $x=0.05(m+1)$, put
+\begin{align*}
+R_m&=\max\bigl(4\times10^{-4},\,10^{-3}-6\times10^{-4}\max(0,x-0.3)\bigr),\\
+A_m&=\max\bigl(0,\,10-10\max(0,x-0.3)\bigr),
+\end{align*}
+with tail parameters on blocks of width $0.1$ ($N=24$ at $\beta=2.46$ down to $N=13$ at $0.96$); both are non-increasing in $m$, and at a boundary point the smaller tube applies.
+The cell test is that of \S\ref{sec:tube} with cell width $0.002$, except that the requirement on the image is replaced: the part of the image with $\beta'\ge0.95$ must lie in $\hat\cU$ (checked against every piece and block it meets), and the part with $\beta'<0.95$ must lie in $\cD$.
+For the latter, the range of $a'_1$ is split into $64$ subintervals; on each, rows $2\le n\le\min(N,20)$ are checked as $\exp(\tfrac{q_n}3\log v+\mathrm{bound}_n)\le\inf_{[u,v]}(\gamma_n+0.005t^n)$ with relative margin $10^{-9}$, rows up to $20$ beyond $N$ through the image tail norm, and the tail beyond $20$ through $\chi_n(2)\le\tfrac43 2^n$ and $\rho\ge2$.
+Non-negativity $a'_n\ge0$ is automatic since decimation takes fourth powers.
+
+\begin{lemma}[soundness of the exit test; paper]\label{lem:exit}
+Let $[u_0,v_0]$ enclose $a'_1$ over the image of a cell, with $v_0<0.21$, and let $[u_0,v_0]=\bigcup_m[u_m,v_m]$.
+Suppose that for every $m$ and every $2\le n\le\min(N,20)$, $\exp(\tfrac{q_n}3\log v_m+b_n)\le\inf_{t\in[u_m,v_m]}(\gamma_n(t)+0.005\,t^n)$, where $|e'_n|\le b_n$ on the image; that the rows $N<n\le20$ and the tail beyond $20$ satisfy the bounds stated above.
+Then the image of the cell lies in $\cD$.
+\end{lemma}
+\begin{proof}
+For a point of the image with $a'_1=t\in[u_m,v_m]$, $a'_n=\exp(\tfrac{q_n}3\log t+e'_n)\le\exp(\tfrac{q_n}3\log v_m+b_n)$ because $\log$ is increasing and $q_n>0$; the right-hand side is at most $\gamma_n(t)+0.005t^n$ by hypothesis.
+Since $c'_n=(n+1)a'_n$ and $\cD$ is stated for $c_n$ with the same normalisation, the row condition holds; the lower bound $c'_n\ge0$ holds since $a'_n$ is a fourth power.
+The remaining rows and the tail are bounded through the image norm.
+The infimum of $\gamma_n$ over $[u_m,v_m]$ is attained at an end point or at a break point of the piecewise-linear $\gamma_n$, and is evaluated with a relative margin $10^{-9}$.
+\end{proof}
+
+\paragraph{Results of the joining computation (\IA).}
+All $755$ cells of $\beta\in[0.95,2.46]$ and the $27$ seam cells in $[2.46,3.0]$ pass ($782$ cells, certificate \code{fprof\_F1.csv}); the largest image ratio is $0.934$ and the largest ratio against $\cD$ is $0.9888$.
+The $139$ exit cells ($\beta\in[0.95,1.228]$) have images with $\beta'\in[0.665,0.95)$ and $a'_1\in[0.105,0.206)$, all inside the range of W-half$(T)$.
+Other profiles of $(R_m,A_m)$ also reach $0.95$ (largest image ratios $0.878$, $0.9999$, $0.995$ for three variants, and $0.929$ with cell width $0.001$ on $1537$ cells), whereas keeping $R=10^{-3}$, $A=10$ and integer tail blocks leaves the lower end at $2.46$ or, with partial narrowing, between $2.17$ and $2.50$, limited by the last row $n=N$.
+Two details matter.
+First, the term $Aq_nu^3$, which helps at weak coupling, enlarges the remainder at strong coupling: for one cell at $\beta=1.0$ and $R=10^{-3}$ the ratio is $17.4$ with $A=10$ and $0.586$ with $A=0$, $R=6\times10^{-4}$.
+Second, row $n=2$ of $\cD$ has a margin of only $1$--$7\%$ over the image of the heat kernel itself (ratio $0.93$--$0.99$ for $\beta\in[0.65,1.3]$ with $R\to10^{-5}$), which is why $R$ is lowered to $4\times10^{-4}$; and without the subdivision of the $a'_1$-range the correlation between the upper bound of $a'_n$ and the lower bound of $\gamma_n$ is lost and the exit cells fail with ratio $1.03$--$1.06$.
+In double precision, Wilson-action orbits started at $\beta=3,6,12$ stay inside a tube of radius $R\approx2.6\times10^{-4}$ (with $A=10$) down to $\beta\approx0.4$ after a transient of two or three steps, so the failure of the unmodified tube below $2.46$ reflects the bounds, not the orbits.
+
+On $\beta\in[0.95,64]$ the one-step drop satisfies $\beta(w)-\beta(Tw)\in[0.2196,0.2990]$; on $[64,128]$ it is at least $0.2296$.
+
+\begin{theorem}[MK-full; \IA{} inputs, Lean assembly]\label{thm:mkfull}
+Let $T$ be the MK map on SU(2) plaquette weights, $\hat\cU$ the extended tube, $\cD$ and $\cK$ the tube and region of the earlier record W-half$(T)$.
+Assume:
+\begin{enumerate}[label=(\alph*),nosep]
+\item the interval arithmetic of \S\ref{sec:tube} is sound (self-written library; IEEE~754 correct rounding and Higham's bound assumed; the derivation of the remainder and cumulant bounds is on paper and not formalised);
+\item the certificate of W-half$(T)$ (the earlier record [KSR, 11-06], not re-run here) is correct;
+\item the reference curve $\gamma$ of $\cD$ is the one reconstructed by the method described in that record (it agrees with the recorded value $q_\gamma(0.3)=c_2/t^2=0.451$ at the one point compared);
+\item the bound $557$ for the second stage counts cells of W-half$(T)$ and is crude;
+\item at the boundary between two pieces of $\hat\cU$ the intersection of the two tubes is used.
+\end{enumerate}
+Then every $w\in\hat\cU$ with $0.95\le\beta(w)\le128$ satisfies $T^jw\in\cD$ for some
+\[
+j\le\Bigl\lceil\frac{\beta(w)-0.95}{0.2196}\Bigr\rceil+1\le580,
+\]
+and then $T^{j+i}w\in\cK$ for some $i\le557$; in total at most $1137$ steps.
+For $\beta(w)\le64$ the bounds are $289$ and $846$.
+\end{theorem}
+
+\begin{proof}
+Above $0.95$ each step either stays in $\hat\cU$ with a drop of at least $0.2196$ or lands in $\cD$ (Theorem~\ref{thm:huv}(i) on $[2.46,128]$, the joining computation below $2.46$), so after at most $\lceil(\beta(w)-0.95)/0.2196\rceil$ steps the orbit has left $\hat\cU$ through its lower end, and the exit cells map into $\cD$.
+Inside $\cD$ the cell index decreases strictly at each step until $\cK$ is reached (assumption (b)).
+The composition, the ceiling and the numerical values $288$, $579$, $1137$ are checked in Lean (\S\ref{sec:lean}).
+\end{proof}
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{rcccc}
+\toprule
+$\beta(w)\le$ & steps to $\cD$ (upper) & steps in $\hat\cU$ (lower) & then to $\cK$ (upper) & total (upper) \\
+\midrule
+$16$ & $70$ & $51$ & $557$ & $627$ \\
+$32$ & $143$ & $104$ & $557$ & $700$ \\
+$64$ & $289$ & $211$ & $557$ & $846$ \\
+$128$ & $580$ & --- & $557$ & $1137$ \\
+\bottomrule
+\end{tabular}
+\caption{Step counts of Theorem~\ref{thm:mkfull}. The upper bounds use the drop $\ge0.2196$; the lower bounds use the drop $\le0.2990$, certified on $[0.95,64]$ only. The double-precision estimate of the earlier record [KSR, 11-06] $4\beta-1=255$ for the heat kernel at $\beta=64$ lies between the bounds.}\label{tab:steps}
+\end{table}
+
+\begin{remark}[where each condition enters]
+Condition (a) enters every computer-assisted step: Theorem~\ref{thm:huv}(i),(iii) on $[2.46,128]$, the joining computation on $[0.95,3.0]$, and the exit test against $\cD$.
+Conditions (b) and (d) enter only the second stage, inside $\cD$; (c) enters the exit test, through the upper boundary $\gamma_n+0.005t^n$ of $\cD$.
+Condition (e) is a convention that makes $\hat\cU$ a well-defined set; with the other convention the boundary cells would have to be tested against both pieces, which the computation does in any case for images that meet several pieces.
+The Lean statements take the one-step alternatives (stay with a drop, or exit into $D$; decrease of the cell index, or entry into $K$) and the bounds $0.95\le\beta\le128$ and $r\le556$ as hypotheses; they do not know what $U$, $D$, $K$ are.
+\end{remark}
+
+\section{\texorpdfstring{Why $\beta\to\infty$ is open}{Why beta to infinity is open}}\label{sec:open}
+
+The tube is \emph{easier} at large $\beta$ (Table~\ref{tab:cells}: the ratio decreases from $0.889$ to $0.492$, $\lambda_{\mathrm{tube}}$ from above $1$ to $0.26$), so it is natural to try to cover $[128,\infty)$ by one asymptotic cell.
+With the present cell test this fails, for three reasons, of which the first is structural.
+
+\paragraph{Scaling variables.}
+Put $\xi_n=q_nu$. The heat kernel is $a_n=e^{-\xi_n/2}$ and the tube weight is $W_n=u^2(\xi_n^2+A\xi_n)$.
+The tail parameters chosen by our rule scale as $N\approx\nu\sqrt\beta$, $\lambda\approx\ell_0/\sqrt\beta$ ($N/\sqrt\beta=20.5$--$22.0$ and $\lambda\sqrt\beta=2.70$--$2.93$ for $\beta=128,\dots,2048$).
+Normalising each contribution by $RW_i$, the four columns of the cell test behave as follows.
+\begin{itemize}[nosep]
+\item Centre defect: tends to $(\sigma_1/R)\,\xi_N/(\xi_N+A)\le\sigma_1/R=0.2604$, where $\sigma_1=1/3840$ is the one-step $\theta^4$ coefficient from the heat kernel [paper, leading order].
+\item Linear part: approximately constant ($0.2566\to0.2553$ measured).
+\item Second order in $e$: exactly proportional to $u$ (measured at five points).
+\item Third-order remainder: of order $u^0$ and proportional to the cube of the cell width $\Delta\beta$.
+\end{itemize}
+Since the image satisfies $u'>u_c$, each row ratio is at most the sum of the four column maxima.
+
+\paragraph{The cubic-remainder wall (paper).}
+In the low rows the remainder is dominated by the $\delta u$-direction: $D_j\approx q_j|\delta u|/2\le\xi_j\Delta\beta\,u/4$, so $\mathbb{E}_i[(\sum_kD_{j_k})^3]\approx(\Delta\beta\,u/4)^3\,\mathbb{E}_i[(\sum\xi_{j_k})^3]$, while the requirement in row $2$ is $RAq_2u^3\propto u^3$.
+The ratio is $\Delta\beta^3/(RA)$ times a constant independent of $\beta$.
+Hence a test that expands around the centre to second order in $\delta u$ and bounds the third order in absolute terms needs cells of bounded \emph{absolute} width in $\beta$: covering $u\in[0,1/128]$ by one cell makes $\delta u$ comparable to $u$, and the remainder exceeds the requirement by orders of magnitude.
+Measured: at $\beta=128$ and $256$ the remainder column is $7.4$--$7.9$ times larger for width $0.08$ than for $0.01$, and cells pass only up to width about $0.04$.
+
+\paragraph{Measured columns.}
+For single cells of width $0.02$ ending at $\beta=128,256,512,1024$ ($N=232,335,483,693$) the four columns are: centre defect $0.2538$, $0.2543$, $0.2551$, $0.3691$; linear $0.2566$, $0.2559$, $0.2556$, $0.2554$; second order $0.0149$, $0.0075$, $0.0037$, $0.0019$; remainder $0.0834$, $0.0817$, $0.0856$, $0.1261$ (\IA).
+The jump of the defect and the remainder at $\beta=1024$ comes from rows $n=2$ (rounding) and from the tail floor; dividing $t_0$ by $1000$ lowers the remainder at $1024$ to $0.0793$ but leaves the rounding term unchanged.
+
+\paragraph{The rounding floor.}
+The absolute error of $\ell'=4(\log P_i-\log P_0)$ is of order $4\gamma_{2N+6}$, and the smallest requirement is $RAq_2u^3=0.08\,u^3$; with $N\propto\sqrt\beta$ the ratio grows like $u^{-7/2}$.
+Single cells $[\beta-0.02,\beta]$ of the tube $\cU$ pass at $\beta=256$, $512$, $1024$ (ratio $0.4916$, $0.4942$, $0.5313$; \IA) and fail at $\beta=2048$ (ratio $4.69$, limited by rounding in row $2$).
+A third, removable, term is the floor of the tail parameters, of order $u^{-3}$.
+
+\paragraph{Directions.}
+The obstruction is in the cell test, not in the bounded quantities: the four columns stay below $0.2604+0.2570+2u+0.0835\le0.62$ for $u\le1/128$ \emph{at the measured points}, which is not a proof over $[128,\infty)$.
+What would be needed:
+\begin{enumerate}[nosep]
+\item bounding the third-order term \emph{after} the projection $P$, so that the $\delta u$ direction, which $P$ removes at leading order (Lemma~\ref{lem:shape}: the $u^3$ terms cancel), does not enter the remainder; alternatively, adding the third derivative $g_3$ in the $\delta u$ direction to the point quantities, so that only the $e$-part remains in $R_3$;
+\item computing the projected quantities $e'_i$ directly, instead of as differences of logarithms of size $q_iu$, so that the rounding error scales with the requirement;
+\item taking the tail size $t_0$ proportional to $u^3$, which removes the tail floor.
+\end{enumerate}
+With (1)--(3) the cell test would need to verify four column bounds as functions of $u$ on $[0,1/128]$, which is the content of the bookkeeping statement \code{row\_lt\_req\_of\_columns}: if each row bound is a sum of four columns, each column is bounded by a constant (or by a multiple of $u$), and the requirement is at least the normalising weight, then the row passes; \code{uniform\_columns\_128} instantiates this with the measured constants as hypotheses.
+The tail itself can be controlled in closed form.
+
+\begin{lemma}[Gaussian tail of heat-kernel coefficients; paper]\label{lem:tail}
+Let $p\ge0$, $\lambda>0$, $u>0$, $M\ge2$, and $r:=(1+1/M)^pe^{\lambda-(2M+1)u/2}<1$. Then
+\[
+\sum_{n\ge M-1}(n+1)^pe^{\lambda n}e^{-q_nu/2}\le e^{u/2-\lambda}\,\frac{M^pe^{\lambda M-M^2u/2}}{1-r}.
+\]
+\end{lemma}
+\begin{proof}
+Since $q_n=(n+1)^2-1$, the term with $m=n+1$ equals $e^{u/2-\lambda}m^pe^{\lambda m-m^2u/2}$.
+The ratio of consecutive terms is $((m+1)/m)^pe^{\lambda-(2m+1)u/2}$, decreasing in $m$, hence at most $r$ for $m\ge M$; sum the geometric series.
+\end{proof}
+With $N=\nu\sqrt\beta$, $\lambda=\ell_0/\sqrt\beta$ and $M=N+2$, the exponential factor is independent of $\beta$ while $1/(1-r)$ grows like $\sqrt\beta$ (if $2p\le\nu(\nu-\ell_0)$ and $(\nu-\ell_0)\sqrt u\le1$ then $1/(1-r)\le4/((\nu-\ell_0)\sqrt u)$); so $\nu$ growing like $\sqrt{\log\beta}$ suffices for the tail, in line with the slow growth of $N/\sqrt\beta$ chosen by our rule.
+The Lean statement \code{mk\_full\_chain\_general} already takes the upper end $\beta_0$ as a parameter (step bound $\lceil(\beta_0-0.95)/0.2196\rceil+558$); its hypotheses are verified only for $\beta_0\le128$.
+
+\section{What is machine-checked}\label{sec:lean}
+
+{\sloppy
+\paragraph{What is in Lean.}
+Five Lean~4 modules with Mathlib [M] check the \emph{finite algebra} of the paper; the MK map, the measure, the saddle-point approximations and all interval computations are outside Lean.
+In each statement the computer-assisted inputs enter as hypotheses.
+\begin{itemize}[nosep]
+\item \code{LatticeGaugeHierarchicalShapeFlow} ($10$ declarations): \code{quarticStep\_fixed}, \code{quarticStep\_iterate} (the map $\sigma\mapsto\sigma/16+1/3840$, its fixed point $1/3600$ and $k$-step contraction; no hypotheses), \code{shapeStep\_fixed}, \code{shapeStep\_contract}, \code{shapeStep\_ratio\_le} (hypothesis $k\ge2$: fixed point $12\ell/(4^{2k}-16)$, ratio $16/4^{2k}\le1/16$), \code{shapeStep\_quartic}, \code{sextic\_fixed} ($1/963900$), \code{flow\_coefficient} ($1/48-15/3600=1/60$), \code{affine\_contraction} (hypotheses $0\le\lambda<1$, $0\le\varepsilon$, $d_{k+1}\le\lambda d_k+\varepsilon$: $d_k\le\lambda^kd_0+\varepsilon/(1-\lambda)$), \code{tube\_iterate}.
+\item \code{LatticeGaugeHierarchicalTubeChain} ($8$): \code{tube\_exit}, \code{cell\_descent}, \code{chain\_compose}, \code{mk\_full\_chain}, \code{steps\_numeric} ($\lceil(64-0.95)/0.2196\rceil=288$), \code{mk\_full\_chain\_64} (hypotheses: $0.95\le\beta\le64$ on $U$; each step stays in $U$ with drop $\ge0.2196$ or lands in $D$; in $D$ the cell index $r\le556$ decreases or the orbit lands in $K$; conclusion: $K$ within $846$ steps).
+\item \code{LatticeGaugeHierarchicalUpperTube} ($8$): \code{steps\_numeric\_128} ($579$), \code{mk\_full\_chain\_128} (the same hypotheses with $\beta\le128$; $K$ within $1137$ steps), \code{union\_tube\_step}.
+\item \code{LatticeGaugeHierarchicalChainGeneral} ($12$): \code{mk\_full\_chain\_general} (upper end $\beta_0$ as a parameter; bound $\lceil(\beta_0-0.95)/0.2196\rceil+558$), \code{steps\_general\_at\_128}, \code{steps\_general\_mono}, \code{row\_lt\_req\_of\_columns}, \code{uniform\_columns\_128} (column constants as hypotheses).
+\item \code{LatticeGaugeClassResidualTelescoping} ($6$, shared with a companion paper): \code{telescoping\_residual}, \code{geometric\_part\_le}, \code{inv\_sq\_sum\_le}, \code{uniform\_deviation} (hypotheses $a,c>0$, $C,D\ge0$, $0\le q<1$ and a one-step residual at most $C/(a+ck)^2+Dq^k$; conclusion: the total deviation after $K$ steps is at most $C(1/a^2+1/(ca))+D/(1-q)$, uniformly in $K$).
+\end{itemize}
+
+\par}
+
+\paragraph{Trust base.}
+Each module ends with one \code{\#print axioms} line per listed declaration ($44$ in all); each reads a subset of \code{[propext, Classical.choice, Quot.sound]} (one of them, \code{chain\_compose}, reads \code{[propext, Quot.sound]}), and the outputs are included with the Lean files as \code{axioms-<module>.txt}.
+\code{sorry}, \code{axiom} declarations and \code{native\_decide} do not occur.
+An independent re-check of these modules was completed on 2026-10-15 (every file checked with \code{lake env lean} in the same environment on a separate session, rc=0, standard axioms only).
+
+{\sloppy\paragraph{Reproduction.}
+The archive of the modules, \url{\bundleurl} (with a \code{.sha256} file at the same address with that suffix), and the complete \code{\#print axioms} output, \url{\axiomsurl}, were placed on 2026-10-15, after the independent re-check; the ledger and build instructions are at \url{https://computoergosum.com/en/principia/lean/index.html}.
+To verify: unpack, run \code{lake exe cache get}, then \code{LEAN\_NUM\_THREADS=1 lake build} with the module names above; the \code{\#print axioms} lines at the end of each module should agree with the report above.\par}
+
+\paragraph{Certificates.}
+The interval certificates are distributed with the paper as CSV files, one row per cell, with a \code{SHA256SUMS} file:
+\code{main\_lo.csv} and \code{main\_hi.csv} ($3100$ cells, $\beta\in[2,64]$; Theorem~\ref{thm:huv}, Table~\ref{tab:cells}),
+\code{main\_128.csv} ($3200$ cells, $[64,128]$),
+\code{fprof\_F1.csv} ($782$ cells of $\hat\cU$, $[0.95,3.0]$; Theorem~\ref{thm:mkfull}),
+\code{cstar\_A0.csv} ($50$ cells; Proposition~\ref{prop:window}),
+and the tail parameters \code{params.csv}, \code{params\_ext.csv}, \code{params\_128.csv}.
+The interval inputs of Theorem~\ref{thm:curve} ($\tilde\mu$, $\kappa$, $\tilde\delta$ per cell) and the single cells of \S\ref{sec:open} are not among these files; their CSV files are pending.
+In \code{main\_lo.csv}, \code{main\_hi.csv} and \code{main\_128.csv} each row contains the integer block, the cell endpoints in $\beta$, the truncation $N$, the pass flags of the individual requirements, the ratio and the row where it is attained, the four column maxima of \S\ref{sec:open} (centre defect, linear, second order, remainder), $\lambda_{\mathrm{tube}}$, the tail ratio, the enclosure of the image coupling, and the enclosures of the coupling flow at the centre and over the tube.
+For example, the last cell $[127.98,128.00]$ has $N=232$, ratio $0.49196$ in row $98$, columns $0.2538$, $0.2566$, $0.0149$, $0.0834$ and $\lambda_{\mathrm{tube}}=0.2616$.
+The program that produced them is not part of the Lean development; its rounding model is described in \S\ref{sec:tube}.
+
+\section{Correspondence table}\label{sec:corr}
+Table~\ref{tab:corr} lists, for each statement with a Lean counterpart, the declarations and their place in the distributed files.
+Abbreviations of the files:
+\begin{itemize}[nosep]
+\item SF: \code{LatticeGaugeHierarchicalShapeFlow.lean};
+\item TC: \code{LatticeGaugeHierarchicalTubeChain.lean};
+\item UT: \code{LatticeGaugeHierarchicalUpperTube.lean};
+\item CG: \code{LatticeGaugeHierarchicalChainGeneral.lean};
+\item RT: \code{LatticeGaugeClassResidualTelescoping.lean}.
+\end{itemize}
+Theorem~\ref{thm:huv} has no Lean statement; it rests on the certificates \code{main\_lo.csv}, \code{main\_hi.csv}, \code{main\_128.csv}.
+Proposition~\ref{prop:window} rests on \code{cstar\_A0.csv}.
+Lemmas~\ref{lem:graph}, \ref{lem:exit} and~\ref{lem:tail} are on paper only.
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{lll}
+\toprule
+Statement & Lean declaration & File:line \\
+\midrule
+Prop.~\ref{prop:shape} (algebra only) & \code{quarticStep\_fixed} & SF:20 \\
+ & \code{quarticStep\_iterate} & SF:24 \\
+ & \code{shapeStep\_fixed} & SF:45 \\
+ & \code{shapeStep\_contract} & SF:55 \\
+ & \code{shapeStep\_ratio\_le} & SF:65 \\
+ & \code{shapeStep\_quartic} & SF:71 \\
+ & \code{sextic\_fixed} & SF:75 \\
+Prop.~\ref{prop:cstar} (algebra only) & \code{flow\_coefficient} & SF:78 \\
+Thm.~\ref{thm:curve} (iteration only) & \code{affine\_contraction} & SF:82 \\
+ & \code{tube\_iterate} & SF:99 \\
+Thm.~\ref{thm:mkfull} (assembly; & \code{tube\_exit} & TC:35 \\
+\quad inputs \code{fprof\_F1.csv} and the & \code{steps\_numeric} & TC:107 \\
+\quad certificates above as & \code{mk\_full\_chain\_64} & TC:113 \\
+\quad hypotheses) & \code{mk\_full\_chain\_128} & UT:95 \\
+ & \code{mk\_full\_chain\_general} & CG:87 \\
+\S\ref{sec:open} (bookkeeping only) & \code{row\_lt\_req\_of\_columns} & CG:127 \\
+ & \code{uniform\_columns\_128} & CG:152 \\
+Uniform deviation (shared module) & \code{uniform\_deviation} & RT:83 \\
+\bottomrule
+\end{tabular}
+\caption{Statements of this paper and the Lean declarations that check their finite algebra. Hypotheses supplied by interval computations are not checked in Lean.}\label{tab:corr}
+\end{table}
+
+\section{What is not claimed}\label{sec:notclaimed}
+\begin{itemize}
+\item \textbf{No implication for four dimensions.} The map $T$ is exact only on a hierarchical lattice, where one plaquette weight returns to one plaquette weight after a step: multi-link couplings, gauge re-fixing and large-field remainders are absent by construction. Nothing here says that the same tube argument works for one step of the hypercubic lattice. A comparison of the MK partition function with the hypercubic one exists [To] (an upper bound by translation invariance and convexity, a lower bound by reflection positivity), but its use for confinement requires a common interpolation parameter for twisted and untwisted boundary conditions that is not established [IS1, IS2]; the comparison concerns numbers (partition functions), not effective actions, so it does not transport the chain of this paper to four dimensions.
+\item \textbf{No transfer of the tube.} In a one-step comparison of the type of [To], a representative weight $\alpha c^{\mathrm U}$ raises the transverse coordinate $e_2$ by at least $(5/3)(1-\alpha)$; staying inside the tubes of this paper would force $1-\alpha$ to be very small (of order $10^{-2}$ in $\cD$ and far smaller in $\hat\cU$ at $\beta=64$), in tension with the requirement $\alpha\le1-\delta$ of that approach. We record this only as a reason why no transfer is attempted.
+\item \textbf{No test of non-commutativity.} The hierarchical model flows to strong coupling and confines also for U(1) [It85]; the same chain would be expected there.
+\item \textbf{No statement about a given initial action.} Theorem~\ref{thm:mkfull} starts from points of $\hat\cU$. Whether the Wilson-action weight at a given $\beta$ lies in $\hat\cU$, or enters it after finitely many steps, is not certified; the double-precision orbits of \S\ref{sec:mkfull} suggest it, after a transient of two or three steps, but this is an observation.
+\item \textbf{No meaning attached to $\cK$.} We do not state what positivity of the lower bound defining $\cK$ implies for the hierarchical measure.
+\item \textbf{Self-written interval arithmetic.} All interval statements are \IA. The rounding model is assumed, the remainder and cumulant bounds are derived on paper only, and no established interval package was used for cross-checking.
+\item \textbf{W-half$(T)$ is not re-run.} It is the earlier record [KSR, 11-06]; the reference curve $\gamma$ of its tube was reconstructed by us from the description in that record and compared with it at one point.
+\item \textbf{$\beta\to\infty$.} Invariance is certified on $[2.46,128]$, the attracting curve on $[15.26,64]$, the enclosure of the flow coefficient on $50$ cells; the shape coefficients and $c^*=1/60$ are leading-order statements without error constants.
+\item \textbf{No external review.} The computations, the Lean development and this text were produced within the authors' group (\S\ref{sec:ai}).
+\end{itemize}
+
+\section{Disclosure of AI use}\label{sec:ai}
+
+This note was produced with the assistance of AI agents. The observation, the informal proofs, the Lean~4 development including the formalised statements, the literature search, the reports on which this note is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code, across many separate sessions, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for rebuilding the Lean development from the distributed archive on a separate machine, for checking the claims of this note against the reports, and for preparing the distributed version; the independent rebuild was completed on 2026-10-15 (every file checked with \code{lake env lean} in the same environment on a separate session, rc=0, standard axioms only). The human author set the task, fixed the working rules and load limits, reviewed the record, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. In particular the analytic steps listed in \S\ref{sec:lean} are checked on paper only. This edition and the Lean development it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-hierarchical-chain}, the development under \texttt{lean/\allowbreak{}ym-hierarchical-chain}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section and in the naming of the agent that carried out the independent re-check.
+
+\begin{thebibliography}{99}
+\bibitem[Hi]{Hi} N.~J.~Higham, \emph{Accuracy and Stability of Numerical Algorithms}, 2nd ed., SIAM, 2002 (not consulted directly).
+\bibitem[IS1]{IS1} K.~R.~Ito and E.~Seiler, arXiv:0711.4930; cited for Eq.~(3.5).
+\bibitem[IS2]{IS2} K.~R.~Ito and E.~Seiler, arXiv:0803.3019; cited for \S3.3.
+\bibitem[It84]{It84} K.~R.~Ito, Commun. Math. Phys. 95 (1984), 247; cited for the hierarchical lattice models in which the Migdal--Kadanoff recursion is exact (Eqs.~(1)--(3)).
+\bibitem[It85]{It85} K.~R.~Ito, \emph{Permanent quark confinement in four-dimensional hierarchical lattice gauge theories of Migdal--Kadanoff type}, Phys. Rev. Lett. 55 (1985), 558--561 (abstract only consulted).
+\bibitem[JW]{JW} A.~Jaffe and E.~Witten, \emph{Quantum Yang--Mills theory}, official problem description, Clay Mathematics Institute, \url{https://www.claymath.org/millennium/yang-mills-the-maths-gap/}.
+\bibitem[Ka]{Ka} L.~P.~Kadanoff, Ann. Phys. 100 (1976), 359 (not consulted directly).
+\bibitem[KSR]{KSR} Kiichi, Shiori and Rin, \emph{Yang--Mills and the mass gap} (online textbook, in Japanese), Parts~11 and~15, \url{https://computoergosum.com/principia/yang-mills/index.html} (2026).
+\bibitem[M]{M} Mathlib, \url{https://github.com/leanprover-community/mathlib4}.
+\bibitem[Mi]{Mi} A.~A.~Migdal, \emph{Recursion equations in gauge field theories}, Zh. Eksp. Teor. Fiz. 69 (1975), 810--822; Sov. Phys. JETP 42 (1975), 413--418; and Zh. Eksp. Teor. Fiz. 69 (1975), 1457 [Sov. Phys. JETP 42 (1975), 743] (not consulted directly).
+\bibitem[Mo]{Mo} R.~E.~Moore, \emph{Interval Analysis}, Prentice-Hall, 1966 (not consulted directly).
+\bibitem[To]{To} E.~T.~Tomboulis, \emph{Confinement for all values of the coupling in four-dimensional SU(2) gauge theory}, arXiv:0707.2179.
+\bibitem[Tu]{Tu} W.~Tucker, \emph{Validated Numerics: A Short Introduction to Rigorous Computations}, Princeton University Press, 2011 (not consulted directly).
+\end{thebibliography}
+
+\end{document}

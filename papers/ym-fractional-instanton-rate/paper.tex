@@ -1,0 +1,325 @@
+%% pdfTeX / latexmk -pdf (see README.md)
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\renewcommand{\thetheorem}{\Alph{theorem}}
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}[lemma]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[lemma]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[lemma]{Remark}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\bundleurl}{https://computoergosum.com/principia/lean/principia-ym-fractional-instanton-rate-2026-10-15.tar.gz}
+\newcommand{\axiomsurl}{https://computoergosum.com/principia/lean/axioms-ym-fractional-instanton-rate-2026-10-15.txt}
+
+\title{An area-law bound for SU(2) lattice gauge theory on a twisted small torus whose rate is the action of a flux-carrying column}
+\author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
+\date{2026-10-15}
+
+\begin{document}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
+
+\begin{abstract}
+We consider four-dimensional SU(2) Wilson lattice gauge theory on $T^2_N\times T^2_M$ with an 't~Hooft twist $n_{12}=1$ on the small torus $T^2_N$, and the bias $\theta(N,M,\beta)=(Z(0)-Z(1))/(Z(0)+Z(1))$ between the two sectors of the flux $n_{34}$ through the large plane.
+For fixed $N$ an area law $-\ln\theta\ge\frac12 e^{-2\beta N^2}M^2$ follows from a thin $\mathbb{Z}_2$ vortex sheet.
+We show, for every $N\ge2$, block size $\ell\ge2$, $\beta\ge1$ and $M\in2\ell\mathbb{N}$, that $\theta\le\exp(-c\,\beta^{-a}e^{-\beta(S_*(N,\ell)+\varepsilon(\beta))}M^2)$ with $\varepsilon(\beta)=O(\sqrt{\ln\beta/\beta})$, where $S_*(N,\ell)$ is the minimal Wilson action of the $n_{34}$-twisted column $T^2_N\times[0,\ell]^2$ with its frame frozen to the twist-eater vacuum; $c$, $a$ and the constant in $\varepsilon$ depend on $N$ and $\ell$, and one constant (a rigidity constant of the frame) is shown to exist but is not explicit.
+The proof uses an exact column representation of $\theta$, the chessboard estimate (quoted from the literature) applied only to the indicator of frames of large action, and a quadratic rigidity bound for frames near the two flat orbits that rests on the vanishing of a twisted adjoint cohomology group.
+At fixed $M$ we also show the reverse bound, so that the exponential rate of $-\ln\theta$ in $\beta$ lies in $[S_{\min}(N,M),S_*(N,\ell)]$ for $M\in2\ell\mathbb{N}$.
+Explicit configurations give computed upper bounds $S_*\le0.6762\pi^2,\ 0.9193\pi^2,\ 0.9707\pi^2$ for $N=2,3,4$, against $2N^2=8,18,32$.
+At the semiclassical level $S_*$ is the action of a lattice fractional instanton confined to a column; without an identification $\lim_\ell S_*(N,\ell)=\lim_M S_{\min}(N,M)$, which we do not prove, the fractional-instanton action enters only as an upper bound on the rate.
+Nothing here is uniform in $N$, and nothing bears on the continuum limit or on a mass gap.
+Two finite algebraic steps are checked in Lean~4 with Mathlib; all analytic steps are on paper.
+\end{abstract}
+
+\section{Setting}\label{sec:setting}
+
+\paragraph{Motivation.}
+Compactifying two directions of four-dimensional SU(2) Yang--Mills theory on a small torus with 't~Hooft flux $n_{12}=1$ removes the classical zero modes [tH81].
+At the semiclassical level the cheapest objects carrying flux $n_{34}$ through the remaining plane are fractional instantons of topological charge $\frac12$ and action $4\pi^2/g^2=\pi^2\beta$ ($\beta=4/g^2$), localised in the plane [GAM, TU], and a dilute gas of them gives an area law with string tension proportional to $e^{-\pi^2\beta}$ up to a prefactor [TU].
+This paper asks how much of this picture can be proved on the lattice at fixed $N$, uniformly in the size $M$ of the plane.
+The setting, the uniqueness of the twist-eater vacuum and the positivity of $S_{\min}$ below are also described, in Japanese, in [KSR].
+
+\paragraph{Lattice and sectors.}
+$\Lambda=(\mathbb{Z}/N)^2\times(\mathbb{Z}/M)^2$, SU(2) link variables $U$, normalised Haar measure $dU$, plaquette action $S^z_p(U)=1-\frac12 z_p\tr U_p\in[0,2]$ and weight $e^{-\beta S^z(U)}$ with $S^z=\sum_pS^z_p$.
+The background twist $n_{12}=1$ sets $z_p=-1$ on one $(1,2)$-plaquette in each $(1,2)$-plane; sector $n_{34}=1$ in addition sets $z_p=-1$ on a sheet $\Pi_q$ of the $N^2$ $(3,4)$-plaquettes over a unit square $q$ of the plane.
+With $Z(0),Z(1)$ the two partition functions and $\Delta F=\ln(Z(0)/Z(1))$,
+\[ \theta(N,M,\beta)=\frac{Z(0)-Z(1)}{Z(0)+Z(1)}=\tanh\frac{\Delta F}{2}. \]
+Through the Tomboulis--Yaffe inequality this bias controls Wilson loops in the large plane; we do not use that inequality.
+The twist-eater vacuum $U^0$ has holonomies $i\sigma_1,i\sigma_2$ around the two cycles of $T^2_N$, all links in directions $3,4$ equal to $1$, and $S^z(U^0)=0$ in sector $n_{34}=0$.
+In sector $(n_{12},n_{34})=(1,1)$ no configuration has action $0$ (an element of SU(2) commuting with $i\sigma_1$ and $i\sigma_2$ is $\pm1$), so the minimal action $S_{\min}(N,M)$ of that sector is positive and at most $2N^2$.
+
+\paragraph{What we call the rate.}
+For fixed $N$ and $M$, the rate is the exponential rate in $\beta$ of $-\ln\theta$, i.e.\ the limits of $-\beta^{-1}\ln(-\ln\theta)$ as $\beta\to\infty$.
+A bound $-\ln\theta\ge c\,e^{-\beta S}M^2$ uniform in $M$ is an area law at fixed $N$ with rate at most $S$.
+
+\paragraph{Limits stated in advance.}
+(i) The identification of $S_*$ with a fractional instanton is made at the semiclassical level only; the theorems are about the lattice quantities $S_*$ and $S_{\min}$.
+(ii) No statement is uniform in $N$.
+(iii) The rigidity constant $c_R(N,\ell)$ is shown to exist; its value is not explicit, and so neither is the value of $\beta$ beyond which Theorem~\ref{thm:A} improves the thin-sheet bound.
+(iv) The identification $\lim_\ell S_*(N,\ell)=\lim_MS_{\min}(N,M)$ (property (G2) of \S\ref{sec:notclaimed}) is not proved; wherever the rate is described as the fractional-instanton action, this is an upper bound unless (G2) is assumed, and we say so in the statement.
+(v) The chessboard estimate is quoted, not re-derived.
+
+\paragraph{Blocks, frames, columns.}
+Fix $\ell\ge2$ and $M=K\ell$ with $K$ even.
+The plane is tiled by closed squares $D_t$, $t\in T=(\mathbb{Z}/K)^2$, so $|T|=M^2/\ell^2$.
+A link is a \emph{skeleton link} if its projection to the plane lies on the grid $\{x_3\in\ell\mathbb{Z}\}\cup\{x_4\in\ell\mathbb{Z}\}$.
+The \emph{interior links} of $t$ are the non-skeleton links projecting into $D_t$; there are $n_B=2N^2(\ell-1)(2\ell-1)$ of them.
+The \emph{frame} $\Sigma_t$ is the set of skeleton links projecting into $\partial D_t$; as a cell complex it is $T^2_N\times C_{4\ell}$, and its $2$-cells are the \emph{frame plaquettes}.
+Every plaquette either has only skeleton links, or has an interior link of exactly one block $t$ and all its other links in $\Sigma_t$ (Lemma~\ref{lem:partition}).
+Write $P_t$ for the latter plaquettes, $S^\pm_t(\Sigma,U_{\rm int})=\sum_{p\in P_t}S^{z^\pm}_p$ where $z^-$ carries an extra sheet $\Pi_{q_t}$ over a unit square $q_t\subset D_t$, and
+\[ Z^\pm_t(\Sigma)=\int\prod_{\mathrm{int}(t)}dU\,e^{-\beta S^\pm_t},\qquad \theta_t(\Sigma)=\frac{Z^+_t-Z^-_t}{Z^+_t+Z^-_t},\qquad m^\pm_t(\Sigma)=\min S^\pm_t(\Sigma,\cdot). \]
+$A_t(\Sigma)$ denotes the action of the frame plaquettes of $t$, and $A_{\rm sk}$ the action of the plaquettes all of whose links are skeleton links.
+
+\begin{definition}\label{def:Sstar}
+$S_*(N,\ell):=m^-_t(\Sigma^0)$, where $\Sigma^0$ is the restriction of $U^0$ to the frame: the minimal action of the $n_{34}$-twisted column with its frame frozen to the vacuum.
+\end{definition}
+
+Constants: $c_0=8/(3\pi^3)$, $L_\partial=N^2(12\ell-8)$, $L(\beta)=4N^2\ell^2(12\ln\beta+34)+8\ln2$.
+
+\section{Theorem A: the rate at fixed $N$}\label{sec:A}
+
+\begin{theorem}[confinement direction]\label{thm:A}
+Let $N\ge2$, $\ell\ge2$, $\beta\ge1$ and $M\in2\ell\mathbb{N}$, and let $c_R=c_R(N,\ell)>0$ be the rigidity constant of Lemma~\ref{lem:rigid} (shown to exist, not explicit). Then
+\[ \theta(N,M,\beta)\le\exp\Big(-\frac{M^2}{2\ell^2}\,c_0^{\,n_B}e^{-6n_B}\beta^{-3n_B}\exp\big(-\beta S_*(N,\ell)-L_\partial\sqrt{\beta L(\beta)/c_R}\big)\Big). \]
+$S_*(N,\ell)$ may be replaced by the column action of any explicit configuration with vacuum frame.
+\end{theorem}
+
+Where $\theta>0$ this reads $-\ln\theta\ge c(N,\ell)\beta^{-a}e^{-\beta(S_*(N,\ell)+\varepsilon(\beta))}M^2$ with $a=3n_B$ and $\varepsilon(\beta)=L_\partial\sqrt{L(\beta)/(c_R\beta)}$.
+
+\subsection{Exact column representation}
+
+\begin{lemma}[partition of plaquettes]\label{lem:partition}
+Every plaquette lies either in $P_{\rm sk}$ (all links skeleton) or in exactly one $P_t$, and every $p\in P_t$ has all its links in $\mathrm{int}(t)\cup\Sigma_t$.
+\end{lemma}
+\begin{proof}
+The projection $\pi(p)$ to the plane is a vertex ($(1,2)$-plaquettes), an edge ($(\mu,3)$, $(\mu,4)$, $\mu\le2$) or a unit square ($(3,4)$), and the links of $p$ project onto faces of $\pi(p)$.
+If $\pi(p)$ lies in the grid, all links are skeleton.
+Otherwise $\pi(p)$ lies in a unique closed square $D_t$, and $p$ has a link whose projection leaves the grid (for a unit square, one of its four edges is off the grid because $\ell\ge2$); the links of $p$ projecting into the grid project into $D_t\cap\text{grid}=\partial D_t$.
+\end{proof}
+
+\begin{lemma}[central moves]\label{lem:moves}
+(a) The partition function with sheets on $\Pi_q$, $q\in Q$, depends only on $|Q|\bmod2$.
+(b) $Z^\pm_t$ and $m^\pm_t$ do not depend on the choice of $q_t\subset D_t$.
+(c) If $\Sigma^\flat$ is obtained from $\Sigma$ by multiplying the $3$-links over one edge of $\partial D_t$ by $-1$, then $Z^s_t(\Sigma^\flat)=Z^{-s}_t(\Sigma)$ and $m^s_t(\Sigma^\flat)=m^{-s}_t(\Sigma)$.
+\end{lemma}
+\begin{proof}
+Multiplying the $3$-links at $(x_1,x_2,a,b+1)$, for all $(x_1,x_2)$, by the central element $-1$ preserves Haar measure and changes the sign of $\tr U_p$ exactly on $\Pi_{(a,b)}\cup\Pi_{(a,b+1)}$: a $(3,4)$-plaquette contains one such link if and only if it lies in these sheets, a $(\mu,3)$-plaquette with $\mu\le2$ contains two or none, and other plaquettes contain none.
+The same holds in direction $4$, and the dual lattice is connected; this gives (a).
+In (b) the flipped links are interior links of $t$.
+In (c) the flipped links lie, among the plaquettes of $P_t$, only in the sheet over the unit square of $D_t$ adjacent to the edge (the $(\mu,3)$-plaquettes over the edge are frame plaquettes and contain two flipped links); this adds one sheet, which (b) moves onto $q_t$, where two sheets cancel.
+The substitutions are bijections of the interior configurations, so the minima transform in the same way.
+\end{proof}
+
+\begin{proposition}[column representation]\label{prop:column}
+Choose $q_t$ reflection-covariantly (mirrored in adjacent blocks). Let $\tilde\mu(dU,s)\propto e^{-\beta S^{z^s}(U)}dU$ on configurations and sign vectors $s\in\{\pm\}^T$, where $z^s$ carries a sheet over $q_t$ for each $t$ with $s_t=-$, and let $\nu$ be its marginal on skeleton links. Then
+\[ \theta=\Big\langle\prod_{t\in T}s_t\Big\rangle_{\tilde\mu}=\E_\nu\Big[\prod_{t\in T}\theta_t(\Sigma)\Big]. \]
+\end{proposition}
+\begin{proof}
+By Lemma~\ref{lem:moves}(a), $Z[s]=Z(0)$ if $\prod_ts_t=1$ and $Z(1)$ otherwise, and half of the $2^{|T|}$ sign vectors have each parity; so $\sum_s(\prod_t s_t)Z[s]=2^{|T|-1}(Z(0)-Z(1))$ and $\sum_sZ[s]=2^{|T|-1}(Z(0)+Z(1))$.
+By Lemma~\ref{lem:partition}, $Z[s]=\int d\Sigma\,e^{-\beta A_{\rm sk}(\Sigma)}\prod_tZ_t^{s_t}(\Sigma)$, and the sums over $s$ factorise block by block: $\sum_s\prod_ts_tZ^{s_t}_t=\prod_t(Z^+_t-Z^-_t)$ and $\sum_s\prod_tZ^{s_t}_t=\prod_t(Z^+_t+Z^-_t)$ (Lean: \code{ColumnChessboard.signed\_sum} and \code{unsigned\_sum}). Divide.
+\end{proof}
+
+\subsection{Reflection positivity and frames of large action}
+
+\begin{proposition}\label{prop:rp}
+$\tilde\mu$ is reflection positive for the site reflections $x_3\mapsto2k\ell-x_3$ and $x_4\mapsto2k\ell-x_4$. Consequently, by the chessboard estimate [FILS, Sh, Bi], for bounded functions $f_t$ of the variables of the closed block $D_0$, $|\langle\prod_tf_t\circ\vartheta_t\rangle_{\tilde\mu}|\le\prod_t\langle\prod_sf_t\circ\vartheta_s\rangle_{\tilde\mu}^{1/|T|}$, where $\vartheta_t$ is the composition of block reflections mapping $D_t$ to $D_0$.
+\end{proposition}
+\begin{proof}[Proof of reflection positivity]
+The reflection maps links of one closed half to the other (inverting links normal to the hyperplane), the sheet signs of mirrored blocks to each other, twist plaquettes to twist plaquettes, and sheets to sheets by the covariant choice of $q_t$; $\tr U_p^{-1}=\tr U_p$ in SU(2), and Haar measure is inversion invariant.
+Every plaquette lies in a fixed hyperplane or in one closed half (sheets are $(3,4)$-plaquettes, never inside a hyperplane $x_3$ or $x_4=$ const).
+So the weight factorises as $A(\phi)F(\phi,\psi_+,s_+)F(\phi,\Theta\psi_-,\Theta s_-)$ with $\phi$ the variables in the fixed hyperplanes and $A,F\ge0$, and $\langle G\,\Theta\bar G\rangle=\tilde Z^{-1}\int d\phi\,A(\phi)\,|\sum_{s_+}\int d\psi_+FG|^2\ge0$.
+The chessboard estimate is the general consequence of reflection positivity for a family of reflections through all block-boundary hyperplanes [FILS, Sh, Bi]; it needs $K=M/\ell$ even. We quote it and do not re-derive it.
+\end{proof}
+
+\begin{lemma}[reduction to frames of large action]\label{lem:goodbad}
+Let $G_0$ be an event on the frame of block $0$, $G_t=\vartheta_t^{-1}G_0$, and suppose $|\theta_t|\le1-\eta$ on $G_t$ with $\eta\in[0,1]$. With $p=\nu(\bigcap_tG^c_t)^{1/|T|}$, $\theta\le(1-\eta(1-p))^{|T|}$.
+\end{lemma}
+\begin{proof}
+$|\theta_t|\le(1-\eta)+\eta\mathbf{1}_{G_t^c}$ pointwise. Expand the product over subsets $S\subset T$ (Lean: \code{ColumnChessboard.prod\_expand}); by Proposition~\ref{prop:rp} applied to $f_t=\mathbf{1}_{G^c_0}$ for $t\in S$ and $f_t=1$ otherwise, $\nu(\bigcap_{t\in S}G_t^c)\le p^{|S|}$; sum the binomial series (Lean: \code{ColumnChessboard.\allowbreak{}binomial\_bound}).
+\end{proof}
+
+\begin{lemma}[frames of large action are rare]\label{lem:bad}
+Let $\varepsilon_1=L(\beta)/\beta$ and $G_t=\{A_t\le\varepsilon_1\}$. Then $p\le\frac12$ for all $\beta\ge1$.
+\end{lemma}
+\begin{proof}
+A skeleton plaquette belongs to at most four frames (the $(1,2)$-plaquettes over a grid corner), so on $\bigcap_tG_t^c$ we have $A_{\rm sk}\ge\frac14\sum_tA_t>\varepsilon_1|T|/4$.
+By Markov's inequality $\nu(\bigcap_tG_t^c)\le e^{-\beta\varepsilon_1|T|/4}\E_\nu e^{\beta A_{\rm sk}}$, and $\E_\nu e^{\beta A_{\rm sk}}=\Xi^{-1}\int d\Sigma\prod_t(Z^+_t+Z^-_t)\le2^{|T|}/\Xi\le2/Z(0)$, because $Z^\pm_t\le1$ and $\Xi=2^{|T|-1}(Z(0)+Z(1))$.
+Each $S_p$ is $1$-Lipschitz in each of its links in operator norm ($\frac12|\tr(A-B)|\le\|A-B\|$ and $\|\prod U_i-\prod V_i\|\le\sum\|U_i-V_i\|$ for unitaries).
+On the set where every link is within $r=1/\beta$ of $U^0$ the action is at most $4\cdot6N^2M^2\,r$.
+The class angle $\psi\in[0,\pi]$ of $W^{-1}U$ has density $\frac2\pi\sin^2\psi$, and $\|U-W\|=2\sin(\psi/2)\le\psi$; so a ball of radius $r\le\pi/2$ has Haar measure at least $\frac2\pi\int_0^r(2\psi/\pi)^2d\psi=c_0r^3$.
+Hence $Z(0)\ge(c_0\beta^{-3})^{4N^2M^2}e^{-24N^2M^2}\ge\exp(-N^2M^2(12\ln\beta+34))$, using $4\ln(1/c_0)<10$.
+With $M^2=\ell^2|T|$, $p\le2^{1/|T|}\exp(-L(\beta)/4+N^2\ell^2(12\ln\beta+34))=2^{1/|T|}\cdot\frac14\le\frac12$.
+\end{proof}
+
+\subsection{Flat frames and rigidity}
+
+\begin{lemma}[flat frames]\label{lem:flat}
+$A_t(\Sigma)=0$ if and only if $\Sigma$ lies in one of two distinct gauge orbits, that of $\Sigma^0$ or that of $\Sigma^\flat$ ($\Sigma^0$ modified as in Lemma~\ref{lem:moves}(c)). They are distinguished by the sign $\pm1$ of the holonomy around $\partial D_t$.
+\end{lemma}
+\begin{proof}
+On each slice $T^2_N\times\{c\}$ a flat twisted configuration is, in a comb gauge, determined by two holonomies with $P_1P_2P_1^{-1}P_2^{-1}=-1$.
+For unit quaternions, $P_1P_2=-P_2P_1$ forces both to be purely imaginary and orthogonal, so $(P_1,P_2)$ is conjugate to $(i\sigma_1,i\sigma_2)$ with stabiliser $\{\pm1\}$.
+Gauge every slice to the twist eater. Flatness of the mixed plaquettes over a cycle edge $\tau$ gives $V(x+\hat\mu)=(U^0_{x,\mu})^{-1}V(x)U^0_{x,\mu}$ for the links $V(x)$ along $\tau$; going around the two cycles of $T^2_N$ shows that $V(0)$ commutes with $i\sigma_1$ and $i\sigma_2$, hence $V\equiv\epsilon_\tau\in\{\pm1\}$.
+A gauge transformation $-1$ on one slice flips $\epsilon$ on its two cycle edges, so only $\prod_\tau\epsilon_\tau$, which is $\frac12\tr$ of the holonomy around $\partial D_t$, is invariant.
+\end{proof}
+
+\begin{lemma}[rigidity]\label{lem:rigid}
+There is $c_R=c_R(N,\ell)>0$ such that $A_t(\Sigma)\ge c_R\,d(\Sigma)^2$ for every frame $\Sigma$, where $d$ is the max-link operator-norm distance to the union of the two flat orbits.
+\end{lemma}
+\begin{proof}
+Write $\Sigma_e=e^{a_e}\Sigma^f_e$ near a flat frame $\Sigma^f$, $a\in\mathfrak{su}(2)^{\Sigma_t}$.
+Then $z_pU_p=\exp((d^1_fa)_p+O(|a|^2))$ with $d^1_f$ the coboundary of the cellular complex of $T^2_N\times C_{4\ell}$ with coefficients in the adjoint local system of $\Sigma^f$, and $1-\frac12\tr e^X=\frac12|X|^2+O(|X|^4)$; so $A_t=\frac12|d^1_fa|^2+O(|a|^3)$.
+The tangent space of the orbit is $\operatorname{im}d^0_f$, so the Hessian is non-degenerate on the normal space if and only if $H^1=0$.
+In the gauge of Lemma~\ref{lem:flat} the cycle links are $\pm1$, which act trivially in the adjoint, so the local system is pulled back from $V=\mathrm{ad}(\text{twist eater})$ on $T^2_N$, and the cellular complex is the tensor product of the twisted complex of $T^2_N$ and the untwisted complex of $C_{4\ell}$ (Künneth over $\mathbb{R}$).
+$H^0(T^2_N;V)=0$: no vector of $\mathfrak{su}(2)$ is fixed by both $\mathrm{Ad}(i\sigma_1)$ and $\mathrm{Ad}(i\sigma_2)$.
+$H^2(T^2_N;V)\cong H_0(T^2_N;V)$ is the space of coinvariants, which is $0$ because the images of $\mathrm{Ad}(i\sigma_1)-1$ and $\mathrm{Ad}(i\sigma_2)-1$ span $\mathfrak{su}(2)$.
+The Euler characteristic gives $\dim H^0-\dim H^1+\dim H^2=3\chi(T^2)=0$, so $H^1(T^2_N;V)=0$, and by Künneth $H^1(T^2_N\times C_{4\ell};V)=0$.
+Near the compact zero set the Taylor expansion with remainder uniform on the zero set gives $A_t\ge\frac14\lambda\,\mathrm{dist}^2$ with $\lambda>0$ the minimum over the zero set of the smallest normal eigenvalue (this is the Morse--Bott situation [Bott]); away from a neighbourhood $A_t$ is bounded below by compactness, while $d\le2$. Riemannian and max-link distances are comparable on the compact product.
+\end{proof}
+
+\begin{remark}
+The radius of the neighbourhood and the bound away from it are not explicit; only their existence is used.
+\end{remark}
+
+\subsection{Proof of Theorem~\ref{thm:A}}
+
+\begin{lemma}[ball bound]\label{lem:ball}
+For every frame and $\beta\ge1$, $1-|\theta_t|\ge\min(Z^+_t,Z^-_t)\ge c_0^{n_B}\beta^{-3n_B}e^{-6n_B}e^{-\beta\max_sm^s_t(\Sigma)}$.
+\end{lemma}
+\begin{proof}
+$1-|\theta_t|=2\min(Z^\pm_t)/(Z^+_t+Z^-_t)$ and $Z^\pm_t\le1$.
+Around a minimiser, on the set where each interior link is within $1/\beta$ of it, $S^s_t\le m^s_t+6n_B/\beta$ (each interior link lies in six plaquettes, all in $P_t$), and this set has Haar measure at least $(c_0\beta^{-3})^{n_B}$.
+\end{proof}
+
+\begin{lemma}[frames of small action]\label{lem:good}
+If $A_t(\Sigma)\le\varepsilon$ then $\max_sm^s_t(\Sigma)\le S_*(N,\ell)+L_\partial\sqrt{\varepsilon/c_R}$.
+\end{lemma}
+\begin{proof}
+$m^s_t$ is invariant under gauge transformations of the frame (extend by $1$ to interior sites; by Lemma~\ref{lem:partition} every plaquette of $P_t$ has its links in $\mathrm{int}(t)\cup\Sigma_t$).
+By Lemma~\ref{lem:rigid} the frame is, after a gauge transformation, within $d=\sqrt{\varepsilon/c_R}$ of $\Sigma^0$ or $\Sigma^\flat$ in every link.
+$m^s_t$ is $L_\partial$-Lipschitz in the frame: $L_\partial$ counts the incidences between plaquettes of $P_t$ and frame links, namely $8N^2(\ell-1)$ mixed plaquettes $(\mu,\tau')$ with $\tau'$ an inward edge at a non-corner boundary vertex, each with one frame link, and $4\ell N^2$ incidences of $(3,4)$-plaquettes with boundary edges.
+Finally $m^+_t(\Sigma^0)=0$, $m^-_t(\Sigma^0)=S_*$, and $m^\pm_t(\Sigma^\flat)=m^\mp_t(\Sigma^0)$ by Lemma~\ref{lem:moves}(c).
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:A}]
+Take $G_t=\{A_t\le\varepsilon_1\}$, which is reflection covariant because the frame action is invariant under block reflections. By Lemmas~\ref{lem:ball} and~\ref{lem:good}, $|\theta_t|\le1-\eta$ on $G_t$ with
+\[ \eta=c_0^{n_B}\beta^{-3n_B}e^{-6n_B}\exp\big(-\beta S_*-L_\partial\sqrt{\beta L(\beta)/c_R}\big)\in[0,1]. \]
+By Lemma~\ref{lem:bad}, $p\le\frac12$, and Lemma~\ref{lem:goodbad} gives $\theta\le(1-\eta/2)^{M^2/\ell^2}\le\exp(-\eta M^2/(2\ell^2))$ (Lean: \code{ColumnChessboard.exp\_bound}). If an explicit configuration with vacuum frame and column action $\bar S$ replaces the minimiser in Lemma~\ref{lem:good}, the same proof gives the bound with $\bar S$.
+\end{proof}
+
+\section{Theorem B and Corollary C: the reverse bound at fixed $M$}\label{sec:B}
+
+\begin{theorem}[fixed-$M$ reverse bound]\label{thm:B}
+For all $N,M\ge2$ and $\beta\ge1$ let $x=2\exp\big(-\beta S_{\min}(N,M)+N^2M^2(12\ln\beta+34)\big)$. If $x\le\frac12$ then $0<\theta$ and $-\ln\theta(N,M,\beta)\le2x$.
+\end{theorem}
+\begin{proof}
+$\theta=1-2Z(1)/(Z(0)+Z(1))\ge1-2Z(1)/Z(0)$. Every configuration of sector $(1,1)$ has action at least $S_{\min}(N,M)$, so $Z(1)\le e^{-\beta S_{\min}(N,M)}$ (normalised Haar measure), and $Z(0)\ge\exp(-N^2M^2(12\ln\beta+34))$ as in the proof of Lemma~\ref{lem:bad}. So $\theta\ge1-x\ge\frac12$ and $-\ln\theta\le-\ln(1-x)\le x/(1-x)\le2x$.
+\end{proof}
+
+\begin{corollary}\label{cor:C}
+For fixed $N\ge2$, $\ell\ge2$ and $M\in2\ell\mathbb{N}$,
+\[ S_{\min}(N,M)\le\liminf_{\beta\to\infty}\frac{-\ln(-\ln\theta)}{\beta}\le\limsup_{\beta\to\infty}\frac{-\ln(-\ln\theta)}{\beta}\le S_*(N,\ell). \]
+The best choice is $\ell=M/2$. The two ends are lattice quantities; reading the right end as a fractional-instanton action is a statement at the semiclassical level.
+\end{corollary}
+\begin{proof}
+For large $\beta$, $x\le\frac12$ and Theorem~\ref{thm:B} gives
+\[ -\beta^{-1}\ln(-\ln\theta)\ge S_{\min}(N,M)-O_{N,M}(\ln\beta/\beta). \] Theorem~\ref{thm:A} gives $-\beta^{-1}\ln(-\ln\theta)\le S_*(N,\ell)+\varepsilon(\beta)+O_{N,\ell}(\ln\beta/\beta)$ with $\varepsilon(\beta)\to0$.
+\end{proof}
+
+The ends are consistent: $S_{\min}(N,k\ell)\le S_*(N,\ell)$ for all $k\ge1$, because extending a column configuration with vacuum frame by the vacuum gives a configuration of sector $(1,1)$ on $T^2_N\times T^2_{k\ell}$ with the same action (Lemma~\ref{lem:partition}; for $k=1$ the opposite frame sides are identified consistently because the vacuum frame is translation invariant).
+The fixed-$M$ bound loses $e^{O(M^2\ln\beta)}$ through the lower bound on $Z(0)$, so it says nothing uniformly in $M$; the $M$-uniform reverse bound is open (\S\ref{sec:notclaimed}).
+
+\section{The thin-sheet bound and computed upper bounds for $S_*$}\label{sec:numbers}
+
+\begin{proposition}[thin-sheet bound]\label{prop:trivial}
+$|\theta_t|\le\tanh(\beta N^2)$ for every frame. Hence for $M\in2\mathbb{N}$, with $\ell=2$,
+\[ -\ln\theta\ge\frac{M^2}{4}\big(-\ln\tanh(\beta N^2)\big)\ge\frac{M^2}{2}e^{-2\beta N^2}. \]
+\end{proposition}
+\begin{proof}
+$|S^-_t-S^+_t|=|\sum_{p\in\Pi_{q_t}}\tr U_p|\le2N^2$, so $e^{-2\beta N^2}\le Z^-_t/Z^+_t\le e^{2\beta N^2}$ and $|\theta_t|\le\tanh(\beta N^2)$. Proposition~\ref{prop:column} (no chessboard estimate is needed) gives $\theta\le\tanh(\beta N^2)^{M^2/4}$, and $-\ln\tanh y=\ln\frac{1+u}{1-u}\ge2u$ with $u=e^{-2y}$.
+\end{proof}
+
+Theorem~\ref{thm:A} improves the exponent by $2N^2-S_*$ per unit of $\beta$, but its prefactor is $\beta^{-3n_B}e^{-6n_B}e^{-O(\sqrt{\beta\ln\beta})}$ with a non-explicit constant, so it beats Proposition~\ref{prop:trivial} only for $\beta$ beyond a finite, large and non-explicit value.
+
+\paragraph{Elementary properties of $S_*$.}
+$S_*(N,\ell)$ is attained (compactness), is at most $2N^2$ (vacuum interior and one thin sheet), is non-increasing in $\ell$ (place a minimiser in a corner of a larger column and the vacuum elsewhere; every additional plaquette has all its links at vacuum values), and satisfies $S_*(N,\ell)\ge S_{\min}(N,k\ell)$ for $k\ge1$. Hence $\lim_\ell S_*(N,\ell)$ exists and is at least $\limsup_kS_{\min}(N,k\ell)$ for each $\ell$.
+
+\paragraph{Computed upper bounds.}
+Column minimisers were searched by cooling from a thin sheet plus noise; saved configurations were normalised exactly, the frame was checked to equal the vacuum exactly, and the column action was re-evaluated in 40-digit arithmetic. Each value is the action of an explicit configuration and therefore an upper bound on $S_*$; by the last sentence of Theorem~\ref{thm:A} it can be inserted there. The values below are computed and were not recomputed for this paper.
+\begin{center}
+\begin{tabular}{lll}\toprule
+$(N,\ell)$ & computed upper bound on $S_*(N,\ell)$ & $/\pi^2$ \\\midrule
+$(2,12)$ & $6.67348665542$ & $\le0.6762$\\
+$(3,12)$ & $9.07284242009$ & $\le0.9193$\\
+$(4,8)$ & $9.57961427901$ (search not converged) & $\le0.9707$\\\bottomrule
+\end{tabular}
+\end{center}
+Against the thin-sheet rate $2N^2=8,18,32$, these give exponent gains of about $1.33$, $8.93$ and at least $22.4$.
+Cooling on the periodic torus gives
+\[ S_{\min}(2,M)\approx6.740117,\ 6.677345,\ 6.673724,\ 6.673486,\ 6.673485\quad(M=4,6,8,12,16) \]
+and $S_{\min}(3,16)=9.072494$; these cooled values are upper bounds on $S_{\min}$, not lower bounds, so they do not supply the left end of Corollary~\ref{cor:C} as a number. With the computed upper bound $S_*(2,8)\le6.67400717258$, Corollary~\ref{cor:C} for $N=2$, $M=16$ places the rate in $[S_{\min}(2,16),\,6.67400717259]$, where the cooled value of $S_{\min}(2,16)$ is $6.673485$.
+That $S_*(N,\ell)$ approaches the periodic-torus values as $\ell$ grows, with an excess decaying roughly like $e^{-m_N\ell}/\ell$, $m_N=2\,\mathrm{arsinh}\sin(\pi/2N)$, is a numerical observation.
+
+\section{What is not claimed}\label{sec:notclaimed}
+
+\begin{enumerate}[leftmargin=*]
+\item \emph{(G1) Reverse bound uniform in $M$.} A dilute-gas lower bound
+\[ \theta\ge\exp\big(-C\beta^{a'}e^{-\beta(S_*-o(1))}M^2\big) \]
+is open. One route is to rewrite $\theta$ exactly over connected clusters of frames of large action and to show that each cluster factor is positive with $1-2q_R\ge e^{-C|R|}$ (a property we call (Pos)); neither the rewriting nor (Pos) is claimed here.
+\item \emph{(G2) Identification of the rate.} $\lim_\ell S_*(N,\ell)=\lim_MS_{\min}(N,M)$ is not proved; only the inequality $\ge\limsup_k S_{\min}(N,k\ell)$ is. Without (G2), the statement ``the rate is set by fractional instantons'' holds only on the upper side: the rate is at most the confined-column action $S_*$.
+\item \emph{(G3) Large $N$.} $S_{\min}(N,\infty)/\pi^2\approx0.676,\ 0.919,\ 0.96$ for $N=2,3,4$, approaching the continuum value $1$, is numerical only. Nothing is uniform in $N$, and the passage from $N$ small compared with the correlation length to $N$ large is not addressed.
+\item \emph{(G4) Constants.} $c_R$ and hence the range of $\beta$ in which Theorem~\ref{thm:A} improves Proposition~\ref{prop:trivial} are not explicit; the prefactor $\beta^{-3n_B}$ and the $\sqrt{\beta\ln\beta}$ term come from crude ball estimates and worst-case frames.
+\item \emph{(G5) From an area law to a gap.} An area law for the twist-summed bias does not by itself give a mass gap: on a product of a confining theory with a massless free field, Wilson loops of the first factor obey an area law while the spectrum has no gap. Any passage from area law to gap has to restrict the observables, and we do not attempt it.
+\end{enumerate}
+Moreover: no continuum limit is taken; the semiclassical identification of $S_*$ with a fractional instanton is interpretation, not a theorem here; the chessboard estimate is quoted; the computed values are not machine-checked.
+
+\section{What is machine-checked}\label{sec:lean}
+
+One Lean~4 module with Mathlib, \code{ColumnChessboard}, checks the finite algebra used above and nothing analytic (declarations below are in that namespace):
+\begin{center}\footnotesize
+\begin{tabular}{lp{0.62\textwidth}}\toprule
+declaration & role in this paper \\\midrule
+\code{signed\_sum} & $\sum_s\prod_t s_t Z^{s_t}_t=\prod_t(Z^+_t-Z^-_t)$ (Prop.~\ref{prop:column}) \\
+\code{unsigned\_sum} & $\sum_s\prod_t Z^{s_t}_t=\prod_t(Z^+_t+Z^-_t)$ (Prop.~\ref{prop:column}) \\
+\code{prod\_expand} & expansion of $\prod_t((1-\eta)+\eta x_t)$ over subsets (Lemma~\ref{lem:goodbad}) \\
+\code{binomial\_bound} & from $a_S\le p^{|S|}$ to $(1-\eta+\eta p)^{|T|}$, for $0\le\eta\le1$ (Lemma~\ref{lem:goodbad}) \\
+\code{exp\_bound} & $(1-y)^n\le e^{-ny}$ for $y\le1$ (proof of Theorem~\ref{thm:A}) \\\bottomrule
+\end{tabular}
+\end{center}
+For each of the five, \code{\#print axioms} reports \code{[propext, Classical.choice, Quot.sound]} only; \code{sorry} and \code{native\_decide} are not used.
+Measures, the chessboard estimate, Haar-ball volumes, the cohomology computation, the Morse--Bott argument and all numerical values are outside Lean.
+{\sloppy The module is distributed at \url{\bundleurl} (with a \code{.sha256} file at the same address with that suffix), and the \code{\#print axioms} output at \url{\axiomsurl}; the ledger and build instructions of the site's Lean developments are at \url{https://computoergosum.com/en/principia/lean/index.html}.\par}
+To verify: unpack, run \code{lake exe cache get}, then \code{LEAN\_NUM\_THREADS=1 lake env lean ColumnChessboard.lean}; the \code{\#print axioms} lines at the end of the module should agree with the report above and with the distributed axiom log.
+
+\section{Disclosure of AI use}\label{sec:ai}
+
+This paper was produced with the assistance of AI agents. The constructions, the informal proofs, the computations, the Lean~4 development including the formalised statements, the literature search, the reports on which this paper is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code, across many separate sessions, each of which began without memory of the previous ones and read the written record instead; the proofs of Sections~\ref{sec:A}--\ref{sec:numbers} were re-derived line by line from an earlier written record before this text was written. A second group of instances, running on the server of the website named on the title page, is responsible for rebuilding the Lean development from the distributed archive on a separate machine, for checking the claims of this paper against the reports, and for preparing the distributed version; the independent rebuild was completed on 2026-10-15 (every file checked with \code{lake env lean} in the same environment on a separate session, rc=0, standard axioms only). The human author set the task, fixed the working rules and load limits, reviewed the record, and decides whether and where the result is reported; he is responsible for this paper. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This paper should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. In particular the analytic steps, the quoted chessboard estimate and all numerical values are not machine-checked. This edition and the Lean development it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the paper under \texttt{papers/\allowbreak{}ym-fractional-instanton-rate}, the development under \texttt{lean/\allowbreak{}ym-fractional-instanton-rate}). The web edition of this paper, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section.
+
+\begin{thebibliography}{FILS}
+\bibitem[Bi]{Bi} M.~Biskup, Reflection positivity and phase transitions in lattice spin models, Lecture Notes in Math.\ 1970 (2009) 1 (not consulted directly).
+\bibitem[Bott]{Bott} R.~Bott, Ann.\ of Math.\ 60 (1954) 248 (not consulted directly).
+\bibitem[FILS]{FILS} J.~Fr\"ohlich, R.~Israel, E.~H.~Lieb, B.~Simon, Commun.\ Math.\ Phys.\ 62 (1978) 1 (not consulted directly).
+\bibitem[GAM]{GAM} A.~Gonz\'alez-Arroyo, A.~Montero, Phys.\ Lett.\ B 442 (1998) 273, arXiv:hep-th/9809037 (not consulted directly).
+\bibitem[KSR]{KSR} Kiichi, Shiori and Rin, \emph{Yang--Mills and the mass gap} (online textbook, in Japanese), Part~12, chapters on the twisted torus and on fractional instantons, \url{https://computoergosum.com/principia/yang-mills/index.html} (2026).
+\bibitem[Sh]{Sh} S.~B.~Shlosman, Russian Math.\ Surveys 41 (1986) 83 (not consulted directly).
+\bibitem[tH81]{tH81} G.~'t~Hooft, Commun.\ Math.\ Phys.\ 81 (1981) 267 (not consulted directly).
+\bibitem[TU]{TU} Y.~Tanizaki, M.~\"Unsal, Prog.\ Theor.\ Exp.\ Phys.\ (2022), arXiv:2201.06166 (not consulted directly).
+\end{thebibliography}
+\end{document}

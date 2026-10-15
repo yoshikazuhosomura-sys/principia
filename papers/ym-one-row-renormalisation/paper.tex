@@ -1,0 +1,560 @@
+%% One-row four-plaquette model of SU(2) convolution renormalisation (web edition)
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}[lemma]{Proposition}
+\newtheorem{corollary}[lemma]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[lemma]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[lemma]{Remark}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\SU}{\mathrm{SU}(2)}
+\newcommand{\Cov}{\operatorname{Cov}}
+\emergencystretch=3em
+\newcommand{\code}[1]{\texttt{#1}}
+%% Distribution addresses of the Lean bundle (set by the web edition).
+\newcommand{\bundleurl}{https://computoergosum.com/principia/lean/principia-ym-one-row-renormalisation-2026-10-15.tar.gz}
+\newcommand{\axiomsurl}{https://computoergosum.com/principia/lean/axioms-ym-one-row-renormalisation-2026-10-15.txt}
+
+\title{A one-dimensional model of SU(2) convolution renormalisation: the curvature term $2/5$, the prefactor fixed point $37/76$, and a shape remainder uniform in the number of steps}
+\author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
+\date{2026-10-15}
+
+\begin{document}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
+
+\begin{abstract}
+We study a one-dimensional toy model of block-spin renormalisation for $\SU$ class functions: four plaquettes in a row, with the two overlapping $3\times1$ loops $W_a=P_1P_2P_3$ and $W_b=P_2P_3P_4$ held fixed and the inner holonomies integrated out.
+The model is not the four-dimensional lattice gauge theory; it isolates what the curvature of the group does to a convolution step.
+For a plaquette weight $e^{F}$ and inner kernel $G=e^F*e^F$, the two quadratic couplings of the effective weight (single loop $\kappa_a$, composite loop $\kappa_{ab}$) are, after an elementary integration by parts on $[0,\pi]$, $\kappa_a=\E[F'(\log G)']/24$ and $\kappa_{ab}=\E[F'^2]/24$; hence the tree ratio $\kappa_{ab}/\kappa_a=2$ persists if and only if $\E[F'(F'-2(\log G)')]=0$, and a pointwise sufficient condition is $G\propto e^{F/2}$ (Theorem~1).
+For weights concentrated at the identity, at leading order (Laplace) the criterion reads $D=2/5+(24/5)(q/B)$, where $B$ is the tree coupling, $q$ the $\psi^4$ coefficient, and $2/5$ is contributed by the Van Vleck prefactor $\psi/\sin\psi$ alone; the heat-kernel action has ratio $2+2t/3$, while for $\mathrm{U}(1)$ Villain it is $2$.
+For the diagonal one-step map $f'=[(f*f)*f^2]^{1/2}$ we show, at leading order (Laplace), that $B'=B/5$, that every shape coordinate $\psi^{2k}$ contracts by $(4^k+1)/5^{2k-1}$, that the prefactor power read from $\psi^4$ obeys $\gamma'=(17\gamma+296)/625$ with unique fixed point $37/76$, and that on the attracting class the ratio is $2+(2/3)/B$; the ratio-two curve is not invariant (Theorem~2).
+Finally, in a projected version of the model (coefficients up to $\psi^8$, analytic part of $\log f'$), with a one-step constant $C$ computed from explicit integrals, the distance $r_n$ to the attracting class satisfies $r_n\le(17/625)^n r_0+C/((5-17/625)B_n)$ for all $n$ with $B_0,\dots,B_{n-1}\ge32$, uniformly in the number of steps (Theorem~3); a Wilson start lies outside the box where this holds and, in computed flows, violates the bound at the first step.
+The finite-group skeleton, the algebra of every leading-order coefficient and the assembly of Theorem~3 are checked in Lean~4 with Mathlib; Haar measures, Laplace asymptotics and the numerical constants are not.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+The existence of a four-dimensional quantum Yang--Mills theory with a mass gap is one of the Millennium Prize Problems of the Clay Mathematics Institute (\url{https://www.claymath.org/millennium/yang-mills-the-maths-gap/}).
+This note does not address that problem.
+It studies one block-spin step in a one-dimensional toy model: four $\SU$ plaquettes in a row, with two overlapping loops held fixed and the inner holonomies integrated out.
+The model and its one-loop couplings are set out in the textbook [KSR, Chapter 15-06], and the one-step remainder with its computed constant in [KSR, Chapter 15-03, \S04].
+This note collects the statements, gives the arguments, and lists what is checked in Lean~4.
+Beyond [KSR] it adds, in Proposition~\ref{prop:onestep}, the constant $C=0.00182$ and the $B_{\min}=1000$ column of Table~\ref{tab:C} (the one-step inequality itself and the constants $C=0.0108/0.0036/0.00076$ are in [KSR, 15-06, Theorem~U] and [KSR, 15-03, \S04]), the first-order terms of the $\psi^6$ and $\psi^8$ coordinates, the total-variation estimate and the value of $\gamma_4^*$; these are marked where they occur.
+
+\section{The model}\label{sec:model}
+
+\paragraph{Conventions.}
+We write $\SU$ as the unit quaternions, $U=(\cos\psi,\sin\psi\,\hat n)$ with $\psi\in[0,\pi]$ the geodesic distance from the identity on the unit sphere $S^3$ (half the rotation angle), and $\langle p,q\rangle:=\mathrm{Re}(p\bar q)$, so that $\langle p,q\rangle=\tfrac12\mathrm{tr}(pq^{-1})$ for unit $p,q$.
+A class function is a function $f(\psi)$; $dU$ is the normalised Haar measure, which in these coordinates is $(2/\pi)\sin^2\psi\,d\psi$ times the uniform measure on $\hat n\in S^2$.
+Convolution is $(f*g)(W)=\int f(U)g(U^{-1}W)\,dU$.
+We write
+\begin{gather*}
+P(\psi):=\frac{\psi}{\sin\psi},\qquad v:=\log P,\qquad \log P(\psi)=\sum_{k\ge1}p_k\psi^{2k},\\
+p_1=\tfrac16,\quad p_2=\tfrac1{180},\quad p_3=\tfrac1{2835},\quad p_4=\tfrac1{37800},\qquad p_k=\frac{\zeta(2k)}{k\pi^{2k}}.
+\end{gather*}
+$P$ is the Van Vleck prefactor of $S^3$ [VV]; $P^{-2}=(\sin\psi/\psi)^2$ is the Haar density in exponential coordinates.
+The heat kernel is $p_t=\sum_{n\ge0}(n+1)e^{-tn(n+2)/2}\chi_n$, $\chi_n(\psi)=\sin((n+1)\psi)/\sin\psi$, the density of $e^{(t/2)\Delta}$ on the unit $S^3$; by the image sum $p_t(\psi)\propto P(\psi)e^{-\psi^2/(2t)}$ up to terms $O(e^{-\pi^2/t})$, and $p_s*p_t=p_{s+t}$ [Fa, Me].
+
+\paragraph{Four plaquettes in a row.}
+Take the $4\times1$ strip of the square lattice with plaquettes $P_1,\dots,P_4$ (holonomies based at a common corner).
+It has $10$ vertices and $13$ links, so $13-10+1=4$ independent gauge-invariant holonomies; in a maximal-tree gauge the four plaquette holonomies are independent and Haar distributed.
+Each plaquette carries the same class weight $f$ (for Wilson [W], $f=e^{\beta\cos\psi}$; for the heat kernel, $f=p_t$).
+Fix the block variables $W_a=P_1P_2P_3$ and $W_b=P_2P_3P_4$; then $P_1=W_a(P_2P_3)^{-1}$ and $P_4=(P_2P_3)^{-1}W_b$, and the remaining integral is over $(P_2,P_3)$.
+With $U:=P_2P_3$ (left invariance, Jacobian $1$),
+\begin{equation}\label{eq:w}
+w(W_a,W_b)=\int G(U)\,f(W_aU^{-1})\,f(U^{-1}W_b)\,dU,\qquad G:=f*f .
+\end{equation}
+For a finite group and arbitrary weights with values in a commutative semiring, \eqref{eq:w} (with the constraint written as an indicator) is the Lean statement \code{four\_plaquette\_constrained}; when the weights form a convolution semigroup $p_s*p_t=p_{s+t}$, the inner factor is $p_{2t}$ (\code{four\_plaquette\_of\_semigroup}).
+For Wilson's action the outer factors combine, $w=\int Z_1(\beta|1+U|)e^{\beta\langle W_a+W_b,U\rangle}dU$ with $Z_1(b)=2I_1(b)/b$, and conjugation invariance reduces $w$ to a function of $\mathrm{Re}W_a+\mathrm{Re}W_b$ and $\mathrm{Re}(W_aW_b^{-1})$.
+
+\paragraph{Loop couplings.}
+Write $W_a=\exp(i\,a\cdot\sigma/2)$, $W_b=\exp(i\,b\cdot\sigma/2)$, $\theta_a=|a|$, $\theta_b=|b|$, and $\theta_{ab}$ for the class angle of $W_aW_b^{-1}$ ($\theta_{ab}^2=|a-b|^2+O(\theta^4)$).
+We define the \emph{single-loop coupling} $\kappa_a$ and the \emph{composite-loop coupling} $\kappa_{ab}$ by
+\begin{equation}\label{eq:kappa}
+-\log w=\mathrm{const}+\kappa_a(\theta_a^2+\theta_b^2)+\kappa_{ab}\,\theta_{ab}^2+O(\theta^4).
+\end{equation}
+These are the two coordinates of the symmetric quadratic forms in two loops; the effective action closes on a one-parameter family $\{\beta'T\}$ of a single quadratic form $T$ at quadratic order only if $\kappa_{ab}/\kappa_a$ does not depend on the coupling.
+
+\paragraph{The tree value.}
+In the abelianised Gaussian approximation $a=f_1+f_2+f_3$, $b=f_2+f_3+f_4$, minimising $\sum f_i^2$ over $f_2,f_3$ gives
+\begin{equation}\label{eq:tree}
+\min\sum_{i=1}^4 f_i^2=\tfrac15(3a^2+3b^2-4ab)=\tfrac15(a^2+b^2)+\tfrac25(a-b)^2 ,
+\end{equation}
+so the tree ratio is $\kappa_{ab}/\kappa_a=2$, independently of the action.
+(For three plaquettes with $W_a=P_1P_2$, $W_b=P_2P_3$ it is $\tfrac13(a^2+b^2)+\tfrac13(a-b)^2$, ratio $1$.)
+The inequality, its attainment and the split are the Lean statements \code{tree\_lower\_four}, \code{tree\_attained\_four}, \code{shape\_four} (and \code{shape\_three}); they are elementary real algebra.
+
+\paragraph{The one-step map.}
+To iterate, one needs a single-loop weight after the step.
+Since $\theta_{ab}=0$ on the diagonal $W_a=W_b=W$, where the composite-loop factor is constant, we define
+\begin{equation}\label{eq:step}
+f'(\psi):=w(W,W)^{1/2}=\bigl[(G*f^2)(W)\bigr]^{1/2}=\bigl[((f*f)*f^2)(W)\bigr]^{1/2},
+\end{equation}
+which in characters is $f'^2=\sum_n a_n^2b_n(n+1)^{-2}\chi_n$ for $f=\sum a_n\chi_n$, $f^2=\sum b_n\chi_n$.
+We call \eqref{eq:step} the \emph{diagonal definition}; mixed quartic terms of $w$ that do not factorise through single-loop weights do not enter $f'$.
+For weights concentrated at the identity we write
+\begin{equation}\label{eq:class}
+\log f=\mathrm{const}-\tfrac{B}{2}\psi^2+h(\psi),\qquad h(\psi)=\sum_{k\ge1}h_k\psi^{2k},\qquad q:=h_2,
+\end{equation}
+with $B$ large (the tree coupling) and $h=O(1)$; for Wilson $B=\beta$, $q=\beta/24$ (so $h$ is not $O(1)$ there: $q/B=1/24$), for the heat kernel $B=1/t$, $h=\log P$.
+We call $h_k/B$ the \emph{shape coordinates} and $\gamma_k:=h_k/p_k$ the \emph{prefactor power read from $\psi^{2k}$} (for $h=\gamma\log P$ all $\gamma_k$ equal $\gamma$).
+
+\paragraph{What is modelled.}
+The map \eqref{eq:step} is a one-dimensional caricature of a block-spin step: two plaquettes are convolved in series ($f*f$), the result is convolved with a pointwise product ($f^2$, the two outer plaquettes meeting at the same block variable), and a square root returns a single-loop weight.
+The model contains no transverse directions, no block averaging in four dimensions, no large-field region and no infinite volume.
+Its purpose is to separate, in a setting where everything can be computed, the parts of one step that the flat (abelian, Gaussian) theory already has from the part produced by the curvature of $\SU$.
+In the Migdal--Kadanoff scheme [Mi, Ka] a one-link class function is renormalised by convolution and powers; the model here differs by the overlap of the two fixed loops, which is what creates the composite coupling $\kappa_{ab}$.
+
+\paragraph{Summary.}
+Section~\ref{sec:oneloop} records that the ratio $\kappa_{ab}/\kappa_a$, equal to $2$ at tree level for every action, moves with the coupling at one loop: as $2+1/\beta$ for Wilson's action and as $2+2t/3$ for the heat kernel, while it stays at $2$ for the abelian Villain action.
+Theorem~\ref{thm:criterion} (Section~\ref{sec:thm1}) explains this by an exact identity: after one integration by parts on $[0,\pi]$ the two couplings are first moments of $F'(\log G)'$ and $F'^2$ against one explicit measure, so the ratio is $2$ exactly when the inner kernel behaves like the square root of the outer one, in the mean.
+For the flat Gaussian this is the semigroup property; on $\SU$ the Van Vleck prefactor breaks it, and at one loop the defect is the number $2/5$ (Proposition~\ref{prop:D}), which can be compensated by a steeper quartic ($q/B=-1/12$) but not by any power of the prefactor.
+Theorem~\ref{thm:class} (Section~\ref{sec:thm2}) follows the one-step map: shapes contract, the tree coupling is divided by $5$, and the prefactor power has an attracting value $37/76$ (read from $\psi^4$); on the attracting class the ratio is $2+(2/3)/B$, the same leading value as for the heat kernel, and a ratio-two action does not stay ratio-two.
+Theorem~\ref{thm:U} (Section~\ref{sec:thm3}) controls the remainder: in a projected version of the model and inside a box around the attracting class, the distance to the class after $n$ steps is at most $(17/625)^nr_0+C/((5-17/625)B_n)$, with the final scale $B_n$ only, for any number of steps taken from large $B_0$.
+The abelian case is carried along as a control throughout: there the inhomogeneous terms vanish and the attracting class is the Villain action.
+
+\section{Loop couplings at one loop}\label{sec:oneloop}
+
+The tree ratio $2$ is corrected at the next order of the Laplace expansion of \eqref{eq:w}.
+For Wilson's action the one-dimensional reduction of \eqref{eq:w} gives, in terms of moments of the base weight $\sin^2\psi\,Z_1(2\beta\cos(\psi/2))e^{2\beta\cos\psi}d\psi$,
+\[
+\kappa_a=\tfrac18\langle\beta\cos\psi\rangle-\tfrac1{12}\langle\beta^2\sin^2\psi\rangle,\qquad \kappa_{ab}=\tfrac1{24}\langle\beta^2\sin^2\psi\rangle ,
+\]
+and expanding the weight at $\psi=0$ (exponent $4\beta-\tfrac54\beta\psi^2+\tfrac{17}{192}\beta\psi^4$, prefactor $\psi^2(1-\psi^2/3)(1+3\psi^2/16)$) yields, at leading order (Laplace),
+\begin{equation}\label{eq:wilson}
+40\kappa_a=\beta-1+O(\beta^{-1}),\qquad 20\kappa_{ab}=\beta-\tfrac12+O(\beta^{-1}),\qquad \frac{\kappa_{ab}}{\kappa_a}=\frac{2(\beta-\frac12)}{\beta-1}+O(\beta^{-2}).
+\end{equation}
+The fluctuation part (total minus tree) is $-1/40$ for both couplings: the tree form has ratio $2$, the one-loop form ratio $1$, so the sum turns with $\beta$.
+For the heat kernel, the same expansion (Section~\ref{sec:thm1}) gives $40\kappa_a=1/t-13/15+O(t)$, $20\kappa_{ab}=1/t-8/15+O(t)$, and
+\begin{equation}\label{eq:hk}
+\frac{\kappa_{ab}}{\kappa_a}=2+\frac{2t}{3}+O(t^2)\qquad\text{(at leading order (Laplace))}.
+\end{equation}
+For the $\mathrm{U}(1)$ Villain (periodised Gaussian) action [Vi] the exponent of \eqref{eq:w} is, up to winding terms of size $e^{-c/t}$, exactly
+$\alpha^2/(4t)+(s-\alpha)^2/(2t)+(u-\alpha)^2/(2t)=(3s^2+3u^2-4su)/(10t)+(5/(4t))(\alpha-2(s+u)/5)^2$,
+so the ratio is $2$ for every $t$; for the $\mathrm{U}(1)$ Wilson action it is $2+0.2/\beta+O(\beta^{-2})$.
+
+Table~\ref{tab:ratio} lists computed values.
+They come from two independent routes (a three-dimensional quadrature of \eqref{eq:w} on a grid of non-commuting backgrounds $\theta\le0.3$ with a least-squares fit of $\log w$ to degree $8$, and one-dimensional moment formulas, Theorem~\ref{thm:criterion}), which agree to relative $8\times10^{-12}$; the heat kernel was implemented both by its character series and by its image sum.
+The $\mathrm{U}(1)$ Villain control returns the ratio $2$ to within $6\times10^{-12}$ on the same pipeline.
+The table is evidence for the asymptotic formulas \eqref{eq:wilson} and \eqref{eq:hk}; nothing in the theorems below depends on it.
+
+\begin{table}[h]
+\centering\small
+\caption{Computed ratio $\kappa_{ab}/\kappa_a$ for four plaquettes in a row ($\SU$ unless stated; heat kernel at $t=1/\beta$).}\label{tab:ratio}
+\begin{tabular}{@{}rcccccc@{}}
+\toprule
+$\beta$ & Wilson & $\frac{2(\beta-1/2)}{\beta-1}$ & heat kernel & $2+\frac{2}{3\beta}$ & U(1) cos & U(1) Villain\\ \midrule
+4 & 2.3211041 & 2.33333 & 2.2089775 & 2.16667 & 2.0617315 & 2\\
+8 & 2.1408504 & 2.14286 & 2.0926527 & 2.08333 & 2.0275976 & 2\\
+16 & 2.0662495 & 2.06667 & 2.0438662 & 2.04167 & 2.0131157 & 2\\
+32 & 2.0321625 & 2.03226 & 2.0213683 & 2.02083 & 2.0064001 & 2\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Matching Wilson and the heat kernel by the coefficient of the fundamental representation ($I_2(\beta)/I_1(\beta)=e^{-3t/2}$, i.e.\ $t=1/\beta+1/(2\beta^2)+O(\beta^{-3})$), the deviation of the ratio from $2$ is $1/\beta$ for Wilson and $2/(3\beta)$ for the heat kernel at leading order.
+In the abelian case the deviation disappears for the Gaussian (Villain) action; in $\SU$ it does not.
+Read at this order, the Wilson deviation $1/\beta$ splits into $2/(3\beta)$, which survives the change to the heat-kernel action and is therefore attributable to the curvature of the group, and $1/(3\beta)$, attributable to the non-Gaussian exponent of $e^{\beta\cos\psi}$.
+Both parts are $O(g^2)$ in the usual identification $\beta=4/g^2$, and both vanish as $\beta\to\infty$, where the ratio returns to its tree value.
+The question that the rest of the paper addresses is therefore not whether a second coordinate appears (it does, at relative order $1/\beta$), but whether it is a free parameter of the flow or is fixed by the flow, and whether the corresponding remainder can be summed over many steps.
+The next section identifies the origin of the $2/(3\beta)$.
+
+\section{Theorem 1: the ratio-two criterion}\label{sec:thm1}
+
+Let the outer kernel be $e^{F(\psi)}$ and the inner kernel $G(\psi)$, both smooth class functions on $[0,\pi]$, and consider $w=\int G(U)e^{F(W_aU^{-1})}e^{F(U^{-1}W_b)}dU$ (for \eqref{eq:w}, $e^F=f$ and $G=f*f$).
+Let $\mu$ be the probability measure on $[0,\pi]$
+\[
+\mu(d\psi)\propto\sin^2\psi\;G(\psi)\,e^{2F(\psi)}\,d\psi,
+\]
+and write $\E$ for its expectation.
+
+\begin{theorem}[ratio-two criterion]\label{thm:criterion}
+Assume $F,\log G\in C^2[0,\pi]$ (as functions of $\psi$, with $F'(0)=0$), and that the boundary term $F'\sin^2\psi\,G\,e^{2F}$ vanishes at $\psi=0$ and $\psi=\pi$.
+Then the couplings \eqref{eq:kappa} of $w$ at $a=b=0$ are
+\begin{equation}\label{eq:ibp}
+\kappa_a=\tfrac1{24}\,\E\bigl[F'\,(\log G)'\bigr],\qquad \kappa_{ab}=\tfrac1{24}\,\E\bigl[F'^2\bigr].
+\end{equation}
+Consequently, when $\E[F'(\log G)']\ne0$,
+\[
+\frac{\kappa_{ab}}{\kappa_a}=2+\frac{D}{\E[F'(\log G)']},\qquad D:=\E\bigl[F'(F'-2(\log G)')\bigr],
+\]
+so the ratio equals $2$ if and only if $D=0$; the pointwise condition $(\log G)'=F'/2$, i.e.\ $G\propto e^{F/2}$, is sufficient.
+\end{theorem}
+
+\begin{proof}
+Write $d_a(U)$ for the distance from $W_a$ to $U$ on $S^3$.
+At $a=0$, $\nabla_a d_a=-\hat u/2$ and $\nabla_a^2d_a=\tfrac14\cot\psi\,(I-\hat u\hat u^{\mathsf T})$ (the Hessian of the distance on the unit three-sphere; $\hat u=\hat n$).
+Hence $\nabla_aF=-\tfrac12F'\hat u$ and $\nabla_a^2F=\tfrac14F''\hat u\hat u^{\mathsf T}+\tfrac14F'\cot\psi(I-\hat u\hat u^{\mathsf T})$.
+Expanding $\log w$ to second order in $(a,b)$ at $0$, the first-order terms vanish by the symmetry $\hat u\mapsto-\hat u$, and averaging over $\hat u\in S^2$ ($\E\hat u\hat u^{\mathsf T}=I/3$):
+\[
+\E[\nabla_a^2F]=I\cdot\E\bigl[\tfrac1{12}F''+\tfrac16F'\cot\psi\bigr],\qquad \Cov(\nabla_aF,\nabla_bF)=I\cdot\tfrac1{12}\E[F'^2]=\Cov(\nabla_aF,\nabla_aF).
+\]
+With $S:=\tfrac1{12}\E[F'^2]$ and $D_0:=\E[\tfrac1{12}F''+\tfrac16F'\cot\psi]$, the second-order Taylor coefficient of $\log w$ is $\tfrac12D_0(|a|^2+|b|^2)+\tfrac12S(|a|^2+|b|^2+2a\cdot b)$, and since $|a-b|^2=|a|^2+|b|^2-2a\cdot b$ this gives $\kappa_{ab}=S/2$ and $\kappa_a=-D_0/2-S$.
+Now integrate by parts:
+\[
+\frac{d}{d\psi}\Bigl[F'\sin^2\psi\,G\,e^{2F}\Bigr]=\sin^2\psi\,G\,e^{2F}\Bigl[F''+2\cot\psi\,F'+F'(\log G)'+2F'^2\Bigr],
+\]
+and the boundary terms vanish by assumption, so $\E[F''+2F'\cot\psi]=-\E[F'(\log G)']-2\E[F'^2]$.
+Substituting, $\kappa_a=-\tfrac1{24}\E[F''+2F'\cot\psi]-\tfrac1{12}\E[F'^2]=\tfrac1{24}\E[F'(\log G)']$.
+The remaining statements are algebra: $\kappa_{ab}=2\kappa_a$ iff $\E[F'^2]-2\E[F'(\log G)']=0$, and $\E[F'^2]/\E[F'(\log G)']=2+D/\E[F'(\log G)']$.
+\end{proof}
+
+The proof is elementary.
+Its algebraic steps (from the integration-by-parts relation to \eqref{eq:ibp}, the equivalence and the quotient identity) are the Lean statements \code{kappa\_a\_of\_ibp}, \code{kappa\_ab\_eq}, \code{ratio\_two\_iff}, \code{ratio\_eq\_two\_add}; the Haar measure, the Hessian of the distance and the integration by parts are outside Lean.
+The same computation for $\mathrm{U}(1)$ (measure $d\alpha$, no $\cot$ term) gives $\kappa_a=\tfrac12\E[F'(\log G)']$, $\kappa_{ab}=\tfrac12\E[F'^2]$ and the same criterion.
+
+\paragraph{Flat Gaussian, heat kernel and Van Vleck.}
+The flat Gaussian semigroup satisfies the sufficient condition: $p_{2t}\propto p_t^{1/2}$ for the $\mathrm{U}(1)$ Villain kernel (up to winding terms), which is the ratio $2$ found in Section~\ref{sec:oneloop}.
+For the $\SU$ heat kernel, the semigroup property closes the inner integral ($G=p_{2t}$), but
+\[
+F=\log p_t=-\frac{\psi^2}{2t}+v+c,\qquad \log G=\log p_{2t}=-\frac{\psi^2}{4t}+v+c',
+\]
+so $(\log G)'-F'/2=v'/2\ne0$: the Van Vleck factor enters the inner and the outer kernel with the same power and spoils the square-root relation.
+Substituting into Theorem~\ref{thm:criterion},
+\[
+\frac{\kappa_{ab}}{\kappa_a}-2=\frac{\E[(\psi/t-v')\,v']}{\E[(\psi/t-v')(\psi/(2t)-v')]}>0
+\]
+on the range where $\psi/t$ dominates $v'=1/\psi-\cot\psi=\psi/3+O(\psi^3)$, and the Laplace expansion of $\mu\propto\psi^2(1+\psi^2/6+\dots)e^{-5\psi^2/(4t)}$ gives \eqref{eq:hk}.
+In saddle-point language, the curvature of the Hessian of the three distances contributes $-(3(A+B)-4P)/150$ ($A=\theta_a^2$, $B=\theta_b^2$, $P=a\cdot b$), parallel to the tree form, and the three prefactors contribute $-(17(A+B)-16P)/600$, which is not; only the prefactors move the ratio.
+A diagnostic kernel without prefactor ($e^{-\psi^2/(2t)}$ outside, $e^{-\psi^2/(4t)}$ inside) satisfies $G=e^{F/2}$ pointwise and has ratio $2$ for every $t$ (computed to $3\times10^{-12}$); it is not a semigroup on $S^3$, so it is not the weight of a four-plaquette model.
+
+\paragraph{The criterion at one loop.}
+Write a concentrated weight as $f=C\,p_{1/B}(1+\varepsilon)$ with $\varepsilon=c\psi^2+q\psi^4$, $c=O(1)$, $q=O(B)$.
+The inner kernel is $G=p_{2/B}(1+2\E_{\mathrm{br}}[\varepsilon]+O(B^{-2}))$, with $\E_{\mathrm{br}}$ the average over the midpoint of the Brownian bridge of time $2/B$ from $1$ to $U$ (flat approximation, $\E|X|^2=\psi^2/4+3t/2$, $\E|X|^4=\psi^4/16+\tfrac54t\psi^2+\mathrm{const}$ for $t=1/B$).
+With $F'=-B\psi+a_1$, $(\log G)'=-B\psi/2+b_1$ one finds
+\[
+a_1-2b_1=-v'+\varepsilon'-4(\E_{\mathrm{br}}\varepsilon)'=-\tfrac{\psi}{3}+3q\psi^3-10qt\psi+\dots,
+\]
+in which $c\psi^2$ has cancelled: a multiplicative $\psi^2$ correction is absorbed in a shift of the tree coupling.
+Inserting the Gaussian moments $m_2=6/(5B)$, $m_4=12/(5B^2)$ of the leading measure $\psi^2e^{-5B\psi^2/4}$:
+
+\begin{proposition}[one-loop form of the criterion]\label{prop:D}
+For weights \eqref{eq:class} concentrated at the identity, at leading order (Laplace),
+\[
+D=\frac25+\frac{24}{5}\,\frac{q}{B}+O(B^{-1}),\qquad \E[F'(\log G)']=\tfrac35B+O(1),\qquad \frac{\kappa_{ab}}{\kappa_a}=2+\frac{D}{\frac35B}+O(B^{-2}).
+\]
+The term $2/5$ comes from the Van Vleck prefactor alone; $(24/5)(q/B)$ from the quartic part of the exponent.
+For $\mathrm{U}(1)$ the same computation gives $D=(24/25)(q/B)$.
+\end{proposition}
+
+The substitution of the moments is the Lean statement \code{one\_loop\_D} ($B\ne0$), and \code{one\_loop\_D\_u1} for $\mathrm{U}(1)$; the reduction to these moments is on paper.
+Calibration: Wilson has $q/B=1/24$, $D=3/5$, ratio $2+1/\beta$; the heat kernel has $q=0$, $D=2/5$, ratio $2+2t/3$; $\mathrm{U}(1)$ cos has $D=1/25$, ratio $2+0.2/\beta$; $\mathrm{U}(1)$ Villain has $D=0$.
+
+\paragraph{Which one-parameter families can keep the ratio at $2$.}
+Two consequences of Proposition~\ref{prop:D}.
+(i) For the mixed family $f=e^{\beta\cos\psi}P(\psi)^\gamma$ the prefactor power $\gamma$ is a $\psi^2$ correction and does not enter $D$ at one loop; even with $\gamma=c\beta$ one has $q/B=(15+2c)/(120(3-c))$ and $D>8/25$ for all $c<3$ (Lean: \code{gamma\_family\_one\_loop\_lower}).
+On the grid $\gamma\in[-128,0.45]$, $\beta\in\{4,8,16,32\}$, computed values of $D$ are all positive ($0.343$ to $0.600$); for $\gamma\ge1/2$ the singularity of $f$ at $U=-1$ removes the quadratic couplings altogether.
+(ii) Cancelling the $2/5$ needs $q/B=-1/12$, a quartic steeper than Gaussian.
+The fundamental-plus-adjoint action $\beta\cos\psi+\rho\beta\cos^2\psi$ has $B=\beta(1+2\rho)$, $q=\beta(1/24+\rho/3)$, so $D=2/5+\tfrac15(1+8\rho)/(1+2\rho)$ at one loop, which vanishes exactly at $\rho=-1/4$ (Lean: \code{fund\_adj\_one\_loop\_root}, for $\beta\ne0$, $1+2\rho\ne0$).
+Computed roots $\rho^*(\beta)$ of the full $D$ exist for $\beta\ge12$ ($-0.3180$ at $\beta=16$, $-0.2791$ at $32$, $-0.2516$ at $512$, consistent with $-1/4-0.84/\beta$); on the grid at $\beta\le10$ there is none.
+Finally, the pointwise condition $G\propto e^{F/2}$ cannot hold at one loop for a concentrated class function, since $-\psi/3+3q\psi^3-10qt\psi$ is not the zero polynomial for any $q,t$ (Lean: \code{no\_pointwise\_sqrt\_one\_loop}).
+Section~\ref{sec:thm2} shows that the curve $\rho^*(\beta)$ is not preserved by the one-step map, so a ratio-two action is a property of one step, not of the flow.
+
+\section{Theorem 2: the attracting class}\label{sec:thm2}
+
+All statements of this section concern the diagonal one-step map \eqref{eq:step} acting on weights of the form \eqref{eq:class}, in the limit $B\to\infty$ with the argument $w$ of $f'$ and the profile $h=O(1)$ fixed (at leading order (Laplace)).
+The input is three composition rules on $S^3$.
+
+\begin{lemma}[composition rules at leading order (Laplace)]\label{lem:rules}
+Let $f_i=\exp(-B_id_i^2/2+h_i)$, $i=1,2$, with $B_i\to\infty$ in fixed ratio, and $g_i:=h_i-\log P$.
+\begin{enumerate}[label=(\alph*)]
+\item \emph{Convolution.} The saddle of $(f_1*f_2)(W)$ lies on the geodesic from $1$ to $W$, at distance $a=B_2w/(B_1+B_2)$ from $1$ and $b=B_1w/(B_1+B_2)$ from $W$; the convolution has $B=B_1B_2/(B_1+B_2)$ and
+\[
+h_{f_1*f_2}(w)=h_1(a)+h_2(b)+\log P(w)-\log P(a)-\log P(b)+\mathrm{const}+O(B^{-1}),
+\]
+i.e.\ $g_{f_1*f_2}(w)=g_1(a)+g_2(b)$: in the variable $g$ the convolution acts as on flat space.
+\item \emph{Product at the same point.} $f^2$ has $B\mapsto2B$, $h\mapsto2h$ (so $g\mapsto2g+\log P$).
+\item \emph{Square root.} $B\mapsto B/2$, $h\mapsto h/2$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}[Sketch]
+(b) and (c) are immediate.
+For (a), the longitudinal Hessian at the saddle is $B_1+B_2$; transversally (two directions) the Hessian of $\tfrac12d^2$ on $S^3$ is $d\cot d$, so the transverse Hessian is $B_1a\cot a+B_2b\cot b=k\sin w/(\sin a\sin b)$ with $k=B_1a=B_2b$ (Lean: \code{transverse\_hessian}).
+The inverse transverse determinant, together with the Haar density $\sin^2$ at the saddle, produces $P(w)/(P(a)P(b))$ up to a constant (Lean: \code{convolution\_prefactor}, the identity $P(a)P(b)\sin a\sin b/\sin(a+b)=\frac{ab}{a+b}P(a+b)$).
+With $g=0$ this is the semigroup property of the heat kernel at leading order.
+\end{proof}
+
+Equivalently, lifting class functions to radial functions on $\R^3$ by $f=P\cdot\varphi$ inside the ball of radius $\pi$ turns $\SU$ convolution into $\R^3$ convolution, up to images under $\psi\mapsto2\pi\pm\psi$; this is the wrapping map of Dooley and Wildberger [DW] and, at the level of characters, Kirillov's formula for $\SU$ [Ki].
+In this picture $f'^2=P\cdot\Psi\cdot(1+\text{images})$ with $\Psi=\varphi*\varphi*(P\varphi^2)$ an $\R^3$ convolution of three Gaussians of stiffness $B,B,2B$ in series: the curvature survives only in the factor $P$ left by the pointwise product $f^2$ and in the final $P$ and square root.
+
+\begin{theorem}[attracting class]\label{thm:class}
+For the diagonal one-step map \eqref{eq:step} on $\SU$ class functions \eqref{eq:class}, at leading order (Laplace):
+\begin{enumerate}[label=(\roman*)]
+\item \emph{Tree map.} $B'=B/5+O(1)$; the $\psi^{2k}$ shape coordinate is multiplied by $(4^k+1)/5^{2k-1}$; in particular $(q/B)'=\tfrac{17}{125}(q/B)+O(B^{-1})$.
+\item \emph{Prefactor map.} With $g=h-\log P$,
+\[
+h'(w)=g(\tfrac{2w}5)+g(\tfrac w5)+\tfrac12\bigl[\log P(w)+\log P(\tfrac w5)\bigr]+\mathrm{const},
+\]
+so the prefactor powers obey the affine maps
+\[
+\gamma_k'=L_k(\gamma_k-1)+I_k,\qquad L_k=\frac{4^k+1}{25^k},\quad I_k=\frac{1+25^{-k}}2 .
+\]
+For $k=2$: $\gamma'=(17\gamma+296)/625$, a contraction with factor $17/625$ and unique fixed point $\gamma^*=37/76$. In general $\gamma_k^*=\dfrac{25^k-2\cdot4^k-1}{2(25^k-4^k-1)}$, so $\gamma^*_1=2/5$, $\gamma^*_3=1937/3890$, $\gamma^*_4=12191/24398$ (this value is not in [KSR]; it is added in this paper), and $\tfrac12-\gamma_k^*=4^k/(2(25^k-4^k-1))\to0$. The heat kernel ($\gamma=1$) is mapped to $\gamma_2'=313/625$.
+\item \emph{Ratio on the attracting class.} On the fixed class $h^*$ (shape coordinate $(q/B)^*=37/(13680B)$), $D=2/5+O(B^{-1})$ and
+\[
+\frac{\kappa_{ab}}{\kappa_a}=2+\frac{2/3}{B}+O(B^{-2}).
+\]
+\item \emph{The ratio-two curve is not invariant.} The image of the ratio-two locus $q/B=-1/12$ is $q/B=-17/1500+O(B^{-1})$, where the one-loop $D$ equals $216/625$. In the fundamental-plus-adjoint family the curve $\rho^*=-1/4$ is mapped to $\rho'=-53/356$, at distance $9/89$.
+\end{enumerate}
+In $\mathrm{U}(1)$ the inhomogeneous term in (ii) is absent, the fixed point is $h=0$ (Villain, $t'=5t$), and the coefficient in (iii) is $0$.
+\end{theorem}
+
+\begin{proof}
+Apply Lemma~\ref{lem:rules} to \eqref{eq:step}.
+$G=f*f$ has $B_G=B/2$ and $g_G(w)=2g(w/2)$.
+In $G*f^2$ the stiffnesses are $B/2$ and $2B$, so the saddle is at $a=4w/5$ from the identity and $b=w/5$ from $W$ (Lean: \code{tree\_quadratic\_split}, $Bu^2/8+B(w-u)^2/2=Bw^2/10+\tfrac{5B}8(u-\tfrac45w)^2$); the square root halves everything.
+Collecting, $h'(w)=g(2w/5)+g(w/5)+\tfrac12[\log P(w)+\log P(w/5)]$ and $B'=B/5-2h_1'$.
+For (i), the $\psi^{2k}$ coefficient of $g(2w/5)+g(w/5)$ is $(2^{2k}+1)/5^{2k}$ times that of $g$, and $B'=B/5$; dividing, the shape coordinate gains $(4^k+1)/5^{2k-1}$ (Lean: \code{tree\_value\_at\_saddle} for $k=2$).
+For (ii), write $h_k=\gamma_kp_k$; the $\psi^{2k}$ coefficient of the right-hand side is $p_k[L_k(\gamma_k-1)+\tfrac12(1+25^{-k})]$.
+The fixed point and contraction for $k=2$ and the general formula are algebra (Lean: \code{step\_k2}, \code{step\_k2\_fixed\_iff}, \code{step\_k2\_contract}, \code{fixed\_point\_general}, \code{fixed\_point\_k3}, \code{fixed\_point\_k4}, \code{half\_sub\_gamma\_star}, \code{step\_k2\_heat}).
+For (iii), insert $(q/B)^*=O(1/B)$ into Proposition~\ref{prop:D}: $D=2/5+O(1/B)$ and $(2/5)/(3/5)=2/3$ (Lean: \code{ratio\_coefficient}).
+For (iv), $(17/125)(-1/12)=-17/1500$, and in the fundamental-plus-adjoint family $x=q/B$ corresponds to $\rho=(x-1/24)/(1/3-2x)$ (Lean: \code{rho\_of\_ratio}, \code{refit\_solution}, \code{refit\_unique}), giving $-53/356$; $-53/356+1/4=9/89$ and $2/5+(24/5)(-17/1500)=216/625$ (Lean: \code{image\_rho}, \code{image\_gap}, \code{image\_one\_loop\_D}).
+For $\mathrm{U}(1)$ there is no $\log P$ in Lemma~\ref{lem:rules}.
+\end{proof}
+
+\begin{remark}[how the statements were checked numerically]
+Computed one-step maps (two routes: character coefficients with Taylor series of $\log f'$, and direct one-dimensional convolution integrals with a polynomial fit) reproduce (ii): the $B\to\infty$ extrapolations of $\gamma'_2$ from $B=32,\dots,256$ agree with $L_2(\gamma-1)+I_2$ to $10^{-7}$ for $\gamma\in\{0,\tfrac12,1,2\}$, and iterating at fixed $B$ from four starting powers converges to the same point with step ratio $0.02720$ (versus $17/625=0.0272$).
+For (iv), starting at the computed roots $\rho^*(\beta)$, $\beta=128,256,512$, the distance $\rho'-\rho^*(\beta')$ is $0.160,0.127,0.113$, approaching $9/89\approx0.101$ as $O(1/\beta')$; the measured contraction of $q/B$ is $0.1223,0.1290,0.1325$, approaching $17/125=0.136$.
+For (iii), $(r-2)B$ on the class is $0.6758,0.6712,0.6689,0.6678$ at $B=32,\dots,256$, extrapolating to $0.666667$.
+\end{remark}
+
+\paragraph{The fixed class in closed form.}
+Iterating the map of Theorem~\ref{thm:class}(ii) from any $h=O(1)$ converges, coefficient by coefficient, to
+\[
+h^*=\log P+g^*,\qquad g^*(w)=\tfrac12\sum_{n\ge0}\sum_{\varrho}\Bigl[\log P\bigl(\tfrac{\varrho w}5\bigr)-\log P(\varrho w)\Bigr],
+\]
+where $\varrho$ runs over the $2^n$ products of $n$ factors from $\{2/5,1/5\}$; on $\psi^{2k}$ this is the geometric series of the affine map with ratio $L_k<1$.
+The class is not a single power of the prefactor: its powers $\gamma_k^*$ increase with $k$ towards $1/2$, starting from $\gamma_1^*=2/5$.
+The coordinate $\gamma_1$ is not observable separately: it is absorbed in $B'=B/5-2h_1'$, with $h_1'=p_1[(\gamma-1)/5+13/25]$ at leading order.
+
+The prefactor power is thus not halved by a step: it contracts by $L_2=17/625$ (the same number as the tree contraction of $\psi^4$), and the value $\approx\tfrac12$ is the fixed point, produced by the square root acting on the one prefactor that the convolution regenerates.
+The heat kernel is not a fixed point of this map; the attracting class differs from it in the prefactor powers ($\gamma_k^*\ne1$) but not in the leading ratio $2+(2/3)/B$.
+
+\section{Theorem 3: a shape remainder uniform in the number of steps}\label{sec:thm3}
+
+Theorem~\ref{thm:class} describes the leading-order map.
+To iterate it from the ultraviolet one needs the $O(1/B)$ remainder with a constant, uniformly along the flow.
+We do this in a projected version of the model.
+
+\begin{definition}[projected model and distance]\label{def:proj}
+The input of a step is $f=\exp(-B\psi^2/2+h_2\psi^4+h_3\psi^6+h_4\psi^8)$ on all of $[0,\pi]$.
+The output $(B',h_2',h_3',h_4')$ consists of the Taylor coefficients at $w=0$ of the analytic part of $\log f'$, defined below; coefficients of $\psi^{10}$ and higher are discarded, and the output is the input of the next step.
+The distance to the attracting class is
+\[
+r(h):=\max_{k=2,3,4}\,4^k\,\bigl|h_k-h_k^*\bigr|,\qquad h_k^*=\gamma_k^*p_k ,
+\]
+with $\gamma_k^*$ from Theorem~\ref{thm:class}(ii) (weights $\rho^{2k}$, $\rho=2$).
+\end{definition}
+
+\paragraph{The lifted step.}
+In the lift $f=P\varphi$, $\varphi=e^{-B|x|^2/2+g}$ and $f^2=P\cdot(P\varphi^2)$, so $f'^2=P\cdot\Psi\cdot(1+\text{images})$ with $\Psi=\varphi*\varphi*(P\varphi^2)$ on $\R^3$.
+Absorbing the linear part $-p_1|x|^2$ of $-\log P$ into the stiffnesses ($k_1=k_2=B+\tfrac13$, $k_3=2B+\tfrac13$) leaves remainders $\tilde G_i=O(|x|^4)$, saddle ratios $c_1=c_2=(2B+\tfrac13)/(5B+1)$, $c_3=(B+\tfrac13)/(5B+1)$, and Gaussian fluctuations $\eta_i$ with $\sum\eta_i=0$ and covariance $\delta_{ij}/k_i-1/(k_ik_j\sum_l k_l^{-1})$, which at leading order is $\kappa/B$ with $\kappa=\tfrac15\left(\begin{smallmatrix}3&-2&-1\\-2&3&-1\\-1&-1&2\end{smallmatrix}\right)$ (eigenvalues $1,\tfrac35,0$).
+This gives the identity
+\[
+2\log f'(w)=\log P(w)-k_{\mathrm{eff}}w^2+\sum_i\tilde G_i(c_i^2w^2)+\log\E_\eta\bigl[e^{F(w,\eta)-F(w,0)}\bigr]+\text{images}+\mathrm{const},
+\]
+$F(w,\eta)=\sum_i\tilde G_i(|c_iw\hat e+\eta_i|^2)$.
+The \emph{analytic part} is the same expression with $\eta$ restricted to the box $\{|\eta_i|\le1.8\}$ and without images.
+The rest is bounded on $[0,2]$ by $10^{-35}$ for $B\ge32$ (coarse estimate: Gaussian tail of the box and the image factor $e^{-k_{\mathrm{eff}}((2\pi-2)^2-4)/2}$); it need not have Taylor coefficients, since $f$ is not smooth at $-1\in\SU$ and $f*f$ carries a non-analytic term of size about $e^{-B\pi^2}$ at the identity.
+The rational facts used here are in Lean: $c_1\le2/5$, $0\le c_3-1/5\le2/(75B)$, $k_{\mathrm{eff}}/2\le B/5+3/50$ (\code{saddle\_ratio\_le}, \code{saddle\_ratio\_three}, \code{keff\_half\_le}) and the eigenvectors of $\kappa$ (\code{cov\_eigen}).
+
+\paragraph{The first-order term.}
+Expanding $\log\E_\eta$ to second cumulant order and including the $1/B$ shift of the saddle ratios, the $\psi^4$ coordinate of a step is
+\[
+h_2'=\tfrac{17}{625}h_2+\tfrac{74}{28125}+\frac1B\Bigl[-\tfrac{8}{3125}h_2+\tfrac{42}{125}h_3-\tfrac{14}{140625}\Bigr]+O(B^{-2})
+\]
+at fixed $h=O(1)$ (the leading part is Theorem~\ref{thm:class}(ii) for $k=2$). On the class $h^*$ this gives $(\gamma'_2-37/76)B\to-591986/69290625\approx-0.0085435$ (Lean: \code{first\_order\_at\_fixed\_point}, the substitution only); the computed extrapolation is $-0.0085438$.
+For an input whose shape deviates at order one, $h_2=xB$, a one-loop term $c\,x^2$ with $c=11168/15625\approx0.7148$ appears in the $O(1)$ coordinate (Lean: \code{quadratic\_shape\_coefficient}, the arithmetic only); computed fits give $0.7129$ to $0.7147$.
+
+\begin{proposition}[one-step inequality; paper argument with computed constants]\label{prop:onestep}
+In the projected model of Definition~\ref{def:proj}, for $\SU$, four plaquettes in a row and the diagonal definition: if $B\ge32$ and $r(h)\le r_{\mathrm{box}}$ then
+\[
+r(h')\le\tfrac{17}{625}\,r(h)+\frac{C}{B},
+\]
+with $C$ as in Table~\ref{tab:C}, and $B'\le B/5$.
+\end{proposition}
+
+\paragraph{Argument.}
+(1) The leading part is diagonal: $h_k'-h_k^*=L_k(h_k-h_k^*)+[\text{explicit part}]+[\text{remainder}]$, and the weighted maximum of $L_k$ is $L_2=17/625$.
+(2) The explicit part (saddle-ratio shifts and the second-cumulant term, with $c_i(B)$ and the covariance kept as rational functions of $B$) is a polynomial of degree at most two in $\delta=h-h^*$ with coefficients rational in $B$; it is bounded on the box $|\delta_k|\le r_{\mathrm{box}}/4^k$ by a majorant series, evaluated in exact rational arithmetic and 38-digit floating point.
+(3) The remainder $|\log(1+U(w))-Q(w)|$ is bounded uniformly for complex $|w|\le2$ by majorant series of the $\tilde G_i$ (the coefficients of $\log P(\sqrt s)-s/6$ are $\zeta(2k)/(k\pi^{2k})>0$; truncated at $k=250$ with tail below $3\times10^{-44}$), the step $\|(s+d)^k-s^k\|\le(A+D)^k-A^k$ (Lean: \code{pow\_sub\_pow\_norm\_le}), the Taylor remainder $|X|^4e^{|X|}/24$, the vanishing of odd moments on the symmetric box, H\"older's inequality and one-dimensional $\chi_3$ integrals for $|\eta_i|$.
+(4) Cauchy's estimate on $|w|=2$ converts the remainder into an error $\varepsilon_R/2$ in every weighted coefficient.
+(5) $C=\max_k[\text{bound on the explicit part}]\cdot B+B\varepsilon_R/2$, evaluated at $B_{\min}=32$; the explicit part increases in $B$ to its limit and $B\varepsilon_R/2\approx0.18/B$ decreases, both checked on a grid $B\in[32,10^6]$ only.
+The side conditions hold with margin: $|U|\le4.0\times10^{-3}<1$ ($B=32$, $r_{\mathrm{box}}=0.05$), $c_i\cdot2+1.8<\pi$, and $C/32\le(1-17/625)r_{\mathrm{box}}$.
+$B'\le B/5$ follows from $k_{\mathrm{eff}}/2\le B/5+3/50$, $p_1=1/6$ and a $w^2$ correction below $2\times10^{-3}$.
+
+\begin{table}[h]
+\centering\small
+\caption{Computed constants $C$ in Proposition~\ref{prop:onestep} ($B\cdot$explicit part at $B\to\infty$, remainder at $B_{\min}$).}\label{tab:C}
+\begin{tabular}{@{}rcccc@{}}
+\toprule
+box $r_{\mathrm{box}}$ & explicit part $\times B$ & remainder $\times B$ at $B=32$ & $C$ ($B_{\min}=32$) & $C$ ($B_{\min}=1000$)\\ \midrule
+$0$ (on the class) & $0.000759$ & $0.00106$ & $0.00182$ & $0.00079$\\
+$0.01$ & $0.00163$ & $0.00193$ & $0.00355$ & $0.00168$\\
+$0.05$ & $0.00509$ & $0.00568$ & $0.0108$ & $0.00524$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The sharp value on the class as $B\to\infty$ is $C_0=16\times295993/6236156250\approx0.000759$ (the $\psi^4$ component of the $1/B$ term); the estimate at $B_{\min}=32$ is $2.4$ times $C_0$, at $B_{\min}=1000$ it is $1.04$ times. The constant $C=0.00182$ and the column $B_{\min}=1000$ of Table~\ref{tab:C} are not in the textbook [KSR]; they are added in this paper. The one-step inequality of Proposition~\ref{prop:onestep} itself, with $C=0.0108/0.0036/0.00076$, is in [KSR, 15-06, Theorem~U] and [KSR, 15-03, \S04].
+
+\begin{theorem}[uniform shape remainder]\label{thm:U}
+In the projected model of Definition~\ref{def:proj} ($\SU$, four plaquettes in a row, diagonal definition, coefficients up to $\psi^8$, analytic part of $\log f'$), let $B_0,B_1,\dots$ be the actual scales of successive steps and $r_n$ the distance after $n$ steps.
+Assume that the one-step inequality of Proposition~\ref{prop:onestep} holds with $\lambda=17/625$ and a constant $C$ on the box $r\le r_{\mathrm{box}}$ for every scale $B\ge32$, together with $B'\le B/5$, and that $C/32\le(1-\lambda)r_{\mathrm{box}}$.
+If $r_0\le r_{\mathrm{box}}$ and $B_0,\dots,B_{N-1}\ge32$, then for all $n\le N$
+\[
+r_n\le r_{\mathrm{box}}\qquad\text{and}\qquad r_n\le\lambda^n r_0+\frac{C}{(5-\lambda)B_n}.
+\]
+With the constants of Table~\ref{tab:C} (computed): $r_{\mathrm{box}}=0.05$, $C=0.0108$, or $r_{\mathrm{box}}=0.01$, $C=0.00355$.
+\end{theorem}
+
+\begin{proof}
+Induction on $n$.
+The box is preserved because $r_n\le r_{\mathrm{box}}$ and $\lambda r_{\mathrm{box}}+C/B_n\le r_{\mathrm{box}}$ give $r_{n+1}\le r_{\mathrm{box}}$ (Lean: \code{stays\_in\_box}).
+For the bound, $r_{n+1}\le\lambda r_n+C/B_n\le\lambda^{n+1}r_0+\lambda C/((5-\lambda)B_n)+C/B_n=\lambda^{n+1}r_0+5C/((5-\lambda)B_n)$, and $5/B_n\le1/B_{n+1}$ (Lean: \code{uv\_uniform}, under $0\le\lambda<5$, $C\ge0$, $B_n>0$, $5B_{n+1}\le B_n$ and the one-step inequality for $n<N$).
+\end{proof}
+
+The bound depends on the final scale only: the early steps have large $B$ and their remainders are contracted by $\lambda$, so $\sum_{k<N}\lambda^{N-1-k}C/B_k\le C/((5-\lambda)B_N)$.
+The ultraviolet direction is that of large $B_0$: reaching a final scale $\bar B$ after $N$ steps means starting at $B_0\approx5^N\bar B$, and the deviation at $\bar B$ is at most $\lambda^Nr_0+C/((5-\lambda)\bar B)$ however many steps are taken.
+The condition $B_{N-1}\ge32$ allows final scales down to $B_N\approx6$.
+In the shape coordinates $h/B$ the contraction is $17/125$ and the inhomogeneous term is of order $B^{-2}$.
+
+The same bookkeeping in additive form is the following elementary lemma, which is the form used when the observable is read off along a one-parameter class.
+
+\begin{lemma}[telescoping]\label{lem:tele}
+Let $x_k$ be an observable after $k$ steps, $f_k$ the value of a class function at the parameter after $k$ steps, and suppose $|x_{k+1}-x_k-(f_{k+1}-f_k)|\le C(a+ck)^{-2}+Dq^k$ with $a,c>0$, $C,D\ge0$, $0\le q<1$. Then for all $K$,
+\[
+|x_K-x_0-(f_K-f_0)|\le C\Bigl(\frac1{a^2}+\frac1{ca}\Bigr)+\frac{D}{1-q}.
+\]
+\end{lemma}
+
+This is \code{uniform\_deviation} (with \code{telescoping\_residual}, \code{geometric\_part\_le}, \code{inv\_sq\_sum\_le}); the analytic content is entirely in the hypothesis.
+
+\paragraph{Outside the box.}
+The box is small: $r\le0.05$ means a shape deviation $|h_2/B-h_2^*/B|\lesssim0.05/(16B)$.
+Actions whose shape differs from the class at order one lie outside it.
+Starting from Wilson's action ($x=h_2/B=1/24$) the computed flow violates the bound with $\lambda=17/625$ at the first step for every $B_0\in\{32,\dots,512\}$: the required effective contraction is $\bar\lambda/\lambda=1.018$ at $B_0=32$ and $1.001$ at $B_0=512$, and the excess is the one-loop term $cx^2$, independent of $B$ in the $O(1)$ coordinates.
+An artificial start at $x=+0.04$ behaves the same way; starts with negative $x$ (fundamental plus adjoint at $\rho=-1/4$, $x=-1/12$; and $x=-0.1$) stay below the bound, since $cx^2$ then reduces $|\delta|$.
+For $x>1/(2\pi^2)$ the function $-\psi^2/2+x\psi^4$ increases towards $\psi=\pi$ and $f$ concentrates at $-1$; such inputs are not in the class at all.
+Inside the box the computed flow from three starts (the class point, the Gaussian $\gamma=0$, the heat kernel $\gamma=1$), $B_0=32,\dots,512$, one to three steps, stays below the bound with the constants of Table~\ref{tab:C}; with $C$ replaced by $C/10$ the class point and the Gaussian violate it at the first step, so the estimate is not far from sharp there.
+
+\paragraph{Higher coordinates and the shape coordinates.}
+The first-order terms of the $\psi^6$ and $\psi^8$ coordinates are, in the same expansion,
+\begin{align*}
+h_3'&=\tfrac{13}{3125}h_3+\tfrac{7748}{44296875}+\tfrac1B\Bigl[\tfrac{288}{78125}h_2^2-\tfrac{56}{1171875}h_2-\tfrac{12}{15625}h_3+\tfrac{6984}{78125}h_4-\tfrac{236}{123046875}\Bigr],\\
+h_4'&=\tfrac{257}{390625}h_4+\tfrac{24382}{1845703125}+\tfrac1B\Bigl[\tfrac{864}{390625}h_2h_3-\tfrac{496}{615234375}h_2-\tfrac{28}{1953125}h_3-\tfrac{336}{1953125}h_4-\tfrac{202}{5537109375}\Bigr],
+\end{align*}
+the last in the projected model; on the class they give $(\gamma_3'-\gamma_3^*)B\to-0.0027597$ and $(\gamma_4'-\gamma_4^*)B\to-0.0016028$, smaller than the $\psi^4$ value, which is why the $\psi^4$ coordinate determines $C_0$. These first-order terms of the $\psi^6$ and $\psi^8$ coordinates are not in [KSR]; they are added in this paper.
+The $\psi^4$ term of order $1/B$ is linear in $h$ and does not involve $h_4$; the large coefficient $42/125$ of $h_3$ is the part of the $\psi^6$ term brought down to $\psi^4$ by the Gaussian fluctuations.
+In the shape coordinates $\tilde r=r/B$, using $B'\ge B/5-0.17$, Proposition~\ref{prop:onestep} reads
+\[
+\tilde r'\le\tfrac{17}{125}\Bigl(1+\tfrac{0.9}{B}\Bigr)\tilde r+5\Bigl(1+\tfrac{0.9}{B}\Bigr)\frac{C}{B^2},
+\]
+so the contraction of the shape of the action is $17/125$ and the inhomogeneous term is of order $B^{-2}$.
+The distance $r$ controls the total variation between the single-loop measures at the same $B$, $\mathrm{TV}\lesssim r\,(15/(16B^2)+105/(64B^3)+945/(256B^4))$ at leading order; the converse fails, since high coefficients are invisible at width $B^{-1/2}$. This estimate is not in [KSR]; it is added in this paper.
+
+\paragraph{U(1).}
+In the flat case $P=1$ and $h^*=0$; the explicit part has no constant term (the first-order $\psi^4$ term is $(6/25)h_3/B$) and the remainder is proportional to $\delta$, so the inhomogeneous term vanishes and one reads off $r'\le(17/625+0.06/B)\,r$ (read from the computed coefficients, as in [KSR, Chapter 15-06]; the coefficient $0.06/B$ is this paper's value; not a separate estimate on paper).
+
+\section{What is machine-checked}\label{sec:lean}
+\sloppy
+
+\paragraph{Content.}
+The Lean~4 development consists of seven modules, each importing Mathlib [M] only: \code{LatticeGaugeFourPlaquetteChain}, \code{LatticeGaugeHeatKernelFourPlaquette}, \code{LatticeGaugeRatioTwoCriterion}, \code{LatticeGaugeFundAdjointRefit}, \code{LatticeGaugePrefactorFlowFixedPoint}, \code{LatticeGaugeShapeRemainderUniform}, \code{LatticeGaugeClassResidualTelescoping} (each declaration lives in the namespace of its module).
+They check: the finite-group form of \eqref{eq:w} for arbitrary weights in a commutative semiring and its semigroup version; the tree identities \eqref{eq:tree}; the algebra of Theorem~\ref{thm:criterion} from the integration-by-parts relation; the moment substitutions of Proposition~\ref{prop:D} and its two corollaries; the refit and image computations of Theorem~\ref{thm:class}(iv); the affine maps, fixed points and the two trigonometric identities behind Lemma~\ref{lem:rules}; the rational inequalities of Section~\ref{sec:thm3}; and the assembly of Theorem~\ref{thm:U} and Lemma~\ref{lem:tele}.
+Outside Lean are: Haar measure on $\SU$ and every integral, the Hessian of the distance and the integration by parts in Theorem~\ref{thm:criterion}, Laplace's method and all leading-order reductions, the wrapping map, the remainder estimates of Proposition~\ref{prop:onestep}, all numerical constants and all computed values.
+No interval arithmetic is involved.
+
+\paragraph{Trust base.}
+There are $61$ \code{\#print axioms} lines at the ends of the modules ($9+8+9+8+12+9+6$), one for each declaration listed below; each reads \code{[propext, Classical.choice, Quot.sound]}.
+\code{sorry}, \code{axiom} declarations and \code{native\_decide} do not occur.
+The modules were checked with Lean~4 \code{v4.33.1} and the Mathlib revision pinned in the project's \code{lake-\allowbreak{}manifest.json}.
+
+\paragraph{Reproduction.}
+The project is distributed at \url{\bundleurl} (with a \code{.sha256} file at the same address with that suffix), and the complete \code{\#print axioms} output at \url{\axiomsurl} (both were placed on 2026-10-15, after the independent re-check); the ledger and build instructions of the site's Lean developments are at \url{https://computoergosum.com/en/principia/lean/index.html}.
+To verify: unpack, run \code{lake exe cache get}, then \code{LEAN\_NUM\_THREADS=1 lake build} followed by the module names above; the \code{\#print axioms} lines at the end of each module should agree with the report above and with the distributed axiom log.
+
+
+
+\fussy
+\section{Correspondence table}\label{sec:corr}
+
+Paper item, Lean declarations with file and line, and hypotheses in parentheses. The file of each module is \code{LatticeGauge}$\langle X\rangle$\code{.lean}, abbreviated as FPC: $X=$ FourPlaquetteChain; HK: HeatKernelFourPlaquette; R2: RatioTwoCriterion; FAR: FundAdjointRefit; PF: PrefactorFlowFixedPoint; SRU: ShapeRemainderUniform; CRT: ClassResidualTelescoping.
+
+{\small\sloppy
+\begin{longtable}{@{}p{0.2\linewidth}p{0.76\linewidth}@{}}
+\toprule
+Paper & Lean declaration (file:line; hypotheses)\\ \midrule
+\endhead
+Eq.~\eqref{eq:w} & \code{four\_plaquette\_constrained}\,{\scriptsize(FPC:50)} (FPC; finite group, commutative semiring, decidable equality), \code{four\_plaquette\_weight}\,{\scriptsize(FPC:40)}, \code{sum\_pair\_reindex}\,{\scriptsize(FPC:34/HK:72)}; semigroup form \code{four\_plaquette\_of\_semigroup}\,{\scriptsize(HK:78)} (HK; $p_s\star p_t=p_{s+t}$), \code{four\_plaquette\_convPow}\,{\scriptsize(HK:90)}, \code{convPow\_add}\,{\scriptsize(HK:61)}, \code{convPow\_two\_mul}\,{\scriptsize(HK:68)}, \code{conv\_assoc}\,{\scriptsize(HK:33)}, \code{conv\_delta\_left}\,{\scriptsize(HK:44)}, \code{conv\_delta\_right}\,{\scriptsize(HK:48)}, \code{sum\_pair\_reindex}\,{\scriptsize(FPC:34/HK:72)}. \\
+\midrule
+Eq.~\eqref{eq:tree} & \code{tree\_identity\_four}\,{\scriptsize(FPC:68)}, \code{tree\_lower\_four}\,{\scriptsize(FPC:76)}, \code{tree\_attained\_four}\,{\scriptsize(FPC:89)}, \code{shape\_four}\,{\scriptsize(FPC:98)}, \code{tree\_identity\_three}\,{\scriptsize(FPC:102)}, \code{shape\_three}\,{\scriptsize(FPC:107)} (FPC; none). \\
+\midrule
+Theorem~\ref{thm:criterion} & \code{kappa\_a\_of\_ibp}\,{\scriptsize(R2:34)} (R2; the integration-by-parts relation as hypothesis), \code{kappa\_ab\_eq}\,{\scriptsize(R2:38)}, \code{ratio\_two\_iff}\,{\scriptsize(R2:40)}, \code{ratio\_eq\_two\_add}\,{\scriptsize(R2:43)} ($E_1\ne0$). \\
+\midrule
+Proposition~\ref{prop:D} and consequences & \code{one\_loop\_D}\,{\scriptsize(R2:47)}, \code{one\_loop\_D\_u1}\,{\scriptsize(R2:53)} ($B\ne0$; moments substituted), \code{gamma\_family\_one\_loop\_lower}\,{\scriptsize(R2:58)} ($c<3$), \code{fund\_adj\_one\_loop\_root}\,{\scriptsize(R2:66)} ($\beta\ne0$, $1+2\rho\ne0$), \code{no\_pointwise\_sqrt\_one\_loop}\,{\scriptsize(R2:84)} (R2). \\
+\midrule
+Theorem~\ref{thm:class}(i),(iv) & \code{tree\_quadratic\_split}\,{\scriptsize(FAR:55)}, \code{tree\_value\_at\_saddle}\,{\scriptsize(FAR:59)}, \code{refit\_solution}\,{\scriptsize(FAR:31)} ($\beta=4B/3-8q\ne0$), \code{refit\_unique}\,{\scriptsize(FAR:40)}, \code{rho\_of\_ratio}\,{\scriptsize(FAR:44)} ($\beta\ne0$, $1/3-2x\ne0$), \code{image\_rho}\,{\scriptsize(FAR:66)}, \code{image\_gap}\,{\scriptsize(FAR:70)}, \code{image\_one\_loop\_D}\,{\scriptsize(FAR:72)} (FAR). \\
+\midrule
+Theorem~\ref{thm:class}(ii),(iii), Lemma~\ref{lem:rules} & \code{step\_k2}\,{\scriptsize(PF:42)}, \code{step\_k2\_heat}\,{\scriptsize(PF:45)}, \code{step\_k2\_fixed\_iff}\,{\scriptsize(PF:48)}, \code{step\_k2\_contract}\,{\scriptsize(PF:55)}, \code{fixed\_point\_general}\,{\scriptsize(PF:61)} ($x\ne0$, $x-y-1\ne0$), \code{fixed\_point\_k3}\,{\scriptsize(PF:68)}, \code{fixed\_point\_k4}\,{\scriptsize(PF:72)}, \code{half\_sub\_gamma\_star}\,{\scriptsize(PF:76)}, \code{transverse\_hessian}\,{\scriptsize(PF:81)} ($a,b,\sin a,\sin b\ne0$), \code{convolution\_prefactor}\,{\scriptsize(PF:89)} ($\sin a,\sin b,\sin(a+b),a+b\ne0$), \code{ratio\_coefficient}\,{\scriptsize(PF:117)}, \code{rem\_shape\_geometric}\,{\scriptsize(PF:95)} (PF). \\
+\midrule
+Section~\ref{sec:thm3} & \code{saddle\_ratio\_le}\,{\scriptsize(SRU:96)}, \code{saddle\_ratio\_three}\,{\scriptsize(SRU:100)}, \code{keff\_half\_le}\,{\scriptsize(SRU:112)} ($B>0$), \code{cov\_eigen}\,{\scriptsize(SRU:117)}, \code{pow\_sub\_pow\_norm\_le}\,{\scriptsize(SRU:71)} (in $\mathbb{C}$), \code{first\_order\_at\_fixed\_point}\,{\scriptsize(SRU:131)}, \code{quadratic\_shape\_coefficient}\,{\scriptsize(SRU:138)}; Theorem~\ref{thm:U}: \code{uv\_uniform}\,{\scriptsize(SRU:31)}, \code{stays\_in\_box}\,{\scriptsize(SRU:66)} (SRU; hypotheses as in the theorem). \\
+\midrule
+Lemma~\ref{lem:tele} & \code{uniform\_deviation}\,{\scriptsize(CRT:83)}, \code{telescoping\_residual}\,{\scriptsize(CRT:19)}, \code{telescoping\_residual\_multi}\,{\scriptsize(CRT:34)}, \code{geometric\_part\_le}\,{\scriptsize(CRT:41)}, \code{inv\_sq\_step}\,{\scriptsize(CRT:51)}, \code{inv\_sq\_sum\_le}\,{\scriptsize(CRT:62)} (CRT). \\
+\bottomrule
+\end{longtable}}
+
+\section{What is not claimed}\label{sec:notclaimed}
+
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{Not four-dimensional lattice gauge theory.} Everything concerns four plaquettes in a row with two loops held fixed. Nothing is said about a block-spin step of the four-dimensional lattice, block averaging, large fields, infinite volume, the continuum limit or a mass gap.
+\item \textbf{Leading order means leading order.} Theorem~\ref{thm:class}, Proposition~\ref{prop:D} and formulas \eqref{eq:wilson}, \eqref{eq:hk} are statements at leading order (Laplace) as $B\to\infty$; their remainders are not controlled there. The $O(1/B)$ coefficients of Section~\ref{sec:thm3} are computed to second cumulant order. The strong-coupling region $B=O(1)$ is not covered.
+\item \textbf{The diagonal definition.} The one-step map \eqref{eq:step} uses only $W_a=W_b$. Mixed quartic terms of $w$ that do not factorise into single-loop weights do not enter.
+\item \textbf{The projected model.} Theorem~\ref{thm:U} is for inputs truncated at $\psi^8$ and re-inflated at each step; the effect of the discarded coefficients $\psi^{10},\psi^{12},\dots$ on the next step is not included. The coordinates are those of the analytic part of $\log f'$; the non-analytic term of size about $e^{-B\pi^2}$ and the tail outside the $\eta$-box are dropped, with only a coarse bound.
+\item \textbf{The constants are computed.} The constants $C$ of Table~\ref{tab:C} are evaluated from explicit integrals and series in floating point; their monotonicity in $B$ was checked on a grid, not proved. Proposition~\ref{prop:onestep} is a paper argument with computed constants, not a proof in interval arithmetic. Theorem~\ref{thm:U} is proved (and checked in Lean) as an implication from the one-step inequality.
+\item \textbf{The box excludes the standard actions.} Wilson's action and the fundamental-plus-adjoint actions are outside the box of Theorem~\ref{thm:U}; a Wilson start violates the bound at the first step. A version with $\bar\lambda=17/625+O(1/B)$ covering such starts is not proved.
+\item \textbf{Numerical tables.} Table~\ref{tab:ratio}, the roots $\rho^*(\beta)$ and the convergence figures in the remarks are computed values, offered as checks of the asymptotic formulas.
+\item \textbf{Known ingredients.} The heat kernel on $\SU$, its image sum and character expansion, the Van Vleck prefactor, the wrapping map, Kirillov's formula and Laplace's method are standard [Fa, Me, VV, DW, Ki, dB]. That block-spinning generates couplings of larger loops whose coefficients depend on the coupling is the familiar picture behind improved actions. We have not found the specific formulas of Theorems~\ref{thm:criterion}--\ref{thm:class} (the criterion, $2/5$, $37/76$, $9/89$) in the sources we searched, which did not include a systematic search of the lattice literature; they may be known.
+\item \textbf{No external review.} The proofs, the Lean development and this text were produced within the authors' group (\S\ref{sec:ai}); no mathematician outside the authors has read them.
+\end{enumerate}
+
+\fussy
+\section{Disclosure of AI use}\label{sec:ai}
+
+This note was produced with the assistance of AI agents. The observation, the informal proofs, the Lean~4 development including the formalised statements, the literature search, the reports on which this note is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code, across many separate sessions, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for rebuilding the Lean development from the distributed archive on a separate machine, for checking the claims of this note against the reports, and for preparing the distributed version; the independent rebuild was completed on 2026-10-15 (every file checked with \code{lake env lean} in the same environment on a separate session, rc=0, standard axioms only). The human author set the task, fixed the working rules and load limits, reviewed the record, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. In particular the analytic steps listed in \S\ref{sec:lean} are checked on paper only. This edition and the Lean development it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-one-row-renormalisation}, the development under \texttt{lean/\allowbreak{}ym-one-row-renormalisation}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section and in the naming of the agent that carried out the independent re-check.
+
+\begin{thebibliography}{KSR}\small\setlength{\itemsep}{0pt}
+\bibitem[dB]{dB} N.~G.~de Bruijn, \emph{Asymptotic Methods in Analysis}, North-Holland, 1958 (Laplace's method) (not consulted directly).
+\bibitem[DW]{DW} A.~H.~Dooley and N.~J.~Wildberger, \emph{Harmonic analysis and the global exponential map for compact Lie groups}, Funct. Anal. Appl. 27 (1993), 21--27 (not consulted directly).
+\bibitem[Fa]{Fa} J.~Faraut, \emph{Analysis on Lie Groups: An Introduction}, Cambridge Stud. Adv. Math. 110, Cambridge University Press, 2008 (heat kernel and characters of $\SU$) (not consulted directly).
+\bibitem[Ka]{Ka} L.~P.~Kadanoff, \emph{Notes on Migdal's recursion formulas}, Ann. Physics 100 (1976), 359--394 (not consulted directly).
+\bibitem[Ki]{Ki} A.~A.~Kirillov, \emph{Lectures on the Orbit Method}, Grad. Stud. Math. 64, Amer. Math. Soc., 2004 (not consulted directly).
+\bibitem[KSR]{KSR} Kiichi, Shiori and Rin, \emph{Yang--Mills and the mass gap} (online textbook, in Japanese), Part~15, \url{https://computoergosum.com/principia/yang-mills/index.html} (2026).
+\bibitem[M]{M} Mathlib, \url{https://github.com/leanprover-community/mathlib4} (Lean~4 \code{v4.33.1}).
+\bibitem[Me]{Me} P.~Menotti and E.~Onofri, \emph{The action of SU($N$) lattice gauge theory in terms of the heat kernel on the group manifold}, Nuclear Phys. B 190 (1981), 288--300 (not consulted directly).
+\bibitem[Mi]{Mi} A.~A.~Migdal, \emph{Recursion equations in gauge field theories}, Sov. Phys. JETP 42 (1975), 413--418 (not consulted directly).
+\bibitem[VV]{VV} J.~H.~Van Vleck, \emph{The correspondence principle in the statistical interpretation of quantum mechanics}, Proc. Natl. Acad. Sci. USA 14 (1928), 178--188 (not consulted directly).
+\bibitem[Vi]{Vi} J.~Villain, \emph{Theory of one- and two-dimensional magnets with an easy magnetization plane. II}, J. Physique 36 (1975), 581--590 (not consulted directly).
+\bibitem[W]{W} K.~G.~Wilson, \emph{Confinement of quarks}, Phys. Rev. D 10 (1974), 2445--2459 (not consulted directly).
+\end{thebibliography}
+
+\end{document}

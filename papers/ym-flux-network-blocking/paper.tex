@@ -1,0 +1,403 @@
+%% pdfTeX / latexmk -pdf (see README.md)
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\im}{\operatorname{im}}
+%% placed 2026-10-15 (independent re-check done)
+\newcommand{\bundleurl}{https://computoergosum.com/principia/lean/principia-ym-flux-network-blocking-2026-10-15.tar.gz}
+\newcommand{\axiomsurl}{https://computoergosum.com/principia/lean/axioms-ym-flux-network-blocking-2026-10-15.txt}
+
+\title{Tree-level blocking of an abelian-linearised lattice gauge action as a flux network: the coarse coupling $\sum f^2$, the quartic contraction $\sum f^4/\sum f^2$, and their bounds}
+\author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
+\date{2026-10-15}
+
+\begin{document}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
+
+\begin{abstract}
+We study one step of block-spin blocking of a lattice gauge action at tree level (abelian linearisation): the link angles are restricted to one Cartan direction, the action is the quadratic part $\frac{\beta}{2}\sum_p\varphi_p^2$ of the heat-kernel or Wilson action plus a quartic perturbation $-\sigma\sum_p\varphi_p^4$, and the coarse action is the constrained minimum of the fine action at fixed coarse angles; one-loop corrections, non-abelian configurations and large fields are excluded from every statement.
+If a single coarse plaquette angle $\theta$ is fixed (Theorem~F), the minimiser is $\theta f$ with $f=Ps/\|Ps\|^2$, where $s$ is the $2$-chain spanned by the coarse plaquette and $P$ the orthogonal projection onto exact plaquette fields; the coarse coupling is $\beta'=\beta\sum f^2$, the quartic coefficient is carried exactly to $\sigma\sum f^4$ up to $O(\theta^6)$, and the normalised quartic deviation contracts by $\lambda=\sum f^4/\sum f^2\le\max f^2$.
+In a three-dimensional box with free boundary $\sum f^2$ is the effective resistance of the dual network (Thomson's principle).
+If all coarse plaquettes of a periodic lattice are fixed at once with $2^d$ blocks (Theorem~G), admissible data form $\im D_c$ (the coarse Bianchi identity), the minimiser is $UG^{+}\theta$, the coarse action is $\frac\beta2\theta^{\mathsf T}G^{+}\theta$, and $\beta'(\theta)\ge 1/4$ in every direction.
+For the quartic part we show (Theorem~G$'$) that a local representative of the fine-from-coarse map exists, uniformly in the volume, so that the $\ell^4$ cone of quartic deviations is mapped into itself with a volume-independent constant; for $d=4$ a weighted Stein interpolation bound computed on a finite kernel gives the factor $0.823$ for the first step.
+For several steps the answer depends on the blocking rule: with the sum of the two fine links as coarse link the computed cone factor exceeds $1$ at the third step ($1.26$) and the coarse covariance has no fixed point; with a gauge-covariant averaging rule the covariance flow has a fixed point and the computed lower bounds of the cone factor stay between $0.57$ and $0.64$, while an upper bound below $1$ is open.
+We also classify the tail of non-local coarse weights (flat, exponential or power-law) according to how the coarse variable carries conserved quantities and constraints.
+The finite-dimensional inequalities and bookkeeping are checked in Lean~4 with Mathlib; projections, interpolation and all numerical values are outside Lean.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+The question behind this paper is the existence of four-dimensional quantum Yang--Mills theory with a mass gap, in the formulation of the Clay Mathematics Institute [JW]; the paper does not bear on that question itself (\S\ref{sec:notclaimed}).
+It treats one ingredient of the block-spin approach to the ultraviolet problem of lattice gauge theory: the tree-level coarse action of one blocking step, after restricting to abelian configurations.
+The variational principles of electrical networks [Th, Ki, Co, DS], the Hodge decomposition [Ec, Ho] and the Migdal--Kadanoff recursion [Mi, Ka, It] are standard.
+The computations of the flux network and the tables on which the paper rests are recorded in the authors' online textbook [KSR, 15-05].
+The paper states them as theorems with proofs, checks the finite-dimensional steps in Lean~4 (\S\ref{sec:lean}), and adds two items that are not in [KSR, 15-05]: the bound of Theorem~\ref{thm:F}(ii) by edge-disjoint dual paths, and the classification of tails in \S\ref{sec:tails}.
+
+\section{Setting}\label{sec:setting}
+
+\paragraph{Reader and scope.}
+The paper is written for a reader who knows the variational principles of electrical networks (Thomson, Dirichlet, Kirchhoff [Th, Ki, Co, DS]) and block-spin transformations of lattice models.
+Its object is a finite-dimensional linear-algebra problem: the tree-level (saddle-point, $\beta\to\infty$) part of one blocking step of a lattice gauge action, after restricting to abelian configurations.
+The motivation is the block-spin approach to the ultraviolet problem of lattice Yang--Mills theory and the Migdal--Kadanoff approximation [Mi, Ka, It]; nothing in this paper bears on the four-dimensional ultraviolet problem itself (\S\ref{sec:notclaimed}).
+
+\paragraph{Lattice and fields.}
+Let $B$ be either the cubical complex of a box $[0,n_1]\times\dots\times[0,n_d]$ (\emph{free boundary}) or the $d$-torus $(\mathbb{Z}/L)^d$ (\emph{periodic}).
+$C_k$ denotes the $k$-cells (links $C_1$, plaquettes $C_2$, cubes $C_3$), $\partial_k$ the boundary and $D=\partial_2^{\mathsf T}$ the coboundary from links to plaquettes; inner products are the standard ones on $\R^{C_k}$.
+An \emph{abelian configuration} is a vector of link angles $A\in\R^{C_1}$ along one Cartan direction; its plaquette angles are $\varphi=DA$.
+The admissible plaquette fields are $\cA:=\im D\subset\R^{C_2}$; on a free-boundary box $\cA=\ker D_3$ (closed $2$-cochains), on a torus $\cA\subsetneq\ker D_3$ with codimension $\binom d2$.
+$P$ denotes the orthogonal projection onto $\cA$.
+
+\paragraph{Actions.}
+The fine action is $V(\varphi)=\sum_p\bigl(\frac\beta2\varphi_p^2-\sigma\varphi_p^4\bigr)$ with $\sigma\ge0$; the Wilson action has $\sigma=\beta/24$ and the heat-kernel action, at tree level, $\sigma=0$.
+We write $\kappa:=\sigma/\beta$ for the normalised quartic deviation from the heat-kernel class.
+
+\paragraph{Coarse variables.}
+\emph{One coarse plaquette.} A closed $1$-chain $\gamma$ (for instance the boundary of a $b\times b$ square) and a $2$-chain $s$ with $\partial s=\gamma$ (the $b^2$ fine plaquettes of the square, coefficients $\pm1$, support $S$). The constraint ``the holonomy angle of $\gamma$ is $\theta$'' reads $\langle s,\varphi\rangle=\theta$.
+\emph{All coarse plaquettes.} On a torus with even $L$ and $2^d$ blocks, $\theta_P:=\langle s_P,\varphi\rangle$ for each coarse plaquette $P$, where $s_P$ consists of the four fine plaquettes spanning the $2\times2$ square of $P$; this is the abelian linearisation of the coarse Wilson loop.
+The coarse link map $C$ sums the two fine links of a coarse link, and $SD=D_cC$, where $S$ is the matrix with rows $s_P$ and $D_c$ is the coarse coboundary.
+
+\paragraph{One-face and all-face blocking.}
+Fixing one coarse plaquette and leaving the rest of the lattice free gives the network of Theorem~F (\S\ref{sec:F}); fixing all coarse plaquettes simultaneously gives the network of Theorem~G (\S\ref{sec:G}).
+The two differ quantitatively (in four dimensions $\beta'/\beta$ is $0.731$ for one face on large periodic lattices and tends to $1$ at long wavelength for all faces) and only the second is a blocking map.
+
+\paragraph{What cannot be said (stated in advance).}
+Every statement below is at tree level in the abelian linearisation.
+There is no statement at one loop or beyond (the one-loop numbers quoted in \S\ref{sec:tables} and \S\ref{sec:tails} are computed observations), no statement about non-abelian minimisers or about whether the global minimiser is abelian, no large-field statement (Theorem~F is a local minimum in a ball), and no implication for the ultraviolet behaviour of four-dimensional Yang--Mills theory.
+
+\paragraph{Relation to known results.}
+Thomson's and Dirichlet's principles, Kirchhoff's laws and Rayleigh monotonicity [Th, Ki, DS] are classical; the identification of Theorem~F(i) with them is a restatement.
+The Hodge decomposition on a finite cell complex [Ho, Ec] and the Moore--Penrose inverse are standard.
+Lemma~\ref{lem:A} (blocking of a Gaussian field is a linear iteration of the covariance) is a standard fact of Gaussian block-spin transformations.
+The coarse quadratic form of Theorem~G is presumably the quadratic part of the classical ``perfect'' (fixed-point) action of abelian lattice gauge theory; we have not checked the original sources.
+For the remaining statements we have not found them in the literature; they may be known.
+
+\section{Theorem F: one coarse plaquette}\label{sec:F}
+
+Let $u:=Ps$ and assume $u\ne0$ (the constraint is non-empty). Put $f:=u/\|u\|^2$ and $\cA_0:=\{\psi\in\cA:\langle s,\psi\rangle=0\}$.
+Every $\varphi\in\cA$ with $\langle s,\varphi\rangle=\theta$ is uniquely $\theta f+\psi$ with $\psi\in\cA_0$.
+
+\begin{theorem}[Theorem F]\label{thm:F}
+Restrict to abelian configurations at tree level ($\beta\to\infty$ leading term; one-loop corrections are not included), on a free-boundary box or a torus as in \S\ref{sec:setting}, with one coarse plaquette $s$ such that $Ps\neq0$.
+\begin{enumerate}[label=(\roman*)]
+\item For every $\theta\in\R$ the problem $\min\{\frac12\|\varphi\|^2:\varphi\in\cA,\ \langle s,\varphi\rangle=\theta\}$ has exactly one minimiser, $\varphi^*=\theta f$, with value $\theta^2/(2\|u\|^2)$; $f\in\cA$, $\langle s,f\rangle=1$ and $f\perp\cA_0$. On a free-boundary box $\|u\|^2=\min_{c\in\R^{C_3}}\|s-\partial_3c\|^2$ (Dirichlet's principle), and for $d=3$, $\sum f^2$ is the effective resistance from $S$ to the remaining outer faces of the dual network (cubes as nodes, plaquettes as unit resistors) and $f$ is the unit current (Thomson's principle).
+\item For the action $\frac\beta2\sum\varphi^2$ the coarse action is $\frac{\beta'}{2}\theta^2$ with $\beta'=\beta\sum_pf_p^2$ and $\sum f^2=1/\|u\|^2\ge1/|S|$. On a free-boundary box in $d=3$, if each plaquette of $S$ is joined to the outer faces by edge-disjoint dual paths $\pi_p$ of lengths $\ell_p$, then $\sum f^2\le\sum_p\ell_p/|S|^2$ (this bound is not in [KSR, 15-05]; it is added in this paper). Without such a condition $\sum f^2\le1$ fails in general (it fails for $|S|=1$ when the plaquette is a face of a cube of the box).
+\item Let $m=\max_p|f_p|$, $\|f^3\|=(\sum_pf_p^6)^{1/2}$, $r>0$, and $S'_r(\theta):=\inf\{V(\theta f+\psi):\psi\in\cA_0,\ \|\psi\|\le r\}$. If $\sigma(6\theta^2m^2+4|\theta|mr+r^2)\le\beta/4$, then
+\[
+\tfrac{\beta}{2}{\textstyle\sum} f^2\,\theta^2-\sigma{\textstyle\sum} f^4\,\theta^4-\frac{16\sigma^2\|f^3\|^2}{\beta}\theta^6\ \le\ S'_r(\theta)\ \le\ \tfrac{\beta}{2}{\textstyle\sum} f^2\,\theta^2-\sigma{\textstyle\sum} f^4\,\theta^4 .
+\]
+Hence, up to $O(\theta^6)$, the coarse quartic coefficient is $\sigma'=\sigma\sum f^4$ and $\kappa'=\kappa\,\lambda$ with $\lambda:=\sum f^4/\sum f^2$.
+\item $\lambda\le\max_pf_p^2$, and $\lambda\ge 1/(|S|^3\sum f^2)$. In particular, for $|S|=4$ and $\max f^2=1/16$, $1/(64\sum f^2)\le\lambda\le1/16$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) For $\varphi\in\cA$, $\langle s,\varphi\rangle=\langle s,P\varphi\rangle=\langle u,\varphi\rangle$, so Cauchy--Schwarz gives $\theta^2\le\|u\|^2\|\varphi\|^2$, with equality at $\theta u/\|u\|^2$. The constraint set is closed under midpoints, and the parallelogram identity gives uniqueness. For $\psi\in\cA_0$, $\langle f,\psi\rangle=\langle s,\psi\rangle/\|u\|^2=0$. On a free-boundary box $H_2=0$, so $\cA^\perp=\ker\partial_2=\im\partial_3$ and $u=s-\Pi_{\im\partial_3}s$. In $d=3$ the cubes are the nodes of the dual graph, $\varphi\in\ker D_3$ is Kirchhoff's current law, and $\langle s,\varphi\rangle=\theta$ is the total current from $S$ to the other outer faces; minimising $\sum\varphi^2$ is Thomson's principle [Th, DS].
+(ii) The minimum value is $\beta\theta^2/(2\|u\|^2)$ and $\sum f^2=\|u\|^2/\|u\|^4$. The lower bound is Cauchy--Schwarz on $\sum_{p\in S}s_pf_p=1$. A trial unit flow sending $1/|S|$ along each $\pi_p$ lies in $\cA$ and has energy $\sum\ell_p/|S|^2$. For $|S|=1$, $s\notin\cA$, so $\|u\|<\|s\|=1$.
+(iii) The upper bound is $\psi=0$. Since $\langle f,\psi\rangle=0$, $\sum(\theta f+\psi)^2=\theta^2\sum f^2+\|\psi\|^2$. Expanding the quartic and using $|\sum f^3\psi|\le\|f^3\|\|\psi\|$, $\sum f^2\psi^2\le m^2\|\psi\|^2$, $|\sum f\psi^3|\le mr\|\psi\|^2$, $\sum\psi^4\le r^2\|\psi\|^2$,
+\[V(\theta f+\psi)\ge\tfrac\beta2{\textstyle\sum} f^2\theta^2-\sigma{\textstyle\sum} f^4\theta^4+\tfrac\beta4x^2-ax,\qquad x=\|\psi\|,\ a=4\sigma|\theta|^3\|f^3\|,\]
+and $\frac\beta4x^2-ax\ge-a^2/\beta$.
+(iv) $f_p^4\le(\max f^2)f_p^2$. For the lower bound apply $(\sum_Sg)^4\le|S|^3\sum_Sg^4$ to $g_p=s_pf_p$, $\sum_Sg=1$.
+\end{proof}
+
+The finite-sum steps of the proof (Cauchy--Schwarz with equality, midpoint uniqueness, the energy split, the quadratic lower bound, and both inequalities of (iv)) are checked in Lean (\S\ref{sec:lean}); the projection $P$, Dirichlet's principle and the network interpretation are not.
+
+\begin{proposition}[Monotonicity and the coarse plaquette]\label{prop:ineq}
+Same restrictions as Theorem~\ref{thm:F}.
+\begin{enumerate}[label=(\alph*)]
+\item Enlarging the complex that contains $\gamma$ (adding cells while keeping $s$) does not decrease $\sum f^2$.
+\item If the four plaquettes of a $2\times2$ coarse plaquette carry flux $1/4$ each and $\max_pf_p^2=1/16$ (the largest flux sits on the four plaquettes of the coarse plaquette; this holds in every computed box by a box-by-box check [KSR, 15-05], and no general proof is known), then $1/(16d-8)\le\lambda\le1/16$.
+\item In a $d$-dimensional box with an interior $L\times L$ coarse plaquette, $\sum f^2(L)\le\frac{d-1}{2L}+\frac{1}{2L^2}$ and $\lambda(L)\ge\frac{2}{L^4((d-1)L+1)}$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[Sketch]
+(a) Enlarging the complex enlarges $\cA$, so the minimum of $\|\varphi\|^2$ under the same constraint decreases and $\sum f^2=1/\min$ increases (Rayleigh monotonicity [DS]). (b) The upper bound is Theorem~\ref{thm:F}(iv) under the assumption $\max_pf_p^2=1/16$. For the lower bound, the four plaquettes of $s$ alone give $\sum f^4\ge4\cdot4^{-4}=1/64$, and an explicit trial unit flow from $s$ into its neighbouring cubes gives $\sum f^2\le(16d-8)/64$ on any complex containing $s$ and its neighbouring cells, including the infinite lattice; the trial flow is written out in [KSR, Part~15] and not repeated here. (c) A trial flow that spreads the unit flux through $s$ over the faces adjacent to its perimeter gives the upper bound; the lower bound is Theorem~\ref{thm:F}(iv) with $|S|=L^2$.
+\end{proof}
+
+\begin{remark}
+In (b) and (c) the arguments are on paper only; (c) shows that in $d\ge3$ the coupling of one large coarse plaquette is of perimeter type, $\sum f^2=O(1/L)$, in contrast to the area-type count of Migdal--Kadanoff.
+\end{remark}
+
+\begin{remark}[Worked example: the $2\times2\times1$ box]\label{rem:221}
+Take the free-boundary box $2\times2\times1$ in $d=3$ and let $s$ be the four bottom plaquettes. By symmetry and Kirchhoff's laws the unit flux is $1/4$ on each bottom plaquette, $1/12$ on each of the four top plaquettes and the eight plaquettes of the outer sides, and $0$ on the four inner walls; one checks that this field is closed on each of the four cubes and orthogonal to $\cA_0$. Then
+\[
+\textstyle\sum f^2=4\cdot\frac1{16}+12\cdot\frac1{144}=\frac13,\qquad
+\sum f^4=\frac4{256}+\frac{12}{20736}=\frac7{432},\qquad
+\lambda=\frac{7}{144}\approx0.0486,
+\]
+so $\beta'=\beta/3$ at tree level and Theorem~\ref{thm:F}(iv) reads $3/64\le7/144\le1/16$. The same values are obtained by the computation of Table~\ref{tab:box}. For U(1) with the Villain action the one-step map closes on $\beta'=\beta/3$ with vanishing quartic source (paper argument via Poisson summation, and computed).
+\end{remark}
+
+\section{Theorem G: all coarse plaquettes at once}\label{sec:G}
+
+Work on $(\mathbb{Z}/L)^d$ with $L$ even, $2^d$ blocks and the coarse angles $\theta_P=\langle s_P,\varphi\rangle$ of \S\ref{sec:setting}. Put $u_P:=Ps_P$, $G:=SPS^{\mathsf T}$ (so $G_{PQ}=\langle u_P,u_Q\rangle$), $B:=G^{+}$ (Moore--Penrose) and $F:=UB$, where $U$ has columns $u_P$.
+
+\begin{theorem}[Theorem G]\label{thm:G}
+Restrict to abelian configurations at tree level, periodic lattice, $2^d$ blocks, coarse angles linearised as above.
+\begin{enumerate}[label=(\roman*)]
+\item The constraint $\{\varphi\in\cA:S\varphi=\theta\}$ is non-empty if and only if $\theta\in\im D_c$ (the coarse Bianchi identity on every coarse cube and zero coarse flux through every coordinate $2$-torus). In particular a single coarse plaquette cannot be twisted while all others are kept at $0$.
+\item For $\theta\in\im D_c$ the minimiser of $\frac12\|\varphi\|^2$ is unique, $\varphi^*=F\theta$, and the coarse action is $\frac\beta2\theta^{\mathsf T}B\theta$; $F^{\mathsf T}F=B$.
+\item In coarse link variables, $\min\{\frac12\|DA\|^2:CA=a\}=\frac12a^{\mathsf T}Qa$ with $Q=D_c^{\mathsf T}BD_c$, and $Qa=-\mu_a$ for the Lagrange multiplier $\mu_a$ of the constraint.
+\item Because the $\theta_P$ are not independent coordinates, off-diagonal entries of $B$ and the split of a quartic form into ``diagonal'' and ``cross'' parts depend on the representation. Representation-independent quantities are the spectrum of $B$ on $\im D_c$ and, for $\theta\in\im D_c$, $\beta'(\theta):=\theta^{\mathsf T}B\theta/\sum_P\theta_P^2$, $\mu(\theta):=\sum_q(F\theta)_q^4/\sum_P\theta_P^4$ and $\lambda(\theta):=\mu(\theta)/\beta'(\theta)$.
+\item For all $\theta\in\im D_c$, $\beta'(\theta)\ge1/4$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) $\theta=SDA=D_c(CA)\in\im D_c$; conversely, given $a$, put $a_\ell$ on the first fine link of each coarse link and $0$ elsewhere. (ii) A minimum-norm solution lies in $\cA\cap(\cA\cap\ker S)^\perp=\im U$; writing $\varphi=Uc$ gives $Gc=\theta$, and $\im G=\im(SD)=\im D_c$ because $C$ is onto. Then $c=B\theta+\ker G$, $U(\ker G)=0$, $\|\varphi^*\|^2=\theta^{\mathsf T}BGB\theta=\theta^{\mathsf T}B\theta$. Uniqueness is the midpoint argument of Theorem~\ref{thm:F}. (iii) The inner minimum is invariant under $\ker D_c$, so it equals $\min\{\theta^{\mathsf T}B\theta:\theta=D_ca\}$; the multiplier identity is the KKT system $D^{\mathsf T}DA+C^{\mathsf T}\mu=0$. (v) The four-plaquette sets $s_P$ are pairwise disjoint, so $\sum_q\varphi_q^2\ge\sum_P\sum_{q\in s_P}\varphi_q^2\ge\sum_P\theta_P^2/4$ by four-term Cauchy--Schwarz.
+\end{proof}
+
+Part (v) and the four-term Cauchy--Schwarz are checked in Lean (\code{fine\_energy\_lower}, under the hypothesis that the four-plaquette sets are injectively placed); (i)--(iv) are on paper.
+If all coarse plaquettes were independent ($P=I$), $G=4I$ and, after the bond-moving factor $2^{d-2}$, $\beta'/\beta=2^{d-4}$ and $\lambda=1/16$: Theorem~G replaces ``$\cA$ is everything'' in the Migdal--Kadanoff count by $\cA=\im D$.
+
+\paragraph{Computed consequences.}
+(Computed with two implementations, projection plus Gram matrix and Lagrange multipliers, agreeing to $1.3\times10^{-12}$; periodic lattices $4^3$--$48^3$ and $4^4$--$16^4$; same restrictions.)
+The coarse action is not a plaquette action: on $\im D_c$ the eigenvalues of $B$ lie in $[0.25,0.879]$ for $d=4$ and $[0.25,0.497]$ for $d=3$; at long wavelength $\beta'/\beta$ tends to $1$ ($d=4$) and $1/2$ ($d=3$), larger than the one-face value $0.731$ in $d=4$.
+The quartic contraction is a matrix: in coarse directions $\lambda(\theta)$ exceeds $1/16$ (for one coarse link $0.091$ in $d=4$), and the largest $\mu(\theta)/\beta'_0$ found is $0.148$ in $d=4$ (on the $8^4$ box, as in \S\ref{sec:tables}; a value $0.147$ found on a different box is smaller). Hence ``$\lambda\le1/16$'' does not hold for all-face blocking.
+
+\section{Theorem G$'$: a local representative and the quartic cone}\label{sec:Gprime}
+
+Same setting as Theorem~\ref{thm:G}. Let $R:=FD_c$ (coarse links to fine plaquettes). A matrix $K$ agrees with $F$ on $\im D_c$ if and only if $KD_c=R$; reading the rows $k_q$ of $K$ as coarse $2$-chains and the rows $r_q$ of $R$ as coarse $1$-cycles, this is $\partial k_q=r_q$. The Moore--Penrose representative $F$ is the Hodge projection [Ho, Ec] and is not local: its $\ell^\infty\to\ell^\infty$ norm grows with the volume (computed: $0.62\to1.94$ for $d=3$, $0.95\to2.39$ for $d=4$), as does the axial gauge with a fixed base point.
+
+\begin{theorem}[Theorem G$'$]\label{thm:Gp}
+Restrict to abelian configurations at tree level, periodic lattice $(\mathbb{Z}/L)^d$ with $L$ even, $2^d$ blocks, linearised coarse angles.
+\begin{enumerate}[label=(\alph*)]
+\item On the infinite lattice, assign to each row $r_q$ the dual of the axial cone (tree) based at the block of $q$ and moving with $q$; this gives $K_\infty$ with $K_\infty D_c=R_\infty$, translation-covariant, and $\|K_\infty\|_{\infty\to\infty}\le\max_q\sum_\ell|R(q,\ell)|\,\|\ell-x_q\|_1$. If $R_\infty$ decays exponentially, so does $K_\infty$, and the periodisation $K_L$ agrees with $F_L$ on $\im D_c$ for every $L$, with $\|K_L\|_{p\to p}\le\|K_\infty\|_{p\to p}$ for $p=1,\infty$.
+\item Consequently, for all $L$ and $\theta\in\im D_c$, $\sum_q(F_L\theta)_q^4\le\Lambda_d\sum_P\theta_P^4$, where $\Lambda_d$ is any bound for $\|K_\infty\|_{4\to4}^4$; in particular $\sup_\theta\mu(\theta)$ is bounded uniformly in the volume.
+\item If a fine quartic deviation satisfies $|Q(\varphi)|\le c\sum_q\varphi_q^4$, its tree-level image satisfies $|Q(F\theta)|\le c\,\Lambda_d\sum_P\theta_P^4$ for $\theta\in\im D_c$: the $\ell^4$ cone is mapped into the $\ell^4$ cone with constant multiplied by at most $\Lambda_d$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[Proof and status]
+(a) The axial-cone chain $h_b$ satisfies $\partial h_b(\ell)=\ell-h_b(\partial\ell)$; since $\partial r_q=0$, $k_q:=h_{x_q}(r_q)$ satisfies $\partial k_q=r_q$, and $|h_b(y,\mu)|$ involves at most $\|y-b\|_1$ plaquettes. Periodisation commutes with $\partial$ and the symbol of $R_L$ is that of $R_\infty$ at lattice momenta. The exponential decay of $R_\infty$ is argued from the constant rank of the Bloch problem in the coarse momentum (analytic symbol), on paper in outline only; the measured decay is about a factor $1/10$ per coarse step. (b) is Riesz--Thorin [Ri, Th39] or the Stein interpolation below. (c) is the finite-dimensional statement \code{cone\_step} (Lean).
+\end{proof}
+
+\paragraph{The first-step constant.}
+Let $A_q:=\sum_P|K_{qP}|$ be the $\ell^1$ norm of row $q$. For positive weights $v_q$, Stein's interpolation theorem for an analytic family [St] applied to $T_z=D_v^{(1-2z)/2}K$ gives
+\[
+\|K\|_{4\to4}^4\ \le\ \Bigl(\sup_{p}\lambda_{\max}\bigl(K(p)^{\mathsf H}D_vK(p)\bigr)\Bigr)\cdot\max_q\frac{A_q^2}{v_q},
+\]
+and the choice $v_q=A_q^2$ is optimal, giving $\Lambda_w:=\sup_p\lambda_{\max}(K(p)^{\mathsf H}\mathrm{diag}(A_q^2)K(p))$.
+For $d=3$ the unweighted Riesz--Thorin bound is computed as $\Lambda_3=0.245$ (symmetrised tree representative), which is $0.49$ in the long-wavelength normalisation $\beta'_0=1/2$.
+For $d=4$ the unweighted bound cannot go below $1.39$ for any representative, while the weighted bound, computed with $K_\infty$ replaced by the kernel truncated to a $20^4$ box, $N=64$ momentum points and a one-sided second-order remainder, is
+\[
+\sup_\theta\mu(\theta)\ \le\ 0.823\qquad(d=4,\ \text{first step, computed, no interval arithmetic}).
+\]
+Thus, under these conditions, the $\ell^4$ cone of quartic deviations contracts by at least the factor $0.823$ in one step.
+
+\paragraph{Normalisation.}
+Since $\beta'_0=1$ at long wavelength in $d=4$, the factor relevant for a geometric series of normalised deviations $x=c/\beta_k$ (scalar coupling counted at long wavelength) is $\sup\mu/\beta'_0=\sup\mu$; this is normalisation (a). The cones of (a) and of the direction-wise normalisation (b), $|Q(\theta)|\le x\beta\beta'(\theta)\sum\theta^4$, are equivalent up to the factor $4$ because $1/4\le\beta'(\theta)\le\beta'_{\max}$ (lower bound Theorem~\ref{thm:G}(v), upper bound computed, $0.913$ on $20^4$).
+
+\begin{lemma}[Mixed directions; paper, $L$ even, $L\to\infty$]\label{lem:mixed}
+$\sup_\theta\lambda(\theta)=4\sup\mu_{\mathrm{loc}}$, attained in the limit by mixing a localised direction carrying the $\ell^4$ mass with the coarsest direction ($\beta'=1/4$) carrying the $\ell^2$ mass. Hence $\lambda<1$ is equivalent to $\sup\mu<1/4$, and the direction-wise $\lambda$ is not the contraction factor. The coarsest direction itself has exactly $\mu=1/64$, $\lambda=1/16$.
+\end{lemma}
+
+\begin{lemma}[Floor of the interpolation route; paper in outline, computed]\label{lem:floor}
+For every local representative and every weight, the Stein bound is at least $\sum_s\nu_s^2/16\ge0.452>1/4$, so the interpolation route cannot bound $\sup\lambda$ below $1$.
+\end{lemma}
+
+\subsection{Several steps}
+
+\begin{lemma}[Gaussian blocking; standard]\label{lem:A}
+Let $G_k:=B_k^{+}$ on $\im D$ at step $k$. Minimising $\theta^{\mathsf T}B_k\theta$ under $S\theta=\Theta$ gives $\theta^*=F_{k+1}\Theta$ with $F_{k+1}=G_kS^{\mathsf H}B_{k+1}$ and $B_{k+1}=(SG_kS^{\mathsf H})^{+}$; thus $G_{k+1}=SG_kS^{\mathsf H}$, which in momentum space is $G_{k+1}(q)=\frac1{16}\sum_\eta W\,G_k\,W^{\mathsf H}$.
+\end{lemma}
+
+\begin{proof}
+Restrict $\theta$ to the range of $G_k$, which is $\im D$. The Lagrange condition is $B_k\theta=S^{\mathsf H}\Lambda$, so $\theta=G_kS^{\mathsf H}\Lambda$, and the constraint gives $SG_kS^{\mathsf H}\Lambda=\Theta$. Since $S$ maps $\im D$ onto $\im D_c$ (the coarse links can be prescribed arbitrarily) and $G_k$ is positive on $\im D$, $SG_kS^{\mathsf H}$ is invertible on $\im D_c$, and the minimum value is $\Theta^{\mathsf T}B_{k+1}\Theta$. Equivalently, if $\theta$ were a centred Gaussian field with covariance $G_k$, the coarse field $S\theta$ would have covariance $SG_kS^{\mathsf H}$ and the conditional mean of $\theta$ given $S\theta=\Theta$ would be $F_{k+1}\Theta$; the tree-level step is a Gaussian conditional expectation. In momentum space the sum runs over the $2^d$ fine momenta $\eta$ folding onto the coarse momentum $q$.
+\end{proof}
+
+The lemma reduces the multi-step question to the iteration of an explicit linear map on $6\times6$ symbols (for $d=4$), which is what is computed below; the quartic cone at step $j$ is then governed by $F_j\cdots F_1$ restricted to the admissible data.
+
+\emph{Edge-sum blocking} (coarse link $=$ sum of the two fine links; computed exactly in momentum space for $k\le5$, lower bounds by optimisation on tori, no interval arithmetic). The cone factor is not uniform in the number of steps: the first step is $\le0.823$, the second has the lower bound $0.699$, and the third exceeds $1$ ($1.262$ on $8^4$, two independent implementations agreeing to $1.26249328$; $2.200$ on $12^4$). There is no fixed point of the covariance flow: for fixed $q\ne0$ the eigenvalues of $B_k$ on $\im D$ decay like $2^{-k}$ ($0.25,0.090,0.038,0.017,0.0083$ at $q=\pi$), while long wavelengths stay at $1$; the cause is the perimeter divergence of the flux variance of a $2^k\times2^k$ square. The coarsest direction has $\mu=1/64$ at every step computed.
+
+\emph{Averaging blocking} (coarse link $=$ gauge-covariant average over the $2^{d-1}$ transverse positions of parallel two-link lines joined by transverse legs; $C\,\mathrm{grad}=\mathrm{grad}_c$ holds, so the coarse plaquette is a local function of $\theta$). Lemma~\ref{lem:A} holds with $S$ replaced by this transfer. The covariance flow approaches a fixed point (computed exactly for $k\le5$): the eigenvalues of $B_k$ increase monotonically with ratios of successive differences $0.27$--$0.52$, on the axis $G_k=\frac13+\frac23 4^{-k}$, the range is $[1,\approx4.1]$. The computed lower bounds of $\sup\mu_j$ are $0.64,0.57,0.64,0.62$ for $j=1,\dots,4$ ($8^4$, $12^4$), and exactly $1/2$ for one-directional fields. No existence proof of the fixed point is given, and \textbf{an upper bound $\sup\mu_j<1$ uniform in $j$ is open}: the weighted Stein bound gives $4.5$--$8.1$.
+
+\section{Computed tables}\label{sec:tables}
+
+All entries are at tree level for abelian configurations with one $2\times2$ coarse plaquette fixed (Theorem~\ref{thm:F}), computed from the projection formula $f=Ps/\|Ps\|^2$ by two routes (potentials on $3$-cells and least squares on links). Three-dimensional entries are exact rationals; four-dimensional entries are floating point and agree with an independent constrained least-squares computation to $10^{-13}$. In every row $\max f^2=1/16$ and $\sum_Sf=1$, so Theorem~\ref{thm:F}(iv) gives $1/(64\sum f^2)\le\lambda\le1/16$.
+
+\begin{table}[h]\centering\small
+\caption{One coarse plaquette (box table).}\label{tab:box}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Box & boundary & $\sum f^2=\beta'/\beta$ & $\lambda=\sum f^4/\sum f^2$\\ \midrule
+$2\times2\times1$ & free & $1/3$ & $7/144\approx0.04861$\\
+$2\times2\times2$ & free & $15/44$ & $5079/106480\approx0.04770$\\
+$2\times2\times3$ & free & $14/41$ & $367781/7719152\approx0.04765$\\
+$4\times4\times2$, central block & free outer sides & $1023/2815$ & $\approx0.044658$\\
+$4^3$ & periodic & $8/15$ & $0.033212$\\
+$12^3$ & periodic & $0.48227$ & $0.035122$\\
+$48^3$ & periodic & $0.48084$ & $0.035205$\\ \midrule
+$2\times2\times1\times1$ & free & $0.428571$ ($3/7$) & $0.039336$\\
+$2\times2\times2\times1$ & free & $0.435685$ ($105/241$) & $0.038946$\\
+$2^4$ & free & $0.442260$ ($180/407$) & $0.038634$\\
+$4^4$ & periodic & $0.761905$ ($16/21$) & $0.026399$\\
+$8^4$ & periodic & $0.731468$ & $0.026445$\\
+$16^4$ & periodic & $0.730361$ & $0.026452$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The free sides act as a sink for the flux and make $\sum f^2$ smaller and $\lambda$ larger than in the periodic network, in agreement with Proposition~\ref{prop:ineq}(a). Across the table $\lambda\sum f^2=\sum f^4$ stays within $1.04$--$1.22$ times $1/64$, so $\lambda$ moves essentially as $1/\sum f^2$ (an observation).
+
+\paragraph{Perimeter type.}
+For a $4\times4$ coarse plaquette in four dimensions (computed, same restrictions; in $4^4$ it reaches the box edge in the planar directions) $\sum f^2=0.256$ ($4^4$), $0.290$ ($6\times6\times4\times4$), $0.306$ ($12^4$) and $\lambda=2.4$--$2.6\times10^{-3}$, against $0.718$ and $0.0266$ for a $2\times2$ coarse plaquette in $4^4$. About half of $\sum f^2$ sits on the faces adjacent to the perimeter of the coarse plaquette, consistent with the perimeter-type bound of Proposition~\ref{prop:ineq}(c).
+
+\paragraph{Genuine two steps versus iteration.}
+Blocking a $4\times4$ coarse plaquette in one step (``genuine two steps'') and iterating the one-face map twice (re-inserting the marginal of one coarse face) differ in $d=4$: the ratio genuine/iterated is $0.50$--$0.57$ for $\sum f^2$ (on paper, genuine $<$ iterated in every box) and $3.4$--$3.7$ for $\lambda$, so $\lambda$ of two steps is not $\lambda_1^2$. In the planar ($d=2$) control the two agree to floating-point accuracy ($1/16=(1/4)^2$, $1/256=(1/16)^2$).
+
+\paragraph{One-loop numbers (computed observations, not part of any theorem).}
+The $\theta^4$ coefficient generated at one loop from heat-kernel initial data (the ``source'') is $4.11\times10^{-4}\approx1/2433$ ($2\times2\times1$), $4.65\times10^{-4}\approx1/2149$ ($2\times2\times2$), $6.14\times10^{-4}\approx1/1630$ (central block of $4\times4\times2$), $4.86\times10^{-4}\approx1/2058$ ($2^4$), and for an $L\times L$ coarse plaquette in $d=4$ approximately $8\times10^{-3}/L^4$ ($L=1,\dots,4$). For U(1) with the Villain action the source vanishes and $\beta'=\beta\sum f^2$ exactly.
+
+\begin{table}[h]\centering\small
+\caption{The $\ell^4$ cone factor $\sup_\theta\mu_j(\theta)$ in $d=4$, $2^4$ blocks, normalisation (a); all values computed, tree level, abelian linearisation, no interval arithmetic.}\label{tab:cone}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Rule & step $j$ & lower bound & upper bound & spectrum of $B_j$ at $q=\pi$\\ \midrule
+either & 1 & $0.148$ ($8^4$) & $0.823$ (weighted Stein) & $0.25$ / $1.059$\\
+edge sum & 2 & $0.699$ ($12^4$) & none below $3.1$ & $0.090$\\
+edge sum & 3 & $1.262$ ($8^4$), $2.200$ ($12^4$) & --- & $0.038$\\
+averaging & 1 & $0.64$ & --- & $1.059$\\
+averaging & 2 & $0.57$ & $4.5$--$8.1$ (Stein) & $1.388$\\
+averaging & 3, 4 & $0.64$, $0.62$ & --- & $1.686$, $1.840$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The first-step lower bounds differ between the two rules because the coarse variable differs ($0.148$ for the edge sum, $0.64$ for the averaging rule); the upper bound $0.823$ refers to the edge-sum rule.
+
+\section{Tail types of non-local coarse weights}\label{sec:tails}
+
+When the coarse action is written in coarse variables, its quadratic coefficients $Q(r)$ between coarse cells at distance $r$ are non-local. Their tail type depends on how the coarse variable carries conserved quantities and constraints. The following is a classification statement supported by computation; only the summation lemmas listed in \S\ref{sec:lean} are proved.
+
+\begin{proposition}[Tail types; computed, with paper arguments for the mechanisms]\label{prop:tails}
+Restrict to an abelian background, the quadratic coefficient of the coarse field, one step, SU(2) with heat-kernel action at order $O(1)$ as $\beta\to\infty$ (one loop) where stated, otherwise tree level.
+\begin{enumerate}[label=(\arabic*)]
+\item If the coarse variable shares a fine variable between blocks so that a collective quantity is conserved, or if a single global linear constraint is present, the tail is \emph{flat}: independent of $r$ and of order $1/\text{volume}$.
+\item If blocks are joined by splitting the shared weight (no conserved quantity), the tail is \emph{exponential} with the rate of the fine transfer, and at one loop the prefactor is linear in $r$.
+\item If the coordinates are the coarse faces represented by Moore--Penrose (the Bianchi constraint kept implicit), the tail follows the propagator of the constraint: exponential if the coarse complex has open faces, \emph{power-law} on lattices without boundary extending in at least two directions.
+\item If the constraint is promoted to coarse variables (coarse links plus global tags, i.e.\ the harmonic fluxes through the coordinate planes), the tail is exponential in all geometries computed.
+\end{enumerate}
+\end{proposition}
+
+\begin{table}[h]\centering\small
+\caption{Tail types (computed; tree level unless marked one loop).}\label{tab:tails}
+\begin{tabular}{@{}p{0.29\textwidth}p{0.26\textwidth}p{0.36\textwidth}@{}}
+\toprule
+Coarse variable & geometry & tail\\ \midrule
+shared plaquette, conserved class & open chain of $L$ blocks & flat, $(4L+5)/(6(3L+2)^2)$\\
+weight split in half & chain, $2\times10$ plate & exp., rate $\ln(5+2\sqrt6)$; one loop $(r+\alpha)e^{-\kappa r}$\\
+coarse faces, Moore--Penrose & open column $2\times2\times L$ & exp., rate $\ln(3+2\sqrt2)$\\
+coarse faces, Moore--Penrose & periodic plate / $64^3$ & power, $r^{-2}$ / effective $3.3$; flat $-1/(2N)$\\
+coarse links $+$ global tags & periodic $3$d, $2\times2\times L$ & exp., one loop $\kappa=3.094$\\
+coarse links $+$ global tags & periodic $4$d, $2\times2\times2\times L$ & exp., one loop $\approx(r+4.07)\times$tree\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{The one-loop $\kappa$ in three and four dimensions.}
+With coarse links and global tags as variables, the three-dimensional one-loop weight behaves like $(r+\alpha)e^{-\kappa r}$ with $\kappa=3.094$, against the tree rate $\ln(11+2\sqrt{30})=3.0890$, and $\sum_rr|K^{(1)}(r)|$ saturates in the volume (relative change $2.7\times10^{-6}$ from $L=12$ to $16$). In four dimensions $K^{(1)}(r)\approx-0.213\,(r+4.07)\,K^{\mathrm{tree}}(r)$ on the quasi-one-dimensional periodic box, with tree rate $2.667$ along the long axis; the three-dimensional analogue is $-0.568\,(r+2.14)\,K^{\mathrm{tree}}$. The form ``one loop / tree $=$ linear in $r$'' is the same in both dimensions. The description of the four-dimensional one-loop weight in [KSR, 15-05 and 15-08] predates this measurement. Removing the tags (Moore--Penrose faces) produces a flat part and a power-law tail. The flat part is $-1/N$ in four dimensions and $-1/(2N)$ in three dimensions (Table~\ref{tab:tails}); the coefficient depends on the dimension. The fitted exponent is $p=3.95$ on the $12^4$ box and $p=4.40$ on the $16^4$ box; the two values differ with the box.
+On the four-torus of any side $n\ge1$ the linear algebra behind the tags is proved in Lean: $d_2\circ D_c=0$, the six uniform plane fluxes are linearly independent tags disjoint from $\im D_c$, and $\dim\ker d_2\ge\operatorname{rank}D_c+6$.
+
+\section{Relation to the hierarchical map}\label{sec:mk}
+
+The Migdal--Kadanoff recursion [Mi, Ka] treats the coarse plaquettes as independent. In the language of Theorem~\ref{thm:G} this is the replacement $\cA=\R^{C_2}$, $P=I$: then $G=4I$, and after bond moving $\beta'/\beta=2^{d-4}$ and $\lambda=1/16$ in every dimension, which the computations reproduce as a control. Theorem~\ref{thm:F}(iv) shows that $1/16$ is the upper end attained when the flux sits on the four plaquettes of $s$ only; every additional parallel path lowers $\lambda$ (Table~\ref{tab:box}: $0.42$--$0.78$ times $1/16$). For all-face blocking, Theorem~\ref{thm:G} shows that the coarse action is not a plaquette action and that in coarse directions the direction-wise contraction exceeds $1/16$, while the long-wavelength coupling $\beta'/\beta\to1$ in $d=4$ agrees with the Migdal--Kadanoff value. Ito's renormalisation group recursion [It] and the hierarchical models in which the Migdal--Kadanoff map is exact share the independence of coarse plaquettes; Theorems~F and G quantify, at tree level, what the Bianchi constraint changes. The comparison with the Migdal--Kadanoff map is made at tree level only; it does not compare the non-abelian flows.
+
+\section{What is machine-checked}\label{sec:lean}
+
+\paragraph{Content.}
+The Lean~4 development consists of twelve stand-alone modules importing Mathlib [M] only. They check finite-dimensional inequalities and bookkeeping: the Cauchy--Schwarz and midpoint steps of Theorem~\ref{thm:F}, the quartic ratio bounds of Theorem~\ref{thm:F}(iv), the energy lower bound of Theorem~\ref{thm:G}(v), the row/column (Schur) bound and the cone step of Theorem~\ref{thm:Gp}(b)(c), the ledger of normalisations (a)/(b) and the floor inequality of Lemma~\ref{lem:floor}, the iteration ledgers for several steps, the summation lemmas behind the tail types, and the linear algebra of coarse faces and global tags on the four-torus.
+The lattice projections $P$, the Moore--Penrose inverse, Dirichlet's principle, the decay of $R_\infty$, Riesz--Thorin and Stein interpolation, Lemma~\ref{lem:mixed} and all numerical values are \emph{outside} Lean. No interval arithmetic is involved.
+
+\paragraph{Trust base.}
+{\sloppy The twelve modules end with $78$ \code{\#print axioms} lines in total, each reading \code{[propext, Classical.choice, Quot.sound]}. \code{sorry}, \code{axiom} declarations and \code{native\_decide} do not occur. The modules were checked with Lean~4 \code{v4.33.1} and Mathlib at the revision pinned in the project's \code{lake-\allowbreak{}manifest.json}.\par}
+
+\paragraph{Reproduction.}
+{\sloppy The project is distributed at \url{\bundleurl} (with a \code{.sha256} file at the same address with that suffix), and the complete \code{\#print axioms} output at \url{\axiomsurl}; the ledger and build instructions of the site's Lean developments are at \url{https://computoergosum.com/en/principia/lean/index.html}. The two distribution addresses were placed on 2026-10-15, after the independent re-check.
+To verify: unpack, run \code{lake exe cache get}, then \code{LEAN\_NUM\_THREADS=1 lake env lean} on each module listed below; the \code{\#print axioms} lines at the end of each module should agree with the report above and with the distributed axiom log.\par}
+
+\section{Correspondence table}\label{sec:corr}
+Each row gives the paper statement, the Lean declarations, the line of each declaration in the file \code{<module>.lean} of the distributed project (in the order of the declarations; one group per module), and the hypotheses in the order of the Lean statement.
+
+\begin{center}\small
+\begin{longtable}{@{}p{0.16\textwidth}p{0.33\textwidth}p{0.12\textwidth}p{0.28\textwidth}@{}}
+\toprule
+Paper & Lean module / declaration & Lines & Hypotheses\\ \midrule
+\endhead
+Thm.~\ref{thm:F}(i) & \code{LatticeGauge\allowbreak{}FluxNetwork}: \code{thomson\_lower}, \code{thomson\_attained}, \code{minimizer\_unique}, \code{constraint\_midpoint} & 104, 113, 130, 157 & $0<\sum u^2$, $\sum u\varphi=\theta$; midpoint-closed set; subspace\\
+Thm.~\ref{thm:F}(iii) & \code{energy\_split}, \code{quad\_lower} & 94, 174 & $\sum f\psi=0$; $\beta>0$\\
+Thm.~\ref{thm:F}(iv) & \code{sum\_pow\_four\_le}, \code{ratio\_le\_max}, \code{pow\_four\_sum\_le}, \code{ratio\_ge\_of\_unit\_flux} & 30, 42, 49, 71 & $f_i^2\le M$, $0<\sum f^2$; $S\subseteq s$, $\sum_Sf=1$\\
+Thm.~\ref{thm:G}(v) & \code{LatticeGauge\allowbreak{}AllFacesBlocking}: \code{fine\_energy\_lower}, \code{block\_energy\_lower}, \code{sq\_sum\_fin\_four\_le}; \code{smooth\_ratio}, \code{equal\_split\_ratio} & 36, 30, 24; 69, 63 & four-plaquette sets injective into $T$; $n\ne0$, $\theta\ne0$\\
+Thm.~\ref{thm:Gp}(b)(c) & \code{LatticeGauge\allowbreak{}QuarticRowColumnBound}: \code{row\_quartic}, \code{schur\_quartic}, \code{representative\_bound}, \code{cone\_step}, \code{cone\_chain} & 49, 69, 87, 97, 107 & row sums $\le A$, column sums $\le C$; $K$ agrees with $F$ on $S$; $|Q|\le c\sum\varphi^4$\\
+\S\ref{sec:Gprime}, splitting & \code{LatticeGauge\allowbreak{}QuarticSplitTriangle}: \code{quartic\_triangle}, \code{class\_split} & 45, 64 & $a,b>0$, $\sum x^4\le a^4S$, $\sum y^4\le b^4S$\\
+Normalisation, Lem.~\ref{lem:floor} & \code{LatticeGauge\allowbreak{}QuarticConeNormLedger}: \code{ledger}, \code{transfer}, \code{cone\_b\_to\_a}, \code{stein\_floor}, \code{ratio\_sandwich} & 37, 50, 58, 68, 26 & $b_{\min}\sum\theta^2\le\sum\varphi^2\le b_{\max}\sum\theta^2$; $A_i^2\le Fv_i$, $0\le\nu_i\le A_i$\\
+Edge-sum steps & \code{LatticeGauge\allowbreak{}BlockCovarianceLedger}: \code{cone\_chain\_uniform}, \code{growth\_ledger}, \code{inverse\_decay}, \code{four\_split\_quartic\_floor} & 33, 43, 52, 62 & $M_k\le m$; $r g_k\le g_{k+1}$; four parts sum to $t$\\
+Averaging steps & \code{LatticeGauge\allowbreak{}AveragedBlockFlowLedger}: \code{affine\_dist}, \code{tail\_bound}, \code{axis\_flow\_values}, \code{cone\_series} & 36, 52, 85, 89 & $r\ne1$; $0\le r<1$; $0\le c<1$ (premise not proved)\\
+Prop.~\ref{prop:tails}(1) & \code{LatticeGauge\allowbreak{}ToeplitzTailSplit}: \code{split\_unique}, \code{tail\_sum\_le}, \code{flat\_row\_sum\_lt}, \code{flat\_not\_uniform\_geometric} & 35, 56, 119, 131 & $0\le\rho<1$, $|q_r|\le C\rho^r$ ($r\ge2$); $L\ge1$\\
+Prop.~\ref{prop:tails}(2) & \code{LatticeGauge\allowbreak{}WeightedTailBound}: \code{weighted\_tail\_le}, \code{weighted\_sum\_uniform\_linear} & 47, 74 & $|q_r|\le C\rho^r$; $|q_r|\le C(r+1)\sigma^{2r}$\\
+Prop.~\ref{prop:tails} (types) & \code{LatticeGauge\allowbreak{}TailTypeClassification}: \code{flat\_weighted\_unbounded}, \code{exp\_weighted\_le}, \code{power\_sum\_uniform}, \code{power\_sum\_unbounded} & 31, 54, 71, 83 & $c>0$; $0\le\rho<1$; $s>1$; $s\le1$\\
+Prop.~\ref{prop:tails}(4) & \code{CoarseFace\allowbreak{}HodgeSplit}: \code{range\_sup\_tags}, \code{disjoint\_range\_tags}, \code{decomp\_unique}; \code{CoarseFace\allowbreak{}FourTorusTags}: \code{bianchi}, \code{six\_le\_finrank\_tags}, \code{finrank\_ker\_d2\_ge} & 37, 51, 64; 58, 116, 139 & $d_2\circ D_c=0$; none (four-torus of side $n\ge1$)\\
+\bottomrule
+\end{longtable}
+\end{center}
+
+\section{What is not claimed}\label{sec:notclaimed}
+
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{Tree level, abelian linearisation.} All theorems concern the constrained minimum of the quadratic (plus quartic) action over abelian configurations. We do not claim that the global minimiser among non-abelian configurations is abelian, and we make no statement at one loop or beyond. One-loop numbers in \S\ref{sec:tables}--\ref{sec:tails} are computed observations.
+\item \textbf{Local minimum, small fields.} Theorem~\ref{thm:F}(iii) is a statement about a ball $\|\psi\|\le r$ under an explicit smallness condition; large fields are not treated.
+\item \textbf{Numbers.} The constants $0.823$, $\Lambda_3=0.245$, the multi-step lower bounds and all table entries are computed in floating point (exact rationals where stated), without interval arithmetic; $0.823$ uses a kernel truncated to a $20^4$ box in place of $K_\infty$. The exponential decay of $R_\infty$ in Theorem~\ref{thm:Gp}(a) is argued in outline only.
+\item \textbf{Several steps.} For edge-sum blocking the cone factor exceeds $1$ at the third step and the covariance flow has no fixed point. For averaging blocking we give only computed lower bounds and a computed fixed-point behaviour for $k\le5$; an upper bound below $1$ uniform in the number of steps, and the existence of the fixed point, are open.
+\item \textbf{Direction-wise $\lambda$.} ``$\lambda\le1/16$'' is proved only for one coarse face under the stated flux condition (Theorem~\ref{thm:F}(iv)); for all-face blocking it is false in coarse directions, and the direction-wise $\lambda$ does not fall below $1$ (Lemmas~\ref{lem:mixed}, \ref{lem:floor}).
+\item \textbf{Four-dimensional Yang--Mills.} Nothing here constructs a continuum limit, controls the ultraviolet behaviour of four-dimensional lattice Yang--Mills theory, or bears on a mass gap. The paper is linear algebra of the tree-level term of one blocking step.
+\item \textbf{Relation to earlier work.} Thomson, Dirichlet, Kirchhoff, Rayleigh monotonicity, the Hodge decomposition, Riesz--Thorin and Stein interpolation and Gaussian block-spin covariance iteration are standard. The coarse quadratic form of Theorem~\ref{thm:G} is probably known in the literature on perfect actions of abelian lattice gauge theory; MathSciNet and zbMATH were not available to us.
+\item \textbf{No external review.} The proofs, the Lean development and this text were produced within the authors' group (\S\ref{sec:ai}); no mathematician outside the authors has read them.
+\end{enumerate}
+
+\section{Disclosure of AI use}\label{sec:ai}
+
+This note was produced with the assistance of AI agents. The observation, the informal proofs, the Lean~4 development including the formalised statements, the literature search, the reports on which this note is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code, across many separate sessions, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for rebuilding the Lean development from the distributed archive on a separate machine, for checking the claims of this note against the reports, and for preparing the distributed version; the independent rebuild was completed on 2026-10-15 (every file checked with \code{lake env lean} in the same environment on a separate session, rc=0, standard axioms only). The human author set the task, fixed the working rules and load limits, reviewed the record, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. In particular the analytic steps listed in \S\ref{sec:lean} are checked on paper only. This edition and the Lean development it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-flux-network-blocking}, the development under \texttt{lean/\allowbreak{}ym-flux-network-blocking}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section and in the naming of the agent that carried out the independent re-check.
+
+\begin{thebibliography}{KSR}
+\bibitem[Co]{Co} R.~Courant, \emph{Dirichlet's Principle, Conformal Mapping, and Minimal Surfaces}, Interscience, New York, 1950 (not consulted directly).
+\bibitem[DS]{DS} P.~G.~Doyle and J.~L.~Snell, \emph{Random Walks and Electric Networks}, Carus Mathematical Monographs 22, Mathematical Association of America, 1984, arXiv:math/0001057.
+\bibitem[Ec]{Ec} B.~Eckmann, \emph{Harmonische Funktionen und Randwertaufgaben in einem Komplex}, Comment. Math. Helv. 17 (1944/45), 240--255 (not consulted directly).
+\bibitem[Ho]{Ho} W.~V.~D.~Hodge, \emph{The Theory and Applications of Harmonic Integrals}, Cambridge University Press, 1941 (not consulted directly).
+\bibitem[JW]{JW} A.~Jaffe and E.~Witten, \emph{Quantum Yang--Mills theory}, official problem description, Clay Mathematics Institute, \url{https://www.claymath.org/millennium/yang-mills-the-maths-gap/}.
+\bibitem[It]{It} K.~R.~Ito, \emph{Permanent quark confinement in four-dimensional hierarchical lattice gauge theories of Migdal--Kadanoff type}, Phys. Rev. Lett. 55 (1985), 558--561 (not consulted directly).
+\bibitem[Ka]{Ka} L.~P.~Kadanoff, \emph{Notes on Migdal's recursion formulas}, Ann. Physics 100 (1976), 359--394 (not consulted directly).
+\bibitem[Ki]{Ki} G.~Kirchhoff, \emph{Ueber die Aufl\"osung der Gleichungen, auf welche man bei der Untersuchung der linearen Vertheilung galvanischer Str\"ome gef\"uhrt wird}, Ann. Phys. Chem. 72 (1847), 497--508 (not consulted directly).
+\bibitem[KSR]{KSR} Kiichi, Shiori and Rin, \emph{Yang--Mills and the mass gap} (online textbook, in Japanese), Part~15 (chapters 15-05 and 15-08), \url{https://computoergosum.com/principia/yang-mills/index.html} (2026).
+\bibitem[M]{M} Mathlib, \url{https://github.com/leanprover-community/mathlib4} (Lean~4 \code{v4.33.1}).
+\bibitem[Mi]{Mi} A.~A.~Migdal, \emph{Recursion equations in gauge field theories}, Zh. Eksp. Teor. Fiz. 69 (1975), 810--822; Sov. Phys. JETP 42 (1975), 413--418 (not consulted directly).
+\bibitem[Ri]{Ri} M.~Riesz, \emph{Sur les maxima des formes bilin\'eaires et sur les fonctionnelles lin\'eaires}, Acta Math. 49 (1926), 465--497 (not consulted directly).
+\bibitem[St]{St} E.~M.~Stein, \emph{Interpolation of linear operators}, Trans. Amer. Math. Soc. 83 (1956), 482--492 (not consulted directly).
+\bibitem[Th]{Th} W.~Thomson (Lord Kelvin) and P.~G.~Tait, \emph{Treatise on Natural Philosophy}, Clarendon Press, Oxford, 1867 (not consulted directly).
+\bibitem[Th39]{Th39} G.~O.~Thorin, \emph{An extension of a convexity theorem due to M.~Riesz}, Kungl. Fysiogr. S\"allsk. i Lund F\"orh. 8 (1939), 166--170 (not consulted directly).
+\end{thebibliography}
+
+\end{document}
