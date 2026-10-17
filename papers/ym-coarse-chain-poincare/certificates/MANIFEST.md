@@ -1,4 +1,4 @@
-# MANIFEST — files behind Table 1 (Proposition 6.4 (b))
+# MANIFEST — files behind Table 1 of version 1 (Proposition 6.4 (b), double precision with outward margins). Version 2 (2026-10-17): the interval-arithmetic certificate is in `interval/` (see `interval/MANIFEST-interval.md`) and Proposition PIN in `pin/`.
 
 Programs: `psi2.py` (inequality, point version) -> `psiP.py` (same inequality, hbar-interval form; with h1 = h2 it is the point version) -> `cellsF.py` (runs `psiP` on the cells listed in a spec file). Audit of rounding by a separate route: `audit3.py` (needs mpmath), output `audit3.log`.
 
