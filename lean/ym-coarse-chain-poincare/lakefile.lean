@@ -2,7 +2,7 @@ import Lake
 open Lake DSL
 
 /-- `coarsechain` — the Lean development cited by the note "The coarse-chain Poincaré inequality".
-    7 modules, each depending on Mathlib only.
+    9 modules, each depending on Mathlib only (7 of version 1, 2 added in version 2 on 2026-10-17).
     Builds with Lean 4 v4.33.1 and the Mathlib revision below. -/
 package coarsechain where
   leanOptions := #[

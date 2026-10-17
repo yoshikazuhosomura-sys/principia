@@ -12,4 +12,6 @@
   * `CoarseChain.LatticeGaugeDoubleWellTestbed`
   * `CoarseChain.LatticeGaugeHiddenConvexity`
   * `CoarseChain.LatticeGaugeInfluenceRecursion`
+  * `CoarseChain.LatticeGaugeDobrushinIntervalTable` (version 2, 2026-10-17: table of intervals to windows)
+  * `CoarseChain.LatticeGaugePinnedCoarseChain` (version 2, 2026-10-17: Proposition PIN, algebra)
 -/
