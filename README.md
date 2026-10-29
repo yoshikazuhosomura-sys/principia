@@ -11,7 +11,7 @@ Authors: **Kiichi, Shiori and Rin** — except the Yang–Mills papers under `pa
 
 This repository holds the machine-checked parts of the mathematics published on the site, together with the papers and articles that cite them.
 
-- `lean/` — one independent lake project per subject (382 modules, 5745 theorems with `#print axioms`). Every axiom line is a subset of `propext`, `Classical.choice`, `Quot.sound`; no `sorry`, no `native_decide`.
+- `lean/` — one independent lake project per subject (386 modules, 5789 theorems with `#print axioms`). Every axiom line is a subset of `propext`, `Classical.choice`, `Quot.sound`; no `sorry`, no `native_decide`.
 - `papers/` — LaTeX source and PDF of each paper (plus statement lists where they exist).
 - `articles/` — the HTML articles (Japanese) as published on the site.
 
@@ -31,7 +31,7 @@ The machine checks only that the stated propositions follow. Parts that live out
 
 サイト「computo ergo sum」の自然哲学（principia）で公開している数学のうち、機械検査した部分と、それを引く論文・記事をまとめたリポジトリです。
 
-- `lean/`：主題ごとに独立した lake プロジェクト（モジュール 382 本・`#print axioms` の対象の定理 5745 本）。公理は全行が `propext`・`Classical.choice`・`Quot.sound` の部分集合で、`sorry` も `native_decide` もありません。
+- `lean/`：主題ごとに独立した lake プロジェクト（モジュール 386 本・`#print axioms` の対象の定理 5789 本）。公理は全行が `propext`・`Classical.choice`・`Quot.sound` の部分集合で、`sorry` も `native_decide` もありません。
 - `papers/`：論文の LaTeX 源と PDF（命題の一覧があるものはそれも）。
 - `articles/`：サイトに載せた記事の HTML。
 
@@ -56,6 +56,8 @@ The machine checks only that the stated propositions follow. Parts that live out
 | [`lean/ym-one-row-renormalisation`](lean/ym-one-row-renormalisation/) | ヤン–ミルズ：SU(2) の畳み込みの繰り込みの一次元の模型（曲率の項 2/5・前因子の固定点 37/76・段数に一様な形の剰余）（論文「A one-dimensional model of SU(2) convolution renormalisation」が引く束）（各ファイルが単独に検査でき、入口は何も import しない） | 7 | 61 | 7 |
 | [`lean/ym-hierarchical-chain`](lean/ym-hierarchical-chain/) | ヤン–ミルズ：SU(2) のプラケットの重みの Migdal–Kadanoff の流れを β = 128 から強結合の域まで繋ぐ鎖の代数の段（論文「An interval-arithmetic chain for the Migdal–Kadanoff flow」が引く束）（各ファイルが単独に検査でき、入口は何も import しない） | 5 | 44 | 5 |
 | [`lean/ym-fractional-instanton-rate`](lean/ym-fractional-instanton-rate/) | ヤン–ミルズ：捩れた小さなトーラス上の SU(2) 格子ゲージ理論で、率が流束を運ぶ柱の作用になる面積則の上界（市松の和の段）（論文「An area-law bound … on a twisted small torus」が引く束）（各ファイルが単独に検査でき、入口は何も import しない） | 1 | 5 | 1 |
+| [`lean/ym-boundary-mixed-derivative`](lean/ym-boundary-mixed-derivative/) | ヤン–ミルズ：シュレーディンガー汎関数の二つの境界角による混合微分 D_R と通常の結合 β_R の差 h の、強結合での符号の算術と不等式の段（論文「A boundary observable separating U(1) and SU(2) lattice gauge theory」が引く束）（各ファイルが単独に検査でき、入口は何も import しない） | 1 | 9 | 1 |
+| [`lean/ym-h1b-margin-interval`](lean/ym-h1b-margin-interval/) | ヤン–ミルズ第 10 部の検査台：一次元の二重井戸の (T1) の余白を ħ の区間で示す初等不等式と、六つの小区間 I₁〜I₆ の最後の引き算（論文「An interval-arithmetic certificate for the (T1) margin of the one-dimensional double well」が引く束）（各ファイルが単独に検査でき、入口は何も import しない） | 1 | 15 | 1 |
 | [`lean/hadwiger-nelson`](lean/hadwiger-nelson/) | 単位距離グラフ：候補類の非実現（n = 10, 11, 16）と、独立数を抑えた単位距離グラフの下界の証人と族（ハドヴィガー・ネルソン系） | 43 | 182 | 0 |
 | [`lean/collatz`](lean/collatz/) | コラッツ写像（臨界の乗数・測度・階段の高さ・枝の生死・禁止語） | 7 | 108 | 0 |
 | [`lean/riemann-weil-form`](lean/riemann-weil-form/) | Riemann 予想の Weil 形式（時間帯の分割・跡・移送・Ψ 座標・沈んだ数え上げ・ホッジ指数の正値性） | 12 | 73 | 2 |
@@ -77,6 +79,8 @@ The machine checks only that the stated propositions follow. Parts that live out
 | [`papers/ym-one-row-renormalisation`](papers/ym-one-row-renormalisation/) | A one-dimensional model of SU(2) convolution renormalisation: the curvature term 2/5, the prefactor fixed point 37/76, and a shape remainder uniform in the number of steps — authored by Yoshikazu Hosomura with the assistance of Claude | SU(2) の畳み込みの繰り込みの一次元の模型：曲率の項 2/5・前因子の固定点 37/76・段数に一様な形の剰余（`paper.pdf`, `paper.tex`, `statements.md`） |
 | [`papers/ym-hierarchical-chain`](papers/ym-hierarchical-chain/) | An interval-arithmetic chain for the Migdal–Kadanoff flow of SU(2) plaquette weights, from β = 128 to a strong-coupling region — authored by Yoshikazu Hosomura with the assistance of Claude | SU(2) のプラケットの重みの Migdal–Kadanoff の流れを β = 128 から強結合の域まで繋ぐ鎖（`paper.pdf`, `paper.tex`, `statements.md`, `certificates/`） |
 | [`papers/ym-fractional-instanton-rate`](papers/ym-fractional-instanton-rate/) | An area-law bound for SU(2) lattice gauge theory on a twisted small torus whose rate is the action of a flux-carrying column — authored by Yoshikazu Hosomura with the assistance of Claude | 捩れた小さなトーラス上の SU(2) 格子ゲージ理論の面積則の上界（率は流束を運ぶ柱の作用）（`paper.pdf`, `paper.tex`, `statements.md`） |
+| [`papers/ym-boundary-mixed-derivative`](papers/ym-boundary-mixed-derivative/) | A boundary observable separating U(1) and SU(2) lattice gauge theory: one loop, a strong-coupling sign and Monte Carlo — authored by Yoshikazu Hosomura with the assistance of Claude | 境界の観測量で U(1) と SU(2) の格子ゲージ理論を分ける：一ループ・強結合の符号・モンテカルロ（`paper.pdf`, `paper.tex`, `fig-h.pdf`, `statements.md`） |
+| [`papers/ym-h1b-margin-interval`](papers/ym-h1b-margin-interval/) | An interval-arithmetic certificate for the (T1) margin of the one-dimensional double well for ħ ∈ [0.00195, 0.005] — authored by Yoshikazu Hosomura with the assistance of Claude | 一次元の二重井戸の (T1) の余白の区間演算による証明書（ħ ∈ [0.00195, 0.005]）（`paper.pdf`, `paper.tex`, `statements.md`） |
 
 ## articles/
 
