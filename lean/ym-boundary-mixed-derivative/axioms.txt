@@ -1,0 +1,13 @@
+# axioms of principia-ym-boundary-mixed-derivative-2026-10-29 — 1 file; all declarations depend only on propext, Classical.choice, Quot.sound
+
+# StrongCouplingOneSidedTerm.lean (record shipped with the paper; checked with lake env lean on 2026-10-29, rc=0)
+'StrongCouplingOneSided.four_mul_le_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongCouplingOneSided.area_le_strip' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongCouplingOneSided.strip_term_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongCouplingOneSided.strip_coeff_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongCouplingOneSided.tube_coeff_neg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongCouplingOneSided.tube_part_nonpos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongCouplingOneSided.h_main_term' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongCouplingOneSided.h_neg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongCouplingOneSided.h_neg_on_interval' depends on axioms: [propext, Classical.choice, Quot.sound]
+rc=0
