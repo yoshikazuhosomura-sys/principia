@@ -1,0 +1,234 @@
+%% ym-h1b-margin-interval — GitHub edition (pdfTeX / latexmk -pdf)
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\hk}{\hbar\kappa}
+\newcommand{\hr}{\hbar\rho}
+\newcommand{\E}{\mathbb{E}}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Var}{Var}
+
+\title{An interval-arithmetic certificate for the (T1) margin of the one-dimensional double well for $\hbar\in[0.00195,\,0.005]$}
+\author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
+\date{2026-10-29}
+
+\begin{document}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
+
+\begin{abstract}
+For the lattice path measure of the symmetric double well $V(x)=(x^2-1)^2/8$ with time step $\varepsilon=\tfrac12$, restricted to the phase $x_i\ge0$, a two-scale construction reduces a Poincaré inequality uniform in the ring length to a margin inequality on the coarse chain of kept sites, $\lambda=\min\hr-2\max\hk\ge0.067$, where $\hr$ is the scaled one-site gap of the coarse chain and $\hk$ the scaled coupling of a bridge of 11 sites, over neighbour and end values in $[0,2.5]^2$. Earlier computations established this margin at six isolated values of $\hbar$ down to $0.005$. Here we certify it, by interval arithmetic in float64 with outward widths, for every $\hbar$ in the continuum $[0.005/1.17^6,\,0.005]\supset[0.00195,\,0.005]$ ($0.005/1.17^6\approx0.0019492$), split into six subintervals of ratio $1.17$, with margins at least $0.076$, $0.154$, $0.240$, $0.321$, $0.352$, $0.366$. On the $\hbar\rho$ side the new ingredient is an interval version of the banded Muckenhoupt estimate (cellwise comparison of the exponents at the two ends of the $\hbar$-interval); on the $\hk$ side we use a three-point interpolation in $\beta=1/\hbar$ with an explicit third-order remainder. The elementary inequalities of the $\hbar$-interval step and the final subtractions for all six subintervals are written in Lean~4 and pass its check; the interval outputs, the analytic lemmas (Muckenhoupt, FKG, the tail lemma, the interpolation remainder) and the floating-point premise are inputs. The cost of this scheme grows like $\hbar^{-3.5}$, and the remaining range down to the floating-point estimate $\hbar_0\approx5.5\times10^{-4}$ of a Laplace-method lemma is not covered; we explain why this needs a different machine. The status is computer-assisted and conditional.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+{\sloppy This note belongs to the study of a Poincaré inequality that is uniform in $\hbar$ and in the system size for a one-dimensional lattice path measure of a double well, used as a model step in a programme on the Yang--Mills mass gap (background and the full construction: \url{https://computoergosum.com/en/principia/yang-mills/10-06-H1-local-poincare.html}; the problem statement~\cite{JW}). Nothing here addresses gauge theory directly. Numbers quoted without a citation are taken from the authors' working records (programs, outputs and reports), which are not published.\par}
+
+The construction of the cited chapter keeps one site in every twelve, treats the eleven sites between two kept sites as a bridge with fixed ends, and bounds the Poincaré constant of the whole measure by an explicit algebraic expression in a few inputs, using on the coarse chain the Poincaré version of Helffer's criterion (Proposition~3.1 of~\cite{Le}). All inputs except one are established in the cited chapter, each with its own grade, for every $\hbar\in(0,0.2]$. The exception is the margin inequality (T1) on the coarse chain (\S\ref{sec:model}), which was checked by interval arithmetic only at the six nodes $\hbar\in\{0.2,0.1,0.05,0.02,0.01,0.005\}$ (margins $0.7039$, $0.5812$, $0.5677$, $0.3574$, $0.0670$, $0.0845$). Because the rate condition of the construction is monotone in the margin, any lower bound $\lambda\ge0.067$ at other values of $\hbar$ gives there the same constant as at the nodes. The question for $\hbar<0.005$ (row (H1-b) of the remaining rows in the cited chapter) is therefore exactly: does the margin stay $\ge0.067$?
+
+Two routes exist. A semiclassical route: as $\hbar\to0$ the margin tends to a limit determined by a zero-temperature landscape, which we bounded by interval arithmetic from below by $0.758$, and a quantitative Laplace-method lemma (QL) would give an explicit $\hbar_0$ below which the margin is safe; with the constants we can currently write, a floating-point evaluation gives $\hbar_0\approx5.5\times10^{-4}$. A computational route: extend the interval machine of the six nodes from points to intervals of $\hbar$. This note follows the second route, starting from the top of the window; it covers $[0.005/1.17^6,\,0.005]$ and stops there.
+
+\paragraph{Status of the results.} Computer-assisted (interval arithmetic in float64 with outward widths, presupposing correctly rounded IEEE arithmetic), with Lean~4 for the elementary inequalities of the $\hbar$-interval step and the final arithmetic of the six subintervals; conditional on the cited and assumed rows of Table~\ref{tab:status}.
+
+\section{The model and the margin}\label{sec:model}
+
+On a ring of $N=12n$ sites ($n\ge3$) consider
+\[
+S(x)=\sum_i\frac{(x_{i+1}-x_i)^2}{2\varepsilon}+\varepsilon\sum_iV(x_i),\qquad V(x)=\frac{(x^2-1)^2}{8},\qquad\varepsilon=\frac12,
+\]
+and the measure $\mu^{(+)}\propto e^{-S/\hbar}\mathbf 1\{x_i\ge0\ \forall i\}$, with Dirichlet form $\mathcal E(f)=(\hbar/\varepsilon)\sum_i\E|\partial_if|^2$. Keep the sites $y_j=x_{12j}$.
+
+\begin{definition}[bridge, coupling, one-site measure]\label{def:margin}
+\begin{enumerate}[label=(\roman*),leftmargin=2em]
+\item For ends $a,b\ge0$ the bridge measure on $[0,\infty)^{11}$ is $\mu_{a,b}\propto e^{-S_{a,b}/\hbar}$ with $S_{a,b}(x)=\sum_{k=0}^{11}(z_{k+1}-z_k)^2/(2\varepsilon)+\varepsilon\sum_{i=1}^{11}V(x_i)$, $z=(a,x_1,\dots,x_{11},b)$. Write $e(a,b)=\E_{a,b}x_{11}$.
+\item The coupling: $\hk(a,b)=\Cov_{a,b}(x_1,x_{11})/(\varepsilon^2\hbar)=\varepsilon^{-1}\partial_ae(a,b)\ge0$.
+\item The one-site measure of a kept site with neighbours $c,d$ is $\nu_{c,d}(dt)\propto e^{-U(t)/\hbar}dt$ on $[0,\infty)$, $U'(t)=\varepsilon V'(t)+(2t-e(c,t)-e(d,t))/\varepsilon$. We write $\hr(c,d)$ for $\hbar$ times its Poincaré gap for the flat form $\int|f'|^2d\nu$.
+\item The margin: $\lambda:=\min_{c,d\in[0,2.5]}\hr(c,d)-2\max_{a,b\in[0,2.5]}\hk(a,b)$.
+\end{enumerate}
+\end{definition}
+
+(T1) is the inequality $\lambda\ge0.067$. Muckenhoupt's estimate~\cite{Mu,BR} squeezes the Poincaré constant of $\nu_{c,d}$ between $B$ and $4B$, where $B$ is a Hardy-type functional of the density; hence $\hr\ge\hbar/(4B)$. The monotonicity of $e(c,t)$ in $c$ (an MTP$_2$ correlation inequality~\cite{KR}) is what allows a finite set of neighbour values to control the continuum, and a tail lemma (Holley's comparison~\cite{Ho} and a tilted Gaussian bridge) handles $t$ beyond the computed range.
+
+\section{Extending the machine from points of \texorpdfstring{$\hbar$}{hbar} to intervals}\label{sec:scheme}
+
+We take subintervals $I_k=[0.005/1.17^k,\ 0.005/1.17^{k-1}]$, $k=1,\dots,6$, and certify on each
+\[
+\inf_{\hbar\in I_k}\min_{c,d}\hr\ \ge\ r_k,\qquad \sup_{\hbar\in I_k}\max_{a,b}\hk\ \le\ k_k,\qquad r_k-2k_k\ge0.067 .
+\]
+Consecutive subintervals share their endpoints exactly. The ratio $1.17$ is the guide given in the cited chapter (in its section on the $\hbar$ between the nodes), from the size of the fluctuation of the action.
+
+\subsection{The \texorpdfstring{$\hk$}{hbar kappa} side}
+
+At a single $\hbar$ the earlier machine (Lemma K2) tilts the bridge measure at the centre of a box of end values and controls the whole box by the second-order Taylor expansion of the cumulant generating function, with a Hölder remainder; the integrals are computed by transfer operators on a quadrature grid, in interval arithmetic. To make $\beta=1/\hbar$ a third variable we use the following scheme, written out in the authors' working records.
+\begin{itemize}[leftmargin=2em]
+\item \emph{Three-point interpolation (Lemma TI).} For each non-negative weight $X$ (products of end observables) the unnormalised integral $J_X(\beta)=\int Xe^{-\beta H}dx$ is computed at $\beta_{\rm lo},\beta_c,\beta_{\rm hi}$; the quadratic interpolant $p_X$ satisfies $|J_X-p_X|\le(|\omega(\tau)|/6)\sup|J_X'''|$, $\omega=(\tau+\Delta)\tau(\tau-\Delta)$, $\max|\omega|=2\Delta^3/(3\sqrt3)$, by the standard Lagrange remainder.
+\item \emph{Third-order remainder (Lemma EM).} $|y|^3\le c_3(\lambda_+)e^{\lambda_+y}+c_3(\lambda_-)e^{-\lambda_-y}$ with $c_3(\lambda)=(3/(e\lambda))^3$, so $\sup|J_X'''|$ is bounded by $J_X$ at four shifted values of $\beta$; log-convexity of $J_X$ puts the supremum at an endpoint.
+\item \emph{Linear-fractional endpoints (Lemma TF).} On each of $32$ pieces of the $\beta$-interval, the ratio of two such interpolants is a linear-fractional function of the position, whose values lie between those at the two ends of the piece when the denominator is positive there; the interval hull of the endpoint values is taken.
+\end{itemize}
+This gives an upper bound on $\hk$ for every end value in a box and every $\hbar$ in $I_k$. The square $[0,2.5]^2$ of end values is covered by $N\times N$ boxes, with $N=720$ on $I_1$ and $N\propto1/\hbar$ (to keep the box width relative to the thermal width fixed), and quadrature step $h_q\propto\hbar^{3/4}$ (to keep the relative width of the partition function fixed). Boxes above the threshold after the main pass are recomputed with finer settings: the corner near $(0,0)$ with twice the boxes, and the band at the large end with a finer quadrature step; the final map takes, box by box, the minimum of all upper bounds obtained, and the symmetry $\hk(a,b)=\hk(b,a)$ fills the other half.
+
+\subsection{The \texorpdfstring{$\hbar\rho$}{hbar rho} side: an interval version of the banded Muckenhoupt estimate}
+
+\begin{enumerate}[leftmargin=2em]
+\item \emph{The band of $e$.} $e(c,t)$ is enclosed for all $\hbar\in I_k$ by the same TAU scheme (three nodes, Lemma TI with the four shifted values of $\beta$, $32$ pieces), applied to the raw integrals of the weights $1$, $P_+$, $P_-$; the centring constant is fixed on the grid of $\beta_c$ and used for all $\beta$. As a positive control, at $\hbar=0.0046$ (a point inside $I_1$, computed with a different step) all $315126$ point bands lie inside the interval band.
+\item \emph{Exponents compared at the two ends.} Every exponent appearing in the upper bounds $B_\pm$ of Muckenhoupt's functional is a difference of forward sums $\sum_{\rm cells}U'\cdot h_t/\hbar$, that is, a sum over the cells lying between two points, so it can be bounded cell by cell. For each cell we replace $U_{\rm lo}/\hbar$ by $\min(U_{\rm lo}/\hbar_1,U_{\rm lo}/\hbar_2)$ in $B_+$ and $U_{\rm hi}/\hbar$ by $\max(U_{\rm hi}/\hbar_1,U_{\rm hi}/\hbar_2)$ in $B_-$; this is correct whatever the sign of $U$ (Lemma~\ref{lem:cell}). The within-cell corrections are taken at $\hbar_1$ and the tail term $\log(\hbar/g)$ at $\hbar_2$, the ends at which each is largest (derived by hand); the conditions of the tail lemma are monotone in the thermal width $\propto\sqrt\hbar$ and are checked once at $\hbar_2$.
+\item \emph{Pieces.} The Muckenhoupt step alone is repeated on $K=8$ subpieces of $I_k$, sharing the band of item~1; the bound for $I_k$ is the minimum over pieces (Lemma~\ref{lem:cell}(iv)). This reduces the loss from the ratio $1.17$ to $1.17^{1/8}$: on $I_1$, $\hr\ge0.74627$ with $K=1$ and $\ge0.84797$ with $K=8$.
+\item $\hr\ge\hbar_1/(4\sup B)$ on the piece $[\hbar_1,\hbar_2]$ (Lemma~\ref{lem:cell}(iii)).
+\end{enumerate}
+
+\begin{lemma}[elementary steps; Lean]\label{lem:cell}
+Let $0<\hbar_1\le\hbar\le\hbar_2$.
+\begin{enumerate}[label=(\roman*),leftmargin=2em]
+\item For every real $U$: $\min(U/\hbar_1,U/\hbar_2)\le U/\hbar\le\max(U/\hbar_1,U/\hbar_2)$, and the same for finite sums of such terms.
+\item If $\hbar\mapsto r(\hbar)$ and $\hbar\mapsto k(\hbar)$ satisfy $r\le r(\hbar)$ and $k(\hbar)\le k$ on $[\hbar_1,\hbar_2]$ and $0.067\le r-2k$, then $0.067\le r(\hbar)-2k(\hbar)$ there.
+\item If $0<B\le\bar B$ then $\hbar_1/(4\bar B)\le\hbar/(4B)$.
+\item If $P$ is a finite nonempty family of pieces and each $\hbar$ lies in a piece $p\in P$ on which $r_p\le f(\hbar)$, then $\min_{p\in P}r_p\le f(\hbar)$.
+\end{enumerate}
+\end{lemma}
+
+\subsection{The floating-point premise and the weight scale}
+
+The interval arithmetic is the one used at the six nodes: float64 with outward widths added (relative $10^{-10}$ on sums of non-negative terms, $10^{-12}$ on interval operations), presupposing correctly rounded IEEE arithmetic; it is not arithmetic with a directed rounding mode for each operation, nor a multiprecision interval library. Weights below $e^{-700}$ are replaced by an upper bound, and the region where the weight would underflow is covered by a tail upper bound. Two changes to the settings were needed below $\hbar=0.005$, neither of which changes a formula:
+\begin{itemize}[leftmargin=2em]
+\item the weight cut-off was an absolute value, so at large $\beta$ and large end values the tail bound exceeded the integral itself; a uniform factor $e^{C}$ multiplied into all site weights moves the cut-off outward ($C=650$ at first; from $I_4$ on $C=686$, set by a formula with a small safety margin below the float64 limit: $C=687$ still gives finite forward recursions, $C=694$ overflows);
+\item from $I_4$ on, the shift $\lambda_-$ of Lemma EM is lowered automatically so that the tail at the corner $(2.5,2.5)$ stays $e^{-25}$ below the integral at the shifted $\beta$ ($\lambda_-/\beta_c=0.721$, $0.460$, $0.236$ for $I_4$, $I_5$, $I_6$); this enlarges the constant $(3/(e\lambda_-))^3$ of the remainder, by a factor about $4.4$ on $I_5$ and about $30$ on $I_6$.
+\end{itemize}
+A lazily evaluated version of the transfer kernels (built block by block instead of stored) was used where the stored kernels would exceed the memory limit; on a recomputed run of $I_3$ it reproduces the stored version bit for bit.
+
+\section{Results}\label{sec:results}
+
+\begin{table}[ht]\centering\small
+\caption{The six subintervals $I_k=[0.005/1.17^k,\,0.005/1.17^{k-1}]$ (lower end shown to seven digits; consecutive subintervals share endpoints). Boxes: number of boxes of end values up to the symmetry $(a,b)\leftrightarrow(b,a)$, i.e.\ $N(N+1)/2$. $r_k$: lower bound on $\hr$ (Muckenhoupt on $8$ pieces); $k_k$: upper bound on $\hk$ over all boxes; threshold $(r_k-0.067)/2$; margin $r_k-2k_k$ (computed from unrounded values). Neighbour and end values $[0,2.5]^2$.}\label{tab:results}
+\begin{tabular}{@{}llrllll@{}}\toprule
+ & lower end of $I_k$ & boxes & $r_k\ (\hr\ge)$ & $k_k\ (\hk\le)$ & threshold & margin $\ge$\\\midrule
+$I_1$ & $0.0042735$ & 259560 & 0.84797 & 0.38560 & 0.39049 & 0.07677\\
+$I_2$ & $0.0036526$ & 354903 & 0.85245 & 0.34907 & 0.39272 & 0.15431\\
+$I_3$ & $0.0031219$ & 486591 & 0.87360 & 0.31665 & 0.40330 & 0.24030\\
+$I_4$ & $0.0026683$ & 665281 & 0.87539 & 0.27705 & 0.40419 & 0.32129\\
+$I_5$ & $0.0022806$ & 910575 & 0.86653 & 0.25695 & 0.39977 & 0.35262\\
+$I_6$ & $0.0019492$ & 1247410 & 0.85199 & 0.24263 & 0.39250 & 0.36672\\\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{proposition}[conditional, computer-assisted]\label{prop:main}
+Under the premises and rows of Table~\ref{tab:status}, for every $\hbar\in[0.005/1.17^6,\,0.005]$ (which contains $[0.00195,\,0.005]$) and all neighbour and end values in $[0,2.5]^2$, the margin satisfies $\lambda\ge0.067$; on $I_k$ it is at least the value in the last column of Table~\ref{tab:results}.
+\end{proposition}
+
+Combined with the six nodes, (T1) is then certified, under the same premises, on $\{0.2,0.1,0.05,0.02,0.01\}\cup[0.005/1.17^6,\,0.005]$. The gaps between the nodes above $0.005$ are a separate matter not treated here.
+
+\paragraph{Remarks on the numbers.}
+\begin{itemize}[leftmargin=2em]
+\item The margin grows as $\hbar$ decreases because $h_q\propto\hbar^{3/4}$ shrinks the quadrature width faster than the scaling requires; the maxima of $\hk$ on $I_1$ lay just outside the refined corner. For comparison, floating-point values of the true margin are $1.67$ to $1.79$ for $\hbar\in[0.001,0.02]$, so the certified values are limited by the machine, not by the model.
+\item On $I_1$ the main pass alone (without the refinement of the large-end band) gives a maximum of $\hk$ of $4.33884$ and a negative margin; refinement is needed (this negative control is one of the Lean statements).
+\item Where an endpoint is rounded in the text, the lower end of the covered range is rounded up ($0.00195>0.0019492$).
+\end{itemize}
+
+\section{Cost, and why the range below \texorpdfstring{$0.005/1.17^6$}{0.005/1.17\^{}6} is not covered}\label{sec:cost}
+
+The number of boxes per side grows like $1/\hbar$ and the number $n$ of quadrature points like $\hbar^{-3/4}\cdot\hbar^{-1/2}$; the cost of a run is close to (number of rows)$\,\times n^2$ and nearly independent of the number of columns, because the forward chain of each row passes through all weights and grids. The resulting model is cost $\propto\hbar^{-3.5}$, i.e.\ about $1.7$ to $1.8$ times per subinterval. The measured ratios scatter around this: $I_2$ cost about $1.8$ times $I_1$, and $I_6$ about $2.8$ times $I_5$, the latter including a slowdown of about $2.4$ from the lazily evaluated kernels; peak memory reached about $2.6$\,GB on $I_5$.
+
+Below $0.005/1.17^6$ three things fail together:
+\begin{enumerate}[leftmargin=2em]
+\item \emph{Float64 range.} The single weight scale $e^{C}$ cannot be raised beyond $C\approx690$ without overflow, and the automatic choice of $\lambda_-$ falls to $0.045$ on $I_7$; the remainder constant then grows beyond what the margin can absorb, and the tail at the corner $(2.5,2.5)$ cannot be closed with one weight scale. Per-node or per-row scales do not help, since the required range is set by the depth of the well relative to the cut-off, independently of $\beta$.
+\item \emph{Cost.} Down to the floating-point $\hbar_0\approx5.5\times10^{-4}$ of (QL), about nine further subintervals would be needed, at a cost growing by $1.7$ to $1.8$ per step.
+\item \emph{The lower end is not explicit.} $\hbar_0\approx5.5\times10^{-4}$ is a floating-point evaluation of constants in a paper lemma, some of whose rows (the action gap outside a convex neighbourhood, uniformity over the end values, the tail) are not certified.
+\end{enumerate}
+Possible remedies (not tried): a quadrature centred at the minimiser of the bridge action on the thermal scale $\sqrt\hbar$ (Laplace-type coordinates), so that $n$ no longer grows with $1/\hbar$ and the cost would drop to $\propto1/\hbar$; weights in logarithmic form; or sharper constants in (QL).
+
+\section{Status of the rows}\label{sec:statusrows}
+
+Table~\ref{tab:status} lists, for each step of Proposition~\ref{prop:main}, whether it is computed, derived by hand, checked in Lean, cited or assumed.
+
+\begin{table}[h]\centering\small
+\caption{What each step rests on. Grades: \emph{computer-assisted} = interval arithmetic under the float64 premise; \emph{by hand} = derived by the authors, not machine-checked; \emph{cited} = theorem from the literature, statement checked in a restatement; \emph{assumption} = taken as given.}\label{tab:status}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.55\linewidth}>{\raggedright\arraybackslash}p{0.37\linewidth}@{}}\toprule
+Row & Grade\\\midrule
+$r_k$, $k_k$ and the covering of all boxes, $I_1$--$I_6$ & computer-assisted\\
+float64 with outward widths, correct IEEE rounding & assumption (premise of the implementation)\\
+Lemma~\ref{lem:cell} (cellwise comparison, pieces, $\hbar_1/(4\bar B)$, margin on an interval) & by hand and Lean\\
+substitution into $B_\pm$ (exponents as sums over intermediate cells; within-cell corrections at $\hbar_1$, tail term at $\hbar_2$) & by hand\\
+final subtraction $r_k-2k_k\ge0.067$ & Lean (\texttt{margin\_I1}--\texttt{margin\_I6})\\
+Lemma TI (Lagrange interpolation remainder) & cited (standard; reference not re-checked)\\
+Lemma EM with the sharp constant $(3/(e\lambda))^3$ & by hand (Lean has the weaker constant $6/\lambda^3$)\\
+Lemma TF (linear-fractional endpoints), Lemma K2 & by hand\\
+Muckenhoupt $B\le C_P\le4B$ & cited~\cite{Mu,BR}\\
+monotonicity of $e$ (MTP$_2$/FKG) & cited~\cite{KR}\\
+tail lemma (continuous Holley comparison) & assumption (theorem number not checked~\cite{Ho})\\
+uniform weight scale $e^{C}$, symmetry $(a,b)\leftrightarrow(b,a)$ & by hand\\
+the reduction of (H1-b) to (T1) & by hand (cited chapter)\\
+$\hbar_0\approx5.5\times10^{-4}$ of (QL) & floating-point estimate; rows of (QL) partly unverified\\\bottomrule
+\end{tabular}
+\end{table}
+
+\section{What is machine-checked}\label{sec:lean}
+
+{\sloppy The file \texttt{LatticeGaugeH1HbarInterval.lean} (namespace \texttt{LatticeGauge.H1HbarInterval}, 15 theorems, sha256 \texttt{42311821\allowbreak{}60d4e472\allowbreak{}1de2aa29\allowbreak{}9f819e24\allowbreak{}634121d7\allowbreak{}b2293e4c\allowbreak{}f0fb0b2a\allowbreak{}c5561530}) is a single file beginning with \texttt{import Mathlib}. It is distributed as a bundle of its own (ledger and build instructions: \url{https://computoergosum.com/en/principia/lean/index.html}; bundle: \url{https://computoergosum.com/principia/lean/principia-ym-h1b-margin-interval-2026-10-29.tar.gz}, checksum file \url{https://computoergosum.com/principia/lean/principia-ym-h1b-margin-interval-2026-10-29.tar.gz.sha256}; axiom log: \url{https://computoergosum.com/principia/lean/axioms-ym-h1b-margin-interval-2026-10-29.txt}). In the repository named in \S\ref{sec:ai} the file is kept, byte for byte the same, under \texttt{lean/\allowbreak{}ym-h1b-margin-interval} as the module \texttt{H1bMarginInterval.\allowbreak{}LatticeGaugeH1HbarInterval} of a lake project pinned to the same versions; verify there with \texttt{lake exe cache get} and \texttt{LEAN\_NUM\_THREADS=1 lake env lean H1bMarginInterval/\allowbreak{}LatticeGaugeH1HbarInterval.lean}. The bundle fixes the Lean and Mathlib versions (Lean v4.33.1, Mathlib v4.33.1, commit \texttt{0df444a3}). To verify: extract the bundle, run \texttt{lake exe cache get} in the extracted directory, then run \texttt{LEAN\_NUM\_THREADS=1 lake env lean LatticeGaugeH1HbarInterval.lean}; each of the fifteen \texttt{\#print axioms} lines at the end must print \texttt{[propext, Classical.choice, Quot.sound]}. There is no \texttt{sorry}, no \texttt{axiom} declaration and no \texttt{native\_decide}.\par}
+
+What Lean checks: Lemma~\ref{lem:cell}; the threshold arithmetic; the margins $r_k-2k_k\ge0.067$ of $I_1,\dots,I_6$ (theorems \texttt{margin\_I1}--\texttt{margin\_I6}, each a \texttt{norm\_num} check of the literal numbers of Table~\ref{tab:results}, which does not certify those numbers themselves); and that the unrefined value $4.33884$ would not give a margin. What Lean does not check: the interval outputs $r_k$, $k_k$ (they enter as hypotheses), the transfer-operator integrals, Muckenhoupt, FKG, the tail lemma, Lemmas TI, EM (sharp constant), TF and K2, and the floating-point premise. Some elementary steps of Lemmas TI, EM and TF (the Lagrange basis, its Lebesgue constant, $|y|^3$ against exponentials with the constant $6/\lambda^3$, the linear-fractional endpoint lemma) are in a separate earlier file, \texttt{LatticeGaugeH1TaylorStage.lean}, and are not used by this note's Lean file.
+
+\section{What is not claimed}\label{sec:notclaimed}
+\begin{itemize}[leftmargin=2em]
+\item \textbf{$[\hbar_0,\,0.005/1.17^6]$ is not covered} ($0.005/1.17^6\approx0.0019492$; where the covered range is written with a rounded end, it is rounded up to $0.00195$), and (H1) is not established as $\hbar\to0$: the computed range and the range of (QL) do not meet, and $\hbar_0$ itself is a floating-point estimate.
+\item The gaps between the nodes above $0.005$, neighbour and end values above $2.5$, and the version with free ends used inside a box are not treated.
+\item The interval arithmetic is float64 with added outward widths and presupposes correct IEEE rounding; it is not directed rounding and not a multiprecision interval library. Underflowed terms are treated as in the node computations.
+
+\item The relative cost figures were measured on one shared machine and are indicative; the extrapolation to further subintervals is a model.
+\item The model is $0+1$-dimensional; any bearing on gauge theory is by analogy only.
+\end{itemize}
+
+\section{Correspondence table}\label{sec:corr}
+
+\begin{table}[ht]\centering\small
+\caption{Statements and Lean declarations (namespace \texttt{LatticeGauge.H1HbarInterval}, file \texttt{LatticeGaugeH1HbarInterval.lean}).}\label{tab:corr}
+\begin{tabular}{@{}lll@{}}\toprule
+Statement & Lean declaration & Line\\\midrule
+Lemma~\ref{lem:cell}(i), lower & \texttt{cell\_lower} & 10\\
+Lemma~\ref{lem:cell}(i), upper & \texttt{cell\_upper} & 21\\
+Lemma~\ref{lem:cell}(i), sums & \texttt{sum\_lower}, \texttt{sum\_upper} & 28, 33\\
+Lemma~\ref{lem:cell}(iii) & \texttt{rho\_lower} & 38\\
+Lemma~\ref{lem:cell}(iv) & \texttt{pieces\_min} & 45\\
+Lemma~\ref{lem:cell}(ii) & \texttt{margin\_on\_interval} & 51\\
+margin of $I_1$ & \texttt{margin\_I1} & 59\\
+margin of $I_2$ & \texttt{margin\_I2} & 62\\
+margin of $I_3$ & \texttt{margin\_I3} & 65\\
+margin of $I_4$ & \texttt{margin\_I4} & 68\\
+margin of $I_5$ & \texttt{margin\_I5} & 71\\
+margin of $I_6$ & \texttt{margin\_I6} & 74\\
+threshold arithmetic & \texttt{threshold} & 77\\
+negative control on $I_1$ & \texttt{margin\_I1\_coarse\_fails} & 80\\\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Disclosure of AI use}\label{sec:ai}
+This note was produced with the assistance of AI agents. The reduction, the interval scheme, its implementation and runs, the Lean~4 file including the formalised statements, the reports on which this note is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code on a laptop, across many separate sessions, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for checking the Lean file on a separate machine, for checking the numerical claims of this note against the reports, and for preparing the distributed version; for this note that group also prepared the web edition (typesetting, the site page and the placement of the files). The independent check of the Lean file was completed on 2026-10-29 (checked with \texttt{lake env lean} on a separate machine, rc=0, standard axioms only). The human author set the task, chose the problem, fixed the working rules and load limits, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. In particular the interval outputs $r_k$, $k_k$, the transfer-operator integrals, the analytic lemmas and the floating-point premise are not machine-checked. This edition and the Lean file it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-h1b-margin-interval}, the Lean file under \texttt{lean/\allowbreak{}ym-h1b-margin-interval}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section and in one sentence of \S\ref{sec:lean} giving the location of the Lean file in the repository.
+
+\begin{thebibliography}{9}
+\bibitem{BR} F.~Barthe, C.~Roberto, \emph{Modified logarithmic Sobolev inequalities on $\mathbb R$}, Potential Anal.\ 29 (2008) 167--193, arXiv:math/0612026 (Theorems 1 and 2, used as the restatement of~\cite{Mu}).
+\bibitem{Ho} R.~Holley, \emph{Remarks on the FKG inequalities}, Comm.\ Math.\ Phys.\ 36 (1974) 227--231 (not consulted directly).
+\bibitem{JW} A.~Jaffe, E.~Witten, \emph{Quantum Yang--Mills theory}, in: The Millennium Prize Problems, Clay Mathematics Institute, 2006, 129--152 (not consulted directly).
+\bibitem{KR} S.~Karlin, Y.~Rinott, \emph{Classes of orderings of measures and related correlation inequalities. I.~Multivariate totally positive distributions}, J.\ Multivariate Anal.\ 10 (1980) 467--498 (statement checked in the restatement as Proposition 3.5 of S.~Fallat et al., Ann.\ Statist.\ 45 (2017), arXiv:1510.01290).
+\bibitem{Le} M.~Ledoux, \emph{Logarithmic Sobolev inequalities for unbounded spin systems revisited}, Sém.\ Probab.\ XXXV, Lecture Notes in Math.\ 1755 (2001) 167--194 (Proposition 3.1, used in the construction that the margin feeds).
+\bibitem{Mu} B.~Muckenhoupt, \emph{Hardy's inequality with weights}, Studia Math.\ 44 (1972) 31--38 (not consulted directly).
+\end{thebibliography}
+\end{document}
