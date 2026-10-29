@@ -1,0 +1,19 @@
+# axioms of principia-ym-h1b-margin-interval-2026-10-29 — 1 file; all declarations depend only on propext, Classical.choice, Quot.sound
+
+# LatticeGaugeH1HbarInterval.lean (record shipped with the paper; checked with lake env lean on 2026-10-29, rc=0)
+'LatticeGauge.H1HbarInterval.cell_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.cell_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.sum_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.sum_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.rho_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.pieces_min' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.margin_on_interval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.margin_I1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.margin_I2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.margin_I3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.margin_I4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.margin_I5' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.margin_I6' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.threshold' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGauge.H1HbarInterval.margin_I1_coarse_fails' depends on axioms: [propext, Classical.choice, Quot.sound]
+rc=0
