@@ -36,7 +36,7 @@
 
 \title{An interval-arithmetic chain for the Migdal--Kadanoff flow of SU(2) plaquette weights, from $\beta=128$ to a strong-coupling region}
 \author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
-\date{2026-10-15}
+\date{2026-10-30 (version~2; version~1: 2026-10-15)}
 
 \begin{document}
 \maketitle
@@ -49,7 +49,7 @@ This recursion is exact for a hierarchical lattice model; nothing in this paper 
 Around the heat-kernel class we define a tube $\cU$ in a transverse coordinate $e_n=\log a_n-(q_n/3)\log a_1$, $q_n=n(n+2)$, in which all upper bounds become ratios of sums of non-negative terms.
 (1) Theorem H-UV: $T(\cU)\subset\cU$ on $6277$ cells covering $\beta\in[2.46,128]$, and on $\beta\in[15.26,64]$ all orbits in $\cU$ are attracted to one curve at rate $\Lambda\le 0.735$ per step; at the heat-kernel points $(\beta-\beta'-\tfrac14)\beta\in[0.020928,0.023690]$ for $\beta\in[2.5,64]$.
 (2) On the curve, to leading order in $1/\beta$, the shape is $\HK_\beta\cdot\exp(\theta^4/3600+\theta^6/963900+\dots)$ and the coupling flows as $\beta'=\beta-\tfrac14-c^*/\beta$ with $c^*=1/60$ (paper, leading order); on a narrower tube the flow coefficient is enclosed in $[0.0151,0.0188]$ on $50$ cells between $\beta\approx16$ and $128$.
-(3) Theorem MK-full: from any point of an extended tube with $\beta(w)\le128$, at most $580$ steps lead into the tube of the earlier record W-half$(T)$ [KSR, 11-06], and at most $557$ further steps into the region where that record's criterion holds ($1137$ steps in total), under five stated conditions.
+(3) Theorem MK-full: from any point of an extended tube with $\beta(w)\le128$, at most $580$ steps lead into the tube $\cD$ of an earlier interval-arithmetic certificate W-half$(T)$, which is stated here with its definitions as Proposition~\ref{prop:whalf}, derived in Appendix~\ref{app:whalf} and distributed with its programs and logs, and at most $557$ further steps into the region $\cK$ of that certificate ($1137$ steps in total), under five stated conditions.
 Items (1) and the enclosures in (2) are \IA; the step-count assembly and the leading-order algebra are written in Lean~4 and pass its check; the limit $\beta\to\infty$ is not closed, and \S\ref{sec:open} explains which term of the present cell test prevents it.
 \end{abstract}
 
@@ -57,15 +57,18 @@ Items (1) and the enclosures in (2) are \IA; the step-count assembly and the lea
 \addcontentsline{toc}{section}{Introduction}
 The Yang--Mills existence and mass gap problem [JW] asks for a quantum Yang--Mills theory on $\mathbb{R}^4$ with a positive mass gap.
 This paper does not address that problem.
-It studies one explicit hierarchical renormalisation-group map, the Migdal--Kadanoff recursion for SU(2) plaquette weights, as a testing ground for computer-assisted chains of renormalisation steps; the model and its background are described in the authors' online textbook [KSR], chapters 11-06 and 15-04.
+It studies one explicit hierarchical renormalisation-group map, the Migdal--Kadanoff recursion for SU(2) plaquette weights, as a testing ground for computer-assisted chains of renormalisation steps.
+Definitions, statements, derivations, certificates and Lean files used below are all contained in this paper, its appendix and its distributed bundle; a broader account in Japanese, which is not needed for reading the paper, is the authors' online textbook [KSR].
 
-\paragraph{The earlier record.}
-The second stage of Theorem~\ref{thm:mkfull} uses an earlier record of the same model, located in the textbook [KSR] at 11-06 and 15-04, which certifies by interval arithmetic that the orbits in a tube $\cD$ at strong coupling enter a region $\cK$.
-We call it W-half$(T)$; it is not re-run here.
-Below it is referred to as the earlier record [KSR, 11-06].
+\paragraph{The earlier certificate.}
+The second stage of Theorem~\ref{thm:mkfull} uses an earlier certificate for the same map, computed in the authors' working records before the computations of this paper, which shows by interval arithmetic that the orbits in a tube $\cD$ at strong coupling enter a region $\cK$.
+We call it W-half$(T)$.
+Its definitions and statement are given in \S\ref{sec:mkfull} (Definition~\ref{def:D}, Proposition~\ref{prop:whalf}), its derivation and a summary of its output in Appendix~\ref{app:whalf}, and its programs and logs are part of the bundle of this paper (\S\ref{sec:lean}).
+For this version, the decrease of the cell index was checked by a separate computation and part of the certificate was run again (Appendix~\ref{app:whalf}). To readers of the first version: in test~(2) of the cell test the comparison was against the lower end of the current box rather than of the cell; we have corrected the reference point of that comparison and closed the decrease of the cell index by the additional check; the statements are unchanged.
 
-\paragraph{What is not in the textbook.}
-Lemma~\ref{lem:exit} (soundness of the exit test), Lemma~\ref{lem:tail} (Gaussian tail of heat-kernel coefficients) and the single-cell computations at $\beta=256$, $512$, $1024$ and $2048$ in \S\ref{sec:open} are not in the textbook [KSR]; they are added in this paper.
+\paragraph{What this paper adds.}
+Theorem~\ref{thm:huv}, the results of \S\ref{sec:curve}, the joining computation and Theorem~\ref{thm:mkfull}, Lemma~\ref{lem:exit} (soundness of the exit test), Lemma~\ref{lem:tail} (Gaussian tail of heat-kernel coefficients) and the single-cell computations at $\beta=256$, $512$, $1024$ and $2048$ in \S\ref{sec:open} are the contributions of this paper.
+W-half$(T)$ is an input; it is stated and derived here so that the paper can be read and checked without other sources.
 
 \section{The hierarchical map}\label{sec:map}
 
@@ -103,9 +106,9 @@ Hence one step lowers $\beta$ by $1/4$ at leading order; the corrections of orde
 Iterating, $K$ steps starting from $\beta_{\mathrm{start}}$ reach $\beta_{\mathrm{start}}-K/4$ up to a logarithmic correction, so that a range of $\beta$ of length $64$ is crossed in about $256$ steps.
 \end{remark}
 
-\paragraph{What the paper adds.}
+\paragraph{Relation to known results.}
 That the MK flow of SU(2) weights goes to strong coupling is known [It85, Mi].
-What we add is a single chain of interval-arithmetic certificates, with explicit uniform speed and step counts, from the weak-coupling end $\beta=128$ down to the entry of the region used by the earlier record [KSR, 11-06], together with the invariant curve near which the flow runs and the leading-order coefficient of its coupling flow.
+What we add is a single chain of interval-arithmetic certificates, with explicit uniform speed and step counts, from the weak-coupling end $\beta=128$ down to the tube $\cD$ of W-half$(T)$, together with the invariant curve near which the flow runs and the leading-order coefficient of its coupling flow.
 
 \paragraph{An observation that fixes the coordinates.}
 In double precision, the weights reaching the same coupling $\beta'$ after $j$ and after $4$ steps differ in total variation by ratios $16.06$ and $17.00$ for $j=1{:}2{:}3$, against $16.0$ and $17.0$ predicted by a contraction $1/16$ per step, for starting couplings $3.5,7,15,30$; the fitted $\theta^4$ coefficient of $\log(w/\HK)$ is $2.789\times10^{-4}$ at $\beta=60$, against $1/3600=2.778\times10^{-4}$, and $2.615\times10^{-4}$ after one step, against $1/3840$.
@@ -115,7 +118,7 @@ These observations are not part of any statement; they suggested measuring the d
 Section~\ref{sec:tube} defines the transverse coordinate and the tube and explains why every bound is a ratio of non-negative sums.
 Section~\ref{sec:huv} states Theorem H-UV.
 Section~\ref{sec:curve} gives the leading-order shape flow, the attracting curve on a finite interval, and an enclosure of the coupling-flow coefficient.
-Section~\ref{sec:mkfull} joins the tube to the earlier record and states Theorem MK-full.
+Section~\ref{sec:mkfull} states W-half$(T)$, joins the tube to it and states Theorem MK-full.
 Section~\ref{sec:open} explains which term of the cell test prevents $\beta\to\infty$.
 Sections~\ref{sec:lean}, \ref{sec:corr} and~\ref{sec:notclaimed} list what is checked in Lean, the correspondence between statements and Lean declarations, and what is not claimed.
 
@@ -353,15 +356,39 @@ With cell width $0.02$ the same tube fails (the remainder exceeds the requiremen
 
 \section{Theorem MK-full}\label{sec:mkfull}
 
-\paragraph{The earlier record and the coordinate match.}
-The earlier record W-half$(T)$ [KSR, 11-06] works in the coordinate $t:=a_1$ (its coefficients $\langle f\chi_n\rangle/(d_n\langle f\rangle)$ are our $a_n$).
+\paragraph{The earlier certificate W-half$(T)$.}
+W-half$(T)$ works in the coordinate $t:=a_1$ of the normalised coefficients $a_n$ of \S\ref{sec:map}.
 Hence
 \[
 t=a_1=\exp\bigl(-3/(2\beta)\bigr).
 \]
-Its tube $\cD$ consists of the weights with $c_0=1$, $0\le c_n\le\gamma_n(t)+0.005\,t^n$ for $2\le n\le20$, and a tail $\sum_{n>20}(n+1)c_n\chi_n(2)\le10^{-15}$, where $\gamma$ is a piecewise-linear reference curve built from Wilson-action orbits.
-W-half$(T)$ certifies that from every point of $\cD$ with $t\in[0.0144,0.21)$ (equivalently $\beta\in[0.354,0.961)$; $556$ cells) the cell index decreases strictly at each step until the orbit enters the region $\cK$ ($80$ cells, $t\le0.01658$) in which its curvature-type lower bound $\kappa$ is positive.
-\emph{We use $\cK$ only as a region. We do not state what positivity of that bound implies for the hierarchical measure, and we do not use the words confinement or mass gap for it.}
+For $\rho>1$ write $\chi_n(\rho):=\sum_{k=0}^{n}\rho^{\,n-2k}$ (the character $\chi_n$ continued to the point $\mathrm{diag}(\rho,\rho^{-1})$ of the complexified torus), and put $p_1(n):=n(n+1)(n+2)/3$ and $p_2(n):=(n-1)n(n+1)(n+2)(n+3)/15$.
+
+\begin{definition}[the tube $\cD$ and the region $\cK$]\label{def:D}
+Let $J=20$.
+\begin{enumerate}[label=(\alph*),nosep]
+\item \emph{Reference curve.} For each of the $33$ values $\beta_0\in\{2,2.125,\dots,6\}$, start from the Wilson weight $e^{\beta_0\cos\theta}$ ($a_n=I_{n+1}(\beta_0)/I_1(\beta_0)$, $n<60$) and iterate $T$ in double precision with $60$ characters, the integrals over $\theta$ by a Riemann sum on the $7999$ interior points of a uniform grid of $8001$ points on $[0,\pi]$ and the weight rescaled to maximum $1$ before the fourth power; keep the coefficient vectors $(a_0,\dots,a_{20})$ of the iterates from the third on with $0.004<a_1<0.95$, and stop once $a_1<0.004$.
+Sorted by $a_1$, this gives $405$ nodes $(S_j,P_j)$.
+For $0\le n\le20$, $\gamma_n(t)$ is the piecewise-linear interpolation of the values $P_{j,n}$ at the nodes $S_j$, constant outside $[S_1,S_{405}]$.
+\item \emph{Tube.} $\cD$ is the set of weights with $a_0=1$, $a_n\ge0$ for all $n$, $a_n\le\gamma_n(t)+0.005\,t^n$ for $2\le n\le 20$, and $\sum_{n>20}(n+1)a_n\chi_n(2)\le10^{-15}$. (Images under $T$ have $a_n\ge0$, since decimation takes fourth powers.)
+\item \emph{Region.} For a weight with $F(w):=1-\sum_{n\ge1}(n+1)^2a_n>0$ put $D_i(w):=\sum_{n\ge1}(n+1)a_n\,p_i(n)$ ($i=1,2$) and
+\[
+\kappa(w):=1-12\Bigl(\frac{D_1}{F}+\frac{D_2}{F}+\Bigl(\frac{D_1}{F}\Bigr)^2\Bigr).
+\]
+$\cK$ is the set of weights with $a_0=1$, $t(w)\le0.01658$, $F(w)>0$ and $\kappa(w)>0$.
+\end{enumerate}
+\end{definition}
+\emph{We use $\kappa$ only through its formula and $\cK$ only as a region. We do not state what positivity of $\kappa$ implies for the hierarchical measure, and we do not use the words confinement or mass gap for it.}
+
+\begin{proposition}[W-half$(T)$; computer-assisted, Appendix~\ref{app:whalf}]\label{prop:whalf}
+Cover $[0.0144,0.21)$ by cells $[s_k,s_{k+1})$ with $s_{k+1}=s_k(1+r)$, $r=0.005$ on $[0.0144,0.198)$ and $r=0.0025$ on $[0.198,0.21)$ ($556$ cells, overlapping where the computation was restarted). Precisely, the cells are those of the ten ranges listed in Appendix~\ref{app:whalf} (\emph{Output}): in a range $[\ell,h]$ the grid starts at $s=\ell$ and continues by $s\mapsto\min(s(1+r),h)$, so the last cell of each range is truncated at $h$; four ranges start at the restart points $0.14836$, $0.16711$, $0.18639$, $0.20452$. The cells are numbered in increasing order of their lower ends $s_k$.
+\begin{enumerate}[label=(\roman*),nosep]
+\item For every cell and every $w\in\cD$ with $t(w)\in[s_k,s_{k+1}]$: $t(Tw)<s_k$, and either $Tw\in\cD$, or $t(Tw)\le0.0165$ and $Tw\in\cK$.
+\item Every $w\in\cD$ with $t(w)\le0.01658$ lies in $\cK$; on this set $\kappa\ge0.0618$.
+\end{enumerate}
+Consequently the cell index of an orbit in $\cD$ with $t<0.21$ decreases strictly at each step until the orbit is in $\cK$, so $\cK$ is reached within a number of steps bounded by the number of cells.
+\end{proposition}
+The consequence is immediate from (i) and (ii): a point of $\cD$ with $t\le0.01658$ is in $\cK$ by (ii); otherwise it lies in a cell, and by (i) its image is either in $\cK$ or in $\cD$ in a cell of smaller index.
 
 The tube $\cU$ of Theorem~\ref{thm:huv} covers $t\in[0.5435,0.977]$, W-half$(T)$ covers $t<0.21$; the gap is $\beta\in[0.961,2.46)$.
 In the transverse coordinate, the upper boundary of $\cD$ is $e_n\le E_n(t):=\log(\gamma_n(t)+0.005t^n)-\tfrac{q_n}3\log t$, and in row $n=2$ it lies only $0.014$--$0.03$ above $\gamma$ itself, so no tube centred at the heat kernel is contained in $\cD$.
@@ -387,7 +414,7 @@ Then the image of the cell lies in $\cD$.
 \end{lemma}
 \begin{proof}
 For a point of the image with $a'_1=t\in[u_m,v_m]$, $a'_n=\exp(\tfrac{q_n}3\log t+e'_n)\le\exp(\tfrac{q_n}3\log v_m+b_n)$ because $\log$ is increasing and $q_n>0$; the right-hand side is at most $\gamma_n(t)+0.005t^n$ by hypothesis.
-Since $c'_n=(n+1)a'_n$ and $\cD$ is stated for $c_n$ with the same normalisation, the row condition holds; the lower bound $c'_n\ge0$ holds since $a'_n$ is a fourth power.
+Since $\cD$ is stated for the normalised coefficients $a_n$ (Definition~\ref{def:D}), the row condition holds; the lower bound $a'_n\ge0$ holds since $a'_n$ is a fourth power.
 The remaining rows and the tail are bounded through the image norm.
 The infimum of $\gamma_n$ over $[u_m,v_m]$ is attained at an end point or at a break point of the piecewise-linear $\gamma_n$, and is evaluated with a relative margin $10^{-9}$.
 \end{proof}
@@ -404,12 +431,12 @@ In double precision, Wilson-action orbits started at $\beta=3,6,12$ stay inside 
 On $\beta\in[0.95,64]$ the one-step drop satisfies $\beta(w)-\beta(Tw)\in[0.2196,0.2990]$; on $[64,128]$ it is at least $0.2296$.
 
 \begin{theorem}[MK-full; \IA{} inputs, Lean assembly]\label{thm:mkfull}
-Let $T$ be the MK map on SU(2) plaquette weights, $\hat\cU$ the extended tube, $\cD$ and $\cK$ the tube and region of the earlier record W-half$(T)$.
+Let $T$ be the MK map on SU(2) plaquette weights, $\hat\cU$ the extended tube, $\cD$ and $\cK$ the tube and region of Definition~\ref{def:D}.
 Assume:
 \begin{enumerate}[label=(\alph*),nosep]
 \item the interval arithmetic of \S\ref{sec:tube} is sound (self-written library; IEEE~754 correct rounding and Higham's bound assumed; the derivation of the remainder and cumulant bounds is on paper and not formalised);
-\item the certificate of W-half$(T)$ (the earlier record [KSR, 11-06], not re-run here) is correct;
-\item the reference curve $\gamma$ of $\cD$ is the one reconstructed by the method described in that record (it agrees with the recorded value $q_\gamma(0.3)=c_2/t^2=0.451$ at the one point compared);
+\item Proposition~\ref{prop:whalf} holds, i.e.\ the certificate W-half$(T)$ is correct (Appendix~\ref{app:whalf}: interval arithmetic of mpmath, a double-precision reference curve evaluated with relative margin $10^{-9}$);
+\item the reference curve used in the joining computation, recomputed by the construction of Definition~\ref{def:D}(a), is the curve $\gamma$ of $\cD$ (the two computations agree at all $405$ nodes to within $9\times10^{-14}$, less than $2\times10^{-10}$ of the margin $0.005\,t^n$; $\gamma_2(0.3)/0.3^2=0.451$);
 \item the bound $557$ for the second stage counts cells of W-half$(T)$ and is crude;
 \item at the boundary between two pieces of $\hat\cU$ the intersection of the two tubes is used.
 \end{enumerate}
@@ -438,7 +465,7 @@ $64$ & $289$ & $211$ & $557$ & $846$ \\
 $128$ & $580$ & --- & $557$ & $1137$ \\
 \bottomrule
 \end{tabular}
-\caption{Step counts of Theorem~\ref{thm:mkfull}. The upper bounds use the drop $\ge0.2196$; the lower bounds use the drop $\le0.2990$, certified on $[0.95,64]$ only. The double-precision estimate of the earlier record [KSR, 11-06] $4\beta-1=255$ for the heat kernel at $\beta=64$ lies between the bounds.}\label{tab:steps}
+\caption{Step counts of Theorem~\ref{thm:mkfull}. The upper bounds use the drop $\ge0.2196$; the lower bounds use the drop $\le0.2990$, certified on $[0.95,64]$ only. A double-precision count, $4\beta-1=255$ steps from the heat kernel at $\beta=64$, lies between the bounds.}\label{tab:steps}
 \end{table}
 
 \begin{remark}[where each condition enters]
@@ -541,6 +568,31 @@ In \code{main\_lo.csv}, \code{main\_hi.csv} and \code{main\_128.csv} each row co
 For example, the last cell $[127.98,128.00]$ has $N=232$, ratio $0.49196$ in row $98$, columns $0.2538$, $0.2566$, $0.0149$, $0.0834$ and $\lambda_{\mathrm{tube}}=0.2616$.
 The program that produced them is not part of the Lean development; its rounding model is described in \S\ref{sec:tube}.
 
+{\sloppy\paragraph{The bundle of this paper.}
+All files needed to check the paper are collected in one archive, \code{ym-hierarchical-chain-bundle-v2.tar.gz}, distributed with the paper (sha256 \code{0b0ca2c92638f20b575649e5ede851df6bdb7ca2bfaddb20c0bc786d2e56d0bc}); Table~\ref{tab:bundle} lists its parts.
+In the repository named in \S\ref{sec:ai} the bundle is kept unpacked under \code{papers/\allowbreak{}ym-hierarchical-chain/\allowbreak{}certificates-v2}; the CSV certificates of version~1, which are the same files, remain under \code{papers/\allowbreak{}ym-hierarchical-chain/\allowbreak{}certificates}.
+The Lean archive inside it is the archive of \S\ref{sec:lean} above, unchanged (sha256 \code{d549fd8969bd4ec348e09020ceff836a250ca45355deaaf00525f56dcfd33da5}).
+The file \code{SHA256SUMS} at the top of the bundle lists every file.
+To re-run W-half$(T)$: Python~3 with mpmath, NumPy and SciPy; \code{whalf/run.sh} runs the programs, which read each other from their own directory, on a range of cells, e.g.\ \code{bash whalf/run.sh lift 0.0144 0.06 0.005}; \code{bash whalf/run.sh kappa 0.01658} runs part~(ii), and \code{whalf/cover\_all.py} checks the coverage of $[0.0144,0.21)$ by the logged cells.\par}
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{@{}p{0.34\linewidth}p{0.6\linewidth}@{}}
+\toprule
+path in the bundle & content \\
+\midrule
+\code{lean/} & the Lean archive and its axiom log (\S\ref{sec:lean}) \\
+\code{certificates/} & the CSV certificates listed above, with \code{SHA256SUMS} \\
+\code{whalf/programs/} & the programs of Proposition~\ref{prop:whalf}: enclosure of $T$ (\code{mk\_tail\_cert.py}), reference curve (\code{tube\_cap4.py}), envelope (\code{envelope.py}), cell test (\code{tube\_lift.py}; \code{tube\_lift\_strong.py} with the decrease test against the lower end of the cell), decrease of the cell index, one box per cell (\code{drop\_check.py}), part~(ii) (\code{tube\_be\_lift.py}), coverage (\code{lift\_cover.py}) \\
+\code{whalf/run.sh} & runs the programs above \\
+\code{whalf/cover\_all.py} & coverage of $[0.0144,0.21)$ by the logged cells \\
+\code{whalf/logs/} & the original output: one line per cell, restarts included, and the coverage and part~(ii) summaries \\
+\code{whalf/rerun/} & the output of the re-run for this version (Appendix~\ref{app:whalf}) \\
+\code{whalf/curve/} & the reference curve recomputed for the joining computation (\code{gamma\_S.txt}, \code{gamma\_P.txt}, the program that writes them) and the comparison with the curve of the certificate \\
+\bottomrule
+\end{tabular}
+\caption{Parts of the bundle of this paper.}\label{tab:bundle}
+\end{table}
+
 \section{Correspondence table}\label{sec:corr}
 Table~\ref{tab:corr} lists, for each statement with a Lean counterpart, the declarations and their place in the distributed files.
 Abbreviations of the files:
@@ -553,7 +605,7 @@ Abbreviations of the files:
 \end{itemize}
 Theorem~\ref{thm:huv} has no Lean statement; it rests on the certificates \code{main\_lo.csv}, \code{main\_hi.csv}, \code{main\_128.csv}.
 Proposition~\ref{prop:window} rests on \code{cstar\_A0.csv}.
-Lemmas~\ref{lem:graph}, \ref{lem:exit} and~\ref{lem:tail} are on paper only.
+Lemmas~\ref{lem:graph}, \ref{lem:exit} and~\ref{lem:tail} are on paper only, and so are Lemmas~\ref{lem:cg}--\ref{lem:env} of Appendix~\ref{app:whalf}. Proposition~\ref{prop:whalf} has no Lean statement; it rests on the logs \code{whalf/logs/}.
 
 \begin{table}[ht]\centering\small
 \begin{tabular}{lll}
@@ -590,15 +642,138 @@ Uniform deviation (shared module) & \code{uniform\_deviation} & RT:83 \\
 \item \textbf{No test of non-commutativity.} The hierarchical model flows to strong coupling and confines also for U(1) [It85]; the same chain would be expected there.
 \item \textbf{No statement about a given initial action.} Theorem~\ref{thm:mkfull} starts from points of $\hat\cU$. Whether the Wilson-action weight at a given $\beta$ lies in $\hat\cU$, or enters it after finitely many steps, is not certified; the double-precision orbits of \S\ref{sec:mkfull} suggest it, after a transient of two or three steps, but this is an observation.
 \item \textbf{No meaning attached to $\cK$.} We do not state what positivity of the lower bound defining $\cK$ implies for the hierarchical measure.
-\item \textbf{Self-written interval arithmetic.} All interval statements are \IA. The rounding model is assumed, the remainder and cumulant bounds are derived on paper only, and no established interval package was used for cross-checking.
-\item \textbf{W-half$(T)$ is not re-run.} It is the earlier record [KSR, 11-06]; the reference curve $\gamma$ of its tube was reconstructed by us from the description in that record and compared with it at one point.
+\item \textbf{Self-written interval arithmetic.} All interval statements except Proposition~\ref{prop:whalf} are \IA; Proposition~\ref{prop:whalf} uses the interval arithmetic of mpmath [Mp] with a double-precision reference curve. The rounding model is assumed, the remainder and cumulant bounds are derived on paper only, and no established interval package was used for cross-checking.
+\item \textbf{W-half$(T)$ is an input.} Proposition~\ref{prop:whalf} is an earlier computation of the authors, stated and derived here and distributed with its programs and logs; for this version the decrease of the cell index was checked separately and part~(ii) and the cells with $t<0.11$ were run again (Appendix~\ref{app:whalf}). Its reference curve is a double-precision object, and the certificate was not cross-checked with a second interval package. The curve used in the joining computation was recomputed from Definition~\ref{def:D}(a) and agrees with the curve of the certificate at all nodes to within $9\times10^{-14}$.
 \item \textbf{$\beta\to\infty$.} Invariance is certified on $[2.46,128]$, the attracting curve on $[15.26,64]$, the enclosure of the flow coefficient on $50$ cells; the shape coefficients and $c^*=1/60$ are leading-order statements without error constants.
 \item \textbf{No external review.} The computations, the Lean development and this text were produced within the authors' group (\S\ref{sec:ai}).
 \end{itemize}
 
 \section{Disclosure of AI use}\label{sec:ai}
 
-This note was produced with the assistance of AI agents. The observation, the informal proofs, the Lean~4 development including the formalised statements, the literature search, the reports on which this note is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code, across many separate sessions, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for rebuilding the Lean development from the distributed archive on a separate machine, for checking the claims of this note against the reports, and for preparing the distributed version; the independent rebuild was completed on 2026-10-15 (every file checked with \code{lake env lean} in the same environment on a separate session, rc=0, standard axioms only). The human author set the task, fixed the working rules and load limits, reviewed the record, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. In particular the analytic steps listed in \S\ref{sec:lean} are checked on paper only. This edition and the Lean development it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-hierarchical-chain}, the development under \texttt{lean/\allowbreak{}ym-hierarchical-chain}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section and in the naming of the agent that carried out the independent re-check.
+This note was produced with the assistance of AI agents. The observation, the informal proofs, the Lean~4 development including the formalised statements, the literature search, the reports on which this note is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code, across many separate sessions, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for rebuilding the Lean development from the distributed archive on a separate machine, for checking the claims of this note against the reports, and for preparing the distributed version; the independent rebuild was completed on 2026-10-15 (every file checked with \code{lake env lean} in the same environment on a separate session, rc=0, standard axioms only). The human author set the task, fixed the working rules and load limits, reviewed the record, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. In particular the analytic steps listed in \S\ref{sec:lean} are checked on paper only. This edition and the Lean development it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-hierarchical-chain}, the development under \texttt{lean/\allowbreak{}ym-hierarchical-chain}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section, in the naming of the agent that carried out the independent re-check, and in one sentence of \S\ref{sec:lean} giving the location of the certificate files in the repository.
+
+\appendix
+\section{The certificate W-half\texorpdfstring{$(T)$}{(T)}}\label{app:whalf}
+
+This appendix derives Proposition~\ref{prop:whalf}: the enclosure of the untruncated map $T$ used by the certificate (Lemmas~\ref{lem:cg} and~\ref{lem:step}), the lower bound for $\kappa$ (Lemma~\ref{lem:kappa}), the evaluation of the tube boundary (Lemma~\ref{lem:env}), the cell test, and a summary of the output.
+The programs and logs are in the bundle (\S\ref{sec:lean}, file list in Table~\ref{tab:bundle}).
+
+\paragraph{Notation.}
+Write a weight as $w=\sum_nc_n\chi_n$ with $c_n=(n+1)a_n$, $c_0=1$, and $c\ge0$ for coefficientwise non-negativity.
+The Clebsch--Gordan product is $(c\star d)_m:=\sum c_id_j$ over the pairs $(i,j)$ with $m\in\{|i-j|,|i-j|+2,\dots,i+j\}$, so that the product of the class functions with coefficients $c$ and $d$ has coefficients $c\star d$.
+In coefficients the map is: $g:=c^{\star4}$ (bond moving $w\mapsto w^4$), $a'_m:=g_m/((m+1)g_0)$, and $T(w)$ has normalised coefficients $(a'_m)^4$ (decimation).
+For $\rho\ge1$ put $M_\rho(c):=\sum_nc_n\chi_n(\rho)$, the value of $w$ at $\mathrm{diag}(\rho,\rho^{-1})$; note $\chi_n(1)=n+1$.
+$P_K$ is the projection onto the modes $n\le K$.
+In the programs of the bundle the two letters are the other way round: the array \code{c} holds the normalised coefficients $a_n$ of this paper and the array \code{a} holds $c_n=(n+1)a_n$; the comments of the programs use $c_n$ in the sense of $a_n$.
+
+\begin{lemma}[paper]\label{lem:cg}
+Let $c,d\ge0$ and $1\le\rho<\rho'$.
+\begin{enumerate}[label=(\roman*),nosep]
+\item $c\star d\ge0$, and $M_\rho(c\star d)=M_\rho(c)M_\rho(d)$ whenever the sums converge.
+\item $c_n\le M_\rho(c)/\chi_n(\rho)$ for every $n$.
+\item $\chi_n(\rho)/\chi_n(\rho')$ is non-increasing in $n$; $\chi_{n+1}(\rho)/\chi_n(\rho)\ge\rho$; and $\chi_n(\rho)\ge n+1$.
+\item If $w=\sum c_n\chi_n\ge0$ as a function, then $0\le a'_m\le1$ for the coefficients $a'_m$ of $w^4$ normalised as above.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+(i) The multiplicities of the Clebsch--Gordan rule are $0$ or $1$; the identity $\chi_i\chi_j=\sum_{m}\chi_m$ holds for Laurent polynomials in $z$ with $\chi_n=\sum_kz^{n-2k}$, and evaluation at $z=\rho$ is a ring homomorphism.
+(ii) One term of a sum of non-negative terms is at most the sum.
+(iii) With $\rho=e^{\sigma}$, $\chi_n(\rho)=\sinh((n+1)\sigma)/\sinh\sigma$, and $\frac{d}{dx}\log\frac{\sinh(x\sigma)}{\sinh(x\sigma')}=\sigma\coth(x\sigma)-\sigma'\coth(x\sigma')<0$ because $u\mapsto u\coth(xu)$ is increasing; $\rho=1$ is the limit.
+Further $\chi_{n+1}(\rho)-\rho\chi_n(\rho)=\rho^{-n-1}\ge0$, and $\chi_n(\rho)\ge\chi_n(1)=n+1$ term by term.
+(iv) $|\chi_m|\le m+1$ on SU(2), so $|\int w^4\chi_m\,dU|\le(m+1)\int w^4\,dU$.
+\end{proof}
+
+\begin{lemma}[one-step enclosure with a tail; paper]\label{lem:step}
+Let $K\ge1$, $\rho'>1$, $c\ge0$ with $c_0=1$, and $\tau\ge\sum_{n>K}c_n\chi_n(\rho')$.
+Put $\hat c:=P_Kc$, $h:=P_K(\hat c\star\hat c)$, $G:=P_K(h\star h)$, $F_1:=\sum_{n\le K}(n+1)c_n$, $F':=\sum_{n\le K}c_n\chi_n(\rho')$, $M_1(h)=\sum_{n\le K}(n+1)h_n$, $\tau_h:=\sum_{K<n\le2K}(n+1)(\hat c\star\hat c)_n$ and
+\[
+\Delta:=4(F_1+\tau)^3\tau+2M_1(h)\tau_h+\tau_h^2 .
+\]
+Then for $0\le m\le K$,
+\[
+G_m\le g_m\le G_m+\frac{\Delta}{m+1},
+\]
+and the image tail satisfies
+\[
+\sum_{n>K}(n+1)(a'_n)^4\chi_n(\rho')\le\Bigl(\frac{(F'+\tau)^4}{G_0}\Bigr)^4\frac{(K+2)^{-3}\rho'^{-3(K+1)}}{1-\rho'^{-3}} .
+\]
+\end{lemma}
+\begin{proof}
+Since $\hat c\le c$, Lemma~\ref{lem:cg}(i) gives $h\le\hat c\star\hat c\le c\star c$, hence $g-h\star h=(c\star c-h)\star(c\star c+h)\ge0$, and $g_m\ge(h\star h)_m=G_m$ for $m\le K$.
+For the upper bound, Lemma~\ref{lem:cg}(i) at $\rho=1$ gives $\sum_{m\le K}(m+1)(g-h\star h)_m\le M_1(g-h\star h)=M_1(c)^4-M_1(h)^2$.
+Since $\hat c\star\hat c$ has no modes above $2K$, $M_1(\hat c)^2=M_1(h)+\tau_h$, so
+\[
+M_1(c)^4-M_1(h)^2=\bigl[M_1(c)^4-M_1(\hat c)^4\bigr]+\bigl[(M_1(h)+\tau_h)^2-M_1(h)^2\bigr].
+\]
+By Lemma~\ref{lem:cg}(iii), $0\le M_1(c)-M_1(\hat c)=\sum_{n>K}(n+1)c_n\le\tau$, and $M_1(c)\le F_1+\tau$, so the first bracket is at most $4(F_1+\tau)^3\tau$; the second equals $2M_1(h)\tau_h+\tau_h^2$.
+Each term $(m+1)(g-h\star h)_m$ is non-negative, so each is at most $\Delta$.
+For the tail, Lemma~\ref{lem:cg}(ii) at $\rho'$ and (i) give $g_n\le M_{\rho'}(c)^4/\chi_n(\rho')$ with $M_{\rho'}(c)\le F'+\tau$, and $g_0\ge G_0$; hence $a'_n\le(F'+\tau)^4/((n+1)\chi_n(\rho')G_0)$ and
+$\sum_{n>K}(n+1)(a'_n)^4\chi_n(\rho')\le((F'+\tau)^4/G_0)^4\sum_{n>K}(n+1)^{-3}\chi_n(\rho')^{-3}$.
+Finally $\chi_n(\rho')\ge\rho'^n$ and $(n+1)^{-3}\le(K+2)^{-3}$ for $n>K$, and the geometric series gives the stated factor.
+\end{proof}
+The bound $\Delta$ is written as a sum of products of a small and a large quantity on purpose: evaluating $M_1(c)^4-M_1(h)^2$ as a difference of two enclosures lets the width of the enclosures enter $\Delta$ and grow from step to step.
+
+\begin{lemma}[lower bound for $\kappa$; paper]\label{lem:kappa}
+Let $a_n\ge0$ for all $n$, $K\ge6$ and $\tau\ge\sum_{n>K}(n+1)a_n\chi_n(2)$.
+Put $w_i:=p_i(K+1)/\chi_{K+1}(2)$, $\underline F:=1-\sum_{n=1}^K(n+1)^2a_n-\tau$ and $\overline D_i:=\sum_{n=1}^{K}(n+1)a_np_i(n)+\tau w_i$.
+If $\underline F>0$, then $F(w)\ge\underline F$, $0\le D_i(w)\le\overline D_i$ and
+\[
+\kappa(w)\ge1-12\Bigl(\frac{\overline D_1}{\underline F}+\frac{\overline D_2}{\underline F}+\Bigl(\frac{\overline D_1}{\underline F}\Bigr)^2\Bigr).
+\]
+\end{lemma}
+\begin{proof}
+For $n>K$, $(n+1)^2a_n\le(n+1)a_n\chi_n(2)$ by Lemma~\ref{lem:cg}(iii), which gives $F\ge\underline F$.
+For $n\ge K+1\ge7$, $p_1(n+1)/p_1(n)=(n+3)/n\le2$ and $p_2(n+1)/p_2(n)=(n+4)/(n-1)\le2$, while $\chi_{n+1}(2)/\chi_n(2)\ge2$; so $p_i(n)/\chi_n(2)\le w_i$ for $n>K$, which gives $D_i\le\overline D_i$.
+The right-hand side of the definition of $\kappa$ is decreasing in $D_1,D_2\ge0$ and increasing in $F>0$.
+\end{proof}
+
+\begin{lemma}[envelope of the tube boundary; paper]\label{lem:env}
+Let $\gamma_n$ be piecewise linear with nodes $S_j$ and constant outside $[S_1,S_{405}]$.
+For $0\le a<b$, $\sup_{[a,b]}(\gamma_n(t)+0.005t^n)\le\max_{x\in X}\gamma_n(x)+0.005\,b^n$ and $\inf_{[a,b]}(\gamma_n(t)+0.005t^n)\ge\min_{x\in X}\gamma_n(x)+0.005\,a^n$, where $X=\{a,b\}\cup\{S_j:a<S_j<b\}$.
+\end{lemma}
+\begin{proof}
+A piecewise-linear function attains its extrema on $[a,b]$ at the end points or at nodes inside, and $t^n$ is increasing.
+\end{proof}
+The program evaluates $\gamma_n$ at the points of $X$ in double precision and multiplies the maximum by $1+10^{-9}$ and the minimum by $1-10^{-9}$; that this margin covers the rounding of the interpolation is part of assumption~(b) of Theorem~\ref{thm:mkfull}.
+A box with $a_1\in[s,s']$ (no restriction on $a_1$ beyond this) and $0\le a_n\le\sup_{[s,s']}(\gamma_n+0.005t^n)$ therefore contains every point of $\cD$ with $t\in[s,s']$, up to the tail, which is carried separately as $\tau\le10^{-15}$.
+
+\paragraph{The cell test.}
+All enclosures are computed in the interval arithmetic of mpmath [Mp] at $25$ significant digits, with $K=20$ and $\rho'=2$.
+For a cell $[s_k,s_{k+1}]$ the program starts from the box $a_1\in[s_k,s_{k+1}]$, $a_n\in[0,\overline\gamma_n]$ ($2\le n\le20$, $\overline\gamma_n$ the upper envelope of Lemma~\ref{lem:env}), $\tau=10^{-15}$.
+On a box it computes the image by Lemma~\ref{lem:step} ($a'_m$ enclosed through $g_m\in[G_m,G_m+\Delta/(m+1)]$ and $g_0\in[G_0,G_0+\Delta]$; image coefficients $(a'_m)^4$; image tail $\tau'$), and the box \emph{passes} if
+\begin{enumerate}[label=(\arabic*),nosep]
+\item $\tau'\le10^{-15}$;
+\item the upper end of the image $a'_1$ is below the lower end of the $a_1$-range of the box (which is at least $s_k$);
+\item either the upper end of the image $a'_1$ is at most $0.0165$ and the lower bound of Lemma~\ref{lem:kappa} for the image is positive (with $\underline F>0$), or, with $[u,v]$ the enclosure of the image $a'_1$, the upper end of every image $a'_n$ ($2\le n\le20$) is at most the lower envelope $\min_X\gamma_n\cdot(1-10^{-9})+0.005u^n$ of Lemma~\ref{lem:env} over $[u,v]$.
+\end{enumerate}
+A box that does not pass is bisected in the coordinate among $a_1,\dots,a_5$ whose freezing at its midpoint shrinks the enclosure of the image $a'_1$ most; a cell passes if all boxes of a finite bisection pass within a budget of $3000$ boxes.
+If a cell passes, every $w\in\cD$ with $t(w)$ in the cell lies in a passing box, and (1)--(3) give the alternative of Proposition~\ref{prop:whalf}(i): $Tw\in\cD$ by (1), non-negativity of fourth powers and the envelope, or $Tw\in\cK$ by Lemma~\ref{lem:kappa}; in both cases $t(Tw)<t(w)$ by (2), and $t(Tw)<s_k$ by the separate check described under \emph{Output}.
+Part~(ii) evaluates the lower bound of Lemma~\ref{lem:kappa} on the boxes $a_1\in[x_i,x_{i+1}]$, $a_n\in[0,\overline\gamma_n]$, $\tau=10^{-15}$, where $x_0=0$, $x_1=10^{-3}$ and $x_1<\dots<x_{80}=0.01658$ are geometrically spaced ($80$ boxes).
+
+\paragraph{Output.}
+{\sloppy The original logs (Table~\ref{tab:whalf}) record that every cell passes, and they cover $[0.0144,0.21)$ without gaps.
+Test~(2) compares the image with the lower end of the current box, not of the cell; by itself this gives $t(Tw)<t(w)$ but not a decrease of the cell index. In the first version of this paper the decrease of the cell index was stated on the basis of these logs; test~(2) as run does not give it, and the check below closes this.
+For this version two computations were added (\code{whalf/rerun/}; mpmath~1.3.0, NumPy~2.5.2, SciPy~1.18.0).
+First, \code{drop\_check.py} encloses the image $a'_1$ over the whole box of each cell (one box per cell, the enclosure of Lemma~\ref{lem:step}, tail $10^{-15}$) for every cell of the logged grids, that is, of the ten ranges $[0.0144,0.06]$, $[0.06,0.11]$, $[0.11,0.163]$, $[0.14836,0.163]$, $[0.163,0.18]$, $[0.16711,0.18]$, $[0.18,0.198]$, $[0.18639,0.198]$ with $r=0.005$ and $[0.198,0.21]$, $[0.20452,0.21]$ with $r=0.0025$ ($610$ cells in all, counted per range): its upper end is below $s_k$ in every case, and at most $0.67\,s_k$.
+Together with the logs this gives Proposition~\ref{prop:whalf}(i) as stated.
+Second, the cell test with (2) taken against $s_k$ (\code{tube\_lift\_strong.py}) was run on the $409$ cells with $t<0.11$: all pass, each with the same number of boxes as in the logs; and part~(ii) was run again with the original program and returns the same smallest lower bound of $\kappa$, $0.0618141797083238$, to $15$ significant digits.\par}
+
+\begin{table}[ht]\centering\small
+\begin{tabular}{lrrrr}
+\toprule
+range of $t$ & relative cell width & cells & boxes & largest boxes per cell \\
+\midrule
+$[0.0144,0.06]$ & $0.5\%$ & $287$ & $287$ & $1$ \\
+$[0.06,0.11]$ & $0.5\%$ & $122$ & $612$ & $33$ \\
+$[0.11,0.163]$ & $0.5\%$ & $80$ & $6072$ & $225$ \\
+$[0.163,0.198]$ & $0.5\%$ & $42$ & $18926$ & $1491$ \\
+$[0.198,0.21)$ & $0.25\%$ & $25$ & $24065$ & $1289$ \\
+\midrule
+total & & $556$ & $49962$ & $1491$ \\
+\bottomrule
+\end{tabular}
+\caption{Output of the certificate of Proposition~\ref{prop:whalf}(i), from the logs \code{whalf/logs/} (cells counted as logged, including the cells repeated at restarts). Part~(ii): $80$ boxes pass, smallest lower bound of $\kappa$ equal to $0.061814\ldots$}\label{tab:whalf}
+\end{table}
 
 \begin{thebibliography}{99}
 \bibitem[Hi]{Hi} N.~J.~Higham, \emph{Accuracy and Stability of Numerical Algorithms}, 2nd ed., SIAM, 2002 (not consulted directly).
@@ -608,9 +783,10 @@ This note was produced with the assistance of AI agents. The observation, the in
 \bibitem[It85]{It85} K.~R.~Ito, \emph{Permanent quark confinement in four-dimensional hierarchical lattice gauge theories of Migdal--Kadanoff type}, Phys. Rev. Lett. 55 (1985), 558--561 (abstract only consulted).
 \bibitem[JW]{JW} A.~Jaffe and E.~Witten, \emph{Quantum Yang--Mills theory}, official problem description, Clay Mathematics Institute, \url{https://www.claymath.org/millennium/yang-mills-the-maths-gap/}.
 \bibitem[Ka]{Ka} L.~P.~Kadanoff, Ann. Phys. 100 (1976), 359 (not consulted directly).
-\bibitem[KSR]{KSR} Kiichi, Shiori and Rin, \emph{Yang--Mills and the mass gap} (online textbook, in Japanese), Parts~11 and~15, \url{https://computoergosum.com/principia/yang-mills/index.html} (2026).
+\bibitem[KSR]{KSR} Kiichi, Shiori and Rin, \emph{Yang--Mills and the mass gap} (online textbook, in Japanese), \url{https://computoergosum.com/principia/yang-mills/index.html}.
 \bibitem[M]{M} Mathlib, \url{https://github.com/leanprover-community/mathlib4}.
 \bibitem[Mi]{Mi} A.~A.~Migdal, \emph{Recursion equations in gauge field theories}, Zh. Eksp. Teor. Fiz. 69 (1975), 810--822; Sov. Phys. JETP 42 (1975), 413--418; and Zh. Eksp. Teor. Fiz. 69 (1975), 1457 [Sov. Phys. JETP 42 (1975), 743] (not consulted directly).
+\bibitem[Mp]{Mp} F.~Johansson and others, \emph{mpmath: a Python library for arbitrary-precision floating-point arithmetic}, \url{https://mpmath.org} (interval arithmetic \code{mpmath.iv}; version~1.3.0 for the re-run).
 \bibitem[Mo]{Mo} R.~E.~Moore, \emph{Interval Analysis}, Prentice-Hall, 1966 (not consulted directly).
 \bibitem[To]{To} E.~T.~Tomboulis, \emph{Confinement for all values of the coupling in four-dimensional SU(2) gauge theory}, arXiv:0707.2179.
 \bibitem[Tu]{Tu} W.~Tucker, \emph{Validated Numerics: A Short Introduction to Rigorous Computations}, Princeton University Press, 2011 (not consulted directly).
