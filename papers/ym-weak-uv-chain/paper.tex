@@ -1,0 +1,576 @@
+%% ym-weak-uv-chain — GitHub edition (pdfTeX / latexmk -pdf)
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\B}{\mathbb{B}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\Hq}{\mathbb{H}}
+\newcommand{\ra}{\rho_{r_0}}
+\newcommand{\tagL}{\textsc{lean}}
+\newcommand{\tagP}{\textsc{paper}}
+\newcommand{\tagC}{\textsc{comp}}
+\newcommand{\tagK}{\textsc{cited}}
+\newcommand{\tagR}{\textsc{reading}}
+\newcommand{\tagA}{\textsc{assumed}}
+\newcommand{\lt}[1]{\texttt{#1}}
+
+\title{A conditional theorem: weak ultraviolet existence of four-dimensional SU(2) lattice Yang--Mills theory in a small box, with a machine-checked chain from per-step hypotheses}
+\author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
+\date{2026-10-30}
+
+\begin{document}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
+
+\begin{abstract}
+We consider SU(2) lattice Yang--Mills theory with the Wilson action on a periodic four-dimensional torus of fixed physical size $L$, with lattice spacing $a_n=L/(M\cdot2^n)$. Observables are bounded continuous gauge-invariant functions of block variables, obtained by iterating a local gauge-covariant average of parallel transports followed by a radial retraction onto the unit ball of the quaternions. We state a conditional theorem with three hypotheses on the lattice measures: a one-step bound and continuity for an effective coupling, equicontinuity of block correlations under translations, and a lower bound on the probability of a small-field event at each scale. Under these hypotheses, bare couplings can be tuned within a one-loop window, and along a subsequence the pushed-forward measures converge at every dyadic scale to a consistent projective family whose correlation functionals are bounded, uniformly continuous, invariant under the isometries of the torus and reflection positive for observables whose pull-back to the fine lattice lies on the positive side of the reflection plane. We add a chain from per-step hypotheses of renormalisation-group type to the three hypotheses: a one-step recursion for the inverse coupling with a remainder of the form $\delta+C_2/u$, a recursion for the activity of a large-field polymer gas with a coefficient and an invariant bound that may depend on the coupling, a two-stage small-field event, and a split of the translation modulus into a lattice part and a continuous part. The implication from these per-step hypotheses to the conclusions of the theorem is the composition of two statements written in Lean~4 with Mathlib, both of which pass their check; together with the measure theory, combinatorics and arithmetic around them, the Lean material consists of 64 single files with 1419 statements, with no axioms beyond the standard three. We list ten explicit premises that remain. Whether their numerical forms hold is outside the claims of this paper, and none of them is established in four dimensions. In particular, ultraviolet stability of four-dimensional lattice Yang--Mills theory is not shown here; the result is an implication. The part of the conclusion that needs no hypothesis is weak existence by compactness, which the problem statement, in a footnote, does not regard as a solution of its existence part. We do not address clustering, uniqueness of the vacuum, infinite volume, rotation invariance, non-triviality or the mass gap.
+\end{abstract}
+
+\section{Introduction and difference from the problem statement}\label{sec:intro}
+
+{\sloppy The existence part of the Yang--Mills problem~\cite{JW} asks for a quantum Yang--Mills theory on $\mathbb R^4$ satisfying axioms at least as strong as those of Streater--Wightman or Osterwalder--Schrader~\cite{OS}. The problem statement adds (its footnote in \S6.5) that weak existence obtained by compactness alone is not regarded as a solution of the existence part, unless properties of the limit are established by other means. This note states, in a fixed small box, a conditional theorem of the weak type and records its dependencies. All definitions, hypotheses, premises and Lean references used are given in this note and its appendices. An online account of the background is at \url{https://computoergosum.com/en/principia/yang-mills/index.html}; it is not needed to read this note. Numbers quoted without a citation are taken from the authors' working records (programs, outputs and reports), which are not published; they are graded \tagC{} and enter no statement of this note.\par}
+
+Before the statement we list how it differs from the problem statement.
+\begin{enumerate}[label=(\alph*),leftmargin=2em]
+\item \emph{Weak existence.} The conclusion is the existence of subsequential limits (Theorem~\ref{thm:W}); the full sequence converges only under an extra hypothesis. The part that needs no hypothesis is exactly of the compactness type excluded by the footnote cited above.
+\item \emph{No clustering.} The axiom (OS3), uniqueness of the vacuum, is not addressed. Since time is periodic in the box, a reconstruction would give a thermal state at temperature $1/L$, not a vacuum.
+\item \emph{A box.} The theory lives on the torus $\T^4_L$, not on $\mathbb R^4$. On the torus the continuous symmetry group is the isometry group (translations and the hypercubic group), not the Euclidean group; rotation invariance is not addressed.
+\item \emph{Block variables instead of local fields.} The regularity statement concerns bounded continuous functions of block variables at all dyadic scales, not tempered distributions of local fields such as $\operatorname{tr}F^2$. Sharp Wilson loops cannot be used: their expectations tend to zero as $a\to0$ by the perimeter divergence (Appendix~\ref{app:support}).
+\item \emph{Bare couplings are existentially quantified.} The theorem asserts that suitable bare couplings exist, bracketed by a one-loop window. It does not assert that the limit is independent of this choice, of the subsequence, of the block map or of $r_0$.
+\item \emph{No non-triviality.} The non-degeneracy conclusion excludes a disordered limit, not a Gaussian or free one.
+\item \emph{One group.} Only $G=\mathrm{SU}(2)$.
+\end{enumerate}
+
+\paragraph{Status of the results.} The implication from the hypotheses of \S\ref{sec:hyp} and the structural hypotheses of \S\ref{sec:setting} to Theorem~\ref{thm:W} is written in Lean~4 and passes its check, modulo the lattice facts graded \tagP{} or \tagK{} below. The implication from per-step hypotheses to these hypotheses (Theorem~\ref{thm:chain}) is the composition of two Lean statements, both of which pass their check. None of the hypotheses, and none of the ten premises left by the chain (\S\ref{sec:status}), is established in four dimensions.
+
+\section{Setting}\label{sec:setting}
+
+Let $L>0$, let $M\ge2$ be even, and let $n\ge0$. Put $N_n=M\cdot2^n$, $a_n=L/N_n$, and let $\Lambda_n=(a_n\mathbb Z/L\mathbb Z)^4$ be the periodic lattice. The configuration space is $\Omega_n=\mathrm{SU}(2)^{\text{links}(\Lambda_n)}$, and
+\[
+d\mu_n(U)=Z_n^{-1}\exp\Bigl(-\beta_n\sum_p\bigl(1-\tfrac12\operatorname{tr}U_{\partial p}\bigr)\Bigr)\,dU,
+\]
+with $dU$ the product of Haar measures and $\beta_n$ chosen in Theorem~\ref{thm:W}. Let $\B\subset\Hq$ be the closed unit ball of the quaternions, which contains $\mathrm{SU}(2)$ as the unit sphere; for $q\in\Hq$ we write $\tfrac12\operatorname{tr}q=\operatorname{Re}q$. The coarse configuration space at scale $m$ is the compact metric space $E_m=\B^{\text{links}(\Lambda_m)}$. For a coarse plaquette $p$ and $\omega\in E_m$, $\omega_p\in\B$ is the ordered product of the four values of $\omega$ around $p$.
+
+\begin{definition}[block maps]\label{def:block}
+A family of maps $V_{n\to m}\colon\Omega_n\to E_m$ ($n\ge m$) is admissible if:
+\begin{enumerate}[label=(B\arabic*),leftmargin=3em]
+\item each $V_{n\to m}$ is continuous;
+\item each $V_{n\to m}$ is gauge covariant: $V(U^g)=V(U)^{g|_{\Lambda_m}}$ for every fine gauge transformation $g$;
+\item it is local: $V_{n\to m}(U)_b$ depends only on fine links within a finite sup-distance $R_m$ of the coarse link $b$, with $R_m$ independent of $n$;
+\item it commutes with the lattice symmetries that preserve $\Lambda_m$: the hypercubic group, the translations of $\Lambda_m$, and the reflections in the hyperplanes $x_\mu=\tfrac12a_mj$ ($j\in\mathbb Z$);
+\item it composes: $V_{n\to m}=V_{m+1\to m}\circ V_{n\to m+1}$.
+\end{enumerate}
+\end{definition}
+
+\begin{remark}[an example]\label{rem:example}
+One step $V_{k+1\to k}$ assigns to a coarse link $b=(x,x+a_k\hat e)$ the average $q\in\B$ of the ordered products of level-$(k+1)$ links along a fixed family of paths from $x$ to $x+a_k\hat e$. The paths stay within transverse distance $a_{k+1}$ of $b$, and the family is symmetric under the hypercubic group and the reflections. One then applies the radial retraction $\ra(q)=q/\max(|q|,r_0)$. With block factor $2$ the total reach is $R_m=\sum_{k\ge m}a_{k+1}=a_m$. Properties (B1), (B2), (B5) of the retraction, the path products, the averages and their compositions are checked in Lean (Table~\ref{tab:corr}). On the event that every intermediate average has $|q|\ge r_0$, the values lie in $\mathrm{SU}(2)$ and coincide with the projected average. The reach plays no role in reflection positivity below, because the positive-time observables are defined by the support of their pull-back (Definition~\ref{def:positive}).
+\end{remark}
+
+\begin{definition}[positive-time observables]\label{def:positive}
+Let $P$ be a hyperplane $x_4=t_P$ that is a site plane of $\Lambda_n$ for every $n>m$ and a symmetry plane of $\Lambda_m$ (for instance $t_P=a_m(j_0+\tfrac12)$), and let $\Theta$ be the reflection in $P$ and in its partner plane $P+L/2$; since $M$ is even, the partner plane is also a site plane of every $\Lambda_n$, $n>m$. The positive side $S_n^+$ is the set of fine links of $\Lambda_n$ in the closed slab between $P$ and $P+L/2$ on the side $x_4\ge t_P$. A bounded continuous $F\colon E_m\to\mathbb R$ is \emph{positive-time} if $F\circ V_{n\to m}$ depends only on the links in $S_n^+$, for every $n\ge m$ (for $n=m$, $V_{m\to m}$ is the inclusion $\Omega_m\subset E_m$). We write $\mathcal A_m(P)$ for this class. (In Lean: \lt{physPositive}.)
+\end{definition}
+
+By (B3), every $F$ depending only on coarse links at distance more than $R_m$ from $P$ on the positive side (and from the partner plane) belongs to $\mathcal A_m(P)$ (\tagL, \lt{dependsOn\_\allowbreak{}positive\_\allowbreak{}of\_\allowbreak{}gap}). The class $\mathcal A_m(P)$ is closed under linear combinations and products.
+
+\paragraph{Observables.} Let $\mathcal F_m$ be a countable family of gauge-invariant Lipschitz functions on $E_m$ that is dense in the gauge-invariant continuous functions and closed under the hypercubic group. A configuration $x=((m_i,F_i,s_i))_{i\le r}$ consists of $F_i\in\mathcal F_{m_i}$ and shifts $s_i\in\T^4_L$. The space $X$ of configurations carries the discrete metric in $(r,m_i,F_i)$ and the torus metric in the shifts. Let $D\subset X$ be the configurations with all shifts dyadic (in $\bigcup_ka_k\mathbb Z^4$); $D$ is countable and dense. For $s_i\in a_n\mathbb Z^4$ put
+\[
+s_n(x)=\E_{\mu_n}\Bigl[\prod_iF_i\bigl(V_{n\to m_i}(\tau_{-s_i}U)\bigr)\Bigr],
+\]
+and $s_n(x)=0$ otherwise. By (B4) and (B5), each $x\in D$ is represented, for $n$ large, as $s_n(x)=\int G_x\,d\nu_{n,\mathrm{lev}(x)}$ with $G_x$ bounded continuous on $E_{\mathrm{lev}(x)}$, where $\nu_{n,m}=(V_{n\to m})_*\mu_n$.
+
+\paragraph{Structural hypotheses.} The Lean statements of \S\S\ref{sec:thm}--\ref{sec:chain} are stated for abstract data, and the lattice enters through the following structural hypotheses, which we list with the names of the corresponding Lean arguments. Each holds for the lattice data above by (B1)--(B5) and the facts graded in Table~\ref{tab:struct}.
+\begin{enumerate}[label=(St\arabic*),leftmargin=3em]
+\item consistency at finite $n$: $(V_{m+1\to m})_*\nu_{n,m+1}=\nu_{n,m}$ for $n>m$ (\lt{hcons}); continuity of $V_{m+1\to m}$ (\lt{hB});
+\item reflections: continuity of the coarse reflection $\Theta$ (\lt{h$\Theta$c}), and either finite-$n$ reflection positivity $\int (F\circ\Theta)F\,d\nu_{n,m}\ge0$ for $F$ in a given class (\lt{h$\Theta$p}), or the fine form of \S\ref{subsec:rp} (\lt{hRP}, \lt{hcomm}, \lt{h$\nu$});
+\item symmetries of the coarse spaces: continuity of each action (\lt{hsc}) and finite-$n$ invariance of $\nu_{n,m}$ (\lt{hsym});
+\item the small-field set $C_m$ is closed (\lt{hCc}) and contains the two-stage event (\lt{hgood}; Theorem~\ref{thm:chain});
+\item observables: $D$ countable (\lt{hcount}) and dense (\lt{hdense}), $|s_n|\le B_d$ on $D$ (\lt{hbd});
+\item actions on configurations: each acts continuously on $X$ (\lt{hac}) and maps $D$ into $D$ (\lt{ham}); the lattice breaks the symmetry by at most $\varepsilon_b(g,n,d)$, $|s_n(g\cdot d)-s_n(d)|\le\varepsilon_b(g,n,d)$ (\lt{hbr}), and $\varepsilon_b(g,n,d)\to0$ as $n\to\infty$ for each $g$ and $d\in D$ (\lt{hbv}); for dyadic translations and the hypercubic group, $\varepsilon_b(g,n,d)=0$ for $n$ large;
+\item positivity at finite $n$ of the matrices $\sum_{a,b}c_ac_b\,s_n(x_{ab})$ for the positive-time configurations of (W4) (\lt{hpos}), or its fine form (\lt{hPrep});
+\item representation: $s_n(x)=\int G_x\,d\nu_{n,\mathrm{lev}(x)}$ for $x\in D$ and $n$ large (\lt{HR}).
+\end{enumerate}
+
+\begin{table}[ht]\centering\small
+\caption{Support of the structural hypotheses for the lattice data. Grades: \tagL{} checked in Lean; \tagP{} argument written in this note; \tagK{} cited.}\label{tab:struct}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.62\linewidth}>{\raggedright\arraybackslash}p{0.3\linewidth}@{}}\toprule
+fact & grade\\\midrule
+(St1) from (B1), (B5); push-forward of consistent measures & \tagL{} (\lt{pushforward\_\allowbreak{}consistent})\\
+(St2) site reflection positivity of the Wilson measure for functions of $S_n^+$ & \tagK~\cite{OSe}; factorised form \tagL{} (Lemma~\ref{lem:site}); factorisation of the Wilson weight \tagP{} (Appendix~\ref{app:rp})\\
+(St2) commutation $V_{n\to m}\circ\Theta_{\mathrm{fine}}=\Theta\circ V_{n\to m}$ & from (B4), \tagP\\
+(St3), (St6) invariance of $\mu_n$ under lattice symmetries; push-forward & \tagP; \tagL{} (\lt{pushforward\_\allowbreak{}invariant})\\
+(St5), (St8) from the definition of $D$ and (B4), (B5) & \tagP\\
+(St7) from (St2) and the representation of $s_n$ & \tagP{} (\lt{positivity\_\allowbreak{}of\_\allowbreak{}fine}: \tagL)\\\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Hypotheses and the chain of the Bałaban method}\label{sec:hyp}
+
+Let $b_0=22/(48\pi^2)$ and $b=2b_0\ln2\approx0.0644$, the one-loop decrease of the inverse coupling $u=1/g^2=\beta/4$ in one step of block factor~$2$. An \emph{effective inverse coupling} is a family of functions $u_k(x)$ of the bare inverse coupling $x=\beta/4$, defined in Appendix~\ref{app:coupling}, with $u_0(x)=x$; $u_k(x)$ is the inverse coupling after $k$ steps.
+
+\begin{hypothesis}[H-$\beta$]
+On the domain $\{x:u_j(x)\ge u_\star\ \forall j\le k\}$ we have $u_k-3b/2\le u_{k+1}\le u_k-b/2$, and $x\mapsto u_{k+1}(x)$ is continuous there.
+\end{hypothesis}
+\begin{hypothesis}[H-reg]
+For every $\eta>0$ there is $\delta>0$ such that, for $x,x'\in D$ with $\operatorname{dist}(x,x')<\delta$, we have $|s_n(x)-s_n(x')|\le\eta$ for all sufficiently large $n$.
+\end{hypothesis}
+\begin{hypothesis}[H-sf]
+For each $m$ there are a closed set $C_m\subset E_m$ and $\eta_m\in[0,1]$ such that $\nu_{n,m}(C_m)\ge1-\eta_m$ for all sufficiently large $n$.
+\end{hypothesis}
+\begin{hypothesis}[H-Cauchy]
+For $x\in D$, $|s_{n+1}(x)-s_n(x)|\le\delta_n(x)$ with $\sum_n\delta_n(x)<\infty$.
+\end{hypothesis}
+
+The intended small-field set is $C_m=C_{m,R_m}(\varepsilon_m)=\{\omega\in E_m:|\omega_b|=1\ (b\in R_m),\ |1-\tfrac12\operatorname{tr}\omega_p|\le\varepsilon_m\ (p\subset R_m)\}$ for one finite region $R_m\subset\Lambda_m$ and one $\varepsilon_m>0$ per scale. Hypothesis (H-sf) is required, and obtained from the chain, for one such set per scale; a statement for all regions and all $\varepsilon$ would follow by applying the chain to each of them, but this is not written in Lean.
+
+Along the chain of the Bałaban method~\cite{B119,B122a,B122b}, these hypotheses would follow from seven conditions (Table~\ref{tab:chain}). The arrows from the seven conditions to the four hypotheses are readings, not written proofs, with one exception: (W4)$\Rightarrow$(H-$\beta$) is a rewriting of the inequality, once the one-step remainder is at most $b/2$.
+
+\begin{table}[ht]\centering\small
+\caption{The chain (W1)--(W7) and the hypotheses. Grades: \tagL{} checked in Lean; \tagC{} floating-point computation in a stated range; \tagK{} cited, at the level stated; \tagR{} reading of numbers or of the structure; \tagA{} open.}\label{tab:chain}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}p{0.12\linewidth}>{\raggedright\arraybackslash}p{0.62\linewidth}@{}}\toprule
+Condition & feeds & support\\\midrule
+(W1) small-field multi-step bounds, uniform in $a$ & (H-reg), (H-sf), (H-Cauchy) & \tagK{} Theorem~1 of~\cite{B122b} under the assumption that effective couplings stay small (abstract and introduction consulted); \tagL{} contraction skeletons of the class and of the local projection (Appendix~\ref{app:class}); \tagC{} window numbers for three steps\\
+(W2) large-field absorption, KP condition uniform in $k$ & (H-sf) & \tagK{} \cite{B119,B122a} (abstracts); \tagL{} activity recursion, two-colour polymer gas and the box bridge (Appendix~\ref{app:gas})\\
+(W3) gauge fixing uniform in $k$ & inside (W1) & \tagK{} titles of~\cite{B98,B99}; \tagL{} tree gauges; \tagC{} gauge-independent core of the one-step quadratic form\\
+(W4) one-step remainder of the coupling and its continuity & (H-$\beta$) & \tagA{}: a large-field version is Theorem~2 of~\cite{B122b}, which we have read at the level of its abstract and introduction only\\
+(W5) locality, contraction of irrelevant terms & (H-reg), (H-Cauchy) & \tagK{} \cite{BBS} (flat fields); \tagL{} affine iteration bounds, pull-back orbit limits; \tagC{} cone bounds for three steps\\
+(W6) bounds with smooth observable sources & (H-reg) & \tagA\\
+(W7) comparison of two lattices & (H-Cauchy) & \tagA\\\bottomrule
+\end{tabular}
+\end{table}
+
+\section{The theorem and the proof of the implication}\label{sec:thm}
+
+\begin{theorem}[weak ultraviolet existence, conditional]\label{thm:W}
+Assume the setting of \S\ref{sec:setting}, the structural hypotheses (St1)--(St8), and (H-$\beta$), (H-reg), (H-sf).
+\begin{enumerate}[label=(W\arabic*),leftmargin=3em,start=0]
+\item For every target $\gamma_0\le\gamma_1=u_\star^{-1/2}$ and every $n$ there is $\beta_n$ with $4/\gamma_0^2+2bn\le\beta_n\le4/\gamma_0^2+6bn$. After $n$ steps the effective coupling equals $\gamma_0$, and it is at most $\gamma_0$ at every intermediate step.
+\item There are a subsequence $n_j$ and probability measures $\nu_m$ on $E_m$ with $\nu_{n_j,m}\to\nu_m$ weakly for every $m$ and $(V_{m+1\to m})_*\nu_{m+1}=\nu_m$.
+\item (OS0, block form) For $x\in D$ the limit $S(x)=\lim_js_{n_j}(x)$ exists and equals $\int G_x\,d\nu_{\mathrm{lev}(x)}$. $S$ extends uniquely to a bounded, uniformly continuous function on $X$, with the modulus of (H-reg).
+\item (OS1, box form) $S$ is invariant under all translations of $\T^4_L$ and under the hypercubic group. Each $\nu_m$ is invariant under the translations of $\Lambda_m$ and the hypercubic group.
+\item (OS2) For each $m$, each hyperplane $P$ as in Definition~\ref{def:positive} with reflection $\Theta$, and each real $F\in\mathcal A_m(P)$, $\int(F\circ\Theta)F\,d\nu_m\ge0$. The matrix form holds for $S$ on positive-time configurations.
+\item (non-degeneracy) $\nu_m(C_m)\ge1-\eta_m$.
+\end{enumerate}
+If moreover (H-Cauchy) holds, then $s_n(x)\to S(x)$ for $x\in D$ without passing to a subsequence, and the limit is unique. Conclusions (W1) and (W4), and in (W3) the invariance under dyadic translations and the hypercubic group, hold without (H-$\beta$), (H-reg) and (H-sf).
+\end{theorem}
+
+\begin{proof}[Proof of the implication]
+The eight steps below use the Lean statements of Table~\ref{tab:corr}.
+\begin{enumerate}[label=\arabic*.,leftmargin=2em]
+\item (W0). Let $\bar u=1/\gamma_0^2$ and $\mathcal K=\{x\in[\bar u,\bar u+3bn/2]:u_k(x)\ge\bar u\ \forall k\le n\}$. By induction on $k$, using continuity on the domain, $\mathcal K$ is closed, and it contains the right end. Let $s=\inf\mathcal K$; then $s\in\mathcal K$. If $u_n(s)>\bar u$, every step is strictly above $\bar u$, and by continuity on the domain a neighbourhood of $s$ lies in $\mathcal K$, contradicting minimality. Hence $u_n(s)=\bar u$, and the bracket $\bar u+bn/2\le s\le\bar u+3bn/2$ follows from (H-$\beta$) applied $n$ times; $\beta_n=4s$.
+\item (W1). Probability measures on a compact metric space form a compact metrisable space (Prokhorov, compact case), and so does the countable product over $m$. One subsequence therefore serves all $m$ at once. Consistency at finite $n$ is (St1); push-forward is weakly continuous, and limits are unique. The subsequence does not depend on the reflections, the symmetries or the sets $C_m$.
+\item (W4). Fix $m$ and $P$. For $n>m$ and $F\in\mathcal A_m(P)$, the function $F\circ V_{n\to m}$ is bounded, measurable and depends only on $S_n^+$, and by (B4) $(F\circ\Theta)\circ V_{n\to m}=(F\circ V_{n\to m})\circ\Theta_{\mathrm{fine}}$. Site reflection positivity of $\mu_n$ (Appendix~\ref{app:rp}) gives $\int(F\circ\Theta)F\,d\nu_{n,m}\ge0$. The inequality is a closed condition for weak convergence and passes to $\nu_m$ along the subsequence of step~2. Since that subsequence does not depend on $P$, the conclusion holds for every $P$ at once. The matrix form for $S$ follows in the same way from (St7).
+\item (W3), lattice part. The measure $\mu_n$ is invariant under the lattice symmetries, so by (B4) each $\nu_{n,m}$ is invariant (St3); equalities pass to the limit.
+\item (W2). For $x\in D$, weak convergence gives $s_{n_j}(x)\to\int G_x\,d\nu_{\mathrm{lev}(x)}$. By (H-reg) the limit is uniformly continuous on $D$, so it extends uniquely to $X$, and the bound and the modulus pass to the closure.
+\item (W3), translations. Dyadic translations preserve $D$ and act exactly once the lattice is fine enough, so $S$ is invariant under them; more generally an action with breaking $\varepsilon_b\to0$ (St6) leaves $S$ invariant on $D$. Dyadic translations are dense in $\T^4_L$, and $g\mapsto S(g\cdot x)$ is continuous, so $S$ is invariant under all translations.
+\item (W5). A lower bound on the mass of a closed set passes to weak limits (Portmanteau).
+\item Strong form. Summable increments give a Cauchy sequence, and every subsequential limit agrees with its limit.\qedhere
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}[site reflection, factorised form; Lean]\label{lem:site}
+Let $\mu_0$ and $\nu$ be finite measures, let $k\ge0$ and let $h,\varphi$ be bounded measurable functions. Then
+\[\int\varphi(U_0,U_+)\,\varphi(U_0,U_-)\,k(U_0)\,h(U_0,U_+)\,h(U_0,U_-)\;d(\mu_0\otimes\nu\otimes\nu)(U_0,U_+,U_-)\ \ge\ 0 .\]
+\end{lemma}
+\begin{proof}
+By Fubini the left side equals $\int k(U_0)\bigl(\int\varphi(U_0,U_+)h(U_0,U_+)\,d\nu(U_+)\bigr)^2d\mu_0(U_0)$.
+\end{proof}
+
+\section{From per-step hypotheses to the hypotheses of Theorem~\ref{thm:W}}\label{sec:chain}
+
+This section states the per-step hypotheses in the form in which they enter Lean, and the implication from them to the conclusions of Theorem~\ref{thm:W}. Throughout, $u_k(x)$ is the effective inverse coupling of Appendix~\ref{app:coupling}, $z_k(x)\ge0$ a norm of the activity of the large-field polymer gas after $k$ steps (Appendix~\ref{app:gas}), $w_k(x)$ the large-field supply created in step $k$, and all conditions are imposed only on the domain $\{x:u_j(x)\ge u_\star\ \forall j\le k\}$.
+
+\begin{definition}[coupling steps with a moving invariant interval]\label{def:steps}
+Let $\Phi,W,\mathcal D\colon\mathbb R\to\mathbb R$ with $\mathcal D\ge0$ on $[u_\star,\infty)$. The data $(u,z,w,r^{\mathrm{sf}},r^{\mathrm{lf}})$ satisfy the \emph{coupling steps} with constants $b>0$, $\delta$, $C_2,\rho,A,B\ge0$, $\Upsilon$ and $u_\star>0$ if, on the domain,
+\begin{enumerate}[label=(S\arabic*),leftmargin=3em]
+\item $u_{k+1}=u_k-b+r^{\mathrm{sf}}_k+r^{\mathrm{lf}}_k$;
+\item $|r^{\mathrm{sf}}_k|\le\delta+C_2/u_k$ (small-field remainder);
+\item $|r^{\mathrm{lf}}_k|\le\mathcal D(u_k)\,z_k$ (contribution of the large-field gas to the coupling, with a coefficient that may grow with $u$);
+\item $z_{k+1}\le\rho z_k+A w_k+B z_k^2$; moreover $z_k\ge0$ everywhere and $z_0(x)\le W(u_0(x))$ for all $x$ (activity recursion);
+\item $w_k\le\Phi(u_k)$ (rarity of the supply);
+\item $W$ is non-increasing on $[u_\star,\infty)$, and for every $s\ge u_\star$: $\rho W(s)+A\Phi(s)+BW(s)^2\le W(s)$ (moving invariant interval) and $\mathcal D(s)W(s)\le\Upsilon$; finally $\delta+C_2/u_\star+\Upsilon\le b/2$ (margin).
+\end{enumerate}
+\end{definition}
+
+With constant $\mathcal D$ and constant $W=Z$ this is the form with a fixed invariant interval $z_k\le Z$. The moving form is needed when the coefficient $\mathcal D$ grows with $u$: if the contribution is $\mathcal D_1uz$ with $z$ bounded below, no constant coefficient bounds it for all $u$ (\tagL, \lt{constant\_\allowbreak{}D\_\allowbreak{}fails}). Appendix~\ref{app:gas} shows how a threshold growing like $\ln u$ yields $W$ with $uW(u)$ constant. The form (S2) of the small-field remainder is derived in Appendix~\ref{app:class} from premise~1.
+
+\begin{definition}[two-stage small-field event]\label{def:twostage}
+For each scale $m$ let $R_m$ be a finite set of coarse blocks, and for each block $i\in R_m$ let $P_{m,i}$ be a finite set of plaquette labels ($|P_{m,i}|\le n_p(m)$) and $Q_{m,i}$ a finite set of point labels ($|Q_{m,i}|\le n_{pt}(m)$). Let $Y_{m,p},f_{m,x}\colon E_m\to\mathbb R$ be measurable: $Y_{m,p}(\omega)=\beta_m(1-\tfrac12\operatorname{tr}\omega_p)$ is the plaquette variable of the coarse configuration with a scale-dependent constant $\beta_m>0$, and $f_{m,x}(\omega)$ is the invariant $f_1$ at $x$ of the smoothed background determined by $\omega$ (Appendix~\ref{app:background}). With thresholds $y_h(m)$ and $f_h(m)$, the two-stage event is
+\[
+G_m=\bigl\{\omega\in E_m:\ \forall i\in R_m:\ Y_{m,p}(\omega)\le y_h(m)\ (p\in P_{m,i}),\ f_{m,x}(\omega)\le f_h(m)\ (x\in Q_{m,i})\bigr\}.
+\]
+Rarity is paid by the plaquette variables, and analyticity is kept by the background invariant. For a box of block factor~$2$ in four dimensions, $n_p=96$ and $n_{pt}=16$.
+\end{definition}
+
+All statements below hold for arbitrary measurable $Y_{m,p}$, $f_{m,x}$ on $E_m$; the specific choices above enter only through the premises of \S\ref{sec:status}.
+
+\begin{theorem}[the chain; Lean]\label{thm:chain}
+Assume the coupling steps of Definition~\ref{def:steps}. Assume that, for each $m$ and all sufficiently large $n$, $\nu_{n,m}(Y_{m,p}>y_h(m))\le P_1(m)$ and $\nu_{n,m}(f_{m,x}>f_h(m))\le S_{\mathrm{bg}}(m)$ for the plaquettes and points of every block in $R_m$. Assume that $|s_n(d)-s_n(d')|\le\tau_n+\Omega(\operatorname{dist}(d,d'))$ for $d,d'\in D$, with $\tau_n\to0$ and $\Omega(r)\to0$ as $r\downarrow0$. Then:
+\begin{enumerate}[label=(\roman*),leftmargin=2.5em]
+\item (H-$\beta$) holds in the form $u_k-3b/2\le u_{k+1}\le u_k-b/2$ on the domain, and $z_k\le W(u_k)$ there;
+\item for each $m$ and all sufficiently large $n$, $\nu_{n,m}(G_m)\ge1-|R_m|\,(n_pP_1+n_{pt}S_{\mathrm{bg}})$;
+\item (H-reg) holds.
+\end{enumerate}
+If moreover $u_0(x)=x$, $x\mapsto u_{k+1}(x)$ is continuous on the domain, $G_m\subseteq C_m$ with $C_m$ closed, and the structural hypotheses (St1)--(St8) hold, then all conclusions (W0)--(W5) of Theorem~\ref{thm:W} hold with $\eta_m=|R_m|(n_pP_1+n_{pt}S_{\mathrm{bg}})$.
+\end{theorem}
+
+\begin{proof}[Proof of the implication]
+(i) is one induction on $k$ for the activity and the coupling together: if $z_k\le W(u_k)$, then $|r^{\mathrm{lf}}_k|\le\mathcal D(u_k)W(u_k)\le\Upsilon$, so the margin gives the bracket for step $k$; then $u_{k+1}\le u_k$, the recursion, the supply and the moving invariant interval give $z_{k+1}\le W(u_k)\le W(u_{k+1})$ by monotonicity of $W$. (ii) is a union bound over the plaquette events and the background events of each block, written through the indicator $I_{m,i}\in\{0,1\}$ of the bad event of block $i$. (iii) is the $\varepsilon/2$ argument. The last statement composes (i)--(iii) with the steps of the proof of Theorem~\ref{thm:W}. In Lean, (ii) is \lt{rarity\_\allowbreak{}two\_\allowbreak{}stage}, which supplies the rarity field of the structure \lt{ChainHypothesesMoving}, and the rest is the statement \lt{chain\_\allowbreak{}end\_\allowbreak{}to\_\allowbreak{}end\_\allowbreak{}moving}; the implication is the composition of these two statements (Table~\ref{tab:corr2}).
+\end{proof}
+
+\subsection{Reflection positivity from the fine support}\label{subsec:rp}
+In (St2) and (St7), finite-$n$ reflection positivity can be supplied from the fine lattice. Let $\mu_n$ be the fine measures, $\Theta_{\mathrm{fine}}$ the fine reflection, and assume:
+\begin{enumerate}[label=(RP\arabic*),leftmargin=3em]
+\item $\int f(\Theta_{\mathrm{fine}}U)f(U)\,d\mu_n(U)\ge0$ for every bounded measurable $f$ that depends only on the links in $S_n^+$ (\lt{FineRP}): site reflection positivity when $P$ is a site plane of $\Lambda_n$, link reflection positivity when $P$ lies midway between site planes~\cite{OSe};
+\item $V_{n\to m}\circ\Theta_{\mathrm{fine}}=\Theta\circ V_{n\to m}$ for $m\le n$, and $\nu_{n,m}=(V_{n\to m})_*\mu_n$;
+\item each lattice value $s_n(x_{ab})$ on a positive-time configuration is $\int g_a(\Theta_{\mathrm{fine}}U)g_b(U)\,d\mu_n$ with bounded measurable $g_a$ depending only on $S_n^+$.
+\end{enumerate}
+Then finite-$n$ reflection positivity holds for $\mathcal A_m(P)$, and the matrices of (St7) are positive semidefinite, for every block factor and every reach (\tagL, \lt{reflection\_\allowbreak{}positive\_\allowbreak{}of\_\allowbreak{}fine}, \lt{positivity\_\allowbreak{}of\_\allowbreak{}fine}). In these Lean statements the reflections form one family (one hyperplane that is a symmetry plane of every $\Lambda_n$, for instance $x_4=a_0(j+\tfrac12)$); a plane of a finer level $m$ is treated as in step~3 of the proof of Theorem~\ref{thm:W}, with the single-measure lemma \lt{coarse\_\allowbreak{}rp\_\allowbreak{}of\_\allowbreak{}fine\_\allowbreak{}support} and \lt{reflection\_\allowbreak{}positivity\_\allowbreak{}limit}. The statement \lt{chain\_\allowbreak{}end\_\allowbreak{}to\_\allowbreak{}end\_\allowbreak{}fine\_\allowbreak{}support} composes these two lemmas with the chain in the form with constant $\mathcal D$ and constant $W$. The two lemmas produce fields of exactly the types that \lt{chain\_\allowbreak{}end\_\allowbreak{}to\_\allowbreak{}end\_\allowbreak{}moving} takes as arguments, so the same composition applies to Theorem~\ref{thm:chain}; this last composition is not written as a separate Lean declaration. Conditions (RP1)--(RP3) for the Wilson measure form premise~10 (\S\ref{sec:status}, Appendix~\ref{app:rp}).
+
+\subsection{The Lean files}
+Around Theorem~\ref{thm:chain}, the Lean files contain the steps that reduce the per-step hypotheses further (Table~\ref{tab:lean}): finite polymer gases (Dobrushin's recursion, Kotecký--Preiss bounds, free energy); a two-colour polymer gas on $\mathbb Z^4$ with its encoding, neighbour counts and the passage from plaquettes to boxes; the large-field expansion into connected components; regulator counts and weight recursions; Chernoff rarity and the supply; the moving invariant interval; the regularity step with a background Lipschitz constant; tree gauges; the class window and its sharp form; the effective coupling and its continuity; reflection positivity from the fine support.
+
+{\small\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}p{0.09\linewidth}>{\raggedright\arraybackslash}p{0.58\linewidth}@{}}
+\caption{The 62 chain files (the two files of Theorem~\ref{thm:W} are in \S\ref{sec:lean}). ``total / own'': all statements in the file / statements whose text, up to comments, does not occur in a file it copies from. Copies placed in the file's own namespace are also subtracted (\lt{PolymerComponents}: 24 in its namespace, 4 of them copied from \lt{GasExpansion}; \lt{WeightRecursion}: 15, 2 copied from \lt{BoundaryRegulator}); restatements with changed hypotheses count as own. Sum of ``own'': 525.}\label{tab:lean}\\\toprule
+file & total / own & what it closes\\\midrule\endfirsthead
+\toprule file & total / own & what it closes\\\midrule\endhead
+\lt{ChainMovingActivity} & 79 / 12 & Theorem~\ref{thm:chain}: moving invariant interval, logarithmic threshold, end-to-end statement\\
+\lt{ChainEndToEnd\allowbreak{}FineSupport} & 73 / 7 & reflection positivity from the fine support composed with the chain (\S\ref{subsec:rp})\\
+\lt{ChainEndToEnd} & 66 / 2 & the chain with constant coefficient; entry structure from the two-stage event\\
+\lt{ReflectionSupportScale} & 23 / 16 & supports of pull-backs, reach arithmetic for factor 2, coarse reflection positivity, cofinal scales\\
+\lt{MovingActivity} & 5 / 5 & moving bound $z_k\le W(u_k)$; $uW(u)\le Y$; logarithmic threshold; constant $\mathcal D$ fails\\
+\lt{UltravioletChain} & 11 / 11 & per-step steps $\Rightarrow$ (H-$\beta$), (H-sf), (H-reg) forms\\
+\lt{UltravioletGlue} & 33 / 3 & chain conclusions enter the structures of Theorem~\ref{thm:W}\\
+\lt{UltravioletAssembly} & 58 / 4 & class orbit $\Rightarrow$ small remainder; moments $\Rightarrow$ rarity\\
+\lt{SmallRemKernel} & 22 / 11 & (S2) in the $\ker\varphi$ form; projected remainder carries no increment\\
+\lt{TwoStageSmallField} & 23 / 12 & two-stage event, union bound, entry into the rarity field\\
+\lt{BlockGaussianStep} & 8 / 8 & Schur complement, completing the square, KP sum arithmetic\\
+\lt{ClassStepRemainder} & 5 / 5 & bounded two-sided orbits lie in the small ball\\
+\lt{LargeFieldStep} & 5 / 5 & Chernoff rarity; Markov bound on the weight of bad blocks; KP threshold\\
+\lt{LargeFieldSupply} & 6 / 6 & supply bound by a union over the plaquettes of a block; monotonicity; block moments\\
+\lt{LargeFieldCoupling} & 17 / 3 & large-field contribution to the coupling $\le(2/c(\theta))\zeta$ (App.~\ref{app:coupling})\\
+\lt{EvenDifferenceCoupling} & 8 / 8 & coupling difference uniform in the angle; rescaling of the norm\\
+\lt{DifferenceContinuity} & 4 / 1 & the difference coupling is continuous in $x$\\
+\lt{GibbsContinuity} & 5 / 5 & continuity of Gibbs expectations in $x$; (C) for effective couplings\\
+\lt{PolymerGasDobrushin} & 8 / 8 & finite polymer gas: recursion, Dobrushin induction\\
+\lt{KPToDobrushin} & 2 / 2 & KP sum per point $\Rightarrow$ Dobrushin's condition\\
+\lt{PolymerGasKP} & 11 / 1 & KP $\Rightarrow$ $Z>0$ and a lower bound on $\log Z$\\
+\lt{PolymerGasFreeEnergy} & 14 / 3 & two-sided bound on $|\log Z|$, free-energy density\\
+\lt{PolymerBlocking} & 2 / 2 & one blocking step of polymer activities\\
+\lt{PolymerMerge} & 3 / 3 & bound on the merging term of two polymer activities\\
+\lt{PolymerGeometry} & 5 / 5 & merged activity $\le$ product; condition for contraction of activities under blocking\\
+\lt{GasExpansion} & 5 / 5 & expansion of the product weight into polymers\\
+\lt{PolymerComponents} & 24 / 20 & connected components as a partition; components are connected and non-adjacent\\
+\lt{TwoColorPolymerSum} & 18 / 17 & two-colour rooted generating function; KP sum per point\\
+\lt{TwoColorEncoding} & 37 / 19 & encoding of plaquette sets by thin plaquettes and link defects; label sum; KP and Dobrushin\\
+\lt{LatticeTwoColorKP} & 68 / 41 & $\mathbb Z^4$: neighbour counts $20,44,66,122$ by \lt{decide}; KP and Dobrushin on the lattice\\
+\lt{Lattice24KP} & 73 / 20 & the same with plaquette adjacency extended to opposite faces of cubes\\
+\lt{BoxTwoColorKP} & 71 / 20 & boxes of factor 2: box offsets, box neighbours, box KP sum and Dobrushin\\
+\lt{BoxFromFace} & 100 / 19 & box activities from plaquette activities; box KP sum $=$ sum over plaquette polymers; box event bridge\\
+\lt{BoxFiberSiteSum} & 4 / 4 & box site sum bounded by the sum over plaquette configurations\\
+\lt{ClassSiteSum} & 4 / 4 & KP site sum from activity bounds per class of polymer\\
+\lt{SizeSplitKP} & 6 / 6 & KP sum split by polymer size; geometric tail\\
+\lt{LargeSetRegulator} & 5 / 5 & full blocks and fractional regulator\\
+\lt{BoundaryRegulator} & 3 / 3 & regulator count by full blocks and boundary\\
+\lt{BoxConnectivity} & 5 / 5 & a partial box has an inner boundary edge\\
+\lt{WeightRecursion} & 15 / 13 & weight recursion $c_{\mathrm v}|\Gamma|+c_{\mathrm s}|\partial\Gamma|$, obstruction, supplied form\\
+\lt{BlockBoundaryCount} & 36 / 21 & counts on $\mathbb Z^4$; no stationary weight without supply; supply lower bound\\
+\lt{SupplyLedger} & 44 / 8 & weight regenerated from the current scale: no boundary weight needed\\
+\lt{TreeGauge} & 5 / 5 & existence and uniqueness of tree gauges\\
+\lt{TreeGaugeLocality} & 3 / 3 & gauge invariants depend on non-tree links\\
+\lt{NontreeBackground} & 18 / 6 & background bounds of the quadratic type; shifted backgrounds\\
+\lt{RegularityStep} & 4 / 4 & one-step regularity inequality; equicontinuity\\
+\lt{RegularityConstant} & 24 / 6 & $K(\eta)=c_{\mathrm{sh}}(\tau_{\mathrm{bg}}+\ell_{\mathrm{bg}}+2\alpha_{\mathrm{bg}}r(\eta))^{k_0}$\\
+\lt{RegularityRadius} & 55 / 8 & radius $r(\eta)$ of the two-stage event; amplification $<1$\\
+\lt{CThetaReadings} & 7 / 7 & two readings of the conversion from background field angles to class coordinates\\
+\lt{HessianGap} & 27 / 16 & (H-gap) at tabulated points; uniform form in $f_1$; equicontinuity with $K_{\mathrm{bg}}$\\
+\lt{BackgroundConstants} & 9 / 2 & $\|\delta B\|\le c_Q\|\delta V\|/(\lambda_0(1-f_1/f_\star))$\\
+\lt{PullbackOrbitLimit} & 9 / 9 & limits of pulled-back orbits of contractions, without subsequence\\
+\lt{VertexClassWindow} & 6 / 6 & a class with vertex coordinates: pull-back of vertices, two-component step\\
+\lt{SharpWindow} & 15 / 10 & sharp window condition $4\alpha c_0/u\le\kappa^2$; two-sided orbits\\
+\lt{AnalyticFloor} & 3 / 3 & small-field angle bound and the floor $y_h/(1-\cos\theta_c)$\\
+\lt{MarginNumbers} & 4 / 4 & margin arithmetic for block factor $4$ (not used in this note)\\
+\lt{ActivityFixedInterval} & 1 / 1 & invariant interval $4B\cdot A\Phi\le(1-\rho)^2/2$\\
+\lt{MarginRatioTwo} & 11 / 11 & factor-2 margin $b/2=b_0\ln2$; closed-ball condition\\
+\lt{KernelMarginNumbers} & 39 / 6 & arithmetic of the margin (S6) at tabulated values\\
+\lt{KernelMarginWindow} & 47 / 8 & the same at further tabulated values\\
+\lt{KernelMarginStages} & 33 / 22 & window existence condition $c_0/u\le\kappa^2/(8\alpha)$, necessary and sufficient\\
+\lt{KernelWindowTable} & 43 / 10 & arithmetic of the window condition at tabulated values\\\bottomrule
+\end{longtable}}
+
+\section{The premises}\label{sec:status}
+
+Table~\ref{tab:premises} lists the ten explicit premises left by the chain, with the appendix where the terms are defined. The numerical values of the constants ($\tau$, $\alpha$, $c_0$, $\ell$, $\delta$, $D$, $y_h$, $\theta_c$, $c_Q$, $\ldots$) come from floating-point computations; they are not stated in this note, and whether the premises hold with them is outside its claims. Lean checks only the implications from the premises in the stated forms.
+
+{\small\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.04\linewidth}>{\raggedright\arraybackslash}p{0.66\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
+\caption{The ten premises.}\label{tab:premises}\\\toprule
+\# & premise (and where it is defined) & grade of the support\\\midrule\endfirsthead
+\toprule \# & premise & grade\\\midrule\endhead
+1 & quadratic type of the one-step remainder in the class with slaved vertices (P1-slave): $\|R v\|\le c_0/u+(\ell/u)\|v\|+\alpha\|v\|^2$ on the class ball (App.~\ref{app:class}); its coupling coordinate in the form (S2) is \tagL{} & \tagP{} + \tagC\\
+2 & window condition: $c_0/u_\star\le\kappa^2/(8\alpha)$ with $\kappa=1-\tau-\ell/u_\star$, or its sharp form $4\alpha c_0/u_\star\le\kappa^2$ (App.~\ref{app:class}); equivalence with the existence of the window \tagL & \tagC; forms \tagL\\
+3 & large-field weights: a weight carried from scale to scale admits no stationary choice without a fresh surface cost (\tagL); a weight regenerated at each scale needs no boundary weight (\tagL); the premise is a lower bound on the effective density on large coarse fields, uniform in the scale (App.~\ref{app:gas}) & \tagA\\
+4 & one-plaquette moment and rarity: $\E e^{\sigma Y}\le m_1(\sigma)$ per plaquette, hence $P_1(y)\le m_1(\sigma)e^{-\sigma y}$ and the supply bound (S5) (App.~\ref{app:gas}) & \tagC; Chernoff \tagL\\
+5 & logarithmic threshold and moving interval: $y_s(u)=(\ln u)/\sigma+y_0$, $\mathcal D(u)\Phi(u)$ bounded, and (S6) (App.~\ref{app:gas}) & forms \tagL; \tagC\\
+6 & definition of the effective coupling and its continuity (C) (App.~\ref{app:coupling}) & \tagL{} for both definitions\\
+7 & small-field events uniform in the lattice, with the regularity constant through $K_{\mathrm{bg}}$ (\tagL); lattice term $\tau_n\to0$ (App.~\ref{app:support}) & \tagA; \tagC{} free field\\
+8 & background bounds: (H-gap) and the constants of the background map (App.~\ref{app:background}) & \tagC{} at points (checked in Lean point by point); \tagA\\
+9 & large-field gas at the plaquette level: activity bound (H-sum) and label sum; the box events are read through the bridge (App.~\ref{app:gas}) & combinatorics \tagL; bound \tagA\\
+10 & (RP-supp): (RP1)--(RP3) for the Wilson measure and the block maps (\S\ref{subsec:rp}, App.~\ref{app:rp}) & \tagK{} + \tagP\\\bottomrule
+\end{longtable}}
+
+\paragraph{The window and the floor.} Two conditions on the numbers decide where the chain can run; we state their forms only. The class window exists in the Lipschitz form if and only if $c_0/u\le\kappa^2/(8\alpha)$, $\kappa=1-\tau-\ell/u$ (\tagL, \lt{window\_\allowbreak{}necessary}, \lt{window\_\allowbreak{}sufficient}); with a remainder bound of size form the condition is $4\alpha c_0/u\le\kappa^2$ (\tagL, \lt{SharpCond}, \lt{sharp\_\allowbreak{}necessary}, \lt{sharp\_\allowbreak{}sufficient}). The small-field event $\beta(1-\cos\psi)\le y_h$ keeps every plaquette angle $\psi$ below the analyticity angle $\theta_c$ if and only if $\beta\ge\beta_{\mathrm{floor}}=y_h/(1-\cos\theta_c)$ (\tagL, \lt{small\_\allowbreak{}field\_\allowbreak{}angle\_\allowbreak{}le}, \lt{floor\_\allowbreak{}necessary}), and the floor decreases as $\theta_c$ grows (\lt{floor\_\allowbreak{}antitone}). Whether the numerical premises hold, and in which range of $\beta$, is outside the claims of this note.
+
+\section{What is not claimed}\label{sec:notclaimed}
+\begin{itemize}[leftmargin=2em]
+\item Ultraviolet stability of four-dimensional lattice Yang--Mills theory is not shown. None of the ten premises of Table~\ref{tab:premises} is established in four dimensions, and neither are (H-$\beta$), (H-reg), (H-sf), (H-Cauchy). Theorem~\ref{thm:chain} is an implication.
+\item The part of Theorem~\ref{thm:W} that holds without hypotheses is of the compactness type that the problem statement excludes as a solution of its existence part.
+\item Nothing is said about clustering, uniqueness of the vacuum, infinite volume, rotation invariance, local fields, non-triviality or the mass gap. The limit may depend on the subsequence, the block map, $r_0$ and $\gamma_0$.
+\item Whether the numerical forms of the premises hold, and for which $\beta$, is not claimed. The numbers mentioned in the appendices are floating-point computations in stated ranges, one-loop or free-field numbers; they are not non-perturbative statements.
+\item The Bałaban series was consulted at the level of abstracts and introductions only. The correspondence between the regenerated large-field weight of premise~3 and the corresponding construction in~\cite{B122b} has not been checked.
+\item We say nothing about the content of announcements of other work on this problem whose proofs are not public.
+\end{itemize}
+
+\section{What is machine-checked}\label{sec:lean}
+
+The Lean material consists of 64 single files, each beginning with \texttt{import Mathlib}, with 1419 statements in total. Two of them are the files of Theorem~\ref{thm:W}, \texttt{WeakUltraviolet\allowbreak{}Existence.lean} (19 statements) and \texttt{LatticeBlock\allowbreak{}Reflection.lean} (23 statements). The other 62 form the chain (Table~\ref{tab:lean}). Some files place copies of other files side by side so that a seam can be type-checked inside one file; the copies agree with their originals up to comments, except that in five files the \texttt{\#print axioms} lines of the copies are collected at the end of the file. The files are distributed as a bundle of single files, without a Lake project; the addresses are listed below. In the repository named in \S\ref{sec:ai} the 64 files are kept, byte for byte the same, under \texttt{lean/\allowbreak{}ym-weak-uv-chain} as the modules \texttt{WeakUvChain.<name>} of a lake project pinned to the same versions; verify there with \texttt{lake exe cache get} and \texttt{LEAN\_NUM\_THREADS=1 lake env lean WeakUvChain/\allowbreak{}<name>.lean} for each file. The bundle fixes the Lean and Mathlib versions (Lean v4.33.1, Mathlib v4.33.1, commit \texttt{0df444a3}) and contains a list of the sha256 checksums of all its files. To verify: place the files in a Lake project pinned to these versions, run \texttt{lake exe cache get}, then run \texttt{LEAN\_NUM\_THREADS=1 lake env lean <name>.lean} for each file and compare the output with the file \texttt{axioms-<name>.txt}. Every \texttt{\#print axioms} line must print \texttt{[propext, Classical.choice, Quot.sound]} or a subset of it (in files that open \texttt{Classical}, Lean prints \texttt{Classical.choice} as \texttt{choice}), or that the statement depends on no axioms. There is no \texttt{sorry}, no \texttt{axiom} declaration and no \texttt{native\_decide}. Finite counts on $\mathbb Z^4$ use \texttt{decide}. The three main statements are Theorem~\ref{thm:W}, Theorem~\ref{thm:chain} and the composed statement of \S\ref{subsec:rp}; the sha256 checksums of their files are given after the addresses below.
+\begin{flushleft}\scriptsize
+Index of the Lean files and instructions:\\
+\url{https://computoergosum.com/en/principia/lean/index.html}\\
+Bundle:\\
+\url{https://computoergosum.com/principia/lean/principia-ym-weak-uv-chain-2026-10-30.tar.gz}\\
+Checksum file:\\
+\url{https://computoergosum.com/principia/lean/principia-ym-weak-uv-chain-2026-10-30.tar.gz.sha256}\\
+Axiom log:\\
+\url{https://computoergosum.com/principia/lean/axioms-ym-weak-uv-chain-2026-10-30.txt}
+\end{flushleft}
+\par\noindent\begin{minipage}{\linewidth}
+The sha256 checksums of the files of the three main statements are
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\texttt{ChainMovingActivity.lean} & \texttt{85f1c901c05f1586ffc29b9381ea2bf2}\\
+& \texttt{ce938bd48a661d7be6b99edea2a8946d}\\
+\texttt{ChainEndToEndFineSupport.lean} & \texttt{1e64010865298444ec85734c12ddfd16}\\
+& \texttt{6da0527692abd443b84505feb1ae9449}\\
+\texttt{WeakUltravioletExistence.lean} & \texttt{35cf9b9611cd4dd9575a94fe98f70c43}\\
+& \texttt{e2d4a7eb28bf7cc8d3caffe391d0132d}\\
+\end{tabular}
+\end{center}
+\end{minipage}
+
+\medskip\noindent What Lean checks:
+\begin{itemize}[leftmargin=2em]
+\item the implication of Theorem~\ref{thm:W} from its structures, and of Theorem~\ref{thm:chain} from Definitions~\ref{def:steps} and~\ref{def:twostage} (as the composition of \lt{rarity\_\allowbreak{}two\_\allowbreak{}stage} and \lt{chain\_\allowbreak{}end\_\allowbreak{}to\_\allowbreak{}end\_\allowbreak{}moving});
+\item reflection positivity of the push-forward from the fine support, for any block factor;
+\item the finite polymer gases, the two-colour encoding on $\mathbb Z^4$, the box bridge, the connected components, the regulator counts and the weight recursions;
+\item the measure-theoretic union bounds and Chernoff bounds; continuity of Gibbs expectations;
+\item the inequalities between stated numbers in the arithmetic files (margins, window, Hessian points).
+\end{itemize}
+What Lean does not check:
+\begin{itemize}[leftmargin=2em]
+\item the lattice measures and the Wilson action beyond their abstract properties;
+\item the effective actions of the renormalisation group;
+\item whether the numbers are correct;
+\item the ten premises.
+\end{itemize}
+
+\section{Correspondence tables}\label{sec:corr}
+
+{\small\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}p{0.56\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}@{}}
+\caption{Lean declarations for the statements of \S\S\ref{sec:setting}--\ref{sec:thm}, with W = \texttt{WeakUltraviolet\allowbreak{}Existence.lean} and R = \texttt{LatticeBlock\allowbreak{}Reflection.lean}.}\label{tab:corr}\\\toprule
+Statement & Lean declaration & Line\\\midrule\endfirsthead
+\toprule Statement & Lean declaration & Line\\\midrule\endhead
+step 1, (W0) & W: \lt{exists\_\allowbreak{}bare\_\allowbreak{}inverse\_\allowbreak{}coupling} & 38\\
+step 2, compactness & W: \lt{exists\_\allowbreak{}subseq\_\allowbreak{}tendsto\_\allowbreak{}probabilityMeasure}, \lt{exists\_\allowbreak{}common\_\allowbreak{}subseq} & 219, 236\\
+step 2, consistency & W: \lt{limit\_\allowbreak{}consistent}; R: \lt{pushforward\_\allowbreak{}consistent} & 244; 343\\
+step 3, (W4) & W: \lt{reflection\_\allowbreak{}positivity\_\allowbreak{}limit}, \lt{quadratic\_\allowbreak{}positivity\_\allowbreak{}limit}; R: \lt{pushforward\_\allowbreak{}reflection\_\allowbreak{}positive}, \lt{pushforward\_\allowbreak{}reflection\_\allowbreak{}positive\_\allowbreak{}prob}, \lt{pullback\_\allowbreak{}mem\_\allowbreak{}positive} & 272, 467; 314, 355, 328\\
+Lemma~\ref{lem:site} & R: \lt{site\_\allowbreak{}reflection\_\allowbreak{}positive}, \lt{site\_\allowbreak{}reflection\_\allowbreak{}positive\_\allowbreak{}measure}, \lt{measurable\_\allowbreak{}refl} & 233, 277, 228\\
+step 4 & W: \lt{approx\_\allowbreak{}invariance\_\allowbreak{}limit}; R: \lt{pushforward\_\allowbreak{}invariant} & 288; 366\\
+step 5 & W: \lt{exists\_\allowbreak{}subseq\_\allowbreak{}tendsto\_\allowbreak{}on\_\allowbreak{}countable}, \lt{continuous\_\allowbreak{}extension\_\allowbreak{}of\_\allowbreak{}tendsto}, \lt{exists\_\allowbreak{}subseq\_\allowbreak{}continuous\_\allowbreak{}limit} & 330, 346, 430\\
+step 6 & W: \lt{invariance\_\allowbreak{}of\_\allowbreak{}limit}, \lt{invariance\_\allowbreak{}extends\_\allowbreak{}by\_\allowbreak{}density} & 446, 485\\
+step 7 & W: \lt{closed\_\allowbreak{}mass\_\allowbreak{}lower\_\allowbreak{}limit} & 310\\
+step 8 & W: \lt{tendsto\_\allowbreak{}of\_\allowbreak{}summable\_\allowbreak{}increments}, \lt{subseq\_\allowbreak{}limit\_\allowbreak{}eq}, \lt{weak\_\allowbreak{}uv\_\allowbreak{}observable\_\allowbreak{}full} & 498, 508, 637\\
+assembly & W: \lt{BlockHypotheses}, \lt{BlockConclusion}, \lt{ObservableHypotheses}, \lt{Representation} & 525, 542, 590, 662\\
+assembly & W: \lt{weak\_\allowbreak{}uv\_\allowbreak{}block\_\allowbreak{}skeleton}, \lt{weak\_\allowbreak{}uv\_\allowbreak{}observable\_\allowbreak{}skeleton}, \lt{weak\_\allowbreak{}uv\_\allowbreak{}skeleton} & 555, 617, 671\\
+retraction (Remark~\ref{rem:example}) & R: \lt{continuous\_\allowbreak{}retract}, \lt{norm\_\allowbreak{}retract\_\allowbreak{}le}, \lt{retract\_\allowbreak{}of\_\allowbreak{}le}, \lt{retract\_\allowbreak{}mul\_\allowbreak{}unit} & 39, 44, 52, 61\\
+(B2) & R: \lt{covariant\_\allowbreak{}mul}, \lt{mul\_\allowbreak{}star\_\allowbreak{}of\_\allowbreak{}star\_\allowbreak{}mul}, \lt{covariant\_\allowbreak{}path}, \lt{covariant\_\allowbreak{}average}, \lt{covariant\_\allowbreak{}retract}, \lt{blockmap\_\allowbreak{}equivariant} & 82, 94, 107, 126, 136, 159\\
+(B5) & R: \lt{equivariant\_\allowbreak{}comp}, \lt{invariant\_\allowbreak{}pullback} & 168, 176\\
+(B1) & R: \lt{continuous\_\allowbreak{}path\_\allowbreak{}prod}, \lt{continuous\_\allowbreak{}link}, \lt{continuous\_\allowbreak{}blockmap} & 191, 200, 204\\\bottomrule
+\end{longtable}}
+
+{\small\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.26\linewidth}>{\raggedright\arraybackslash}p{0.52\linewidth}>{\raggedright\arraybackslash}p{0.14\linewidth}@{}}
+\caption{Statements of \S\S\ref{sec:setting}, \ref{sec:chain}, \ref{sec:status} and the appendices, and Lean declarations (file, declaration, line).}\label{tab:corr2}\\\toprule
+Statement & Lean declaration & Line\\\midrule\endfirsthead
+\toprule Statement & Lean declaration & Line\\\midrule\endhead
+Theorem~\ref{thm:chain}, end to end & \lt{ChainMovingActivity}: \lt{chain\_\allowbreak{}end\_\allowbreak{}to\_\allowbreak{}end\_\allowbreak{}moving} & 2141\\
+Theorem~\ref{thm:chain}, (ii) and entry & \lt{ChainMovingActivity}: \lt{rarity\_\allowbreak{}two\_\allowbreak{}stage}, \lt{index\_\allowbreak{}good\_\allowbreak{}eq}, \lt{ChainHypothesesMoving} & 1696, 1626, 2099\\
+Definition~\ref{def:steps} & \lt{ChainMovingActivity}: \lt{CouplingStepsMovingD}, \lt{CouplingStepsMoving}, \lt{movingD\_\allowbreak{}of\_\allowbreak{}moving} & 1998, 1919, 2021\\
+Theorem~\ref{thm:chain}, (i) & \lt{ChainMovingActivity}: \lt{activity\_\allowbreak{}le\_\allowbreak{}movingD}, \lt{hbeta\_\allowbreak{}of\_\allowbreak{}steps\_\allowbreak{}movingD} & 2062, 2085\\
+three conclusions at once & \lt{ChainMovingActivity}: \lt{chain\_\allowbreak{}to\_\allowbreak{}hypotheses\_\allowbreak{}moving} & 2112\\
+(iii) & \lt{ChainMovingActivity}: \lt{equicontinuous\_\allowbreak{}of\_\allowbreak{}split} & 921\\
+constant-coefficient chain & \lt{ChainMovingActivity}: \lt{chain\_\allowbreak{}end\_\allowbreak{}to\_\allowbreak{}end}, \lt{chain\_\allowbreak{}ker\_\allowbreak{}two\_\allowbreak{}stage} & 1804, 1876\\
+logarithmic threshold & \lt{ChainMovingActivity}: \lt{log\_\allowbreak{}supply}, \lt{moving\_\allowbreak{}of\_\allowbreak{}log\_\allowbreak{}threshold}, \lt{growing\_\allowbreak{}coefficient\_\allowbreak{}threshold} & 2236, 2245, 2281\\
+constant $\mathcal D$ fails & \lt{MovingActivity}: \lt{constant\_\allowbreak{}D\_\allowbreak{}fails} & 59\\
+\S\ref{subsec:rp} & \lt{ChainEndToEndFineSupport}: \lt{FineRP}, \lt{coarse\_\allowbreak{}rp\_\allowbreak{}of\_\allowbreak{}fine\_\allowbreak{}support}, \lt{physPositive}, \lt{reflection\_\allowbreak{}positive\_\allowbreak{}of\_\allowbreak{}fine}, \lt{positivity\_\allowbreak{}of\_\allowbreak{}fine} & 1931, 1938, 2004, 2009, 2028\\
+\S\ref{subsec:rp}, composed & \lt{ChainEndToEndFineSupport}: \lt{chain\_\allowbreak{}end\_\allowbreak{}to\_\allowbreak{}end\_\allowbreak{}fine\_\allowbreak{}support} & 2051\\
+Definition~\ref{def:positive}, gap form & \lt{ReflectionSupportScale}: \lt{dependsOn\_\allowbreak{}positive\_\allowbreak{}of\_\allowbreak{}gap}, \lt{dependsOn\_\allowbreak{}reach\_\allowbreak{}comp}, \lt{coarse\_\allowbreak{}rp\_\allowbreak{}of\_\allowbreak{}gap}, \lt{reach\_\allowbreak{}sum\_\allowbreak{}le} & 250, 265, 353, 299\\
+form (S2) & \lt{SmallRemKernel}: \lt{small\_\allowbreak{}rem\_\allowbreak{}kernel}, \lt{small\_\allowbreak{}rem\_\allowbreak{}kernel\_\allowbreak{}unit}, \lt{projected\_\allowbreak{}remainder\_\allowbreak{}zero} & 319, 344, 360\\
+window condition & \lt{KernelMarginStages}: \lt{WindowCond}, \lt{window\_\allowbreak{}necessary}, \lt{window\_\allowbreak{}sufficient} & 150, 154, 162\\
+sharp window & \lt{SharpWindow}: \lt{SharpCond}, \lt{sharp\_\allowbreak{}necessary}, \lt{sharp\_\allowbreak{}sufficient}, \lt{exists\_\allowbreak{}unique\_\allowbreak{}entire\_\allowbreak{}orbit}, \lt{sharp\_\allowbreak{}entire\_\allowbreak{}orbit} & 14, 18, 26, 184, 245\\
+class orbit & \lt{UltravioletAssembly}: \lt{window\_\allowbreak{}from\_\allowbreak{}loc\_\allowbreak{}A}; \lt{ClassStepRemainder}: \lt{orbit\_\allowbreak{}in\_\allowbreak{}small\_\allowbreak{}ball} & 426; 82\\
+norm convention & \lt{EvenDifferenceCoupling}: \lt{kernel\_\allowbreak{}constant\_\allowbreak{}scale}, \lt{window\_\allowbreak{}scale} & 110, 115\\
+floor & \lt{AnalyticFloor}: \lt{small\_\allowbreak{}field\_\allowbreak{}angle\_\allowbreak{}le}, \lt{floor\_\allowbreak{}necessary}, \lt{floor\_\allowbreak{}antitone} & 16, 26, 50\\
+factor-2 margin & \lt{MarginRatioTwo}: \lt{half\_\allowbreak{}b2\_\allowbreak{}lower} & 21\\
+premise 6, (C) & \lt{GibbsContinuity}: \lt{continuous\_\allowbreak{}gibbs\_\allowbreak{}expectation}, \lt{continuousOn\_\allowbreak{}effective\_\allowbreak{}coupling}; \lt{DifferenceContinuity}: \lt{continuous\_\allowbreak{}difference\_\allowbreak{}coupling} & 54, 67; 57\\
+(S3) from the difference coupling & \lt{EvenDifferenceCoupling}: \lt{triangle\_\allowbreak{}coefficient\_\allowbreak{}blows\_\allowbreak{}up}, \lt{coupling\_\allowbreak{}uniform} & 31, 72\\
+(H-gap), uniform form & \lt{HessianGap}: \lt{uniform\_\allowbreak{}in\_\allowbreak{}f1}, \lt{equicontinuous\_\allowbreak{}from\_\allowbreak{}gap} & 266, 299\\
+background map & \lt{BackgroundConstants}: \lt{background\_\allowbreak{}lipschitz} & 89\\
+premise 3, carried weight & \lt{BlockBoundaryCount}: \lt{no\_\allowbreak{}stationary}, \lt{supply\_\allowbreak{}lower} & 396, 427\\
+premise 3, regenerated weight & \lt{SupplyLedger}: \lt{regenerated\_\allowbreak{}all\_\allowbreak{}steps} & 597\\
+premise 4, rarity & \lt{LargeFieldStep}: \lt{rarity\_\allowbreak{}chernoff}; \lt{LargeFieldSupply}: \lt{supply\_\allowbreak{}union} & 31; 27\\
+premise 8, gauge invariants & \lt{NontreeBackground}: \lt{invariant\_\allowbreak{}factors} & 431\\
+premise 9, components & \lt{PolymerComponents}: \lt{components\_\allowbreak{}satisfy\_\allowbreak{}gas} & 217\\
+premise 9, encoding & \lt{TwoColorEncoding}: \lt{enc\_\allowbreak{}connected}, \lt{label\_\allowbreak{}sum\_\allowbreak{}le}, \lt{encoded\_\allowbreak{}kp\_\allowbreak{}site}, \lt{encoded\_\allowbreak{}dobrushin} & 581, 489, 875, 1029\\
+premise 9, $\mathbb Z^4$ & \lt{LatticeTwoColorKP}: \lt{lattice\_\allowbreak{}hdeg}, \lt{lattice\_\allowbreak{}kp\_\allowbreak{}site}, \lt{lattice\_\allowbreak{}dobrushin} & 1211, 1228, 1240\\
+premise 9, boxes & \lt{BoxFromFace}: \lt{box\_\allowbreak{}hz\_\allowbreak{}from\_\allowbreak{}face}, \lt{box\_\allowbreak{}hsite\_\allowbreak{}eq\_\allowbreak{}face\_\allowbreak{}sum}, \lt{box\_\allowbreak{}hsite\_\allowbreak{}of\_\allowbreak{}face\_\allowbreak{}sum}, \lt{box\_\allowbreak{}event\_\allowbreak{}bridge} & 1744, 1807, 1833, 1970\\
+regularity step & \lt{RegularityStep}: \lt{equicontinuous\_\allowbreak{}of\_\allowbreak{}small\_\allowbreak{}field} & 110\\
+pull-back orbit limits & \lt{PullbackOrbitLimit}: \lt{orbit\_\allowbreak{}tendsto}, \lt{limit\_\allowbreak{}independent} & 77, 89\\
+class with vertex coordinates & \lt{VertexClassWindow}: \lt{pullback\_\allowbreak{}vertex\_\allowbreak{}le} & 28\\\bottomrule
+\end{longtable}}
+
+\section{Disclosure of AI use}\label{sec:ai}
+This note was produced with the assistance of AI agents. The statement, the hypotheses, the computations, the Lean~4 files including the formalised statements, the reports on which this note is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code on a laptop, across many separate runs, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for checking the Lean files on a separate machine, for checking the numerical claims of this note against the reports, and for preparing the distributed version. The human author set the task, chose the problem, fixed the working rules and load limits, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. This edition and the Lean files it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-weak-uv-chain}, the Lean files under \texttt{lean/\allowbreak{}ym-weak-uv-chain}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section and in one sentence of \S\ref{sec:lean} giving the location of the Lean files in the repository.
+
+\appendix
+
+\section{The effective coupling and its continuity}\label{app:coupling}
+
+Hypothesis (H-$\beta$) and the coupling steps refer to an effective inverse coupling $u_k(x)$, a function of the bare inverse coupling $x=\beta/4$ with $u_0(x)=x$. The theorems hold for any such family; premise~6 is the choice of a definition together with the continuity required by (H-$\beta$). Two definitions are used.
+
+\paragraph{Renormalised coupling.} Let $e_k(x)\in\mathbb R^p$ be a finite vector of Gibbs expectations $\E_x[f_i]=Z_{f_i}(x)/Z(x)$, $Z_f(x)=\int f\,e^{-4xS}\,dU$, of continuous functions $f_i$ on a finite lattice configuration space $\Omega$ with the Wilson action $S$ (the lattice and the $f_i$ depend on $k$), and put $u_k(x)=G_k(e_k(x))$ with $G_k$ continuous on a set containing the image of the domain. A Schrödinger-functional coupling~\cite{LNWW} is of this form.
+
+\paragraph{Difference coupling.} For a background with flux of angle $\theta$, let $Z_\theta(x)=\int e^{-4xS_\theta}\,dU$ be the partition function of the fluctuations around it, $V$ the volume, and $c(\theta)=12(1-\cos\theta)$ the normalisation per unit volume. The difference coupling is $r(x)=(\log Z_\theta(x)-\log Z_0(x))/(c(\theta)V)$. Its large-field part is the same expression with $Z_\theta$ replaced by the partition function of the large-field polymer gas in the background $\theta$; that the gas partition function equals the corresponding ratio of lattice partition functions is part of premise~9.
+
+\begin{lemma}[continuity (C); Lean]\label{lem:C}
+On a compact configuration space with a finite measure and a continuous action, $x\mapsto Z_f(x)$ is continuous, $Z(x)>0$, and $x\mapsto\E_x[f]$ is continuous. Hence a renormalised coupling is continuous on the domain, and the difference coupling is continuous in $x$.
+\end{lemma}
+\begin{proof}
+The integrand $(x,U)\mapsto f(U)e^{-4xS(U)}$ is jointly continuous and $\Omega$ is compact, so the parametric integral is continuous; $Z>0$ because the integrand is positive. Compositions with continuous $G_k$ and with $\log$ (on $Z>0$) are continuous. (\lt{continuous\_\allowbreak{}gibbs\_\allowbreak{}expectation}, \lt{continuousOn\_\allowbreak{}effective\_\allowbreak{}coupling}, \lt{continuous\_\allowbreak{}difference\_\allowbreak{}coupling}.)
+\end{proof}
+
+\paragraph{The large-field contribution (S3).} Write $\zeta$ for the sum of $|z(\gamma)|e^{2|\gamma|}$ over polymers $\gamma$ containing a given site (Appendix~\ref{app:gas}). The free energies of the gas satisfy $|F_\theta-F_0|\le2V\zeta$ when $\zeta\le1$, which gives $|r^{\mathrm{lf}}|\le(2/c(\theta))\zeta$ (\lt{LargeFieldCoupling}). The coefficient $2/c(\theta)$ is at least $1/(3\theta^2)$ and blows up as $\theta\to0$ (\lt{triangle\_\allowbreak{}coefficient\_\allowbreak{}blows\_\allowbreak{}up}). If $F_\theta$ is even in $\theta$ and its coefficients $t_j$ in $\theta^2$ satisfy the Cauchy bound $|t_j|\le2V\zeta R^{-2(j+1)}$ for a radius of analyticity $R\ge7/10$, then $|r^{\mathrm{lf}}|\le\tfrac7{10}\zeta$ for $0<\theta\le1/10$, uniformly in $\theta$ (\lt{coupling\_\allowbreak{}uniform}). With $\zeta$ bounded by a multiple of the activity norm $z_k$, this is the form (S3).
+
+\section{The class, the local projection and the window}\label{app:class}
+
+\paragraph{The class.} The effective action after $k$ steps is described, near the one-loop flow, by a point of a real Banach space $E=\mathbb R\mathcal W\oplus V$. The direction $\mathcal W$ is the marginal term (the Wilson plaquette term) and $\lambda$ its coefficient; $V$ is the space of the coefficients $r$ of the remaining local gauge-invariant terms of the quadratic part (in the computations: terms of dimension six and eight on a block), with a weighted norm $\|r\|_6$. The norm of $E$ is $\|\lambda\mathcal W+r\|=|\lambda|+\|r\|_6$, and the $\beta$-coordinate is the continuous linear functional $\varphi(\lambda\mathcal W+r)=\lambda$. Hence $\|\varphi\|=1$; this is a normalisation, since rescaling the norm by $s>0$ changes $\|\varphi\|$, the quadratic constant $\alpha$ and the source $c_0$ below without changing $\|\varphi\|\alpha c_0^2$ or the window condition (\lt{kernel\_\allowbreak{}constant\_\allowbreak{}scale}, \lt{window\_\allowbreak{}scale}). Terms of degree three and higher in the fluctuation field (vertices) are not coordinates of $E$. In the class with slaved vertices, (P1-slave), they are fixed functions of $(\lambda,r)$, given by the same construction at every step (in the computations: the minimum-norm completion of the quadratic part). An alternative class (P1-vert) adds vertex coordinates; the pull-back of a vertex of degree $n$ under a one-step map of norm $s$ has norm at most $s^n$ times the original (\lt{pullback\_\allowbreak{}vertex\_\allowbreak{}le}), so vertices of degree $\ge3$ contract when $s<1$, and a two-component step bound holds in a weighted norm (\lt{VertexClassWindow}).
+
+\paragraph{The local projection.} Let $\varpi_k\in E$ be the marginal direction of step $k$, $\varphi(\varpi_k)=1$, and $P_k x=\varphi(x)\,\varpi_k$ (the local projection of type A). Then $P_k^2=P_k$ and $\varphi((1-P_k)x)=0$. If the linearised step $S_k$ maps $\varpi_k$ to $\varpi_{k+1}$, then $(1-P_{k+1})S_k=S_k(1-P_k)$: the $\beta$-coordinate is carried along and only the part in $\ker\varphi$ is mapped by the linear part $T_k$. A marginal direction is unique: if a linear map $T$ satisfies $\|Ty\|\le\tau\|y\|$ on $\ker\varphi$ with $\tau<1$ and fixes a direction $\varpi$ with $\varphi(\varpi)=1$, then $Tv=v$ and $\varphi(v)=1$ imply $v=\varpi$ (\lt{marginal\_\allowbreak{}unique}, in the \lt{LocProjection} section of \lt{UltravioletAssembly}).
+
+\paragraph{The step and premise~1.} Write the step on $\ker\varphi$ as $v_{k+1}=T_kv_k+R_k(v_k)$ with $\|T_kv\|\le\tau\|v\|$. Premise~1 is: in the class (P1-slave), $\|R_k(0)\|\le c_0/u_k$ and $R_k$ is Lipschitz on the ball $\|v\|\le r$ with constant $\ell/u_k+2\alpha r$ (equivalently, in size form, $\|R_kv\|\le c_0/u_k+(\ell/u_k)\|v\|+\alpha\|v\|^2$); moreover the remainder before projection, $R_{f,k}$, has the form $R_{f,k}(v)=s_k+q_k(v)$ with $\varphi(s_k)=0$ and $|\varphi(q_k(v))|\le\alpha\|v\|^2$. The source $s_k$ is a relative perturbation of size $c_0g^2=c_0/u$, and for the local projection of type A it lies in $\ker\varphi$.
+
+\paragraph{The window.} A closed ball $\|v\|\le r$ in $\ker\varphi$ is mapped into itself by a contraction if
+\[
+\frac{c_0}{u}+\Bigl(\tau+\frac{\ell}u+2\alpha r\Bigr)r\le r,\qquad \tau+\frac{\ell}{u}+2\alpha r<1
+\]
+(\lt{WindowCond}). Such an $r$ exists if and only if $c_0/u\le\kappa^2/(8\alpha)$ with $\kappa=1-\tau-\ell/u$, and then $r=\kappa/(4\alpha)$ works (\lt{window\_\allowbreak{}necessary}, \lt{window\_\allowbreak{}sufficient}). In size form the condition is $c_0/u+(\tau+\ell/u)r+\alpha r^2\le r$, which is solvable if and only if $4\alpha c_0/u\le\kappa^2$ (\lt{SharpCond}, \lt{sharp\_\allowbreak{}necessary}, \lt{sharp\_\allowbreak{}sufficient}); the Lipschitz form implies the size form (\lt{lipschitz\_\allowbreak{}form\_\allowbreak{}implies\_\allowbreak{}sharp}). For step-dependent maps that preserve the ball and contract on it, there is a unique two-sided infinite orbit in the ball (the \emph{class orbit}; \lt{window\_\allowbreak{}from\_\allowbreak{}loc\_\allowbreak{}A}, \lt{exists\_\allowbreak{}unique\_\allowbreak{}entire\_\allowbreak{}orbit}, \lt{sharp\_\allowbreak{}entire\_\allowbreak{}orbit}), and orbits pulled back from the fine lattice converge to it without a subsequence, independently of the bare values (\lt{orbit\_\allowbreak{}tendsto}, \lt{limit\_\allowbreak{}independent}). A two-sided orbit with $\|v_{k+1}\|\le C+\lambda\|v_k\|$, $\lambda=\tau+\alpha r<1$, that stays bounded lies in the small ball $\|v_k\|\le C/(1-\lambda)$ (\lt{orbit\_\allowbreak{}in\_\allowbreak{}small\_\allowbreak{}ball}). Premise~2 is the window condition at $u=u_\star$ with the numbers of premise~1.
+
+\paragraph{Derivation of (S2).} The increment of the inverse coupling in step $k$ is $u_{k+1}-u_k=-b+d_k+u_k\varphi(R_{f,k}v_k)+r^{\mathrm{lf}}_k$, where $d_k$ is the difference between the one-step coefficient of the small-field flow and its one-loop value, $|d_k|\le\delta$. With $v_k$ on the class orbit, $\|v_k\|\le(c_0/u_k)/(1-\lambda)$, and $\varphi(s_k)=0$, so
+\[
+|r^{\mathrm{sf}}_k|=|d_k+u_k\varphi(q_k(v_k))|\le\delta+u_k\,\alpha\,\frac{c_0^2}{(1-\lambda)^2u_k^2}=\delta+\frac{C_2}{u_k},\qquad C_2=\frac{\alpha c_0^2}{(1-\lambda)^2}
+\]
+(\lt{small\_\allowbreak{}rem\_\allowbreak{}kernel}, \lt{small\_\allowbreak{}rem\_\allowbreak{}kernel\_\allowbreak{}unit}). The projected remainder takes values in $\ker\varphi$ and carries no increment of the coupling (\lt{projected\_\allowbreak{}remainder\_\allowbreak{}zero}), so (S2) must be applied to $R_f$.
+
+\section{The smoothed background and the background bounds}\label{app:background}
+
+\paragraph{Background.} For a coarse configuration $\omega\in E_m$ with all values in $\mathrm{SU}(2)$, the smoothed background $B(\omega)$ is a fine configuration that minimises the Wilson action subject to the block constraint that its block average equals $\omega$; it is a function of $\omega$, and so is everything computed from it. The field strength of $B$ at a point $x$ is the collection of the six $\mathfrak{su}(2)$-valued plaquette angles at $x$, and $f_1(x)\ge0$ is the largest of its invariants under gauge transformations and the hypercubic group, normalised so that a background with a uniform flux of angle $\theta$ in one plane has $f_1=\theta$. On the complement of the domain of $B$ we extend $f_{m,x}$ by a measurable value; the theorems hold for any measurable $f_{m,x}$ on $E_m$.
+
+\paragraph{The gap.} The constrained Hessian $H_c(B)$ is the Hessian of the Wilson action at $B$ on fluctuations that satisfy the linearised block constraint and a gauge condition, and $\lambda_{\min}$ is its smallest eigenvalue. For families of constant backgrounds with a parameter $\theta$ (flux in one or several planes, (anti-)self-dual flux, and three block averages), hypothesis (H-gap) is $\lambda_{\min}(\theta)\ge\lambda_0(1-\theta/\theta_F)$, where $\lambda_0$ is the value at $\theta=0$ and $\theta_F$ the zero of the linear interpolation for the family $F$. It holds at every point of a table of $\lambda_{\min}$ computed on $8^4$ (\tagC; each point checked in \lt{HessianGap}); between the points it is a reading. Expressed in $f_1$, the bound becomes uniform over the families, $\lambda_{\min}\ge\lambda_0(1-f_1/f_\star)$, with $f_\star$ the smallest value of $f_1$ at $\theta=\theta_F$ among the families $F$ (\lt{uniform\_\allowbreak{}in\_\allowbreak{}f1}).
+
+\paragraph{Background map and regularity.} Let $c_Q$ be the operator norm of the constraint. Then $\lambda_{\min}\|\delta B\|\le c_Q\|\delta V\|$, and hence
+\[\|\delta B\|\le\frac{c_Q\|\delta V\|}{\lambda_0(1-f_1/f_\star)}\]
+(\lt{background\_\allowbreak{}lipschitz}): the background is Lipschitz in the coarse variable with constant $K_{\mathrm{bg}}(f_h)=c_Q/(\lambda_0(1-f_h/f_\star))$ on the event $f_1\le f_h$, for $f_h<f_\star$. In a tree gauge (a maximal tree of links in each block is set to the identity; it exists and is unique, \lt{TreeGauge}), gauge invariants depend only on the non-tree links (\lt{TreeGaugeLocality}), and the background coordinates on the non-tree links obey a step $v_{k+1}=T_kv_k+R_kv_k$ of the same quadratic type as in premise~1, with constants $\tau_{\mathrm{bg}}$, $\ell_{\mathrm{bg}}$, $\alpha_{\mathrm{bg}}$ in place of $\tau$, $\ell/u$, $\alpha$ (\lt{NontreeBackground}). The regularity step bounds the change of a product of observables under a shift $\delta$ by $(\sum_iL_i)K|\delta|+2|I|\,\mu(G^c)$, where $L_i$ are the Lipschitz constants of the observables, $|I|$ their number and $K$ the Lipschitz constant of the block variables in the shift on the small-field event $G$ (\lt{RegularityStep}); with $K(\eta)=c_{\mathrm{sh}}(\tau_{\mathrm{bg}}+\ell_{\mathrm{bg}}+2\alpha_{\mathrm{bg}}r(\eta))^{k_0}$, where $c_{\mathrm{sh}}$ is the Lipschitz constant of the initial shift, $k_0$ the number of steps and $r(\eta)$ the radius of the background ball on an event of probability $\ge1-\eta$, this gives (H-reg) in the split form (\lt{RegularityConstant}, \lt{RegularityRadius}, \lt{equicontinuous\_\allowbreak{}from\_\allowbreak{}gap}). Premise~8 is (H-gap) together with the values of $c_Q$, $\lambda_0$, $f_\star$, $\tau_{\mathrm{bg}}$, $\ell_{\mathrm{bg}}$, $\alpha_{\mathrm{bg}}$, which are not established; premise~7 is the uniformity in the lattice of the small-field events used here and the decay of the lattice term $\tau_n$.
+
+\paragraph{The floor.} On the small-field event the plaquette angle $\psi$ satisfies $\beta(1-\cos\psi)\le y_h$. Analyticity of the background expansion requires $\psi\le\theta_c$, where $\theta_c$ is the analyticity angle of that expansion (distinct from the zeros $\theta_F$ above), which holds for every such $\psi$ if and only if $y_h\le\beta(1-\cos\theta_c)$ (\lt{AnalyticFloor}).
+
+\section{The large-field polymer gas}\label{app:gas}
+
+\paragraph{Polymer gases.} A polymer is a finite connected set of plaquettes (two plaquettes are adjacent if they share a link); a family of polymers is compatible if its members are pairwise non-adjacent; the partition function is $Z=\sum\prod_\gamma z(\gamma)$ over compatible families. The large-field part of the effective weight, a product over large plaquettes, expands into such a gas whose polymers are the connected components (\lt{GasExpansion}, \lt{PolymerComponents}). The Kotecký--Preiss (KP) condition~\cite{KP} in the form used here is the site sum $\sum_{\gamma\ni x}|z(\gamma)|e^{2|\gamma|}\le1$ for every site $x$; it implies Dobrushin's condition, hence $Z>0$ and two-sided bounds on $\log Z$ and on the free-energy density (\lt{KPToDobrushin}, \lt{PolymerGasDobrushin}, \lt{PolymerGasKP}, \lt{PolymerGasFreeEnergy}). The activity norm $z_k$ of \S\ref{sec:chain} is a bound on such site sums after $k$ steps, and the supply $w_k$ is the activity created in step $k$ by large plaquettes that appear in that step.
+
+\paragraph{Two colours and boxes.} For a set $X$ of large plaquettes, a link is a \emph{defect} if at least $m_{\mathrm d}$ of the six plaquettes containing it lie in $X$, and the \emph{thin} plaquettes of $X$ are those containing no defect. The encoding $X\mapsto(\text{thin plaquettes},\text{defects})$ is injective and preserves connectedness for the two-colour adjacency (\lt{enc\_\allowbreak{}connected}). On $\mathbb Z^4$ the numbers of neighbours are $20$ (plaquette to plaquette), $44$ (plaquette to defect), $66$ (defect to plaquette) and $122$ (defect to defect), checked by \lt{decide} (\lt{LatticeTwoColorKP}). Premise~9 at the plaquette level is the activity bound (H-2col): $|z(X)|\le\varepsilon_0^{\#\text{thin}}\prod_{\text{defects }e}\chi(e,X\cap\mathcal P_e)$ with the label sum $\sum_S\chi(e,S)\le\varepsilon_L$ over subsets $S$ of the six plaquettes $\mathcal P_e$ at $e$, or the weaker site-sum form (H-sum): $\sum_{X\ni x}|z(X)|e^{2|X|}\le1$. Under (H-2col), if $\xi_a(1+\vartheta_0)^{d_{a0}}(1+\vartheta_1)^{d_{a1}}\le\vartheta_a$ for both colours $a$ (with the neighbour numbers $d$ above and $\xi$ the colour bounds), then the KP site sums are at most $\vartheta$ of the root colour, and Dobrushin's condition follows (\lt{encoded\_\allowbreak{}kp\_\allowbreak{}site}, \lt{lattice\_\allowbreak{}kp\_\allowbreak{}site}, \lt{lattice\_\allowbreak{}dobrushin}). The quantities $\eta_m$ and $r(\eta)$ of the chain are per box of block factor~$2$ ($16$ sites, $96$ plaquettes with base point in the box, $64$ links). The box image of a plaquette polymer is the set of boxes of its base points; the box activity is the sum of the activities of the plaquette polymers with a given image, and the box KP site sum equals the corresponding sum over plaquette polymers (\lt{box\_\allowbreak{}hsite\_\allowbreak{}eq\_\allowbreak{}face\_\allowbreak{}sum}), so (H-sum) at the plaquette level gives the box KP condition (\lt{box\_\allowbreak{}hsite\_\allowbreak{}of\_\allowbreak{}face\_\allowbreak{}sum}). The bridge bounds the total activity of the plaquette polymers that meet a box by $96\vartheta_0+384\vartheta_1$ (\lt{box\_\allowbreak{}event\_\allowbreak{}bridge}); in this way KP and Dobrushin are applied at the plaquette level and the events of a box are read from them.
+
+\paragraph{Weights (premise~3).} A weight $c_{\mathrm v}|\Gamma|+c_{\mathrm s}|\partial\Gamma|$ carried from scale to scale on a large set $\Gamma$ admits no stationary choice without a fresh surface cost (\lt{no\_\allowbreak{}stationary}, \lt{supply\_\allowbreak{}lower}), while a weight regenerated at each scale from the current field needs no boundary weight (\lt{regenerated\_\allowbreak{}all\_\allowbreak{}steps}). The large-set regulator counts full blocks and boundary (\lt{LargeSetRegulator}, \lt{BoundaryRegulator}). Premise~3 is a lower bound on the effective density on large coarse fields, uniform in the scale.
+
+\paragraph{Rarity and supply (premise~4).} For the plaquette variable $Y$ and $t\ge0$, $\Pr(Y\ge y)\le\E[e^{tY}]e^{-ty}$ (\lt{rarity\_\allowbreak{}chernoff}). Premise~4 is a bound $\E[e^{\sigma Y}]\le m_1(\sigma)$ per plaquette for one fixed $\sigma>0$, uniform in the scale (in the computations, $Y$ is close to a Gamma variable of shape $3/2$ and scale $1/2$, $m_1(t)=(1-t/2)^{-3/2}$ for $t<2$, \tagC). Let $y_s(u)$ be the threshold, as a function of the inverse coupling, above which a plaquette created in a step counts as large. The supply bound $w_k\le\Phi(u_k)$ with $\Phi(u)=n_p\,m_1(\sigma)\,e^{-\sigma y_s(u)}$ follows from the Chernoff bound at $t=\sigma$ and a union bound over the $n_p$ plaquettes of a block (\lt{supply\_\allowbreak{}union}). The threshold $y_s(u)$ enters only through (S5); the threshold $y_h(m)$ of Definition~\ref{def:twostage} is a number per scale and enters only through $P_1(m)$. Theorem~\ref{thm:chain} does not relate them; if $y_h(m)$ is taken to be $y_s(u)$ at the inverse coupling $u$ of scale $m$, the same moment bound gives $P_1(m)\le m_1(\sigma)e^{-\sigma y_h(m)}$.
+
+\paragraph{Moving interval (premise~5).} If the threshold grows like $y_s(u)=(\ln u)/\sigma+y_0$, then $\Phi(u)=\Phi_0/u$ with $\Phi_0=n_p\,m_1(\sigma)\,e^{-\sigma y_0}$ (\lt{log\_\allowbreak{}supply}). With $W(u)=2A\Phi(u)/(1-\rho)$, $\rho<1$ and $4BA\Phi_0/u_\star\le(1-\rho)^2/2$, $W$ is non-increasing, satisfies the moving invariant interval of (S6) for every $u\ge u_\star$, and $uW(u)=2A\Phi_0/(1-\rho)$ (\lt{moving\_\allowbreak{}of\_\allowbreak{}log\_\allowbreak{}threshold}). A coefficient $\mathcal D(u)=\mathcal D_1u$ thus gives $\mathcal D(u)W(u)\le\Upsilon$ with $\Upsilon=2A\mathcal D_1\Phi_0/(1-\rho)$ (\lt{movingD\_\allowbreak{}of\_\allowbreak{}moving}); a coefficient growing like $u\,y_s(u)$ is handled by $y_s(u)=2(\ln u)/\sigma+y_0$ (\lt{growing\_\allowbreak{}coefficient\_\allowbreak{}threshold}). Premise~5 is that the coefficient of the actual gas has one of these forms and that the margin of (S6) holds.
+
+\section{Support of (H-\texorpdfstring{$\beta$}{beta}), (H-reg) and (H-sf)}\label{app:support}
+
+The numbers in this appendix are floating-point computations (\tagC). They support the hypotheses at one loop, at one step or in the free field; they are not non-perturbative statements.
+
+\paragraph{(H-$\beta$).} In $\beta$ units the allowed one-step decrease for block factor $2$ is $4\cdot[b/2,3b/2]=[2b,6b]\approx[0.129,0.386]$, centred at $8b_0\ln2\approx0.2575$. Table~\ref{tab:hbeta} compares one-loop data. Read with a renormalised coupling (a Schrödinger-functional coupling~\cite{LNWW} and a mixed-derivative variant), every step falls in the window. Read as the coefficient of the blocked action on a periodic net, it does not. Hypothesis (H-$\beta$) does not fix the definition of $u_k$ (Appendix~\ref{app:coupling}), so the first reading is admissible; we have not written out the corresponding one-step bound.
+
+\begin{table}[ht]\centering\small
+\caption{One-loop one-step decreases of $\beta$ for block factor $2$ (\tagC), and their ratio to the centre $8b_0\ln2$ of the window; the window is the ratio range $[0.5,1.5]$.}\label{tab:hbeta}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.46\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}@{}}\toprule
+coupling & steps & ratio to centre\\\midrule
+renormalised $\beta_R$, doublings $4\to8$, $8\to16$, $12\to24$ & $0.283$, $0.279$, $0.273$ & $1.10$, $1.08$, $1.06$\\
+mixed-derivative $M_R$, doublings $4\to8$, $8\to16$ & $0.373$, $0.294$ & $1.45$, $1.14$\\
+blocked action, periodic net, one step & $0.745$--$1.136$ & $2.9$--$4.4$\\
+same, non-abelian part only & $0.4325$ & $1.68$\\\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{(H-reg).} In free abelian gauge theory (Feynman gauge, $g^2=1$), we computed for the linearised iterated path average the variance of the phase $\Theta$ of a coarse plaquette, and $\omega(\delta)=(\E|\Theta(\cdot+\delta)-\Theta|^2)^{1/2}$.
+\begin{itemize}[leftmargin=2em]
+\item For sharp lines (no transverse averaging) the variance grows proportionally to $H/a$: $1.37$, $3.26$, $7.17$, $15.07$ for $H/a=2,4,8,16$. This is the perimeter divergence.
+\item For the averaged family with block factor $2$, $\omega(a)$ decreases by a factor of about $0.75$ per step: $0.729$, $0.546$, $0.406$, $0.302$ for $H/a=2,4,8,16$ (periodic boxes of $32^4$, and $64^4$ for the last value). The variance is $0.285$, $0.188$, $0.126$, $0.089$; its ratios, $0.66$, $0.67$, $0.71$, move towards $1$, and we have not determined whether it has a positive limit. On the smaller box the last variance comes out $33\%$ lower, while $\omega(a)$ changes by $8\%$.
+\end{itemize}
+The data are consistent with a split of $\omega^2$ into a lattice-scale part that decays geometrically with the number of steps and a part continuous in $\delta/H$. This is the split form $|s_n(d)-s_n(d')|\le\tau_n+\Omega(\operatorname{dist}(d,d'))$ of Theorem~\ref{thm:chain}. The one-step bound of Appendix~\ref{app:background} reduces (H-reg) to this linearised quantity plus background, remainder and large-field terms; the large-field term is not controlled here.
+
+\paragraph{(H-sf).} Writing large coarse plaquettes as $y=\beta_m(1-\tfrac12\operatorname{tr}\omega_p)\ge y_h$, a one-plaquette fit gives $P_1(y)\approx4.7\,e^{-2y}$, and per box of block factor $2$ the mass of the complement of the two-stage event is $\eta\approx96P_1(y_h)+16S_{\mathrm{bg}}$, where $S_{\mathrm{bg}}$ is the probability per point that the background invariant exceeds $f_h$. The value of $S_{\mathrm{bg}}$ is a statistical upper bound from smoothed fields, uncorrected for autocorrelation.
+
+\section{Reflection positivity at finite \texorpdfstring{$n$}{n}}\label{app:rp}
+
+Let $P$ be a site plane of $\Lambda_n$ with partner plane $P+L/2$ (Definition~\ref{def:positive}); for a plane midway between site planes the argument is the link version of~\cite{OSe} and is not repeated here. Write $U=(U_0,U_+,U_-)$, where $U_0$ is the configuration on the links lying in the two planes, $U_+$ on the links in the open positive slab or joining it to the planes, and $U_-$ on the corresponding links of the negative slab. The reflection $\Theta_{\mathrm{fine}}$ maps the links of $U_+$ onto those of $U_-$ (reversing the orientation of links orthogonal to $P$) and fixes the links of $U_0$ as a set. Every plaquette lies in the closed positive slab or in the closed negative slab, so the Wilson weight factorises as
+\[
+e^{-\beta S(U)}=k(U_0)\,h(U_0,U_+)\,h(U_0,\Theta U_-),
+\]
+where $k(U_0)$ collects the plaquettes inside the two planes and $h(U_0,U_+)$ those of the positive slab; the Haar measure is a product and is invariant under $\Theta_{\mathrm{fine}}$ (\tagP; site reflection positivity of the Wilson action is~\cite{OSe}). For a bounded measurable $f$ of $(U_0,U_+)$, the change of variables $U_-\mapsto\Theta U_-$ and Lemma~\ref{lem:site} give $\int f(\Theta_{\mathrm{fine}}U)f(U)\,d\mu_n\ge0$; this is (RP1). Condition (RP2) is (B4) together with $\nu_{n,m}=(V_{n\to m})_*\mu_n$. For (RP3), a positive-time configuration $x_{ab}$ pairs a reflected configuration with an unreflected one, and by (B4), (B5) its lattice value is $\int g_a(\Theta_{\mathrm{fine}}U)g_b(U)\,d\mu_n$ with $g_a=\prod_iF_i\circ V_{n\to m_i}\circ\tau_{-s_i}$ depending only on $S_n^+$. Lean checks the passage from (RP1)--(RP3) to finite-$n$ positivity of the push-forward and of the matrices (\lt{coarse\_\allowbreak{}rp\_\allowbreak{}of\_\allowbreak{}fine\_\allowbreak{}support}, \lt{matrix\_\allowbreak{}rp\_\allowbreak{}of\_\allowbreak{}fine\_\allowbreak{}support}). Positivity in coarse reflections at a cofinal set of scales (for instance every second scale) already gives positivity at all scales in the limit, if the coarse block maps commute with the reflections and pull positive-time observables back to positive-time observables (\lt{rp\_\allowbreak{}down}).
+
+
+\begin{thebibliography}{99}
+\bibitem{B98} T.~Bałaban, Comm.\ Math.\ Phys.\ 98 (1985) 17--51; 99 (1985) 75--102 (titles only).
+\bibitem{B99} T.~Bałaban, Comm.\ Math.\ Phys.\ 99 (1985) 389--434; 102 (1985) 277--309 (titles only).
+\bibitem{B119} T.~Bałaban, Comm.\ Math.\ Phys.\ 109 (1987) 249--301; 116 (1988) 1--22; 119 (1988) 243--285 (abstracts).
+\bibitem{B122a} T.~Bałaban, Comm.\ Math.\ Phys.\ 122 (1989) 175--202 (abstract).
+\bibitem{B122b} T.~Bałaban, \emph{Large field renormalization.~II}, Comm.\ Math.\ Phys.\ 122 (1989) 355--392 (abstract and introduction, pp.~355--356).
+\bibitem{BBS} R.~Bauerschmidt, D.~C.~Brydges, G.~Slade, \emph{Introduction to a Renormalisation Group Method}, Lecture Notes in Math.\ 2242, Springer, 2019, arXiv:1907.05474.
+\bibitem{JW} A.~Jaffe, E.~Witten, \emph{Quantum Yang--Mills theory}, in: The Millennium Prize Problems, Clay Mathematics Institute, 2006, 129--152.
+\bibitem{KP} R.~Kotecký, D.~Preiss, \emph{Cluster expansion for abstract polymer models}, Comm.\ Math.\ Phys.\ 103 (1986) 491--498 (not consulted directly).
+\bibitem{LNWW} M.~Lüscher, R.~Narayanan, P.~Weisz, U.~Wolff, \emph{The Schrödinger functional --- a renormalizable probe for non-abelian gauge theories}, Nucl.\ Phys.\ B 384 (1992) 168--228 (equations (3.28), (3.36) and the one-loop table).
+\bibitem{OS} K.~Osterwalder, R.~Schrader, \emph{Axioms for Euclidean Green's functions}, Comm.\ Math.\ Phys.\ 31 (1973) 83--112; II, 42 (1975) 281--305 (not consulted directly).
+\bibitem{OSe} K.~Osterwalder, E.~Seiler, \emph{Gauge field theories on a lattice}, Ann.\ Phys.\ 110 (1978) 440--471 (not consulted directly).
+\end{thebibliography}
+\end{document}
