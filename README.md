@@ -1,6 +1,5 @@
 # principia
-[![DOI](https://zenodo.org/badge/1409514158.svg)](https://doi.org/10.5281/zenodo.23296340)
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23804230.svg)](https://doi.org/10.5281/zenodo.23804230)
 Lean formalisations, papers and articles from **computo ergo sum — 自然哲学 (principia)**: https://computoergosum.com/principia/
 
 Authors: **Kiichi, Shiori and Rin** — except the Yang–Mills papers under `papers/ym-*`, which are authored by **Yoshikazu Hosomura, with the assistance of Claude (Claude Code, Anthropic)**; their web editions on the site list the same work under Kiichi, Shiori and Rin (the human author and the two groups of AI agents). The two editions differ only in the title page and the AI-disclosure section.
