@@ -1,0 +1,61 @@
+# axioms of principia-ym-hierarchical-chain-2026-10-15 — 5 files; all declarations depend only on propext, Classical.choice, Quot.sound (or on no axioms)
+
+# LatticeGaugeClassResidualTelescoping.lean (record shipped with the paper)
+'LatticeGaugeClassResidualTelescoping.telescoping_residual' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeClassResidualTelescoping.telescoping_residual_multi' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LatticeGaugeClassResidualTelescoping.geometric_part_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeClassResidualTelescoping.inv_sq_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeClassResidualTelescoping.inv_sq_sum_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeClassResidualTelescoping.uniform_deviation' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeHierarchicalChainGeneral.lean (record shipped with the paper)
+'LatticeGaugeHierarchicalChainGeneral.tube_exit_of_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalChainGeneral.tube_exit_top' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalChainGeneral.cell_descent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalChainGeneral.chain_top' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalChainGeneral.mk_full_chain_general' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalChainGeneral.steps_general_at_128' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalChainGeneral.steps_general_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalChainGeneral.steps_general_le_linear' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LatticeGaugeHierarchicalChainGeneral.row_lt_req_of_columns' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalChainGeneral.uniform_columns' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalChainGeneral.uniform_columns_numeric' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LatticeGaugeHierarchicalChainGeneral.uniform_columns_128' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeHierarchicalShapeFlow.lean (record shipped with the paper)
+'LatticeGaugeHierarchicalShapeFlow.quarticStep_fixed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalShapeFlow.quarticStep_iterate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalShapeFlow.shapeStep_fixed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalShapeFlow.shapeStep_contract' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalShapeFlow.shapeStep_ratio_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalShapeFlow.shapeStep_quartic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalShapeFlow.sextic_fixed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalShapeFlow.flow_coefficient' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalShapeFlow.affine_contraction' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalShapeFlow.tube_iterate' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeHierarchicalTubeChain.lean (record shipped with the paper)
+'LatticeGaugeHierarchicalTubeChain.tube_exit_of_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalTubeChain.tube_exit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalTubeChain.chain_compose' depends on axioms: [propext, Quot.sound]
+'LatticeGaugeHierarchicalTubeChain.tube_weight_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalTubeChain.cell_descent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalTubeChain.mk_full_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalTubeChain.steps_numeric' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalTubeChain.mk_full_chain_64' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+# LatticeGaugeHierarchicalUpperTube.lean (record shipped with the paper)
+'LatticeGaugeHierarchicalUpperTube.tube_exit_of_lt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalUpperTube.tube_exit_top' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalUpperTube.cell_descent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalUpperTube.chain_top' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalUpperTube.steps_numeric_128' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalUpperTube.steps_numeric_64' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalUpperTube.mk_full_chain_128' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LatticeGaugeHierarchicalUpperTube.union_tube_step' depends on axioms: [propext, Classical.choice, Quot.sound]
