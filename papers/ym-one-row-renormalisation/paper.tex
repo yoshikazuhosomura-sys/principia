@@ -6,6 +6,7 @@
 \usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{booktabs}
+\usepackage{array}
 \usepackage{longtable}
 \usepackage{microtype}
 \usepackage{enumitem}
@@ -33,7 +34,7 @@
 
 \title{A one-dimensional model of SU(2) convolution renormalisation: the curvature term $2/5$, the prefactor fixed point $37/76$, and a shape remainder uniform in the number of steps}
 \author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
-\date{2026-10-15}
+\date{2026-10-30 (version~2; version~1: 2026-10-15)}
 
 \begin{document}
 \maketitle
@@ -55,9 +56,10 @@ The finite-group skeleton, the algebra of every leading-order coefficient and th
 The existence of a four-dimensional quantum Yang--Mills theory with a mass gap is one of the Millennium Prize Problems of the Clay Mathematics Institute (\url{https://www.claymath.org/millennium/yang-mills-the-maths-gap/}).
 This note does not address that problem.
 It studies one block-spin step in a one-dimensional toy model: four $\SU$ plaquettes in a row, with two overlapping loops held fixed and the inner holonomies integrated out.
-The model and its one-loop couplings are set out in the textbook [KSR, Chapter 15-06], and the one-step remainder with its computed constant in [KSR, Chapter 15-03, \S04].
-This note collects the statements, gives the arguments, and lists what is checked in Lean~4.
-Beyond [KSR] it adds, in Proposition~\ref{prop:onestep}, the constant $C=0.00182$ and the $B_{\min}=1000$ column of Table~\ref{tab:C} (the one-step inequality itself and the constants $C=0.0108/0.0036/0.00076$ are in [KSR, 15-06, Theorem~U] and [KSR, 15-03, \S04]), the first-order terms of the $\psi^6$ and $\psi^8$ coordinates, the total-variation estimate and the value of $\gamma_4^*$; these are marked where they occur.
+This note defines the model, states the results with their arguments, and lists what is checked in Lean~4.
+The definitions, the one-loop couplings and the one-step constants are collected in Table~\ref{tab:model} at the end of Section~\ref{sec:model}; the derivation of the couplings is in Appendix~\ref{app:oneloop} and that of the constants in Appendix~\ref{app:const}.
+The numerical values were computed by the authors with the procedures described in Appendices~A and~B.
+A broader account in Japanese, which is not needed for reading this note, is the authors' online textbook [KSR].
 
 \section{The model}\label{sec:model}
 
@@ -130,6 +132,27 @@ For the flat Gaussian this is the semigroup property; on $\SU$ the Van Vleck pre
 Theorem~\ref{thm:class} (Section~\ref{sec:thm2}) follows the one-step map: shapes contract, the tree coupling is divided by $5$, and the prefactor power has an attracting value $37/76$ (read from $\psi^4$); on the attracting class the ratio is $2+(2/3)/B$, the same leading value as for the heat kernel, and a ratio-two action does not stay ratio-two.
 Theorem~\ref{thm:U} (Section~\ref{sec:thm3}) controls the remainder: in a projected version of the model and inside a box around the attracting class, the distance to the class after $n$ steps is at most $(17/625)^nr_0+C/((5-17/625)B_n)$, with the final scale $B_n$ only, for any number of steps taken from large $B_0$.
 The abelian case is carried along as a control throughout: there the inhomogeneous terms vanish and the attracting class is the Villain action.
+
+\paragraph{Summary of the model and of its numbers.}
+Table~\ref{tab:model} collects the definitions, the one-loop couplings and the one-step constants used in the rest of the paper, with the place where each is derived.
+
+\begin{table}[h]
+\centering\small
+\caption{The model, its one-loop couplings and the one-step constants. ``Exact'' means an identity for the model as defined; ``leading order'' means the Laplace expansion as $\beta\to\infty$ (or $t\to0$); ``computed'' means evaluated from explicit integrals and series in floating point.}\label{tab:model}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.53\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
+\toprule
+item & statement & grade, derivation \\ \midrule
+model & four $\SU$ plaquettes in a $4\times1$ strip, Haar independent in a maximal-tree gauge; $W_a=P_1P_2P_3$, $W_b=P_2P_3P_4$ fixed; $w(W_a,W_b)=\int G(U)f(W_aU^{-1})f(U^{-1}W_b)\,dU$, $G=f*f$ & exact; \eqref{eq:w}, Appendix~\ref{app:wilson} \\
+couplings & $-\log w=\mathrm{const}+\kappa_a(\theta_a^2+\theta_b^2)+\kappa_{ab}\theta_{ab}^2+O(\theta^4)$ & definition; \eqref{eq:kappa} \\
+tree ratio & $\kappa_{ab}/\kappa_a=2$ for every action & exact (Gaussian minimum); \eqref{eq:tree} \\
+Wilson, $f=e^{\beta\cos\psi}$ & $\kappa_a=\tfrac18\langle\beta\cos\psi\rangle-\tfrac1{12}\langle\beta^2\sin^2\psi\rangle$, $\kappa_{ab}=\tfrac1{24}\langle\beta^2\sin^2\psi\rangle$; $40\kappa_a=\beta-1+O(\beta^{-1})$, $20\kappa_{ab}=\beta-\tfrac12+O(\beta^{-1})$ & moments exact, values leading order; Appendix~\ref{app:wilson} \\
+heat kernel, $f=p_t$ & $40\kappa_a=1/t-\tfrac{13}{15}+O(t)$, $20\kappa_{ab}=1/t-\tfrac8{15}+O(t)$, ratio $2+\tfrac{2t}3+O(t^2)$ & leading order; Appendix~\ref{app:hk} \\
+$\mathrm{U}(1)$ & Villain: ratio $2$ (up to winding terms); cos: ratio $2+0.2/\beta+O(\beta^{-2})$ & Section~\ref{sec:oneloop} \\
+one-step map & $f'=[(f*f)*f^2]^{1/2}$ on the diagonal $W_a=W_b$ & definition; \eqref{eq:step} \\
+one-step remainder & $r(h')\le\tfrac{17}{625}r(h)+C/B$ for $B\ge32$, $r(h)\le r_{\mathrm{box}}$: $C=0.0108$ ($r_{\mathrm{box}}=0.05$), $0.00355$ ($0.01$), $0.00182$ (on the class); sharp value on the class as $B\to\infty$: $C_0\approx0.000759$ & paper argument with computed constants; Proposition~\ref{prop:onestep}, Appendix~\ref{app:const} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Loop couplings at one loop}\label{sec:oneloop}
 
@@ -308,7 +331,7 @@ so the prefactor powers obey the affine maps
 \[
 \gamma_k'=L_k(\gamma_k-1)+I_k,\qquad L_k=\frac{4^k+1}{25^k},\quad I_k=\frac{1+25^{-k}}2 .
 \]
-For $k=2$: $\gamma'=(17\gamma+296)/625$, a contraction with factor $17/625$ and unique fixed point $\gamma^*=37/76$. In general $\gamma_k^*=\dfrac{25^k-2\cdot4^k-1}{2(25^k-4^k-1)}$, so $\gamma^*_1=2/5$, $\gamma^*_3=1937/3890$, $\gamma^*_4=12191/24398$ (this value is not in [KSR]; it is added in this paper), and $\tfrac12-\gamma_k^*=4^k/(2(25^k-4^k-1))\to0$. The heat kernel ($\gamma=1$) is mapped to $\gamma_2'=313/625$.
+For $k=2$: $\gamma'=(17\gamma+296)/625$, a contraction with factor $17/625$ and unique fixed point $\gamma^*=37/76$. In general $\gamma_k^*=\dfrac{25^k-2\cdot4^k-1}{2(25^k-4^k-1)}$, so $\gamma^*_1=2/5$, $\gamma^*_3=1937/3890$, $\gamma^*_4=12191/24398$, and $\tfrac12-\gamma_k^*=4^k/(2(25^k-4^k-1))\to0$. The heat kernel ($\gamma=1$) is mapped to $\gamma_2'=313/625$.
 \item \emph{Ratio on the attracting class.} On the fixed class $h^*$ (shape coordinate $(q/B)^*=37/(13680B)$), $D=2/5+O(B^{-1})$ and
 \[
 \frac{\kappa_{ab}}{\kappa_a}=2+\frac{2/3}{B}+O(B^{-2}).
@@ -385,7 +408,7 @@ h_2'=\tfrac{17}{625}h_2+\tfrac{74}{28125}+\frac1B\Bigl[-\tfrac{8}{3125}h_2+\tfra
 at fixed $h=O(1)$ (the leading part is Theorem~\ref{thm:class}(ii) for $k=2$). On the class $h^*$ this gives $(\gamma'_2-37/76)B\to-591986/69290625\approx-0.0085435$ (Lean: \code{first\_order\_at\_fixed\_point}, the substitution only); the computed extrapolation is $-0.0085438$.
 For an input whose shape deviates at order one, $h_2=xB$, a one-loop term $c\,x^2$ with $c=11168/15625\approx0.7148$ appears in the $O(1)$ coordinate (Lean: \code{quadratic\_shape\_coefficient}, the arithmetic only); computed fits give $0.7129$ to $0.7147$.
 
-\begin{proposition}[one-step inequality; paper argument with computed constants]\label{prop:onestep}
+\begin{proposition}[one-step inequality; paper argument with computed constants, Appendix~\ref{app:const}]\label{prop:onestep}
 In the projected model of Definition~\ref{def:proj}, for $\SU$, four plaquettes in a row and the diagonal definition: if $B\ge32$ and $r(h)\le r_{\mathrm{box}}$ then
 \[
 r(h')\le\tfrac{17}{625}\,r(h)+\frac{C}{B},
@@ -415,7 +438,7 @@ $0.05$ & $0.00509$ & $0.00568$ & $0.0108$ & $0.00524$\\
 \end{tabular}
 \end{table}
 
-The sharp value on the class as $B\to\infty$ is $C_0=16\times295993/6236156250\approx0.000759$ (the $\psi^4$ component of the $1/B$ term); the estimate at $B_{\min}=32$ is $2.4$ times $C_0$, at $B_{\min}=1000$ it is $1.04$ times. The constant $C=0.00182$ and the column $B_{\min}=1000$ of Table~\ref{tab:C} are not in the textbook [KSR]; they are added in this paper. The one-step inequality of Proposition~\ref{prop:onestep} itself, with $C=0.0108/0.0036/0.00076$, is in [KSR, 15-06, Theorem~U] and [KSR, 15-03, \S04].
+The sharp value on the class as $B\to\infty$ is $C_0=16\times295993/6236156250\approx0.000759$ (the $\psi^4$ component of the $1/B$ term); the estimate at $B_{\min}=32$ is $2.4$ times $C_0$, at $B_{\min}=1000$ it is $1.04$ times. The parts of each constant are listed in Table~\ref{tab:Cparts} of Appendix~\ref{app:const}.
 
 \begin{theorem}[uniform shape remainder]\label{thm:U}
 In the projected model of Definition~\ref{def:proj} ($\SU$, four plaquettes in a row, diagonal definition, coefficients up to $\psi^8$, analytic part of $\log f'$), let $B_0,B_1,\dots$ be the actual scales of successive steps and $r_n$ the distance after $n$ steps.
@@ -460,20 +483,22 @@ Inside the box the computed flow from three starts (the class point, the Gaussia
 \paragraph{Higher coordinates and the shape coordinates.}
 The first-order terms of the $\psi^6$ and $\psi^8$ coordinates are, in the same expansion,
 \begin{align*}
-h_3'&=\tfrac{13}{3125}h_3+\tfrac{7748}{44296875}+\tfrac1B\Bigl[\tfrac{288}{78125}h_2^2-\tfrac{56}{1171875}h_2-\tfrac{12}{15625}h_3+\tfrac{6984}{78125}h_4-\tfrac{236}{123046875}\Bigr],\\
-h_4'&=\tfrac{257}{390625}h_4+\tfrac{24382}{1845703125}+\tfrac1B\Bigl[\tfrac{864}{390625}h_2h_3-\tfrac{496}{615234375}h_2-\tfrac{28}{1953125}h_3-\tfrac{336}{1953125}h_4-\tfrac{202}{5537109375}\Bigr],
+h_3'&=\tfrac{13}{3125}h_3+\tfrac{7748}{44296875}\\
+&\quad+\tfrac1B\Bigl[\tfrac{288}{78125}h_2^2-\tfrac{56}{1171875}h_2-\tfrac{12}{15625}h_3+\tfrac{6984}{78125}h_4-\tfrac{236}{123046875}\Bigr],\\
+h_4'&=\tfrac{257}{390625}h_4+\tfrac{24382}{1845703125}\\
+&\quad+\tfrac1B\Bigl[\tfrac{864}{390625}h_2h_3-\tfrac{496}{615234375}h_2-\tfrac{28}{1953125}h_3-\tfrac{336}{1953125}h_4-\tfrac{202}{5537109375}\Bigr],
 \end{align*}
-the last in the projected model; on the class they give $(\gamma_3'-\gamma_3^*)B\to-0.0027597$ and $(\gamma_4'-\gamma_4^*)B\to-0.0016028$, smaller than the $\psi^4$ value, which is why the $\psi^4$ coordinate determines $C_0$. These first-order terms of the $\psi^6$ and $\psi^8$ coordinates are not in [KSR]; they are added in this paper.
+the last in the projected model; on the class they give $(\gamma_3'-\gamma_3^*)B\to-0.0027597$ and $(\gamma_4'-\gamma_4^*)B\to-0.0016028$, smaller than the $\psi^4$ value, which is why the $\psi^4$ coordinate determines $C_0$.
 The $\psi^4$ term of order $1/B$ is linear in $h$ and does not involve $h_4$; the large coefficient $42/125$ of $h_3$ is the part of the $\psi^6$ term brought down to $\psi^4$ by the Gaussian fluctuations.
 In the shape coordinates $\tilde r=r/B$, using $B'\ge B/5-0.17$, Proposition~\ref{prop:onestep} reads
 \[
 \tilde r'\le\tfrac{17}{125}\Bigl(1+\tfrac{0.9}{B}\Bigr)\tilde r+5\Bigl(1+\tfrac{0.9}{B}\Bigr)\frac{C}{B^2},
 \]
 so the contraction of the shape of the action is $17/125$ and the inhomogeneous term is of order $B^{-2}$.
-The distance $r$ controls the total variation between the single-loop measures at the same $B$, $\mathrm{TV}\lesssim r\,(15/(16B^2)+105/(64B^3)+945/(256B^4))$ at leading order; the converse fails, since high coefficients are invisible at width $B^{-1/2}$. This estimate is not in [KSR]; it is added in this paper.
+The distance $r$ controls the total variation between the single-loop measures at the same $B$, $\mathrm{TV}\lesssim r\,(15/(16B^2)+105/(64B^3)+945/(256B^4))$ at leading order; the converse fails, since high coefficients are invisible at width $B^{-1/2}$.
 
 \paragraph{U(1).}
-In the flat case $P=1$ and $h^*=0$; the explicit part has no constant term (the first-order $\psi^4$ term is $(6/25)h_3/B$) and the remainder is proportional to $\delta$, so the inhomogeneous term vanishes and one reads off $r'\le(17/625+0.06/B)\,r$ (read from the computed coefficients, as in [KSR, Chapter 15-06]; the coefficient $0.06/B$ is this paper's value; not a separate estimate on paper).
+In the flat case $P=1$ and $h^*=0$; the explicit part has no constant term (the first-order $\psi^4$ term is $(6/25)h_3/B$) and the remainder is proportional to $\delta$, so the inhomogeneous term vanishes and one reads off $r'\le(17/625+0.06/B)\,r$ (read from the computed coefficients, $0.06=\tfrac6{25}\cdot\tfrac{16}{64}$; not a separate estimate on paper).
 
 \section{What is machine-checked}\label{sec:lean}
 \sloppy
@@ -517,7 +542,7 @@ Theorem~\ref{thm:class}(i),(iv) & \code{tree\_quadratic\_split}\,{\scriptsize(FA
 \midrule
 Theorem~\ref{thm:class}(ii),(iii), Lemma~\ref{lem:rules} & \code{step\_k2}\,{\scriptsize(PF:42)}, \code{step\_k2\_heat}\,{\scriptsize(PF:45)}, \code{step\_k2\_fixed\_iff}\,{\scriptsize(PF:48)}, \code{step\_k2\_contract}\,{\scriptsize(PF:55)}, \code{fixed\_point\_general}\,{\scriptsize(PF:61)} ($x\ne0$, $x-y-1\ne0$), \code{fixed\_point\_k3}\,{\scriptsize(PF:68)}, \code{fixed\_point\_k4}\,{\scriptsize(PF:72)}, \code{half\_sub\_gamma\_star}\,{\scriptsize(PF:76)}, \code{transverse\_hessian}\,{\scriptsize(PF:81)} ($a,b,\sin a,\sin b\ne0$), \code{convolution\_prefactor}\,{\scriptsize(PF:89)} ($\sin a,\sin b,\sin(a+b),a+b\ne0$), \code{ratio\_coefficient}\,{\scriptsize(PF:117)}, \code{rem\_shape\_geometric}\,{\scriptsize(PF:95)} (PF). \\
 \midrule
-Section~\ref{sec:thm3} & \code{saddle\_ratio\_le}\,{\scriptsize(SRU:96)}, \code{saddle\_ratio\_three}\,{\scriptsize(SRU:100)}, \code{keff\_half\_le}\,{\scriptsize(SRU:112)} ($B>0$), \code{cov\_eigen}\,{\scriptsize(SRU:117)}, \code{pow\_sub\_pow\_norm\_le}\,{\scriptsize(SRU:71)} (in $\mathbb{C}$), \code{first\_order\_at\_fixed\_point}\,{\scriptsize(SRU:131)}, \code{quadratic\_shape\_coefficient}\,{\scriptsize(SRU:138)}; Theorem~\ref{thm:U}: \code{uv\_uniform}\,{\scriptsize(SRU:31)}, \code{stays\_in\_box}\,{\scriptsize(SRU:66)} (SRU; hypotheses as in the theorem). \\
+Section~\ref{sec:thm3} & \code{saddle\_ratio\_le}\,{\scriptsize(SRU:96)}, \code{saddle\_ratio\_three}\,{\scriptsize(SRU:100)}, \code{keff\_half\_le}\,{\scriptsize(SRU:112)} ($B>0$), \code{cov\_eigen}\,{\scriptsize(SRU:117)}, \code{pow\_sub\_\allowbreak{}pow\_norm\_le}\,{\scriptsize(SRU:71)} (in $\mathbb{C}$), \code{first\_order\_\allowbreak{}at\_fixed\_point}\,{\scriptsize(SRU:131)}, \code{quadratic\_shape\_\allowbreak{}coefficient}\,{\scriptsize(SRU:138)}; Theorem~\ref{thm:U}: \code{uv\_uniform}\,{\scriptsize(SRU:31)}, \code{stays\_in\_box}\,{\scriptsize(SRU:66)} (SRU; hypotheses as in the theorem). \\
 \midrule
 Lemma~\ref{lem:tele} & \code{uniform\_deviation}\,{\scriptsize(CRT:83)}, \code{telescoping\_residual}\,{\scriptsize(CRT:19)}, \code{telescoping\_residual\_multi}\,{\scriptsize(CRT:34)}, \code{geometric\_part\_le}\,{\scriptsize(CRT:41)}, \code{inv\_sq\_step}\,{\scriptsize(CRT:51)}, \code{inv\_sq\_sum\_le}\,{\scriptsize(CRT:62)} (CRT). \\
 \bottomrule
@@ -542,13 +567,109 @@ Lemma~\ref{lem:tele} & \code{uniform\_deviation}\,{\scriptsize(CRT:83)}, \code{t
 
 This note was produced with the assistance of AI agents. The observation, the informal proofs, the Lean~4 development including the formalised statements, the literature search, the reports on which this note is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code, across many separate sessions, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for rebuilding the Lean development from the distributed archive on a separate machine, for checking the claims of this note against the reports, and for preparing the distributed version; the independent rebuild was completed on 2026-10-15 (every file checked with \code{lake env lean} in the same environment on a separate session, rc=0, standard axioms only). The human author set the task, fixed the working rules and load limits, reviewed the record, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. In particular the analytic steps listed in \S\ref{sec:lean} are checked on paper only. This edition and the Lean development it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-one-row-renormalisation}, the development under \texttt{lean/\allowbreak{}ym-one-row-renormalisation}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section and in the naming of the agent that carried out the independent re-check.
 
+\appendix
+\section{Derivation of the one-loop couplings}\label{app:oneloop}
+
+\subsection{Wilson's action}\label{app:wilson}
+\paragraph{Reduction of the weight.}
+With $U=P_2P_3$ fixed, $P_3=P_2^{-1}U$ and $\mathrm{Re}P_2+\mathrm{Re}(P_2^{-1}U)=\langle1,P_2\rangle+\langle U,P_2\rangle=\langle1+U,P_2\rangle$, so $\int e^{\beta\langle1+U,P_2\rangle}dP_2=Z_1(\beta|1+U|)$ with $Z_1(b)=2I_1(b)/b$.
+The outer plaquettes give $\mathrm{Re}(W_aU^{-1})=\langle W_a,U\rangle$ and $\mathrm{Re}(U^{-1}W_b)=\langle W_b,U\rangle$, hence
+\[
+w(W_a,W_b)=\int Z_1(\beta|1+U|)\,e^{\beta\langle V,U\rangle}\,dU,\qquad V:=W_a+W_b .
+\]
+The kernel is a class function of $U$ ($|1+U|^2=2+2\mathrm{Re}U$), and $\langle V,gUg^{-1}\rangle=\langle g^{-1}Vg,U\rangle$, so $w$ depends only on $V_0:=\mathrm{Re}V=\mathrm{Re}W_a+\mathrm{Re}W_b$ and $r:=|\mathrm{Im}V|$, where $|V|^2=2+2\mathrm{Re}(W_aW_b^{-1})$ and $r^2=|V|^2-V_0^2$.
+Writing $U=(\cos\psi,\sin\psi\,\hat n)$ and integrating over $\hat n\in S^2$,
+\[
+w=\frac2\pi\int_0^\pi\sin^2\psi\;Z_1\bigl(2\beta\cos\tfrac\psi2\bigr)\,e^{\beta V_0\cos\psi}\,\frac{\sinh(\beta r\sin\psi)}{\beta r\sin\psi}\,d\psi .
+\]
+
+\paragraph{Moment formulas.}
+For small backgrounds, $\mathrm{Re}W=\cos(\theta/2)$ gives $\delta V_0=-(\theta_a^2+\theta_b^2)/8$, and $|V|^2=2+2\cos(\theta_{ab}/2)$ gives $\delta(r^2)=-\theta_{ab}^2/4+(\theta_a^2+\theta_b^2)/2+O(\theta^4)$, both around the base point $V_0=2$, $r=0$.
+With $\sinh z/z=1+z^2/6+O(z^4)$ and $\langle\cdot\rangle$ the expectation for the weight $\sin^2\psi\,Z_1(2\beta\cos(\psi/2))e^{2\beta\cos\psi}d\psi$ on $[0,\pi]$,
+\[
+-\log w=\mathrm{const}-\beta\langle\cos\psi\rangle\,\delta V_0-\tfrac16\langle\beta^2\sin^2\psi\rangle\,\delta(r^2)+O(\theta^4),
+\]
+which gives the two formulas of Section~\ref{sec:oneloop}:
+$\kappa_a=\tfrac18\langle\beta\cos\psi\rangle-\tfrac1{12}\langle\beta^2\sin^2\psi\rangle$ and $\kappa_{ab}=\tfrac1{24}\langle\beta^2\sin^2\psi\rangle$.
+
+\paragraph{Laplace expansion.}
+Near $\psi=0$ the exponent of the weight is $2\beta\cos(\psi/2)+2\beta\cos\psi=4\beta-\tfrac54\beta\psi^2+\tfrac{17}{192}\beta\psi^4+O(\beta\psi^6)$, and the prefactor is $\sin^2\psi\cdot(2\beta\cos(\psi/2))^{-3/2}\cdot(1+O(\beta^{-1}))\propto\psi^2\bigl(1-\tfrac{\psi^2}3\bigr)\bigl(1+\tfrac{3\psi^2}{16}\bigr)(1+O(\psi^4)+O(\beta^{-1}))$, using $I_1(b)\sim e^b/\sqrt{2\pi b}$.
+Put $\lambda=5\beta/4$.
+For the radial weight $\psi^2e^{-\lambda\psi^2}$ the moments are $\langle\psi^2\rangle_0=3/(2\lambda)$, $\langle\psi^4\rangle_0=15/(4\lambda^2)$, $\langle\psi^6\rangle_0=105/(8\lambda^3)$.
+The perturbation $\varepsilon=-\tfrac7{48}\psi^2+\tfrac{17\beta}{192}\psi^4$ shifts $\langle\psi^2\rangle$ by $\mathrm{Cov}_0(\psi^2,\varepsilon)=-\tfrac7{48}\cdot\tfrac3{2\lambda^2}+\tfrac{17\beta}{192}\cdot\tfrac{15}{2\lambda^3}=\tfrac{1}{5\beta^2}$, so
+\[
+\langle\psi^2\rangle=\frac6{5\beta}+\frac1{5\beta^2}+O(\beta^{-3}),\qquad \langle\psi^4\rangle=\frac{12}{5\beta^2}+O(\beta^{-3}).
+\]
+Then $\beta\langle\cos\psi\rangle/8=\beta/8-\tfrac3{40}+O(\beta^{-1})$ (the $1/(5\beta^2)$ term and the $\psi^4$ term cancel at order $\beta^{-1}$) and $\beta^2\langle\sin^2\psi\rangle=\beta^2(\langle\psi^2\rangle-\langle\psi^4\rangle/3)+O(\beta^{-1})=\tfrac65\beta-\tfrac35+O(\beta^{-1})$.
+Substituting,
+\[
+\kappa_a=\frac\beta8-\frac3{40}-\frac1{12}\Bigl(\frac65\beta-\frac35\Bigr)=\frac{\beta-1}{40},\qquad \kappa_{ab}=\frac1{24}\Bigl(\frac65\beta-\frac35\Bigr)=\frac{\beta-\frac12}{20},
+\]
+up to $O(\beta^{-1})$, which is \eqref{eq:wilson}.
+The tree values are $\beta/40$ and $\beta/20$ (ratio $2$, \eqref{eq:tree} with the quadratic action $\beta f^2/8$); the remainders $-1/40$ and $-1/40$ have ratio $1$.
+
+\subsection{The heat kernel}\label{app:hk}
+For $f=p_t$, Theorem~\ref{thm:criterion} applies with $F=-\psi^2/(2t)+v$ and $\log G=-\psi^2/(4t)+v$ up to constants and images, $v=\log P$, $v'=\psi/3+O(\psi^3)$.
+The measure is $\mu\propto\sin^2\psi\,P^3e^{-5\psi^2/(4t)}=\psi^2P\,e^{-5\psi^2/(4t)}=\psi^2\bigl(1+\tfrac{\psi^2}6+\dots\bigr)e^{-\lambda\psi^2}$ with $\lambda=5/(4t)$, so
+\[
+\langle\psi^2\rangle=\frac3{2\lambda}\Bigl(1+\frac1{6\lambda}\Bigr)+O(t^3)=\frac{6t}5\Bigl(1+\frac{2t}{15}\Bigr)+O(t^3).
+\]
+Hence $\E[F'^2]=\langle\psi^2\rangle/t^2-\tfrac23\langle\psi^2\rangle/t+O(t)=\tfrac6{5t}-\tfrac{16}{25}+O(t)$ and $\E[F'(\log G)']=\langle\psi^2\rangle/(2t^2)-\langle\psi^2\rangle/(2t)+O(t)=\tfrac3{5t}-\tfrac{13}{25}+O(t)$.
+By \eqref{eq:ibp}, $40\kappa_a=1/t-13/15+O(t)$ and $20\kappa_{ab}=1/t-8/15+O(t)$, and the ratio is $2(1-8t/15)/(1-13t/15)+O(t^2)=2+2t/3+O(t^2)$, which is \eqref{eq:hk}.
+In saddle-point form the same numbers split into the prefactor part $-(17(A+B)-16P)/600$ and the curvature part $-(3(A+B)-4P)/150$ of Section~\ref{sec:thm1}, whose sum gives $\kappa_a-\tfrac1{40t}=-\tfrac{13}{600}$ and $\kappa_{ab}-\tfrac1{20t}=-\tfrac2{75}$.
+
+\section{Derivation of the one-step constants}\label{app:const}
+
+\paragraph{The lifted step.}
+In the lift of Section~\ref{sec:thm3}, $\varphi=f/P=e^{-B|x|^2/2+g}$ with $g=h-\log P$, and the lift of $f^2=P\cdot(P\varphi^2)$ is $\varphi_2=P\varphi^2=e^{-B|x|^2+2h-\log P}$; so $f'^2=P\cdot(\varphi*\varphi*\varphi_2)\cdot(1+\text{images})$, a convolution on $\R^3$ of three factors in series.
+After absorbing $-p_1|x|^2$ into the stiffnesses $k_1=k_2=B+\tfrac13$, $k_3=2B+\tfrac13$, the three remainders $\tilde G_i(s)$, $s=|x|^2$, are $O(s^2)$ with non-negative majorant coefficients (those of $\log P(\sqrt s)-s/6$ are $p_k=\zeta(2k)/(k\pi^{2k})>0$).
+The saddle of the series convolution sits at the fractions $c_i$ of $w$ given in Section~\ref{sec:thm3}, and the fluctuations $\eta_i$ ($\sum_i\eta_i=0$) are Gaussian with covariance $\mathrm{Cov}_{ij}=\delta_{ij}/k_i-1/(k_ik_j\sum_lk_l^{-1})$; this gives the identity for $2\log f'(w)$ of Section~\ref{sec:thm3}.
+
+\paragraph{The first-order term.}
+Expanding $\log\E_\eta[e^{X}]$, $X=F(w,\eta)-F(w,0)$, to second cumulant order gives the first-order term
+\[
+\tfrac12\Bigl[\sum_i\mathrm{Cov}_{ii}\,\Delta\tilde G_i+\nabla F^{\mathsf T}\,\mathrm{Cov}\,\nabla F\Bigr],\qquad \Delta G(|x|^2)=6G'(s)+4sG''(s)\ \text{on }\R^3,
+\]
+to which the $1/B$ shifts of $c_i$ are added.
+Inserting $h=h_2\psi^4+h_3\psi^6+h_4\psi^8$ and collecting the coefficients of $w^4,w^6,w^8$ gives the expressions for $h_2',h_3',h_4'$ in Section~\ref{sec:thm3}; they were evaluated twice, once as series in $1/B$ and once with $c_i(B)$ and $\mathrm{Cov}(B)$ kept as rational functions of $B$, with the same result.
+On the class, the $1/B$ coefficient of $h_2'$ is $-\tfrac8{3125}h_2^*+\tfrac{42}{125}h_3^*-\tfrac{14}{140625}=-\tfrac{295993}{6236156250}$ with $h_2^*=\tfrac{37}{76}p_2$, $h_3^*=\tfrac{1937}{3890}p_3$; multiplied by $1/p_2=180$ this is $-591986/69290625$, and multiplied by the weight $16$ it gives the sharp value $C_0=16\times295993/6236156250$.
+
+\paragraph{The explicit part.}
+With $\delta=h-h^*$, the explicit part of $h_k'-h_k^*-L_k\delta_k$ (saddle-ratio shifts and the second-cumulant term) is a polynomial of degree at most two in $\delta$ with coefficients rational in $B$.
+Its maximum over the box $|\delta_k|\le r_{\mathrm{box}}/4^k$, weighted by $4^k$, is bounded by replacing every coefficient by its absolute value (a majorant), in exact rational arithmetic for the rational coefficients and $38$-digit floating point for the rest.
+
+\paragraph{The remainder.}
+The analytic part restricts $\eta$ to $\mathcal N=\{|\eta_i|\le1.8\}$.
+For complex $|w|\le2$, the remainder $|\log(1+U(w))-Q(w)|$, with $Q$ the second-cumulant part, is bounded as follows: the Taylor coefficients of $\tilde G_i$ in the direction of $\eta_i$ and their fourth-order remainders are bounded by the majorant series (truncated at $k=250$, tail below $3\times10^{-44}$), using $\|(s+d)^k-s^k\|\le(A+D)^k-A^k$ for $\|s\|\le A$, $\|d\|\le D$; the remainder of $e^X-1-X-X^2/2-X^3/6$ by $|X|^4e^{|X|}/24$; odd moments vanish on the symmetric box; products by H\"older's inequality; and $|\eta_i|=\sqrt{v_i}\,\chi_3$ with $v_i\le\kappa_{ii}/B$, so that every expectation is a one-dimensional $\chi_3$ integral (Gauss--Legendre quadrature).
+The side conditions are $c_i\cdot2+1.8<\pi$ (convergence of the majorant series), $|U|\le4.0\times10^{-3}<1$ at $B=32$, $r_{\mathrm{box}}=0.05$, and, for the dropped part, the Gaussian mass of $\R^6\setminus\mathcal N$, at most $6.3\times10^{-37}$ at $B=32$, times $e^{\sup F}\approx e^{2.5}$, and the image factor $e^{-k_{\mathrm{eff}}((2\pi-2)^2-4)/2}\approx e^{-92}$.
+Cauchy's estimate on $|w|=2$ turns a bound $\varepsilon_R$ for the remainder of $2\log f'$ into an error at most $\varepsilon_R/2$ in every weighted coefficient $4^k|h_k'-\cdot|$.
+
+\paragraph{The numbers.}
+$C$ is the limit $B\to\infty$ of the explicit part (times $B$) plus the remainder (times $B$) at $B_{\min}$; the explicit part increases in $B$ towards its limit and $B\varepsilon_R/2\approx0.18/B$ decreases, both checked on a grid $B\in[32,10^6]$ only.
+Table~\ref{tab:Cparts} lists the parts; their sums are the entries of Table~\ref{tab:C}.
+
+\begin{table}[h]
+\centering\small
+\caption{Parts of the constants $C$ of Table~\ref{tab:C} (computed).}\label{tab:Cparts}
+\begin{tabular}{@{}rccccc@{}}
+\toprule
+ & \multicolumn{2}{c}{explicit part $\times B$} & \multicolumn{2}{c}{remainder $\times B$} & $C$ for $B_{\min}=$ \\
+$r_{\mathrm{box}}$ & $B=32$ & $B\to\infty$ & $B=32$ & $B=1000$ & $32$ / $1000$ \\ \midrule
+$0$ & $0.000748$ & $0.000759$ & $0.00106$ & $0.00003$ & $0.00182$ / $0.00079$ \\
+$0.01$ & $0.00160$ & $0.00163$ & $0.00193$ & $0.00005$ & $0.00355$ / $0.00168$ \\
+$0.05$ & $0.00502$ & $0.00509$ & $0.00568$ & $0.00015$ & $0.0108$ / $0.00524$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\fussy
 \begin{thebibliography}{KSR}\small\setlength{\itemsep}{0pt}
 \bibitem[dB]{dB} N.~G.~de Bruijn, \emph{Asymptotic Methods in Analysis}, North-Holland, 1958 (Laplace's method) (not consulted directly).
 \bibitem[DW]{DW} A.~H.~Dooley and N.~J.~Wildberger, \emph{Harmonic analysis and the global exponential map for compact Lie groups}, Funct. Anal. Appl. 27 (1993), 21--27 (not consulted directly).
 \bibitem[Fa]{Fa} J.~Faraut, \emph{Analysis on Lie Groups: An Introduction}, Cambridge Stud. Adv. Math. 110, Cambridge University Press, 2008 (heat kernel and characters of $\SU$) (not consulted directly).
 \bibitem[Ka]{Ka} L.~P.~Kadanoff, \emph{Notes on Migdal's recursion formulas}, Ann. Physics 100 (1976), 359--394 (not consulted directly).
 \bibitem[Ki]{Ki} A.~A.~Kirillov, \emph{Lectures on the Orbit Method}, Grad. Stud. Math. 64, Amer. Math. Soc., 2004 (not consulted directly).
-\bibitem[KSR]{KSR} Kiichi, Shiori and Rin, \emph{Yang--Mills and the mass gap} (online textbook, in Japanese), Part~15, \url{https://computoergosum.com/principia/yang-mills/index.html} (2026).
+\bibitem[KSR]{KSR} Kiichi, Shiori and Rin, \emph{Yang--Mills and the mass gap} (online textbook, in Japanese), \url{https://computoergosum.com/principia/yang-mills/index.html}.
 \bibitem[M]{M} Mathlib, \url{https://github.com/leanprover-community/mathlib4} (Lean~4 \code{v4.33.1}).
 \bibitem[Me]{Me} P.~Menotti and E.~Onofri, \emph{The action of SU($N$) lattice gauge theory in terms of the heat kernel on the group manifold}, Nuclear Phys. B 190 (1981), 288--300 (not consulted directly).
 \bibitem[Mi]{Mi} A.~A.~Migdal, \emph{Recursion equations in gauge field theories}, Sov. Phys. JETP 42 (1975), 413--418 (not consulted directly).
