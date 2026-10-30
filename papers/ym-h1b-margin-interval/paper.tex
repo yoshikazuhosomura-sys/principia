@@ -30,7 +30,7 @@
 
 \title{An interval-arithmetic certificate for the (T1) margin of the one-dimensional double well for $\hbar\in[0.00195,\,0.005]$}
 \author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
-\date{2026-10-29}
+\date{2026-10-29 (revised 2026-10-30)}
 
 \begin{document}
 \maketitle
@@ -38,26 +38,28 @@
 \begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
 
 \begin{abstract}
-For the lattice path measure of the symmetric double well $V(x)=(x^2-1)^2/8$ with time step $\varepsilon=\tfrac12$, restricted to the phase $x_i\ge0$, a two-scale construction reduces a Poincaré inequality uniform in the ring length to a margin inequality on the coarse chain of kept sites, $\lambda=\min\hr-2\max\hk\ge0.067$, where $\hr$ is the scaled one-site gap of the coarse chain and $\hk$ the scaled coupling of a bridge of 11 sites, over neighbour and end values in $[0,2.5]^2$. Earlier computations established this margin at six isolated values of $\hbar$ down to $0.005$. Here we certify it, by interval arithmetic in float64 with outward widths, for every $\hbar$ in the continuum $[0.005/1.17^6,\,0.005]\supset[0.00195,\,0.005]$ ($0.005/1.17^6\approx0.0019492$), split into six subintervals of ratio $1.17$, with margins at least $0.076$, $0.154$, $0.240$, $0.321$, $0.352$, $0.366$. On the $\hbar\rho$ side the new ingredient is an interval version of the banded Muckenhoupt estimate (cellwise comparison of the exponents at the two ends of the $\hbar$-interval); on the $\hk$ side we use a three-point interpolation in $\beta=1/\hbar$ with an explicit third-order remainder. The elementary inequalities of the $\hbar$-interval step and the final subtractions for all six subintervals are written in Lean~4 and pass its check; the interval outputs, the analytic lemmas (Muckenhoupt, FKG, the tail lemma, the interpolation remainder) and the floating-point premise are inputs. The cost of this scheme grows like $\hbar^{-3.5}$, and the remaining range down to the floating-point estimate $\hbar_0\approx5.5\times10^{-4}$ of a Laplace-method lemma is not covered; we explain why this needs a different machine. The status is computer-assisted and conditional.
+For the lattice path measure of the symmetric double well $V(x)=(x^2-1)^2/8$ with time step $\varepsilon=\tfrac12$, restricted to the phase $x_i\ge0$, a two-scale construction reduces a Poincaré inequality uniform in the ring length to a margin inequality on the coarse chain of kept sites, $\lambda=\min\hr-2\max\hk\ge0.067$, where $\hr$ is the scaled one-site gap of the coarse chain and $\hk$ the scaled coupling of a bridge of 11 sites, over neighbour and end values in $[0,2.5]^2$. Earlier computations established this margin at six isolated values of $\hbar$ down to $0.005$. Here we certify it, by interval arithmetic in float64 with outward widths, for every $\hbar$ in the continuum $[0.005/1.17^6,\,0.005]\supset[0.00195,\,0.005]$ ($0.005/1.17^6\approx0.0019492$), split into six subintervals of ratio $1.17$, with margins at least $0.076$, $0.154$, $0.240$, $0.321$, $0.352$, $0.366$. On the $\hbar\rho$ side the main step is an interval version of the banded Muckenhoupt estimate (cellwise comparison of the exponents at the two ends of the $\hbar$-interval); on the $\hk$ side we use a three-point interpolation in $\beta=1/\hbar$ with an explicit third-order remainder. The elementary inequalities of the $\hbar$-interval step and the final subtractions for all six subintervals are written in Lean~4 and pass its check; the interval outputs, the analytic lemmas (Muckenhoupt, FKG, the tail lemma, the interpolation remainder) and the floating-point premise are inputs. The cost of this scheme grows like $\hbar^{-3.5}$, and the remaining range down to the floating-point estimate $\hbar_0\approx5.5\times10^{-4}$ of a Laplace-method lemma is not covered; we explain why this needs a different machine. The status is computer-assisted and conditional.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
 
-{\sloppy This note belongs to the study of a Poincaré inequality that is uniform in $\hbar$ and in the system size for a one-dimensional lattice path measure of a double well, used as a model step in a programme on the Yang--Mills mass gap (background and the full construction: \url{https://computoergosum.com/en/principia/yang-mills/10-06-H1-local-poincare.html}; the problem statement~\cite{JW}). Nothing here addresses gauge theory directly. Numbers quoted without a citation are taken from the authors' working records (programs, outputs and reports), which are not published.\par}
+{\sloppy This note belongs to the study of a Poincaré inequality that is uniform in $\hbar$ and in the system size for a one-dimensional lattice path measure of a double well, used as a model step in a programme on the Yang--Mills mass gap; the problem statement is~\cite{JW}, and general background is in the authors' online textbook~\cite{KSR}. Nothing here addresses gauge theory directly. Numbers quoted without a citation are taken from the authors' working records (programs, outputs and reports), which are not published.\par}
 
-The construction of the cited chapter keeps one site in every twelve, treats the eleven sites between two kept sites as a bridge with fixed ends, and bounds the Poincaré constant of the whole measure by an explicit algebraic expression in a few inputs, using on the coarse chain the Poincaré version of Helffer's criterion (Proposition~3.1 of~\cite{Le}). All inputs except one are established in the cited chapter, each with its own grade, for every $\hbar\in(0,0.2]$. The exception is the margin inequality (T1) on the coarse chain (\S\ref{sec:model}), which was checked by interval arithmetic only at the six nodes $\hbar\in\{0.2,0.1,0.05,0.02,0.01,0.005\}$ (margins $0.7039$, $0.5812$, $0.5677$, $0.3574$, $0.0670$, $0.0845$). Because the rate condition of the construction is monotone in the margin, any lower bound $\lambda\ge0.067$ at other values of $\hbar$ gives there the same constant as at the nodes. The question for $\hbar<0.005$ (row (H1-b) of the remaining rows in the cited chapter) is therefore exactly: does the margin stay $\ge0.067$?
+The inequality in question is condition (H1) of \S\ref{sec:model}: a bound $\Var f\le C\,\mathcal E(f)$ for the measure restricted to one phase, with $C$ independent of $\hbar$ and of the ring length. Section~\ref{sec:construction} states a two-scale construction that keeps one site in every twelve, treats the eleven sites between two kept sites as a bridge with fixed ends, and bounds the Poincaré constant of the whole measure by an explicit algebraic expression in a few inputs, using on the coarse chain the Poincaré version of Helffer's criterion (\cite{He}; Proposition~3.1 of~\cite{Le}). The inputs other than the margin inequality (T1) of Definition~\ref{def:margin} --- the gap of the two-site marginal inside a bridge (T3), the cross term (T4) and the resulting bridge gap $\lambda_S$ --- hold for every $\hbar\in(0,0.2]$; they are stated in \S\ref{sec:construction} and graded in Table~\ref{tab:status}. The margin (T1) was checked by interval arithmetic only at the six nodes $\hbar\in\{0.2,0.1,0.05,0.02,0.01,0.005\}$ (margins $0.7039$, $0.5812$, $0.5677$, $0.3574$, $0.0670$, $0.0845$). Because the rate condition of the construction is monotone in the margin, any lower bound $\lambda\ge0.067$ at other values of $\hbar$ gives there the same constant as at the nodes (Proposition~\ref{prop:reduction}). We call \emph{the question (H1-b)} the following: for $\hbar<0.005$, does the margin stay $\ge0.067$? Within this construction it is the only input not available below $\hbar=0.005$, apart from the rows for large neighbour and end values that are left open at every $\hbar$ (Table~\ref{tab:status}).
 
 Two routes exist. A semiclassical route: as $\hbar\to0$ the margin tends to a limit determined by a zero-temperature landscape, which we bounded by interval arithmetic from below by $0.758$, and a quantitative Laplace-method lemma (QL) would give an explicit $\hbar_0$ below which the margin is safe; with the constants we can currently write, a floating-point evaluation gives $\hbar_0\approx5.5\times10^{-4}$. A computational route: extend the interval machine of the six nodes from points to intervals of $\hbar$. This note follows the second route, starting from the top of the window; it covers $[0.005/1.17^6,\,0.005]$ and stops there.
 
-\paragraph{Status of the results.} Computer-assisted (interval arithmetic in float64 with outward widths, presupposing correctly rounded IEEE arithmetic), with Lean~4 for the elementary inequalities of the $\hbar$-interval step and the final arithmetic of the six subintervals; conditional on the cited and assumed rows of Table~\ref{tab:status}.
+\paragraph{Status of the results.} Computer-assisted (interval arithmetic in float64 with outward widths, presupposing correctly rounded IEEE arithmetic), with Lean~4 for the elementary inequalities of the $\hbar$-interval step and the final arithmetic of the six subintervals; conditional on the reference and assumption rows of Table~\ref{tab:status}.
 
-\section{The model and the margin}\label{sec:model}
+\section{The model, the construction and the margin}\label{sec:model}
+
+\subsection{The model and condition (H1)}
 
 On a ring of $N=12n$ sites ($n\ge3$) consider
 \[
 S(x)=\sum_i\frac{(x_{i+1}-x_i)^2}{2\varepsilon}+\varepsilon\sum_iV(x_i),\qquad V(x)=\frac{(x^2-1)^2}{8},\qquad\varepsilon=\frac12,
 \]
-and the measure $\mu^{(+)}\propto e^{-S/\hbar}\mathbf 1\{x_i\ge0\ \forall i\}$, with Dirichlet form $\mathcal E(f)=(\hbar/\varepsilon)\sum_i\E|\partial_if|^2$. Keep the sites $y_j=x_{12j}$.
+and the measure $\mu^{(+)}\propto e^{-S/\hbar}\mathbf 1\{x_i\ge0\ \forall i\}$, with Dirichlet form $\mathcal E(f)=(\hbar/\varepsilon)\sum_i\E|\partial_if|^2$. The paths stay on the side of the well $x=1$ and carry no kink. \emph{Condition (H1)} (ring version) asks for $\hbar_0>0$ and $C<\infty$ such that $\Var_{\mu^{(+)}}f\le C\,\mathcal E(f)$ for all $\hbar\in(0,\hbar_0]$ and all $n$. The measure is not log-concave, and the simple arguments (a convex core, a global or a site-by-site perturbation) lose factors exponential in $1/\hbar$; this is why the construction below has two scales. Keep the sites $y_j=x_{12j}$.
 
 \begin{definition}[bridge, coupling, one-site measure]\label{def:margin}
 \begin{enumerate}[label=(\roman*),leftmargin=2em]
@@ -70,17 +72,35 @@ and the measure $\mu^{(+)}\propto e^{-S/\hbar}\mathbf 1\{x_i\ge0\ \forall i\}$, 
 
 (T1) is the inequality $\lambda\ge0.067$. Muckenhoupt's estimate~\cite{Mu,BR} squeezes the Poincaré constant of $\nu_{c,d}$ between $B$ and $4B$, where $B$ is a Hardy-type functional of the density; hence $\hr\ge\hbar/(4B)$. The monotonicity of $e(c,t)$ in $c$ (an MTP$_2$ correlation inequality~\cite{KR}) is what allows a finite set of neighbour values to control the continuum, and a tail lemma (Holley's comparison~\cite{Ho} and a tilted Gaussian bridge) handles $t$ beyond the computed range.
 
+\subsection{The two-scale construction}\label{sec:construction}
+
+The following statements are the steps of the construction; (C1)--(C6) number the steps, and the labels (T1)--(T5) name the inputs on which they rest ((T1) is the margin inequality below). Their derivations are given in Appendix~\ref{app:construction}, and their grades are the rows of Table~\ref{tab:status}. Here $\lambda$, $\lambda_S$, $\lambda_c$ and $\rho_f$ are $\hbar$ times spectral gaps for the flat Dirichlet form $\int|\nabla f|^2$, and $T_k$ denotes the Dirichlet Laplacian $\operatorname{tridiag}(-1,2,-1)$ of a path of $k$ sites.
+\begin{enumerate}[label=(C\arabic*),leftmargin=2.6em]
+\item\label{c:var} (T5) $\Var_{\mu^{(+)}}f=\E[\Var(f\mid y)]+\Var(\E[f\mid y])$, for test functions in a class whose regularity and density are assumed (Appendix~\ref{app:var}).
+\item\label{c:markov} (T2) Given $y$, the bridges between consecutive kept sites are independent, the one between $y_j$ and $y_{j+1}$ distributed as $\mu_{y_j,y_{j+1}}$, and the marginal of $y$ is a nearest-neighbour chain on a ring of $n$ sites whose one-site conditional law with neighbours $c,d$ is $\nu_{c,d}$ (Appendix~\ref{app:markov}).
+\item\label{c:nest} (Fine side; nested estimate.) The $11$-site bridge is not log-concave (the smallest eigenvalue of the lower bound $T_{11}/\varepsilon-(\varepsilon/2)I$ of its Hessian is $\approx-0.11$). Inside it keep the sites $4$ and $8$. Each of the three $3$-site sub-bridges has Hessian $\ge A_3:=T_3/\varepsilon-(\varepsilon/2)I$, whose smallest eigenvalue is $\rho_f=15/4-2\sqrt2\approx0.9216$; the coupling between the sub-bridges and the two kept sites is at most $\kappa_f=1.98$; and (T3) the marginal of $(x_4,x_8)$ has gap $\lambda_c\ge1.3\times10^{-4}$ for all end values in $[0,4]^2$ and all $\hbar\in(0,0.2]$. The gap of the bridge is then at least the smaller root of $t^2-(\rho_f+\lambda_c+\kappa_f^2/\rho_f)t+\rho_f\lambda_c=0$, which gives $\lambda_S\ge2.3\times10^{-5}$ (Appendix~\ref{app:fine}).
+\item\label{c:coarse} (Coarse side.) The Poincaré version of Helffer's criterion, applied on the ring in Gershgorin form and using $\hk\ge0$, bounds the gap of the chain of kept sites from below by the margin $\lambda$ whenever $\lambda>0$ (Appendix~\ref{app:coarse}).
+\item\label{c:cross} (T4) The cross term between the two scales is controlled by the constant $\kappa_\times$ with $\kappa_\times^2=2(v/\hbar)\lambda_S/\varepsilon^2$, where $v/\hbar\le2\bigl(644/1455+(60/97)^2/\lambda_c\bigr)\le5888$ (Appendix~\ref{app:cross}).
+\item\label{c:rate} (Rate condition.) If $0\le t<\lambda$ and $t\,\kappa_\times^2\le\lambda_S(\lambda_S-t)(\lambda-t)$, then $C_P(\mu^{(+)})\le\varepsilon/t$ (Appendix~\ref{app:rate}).
+\end{enumerate}
+
+\begin{proposition}[reduction to (T1); conditional]\label{prop:reduction}
+Assume the rows of Table~\ref{tab:status} for \ref{c:var}--\ref{c:rate} other than the open row, and assume moreover that \ref{c:nest}--\ref{c:cross} and the margin hold, with the stated constants, for all neighbour and end values in $[0,\infty)$ \textup{(}this note establishes them for $[0,4]^2$ and $[0,2.5]^2$ only; the rest is the open row\textup{)}. Then, at every $\hbar\in(0,0.2]$ at which $\lambda\ge0.067$, one has $\Var_{\mu^{(+)}}f\le C\,\mathcal E(f)$ with $C\le1.6\times10^{10}$, independently of $n$.
+\end{proposition}
+
+The proof is in Appendix~\ref{app:prop}. At the six nodes this gives $C\le1.6\times10^{10}$. The extrema in $\lambda$ are taken over $[0,2.5]^2$ and (T3) is stated for end values in $[0,4]^2$; the passage to larger neighbour and end values is a separate row (Table~\ref{tab:status}) that this note does not treat.
+
 \section{Extending the machine from points of \texorpdfstring{$\hbar$}{hbar} to intervals}\label{sec:scheme}
 
 We take subintervals $I_k=[0.005/1.17^k,\ 0.005/1.17^{k-1}]$, $k=1,\dots,6$, and certify on each
 \[
 \inf_{\hbar\in I_k}\min_{c,d}\hr\ \ge\ r_k,\qquad \sup_{\hbar\in I_k}\max_{a,b}\hk\ \le\ k_k,\qquad r_k-2k_k\ge0.067 .
 \]
-Consecutive subintervals share their endpoints exactly. The ratio $1.17$ is the guide given in the cited chapter (in its section on the $\hbar$ between the nodes), from the size of the fluctuation of the action.
+Consecutive subintervals share their endpoints exactly. The ratio $1.17$ was chosen from the size of the fluctuation of the action.
 
-\subsection{The \texorpdfstring{$\hk$}{hbar kappa} side}
+\subsection{The \texorpdfstring{$\hk$}{hbar kappa} side}\label{sec:hk}
 
-At a single $\hbar$ the earlier machine (Lemma K2) tilts the bridge measure at the centre of a box of end values and controls the whole box by the second-order Taylor expansion of the cumulant generating function, with a Hölder remainder; the integrals are computed by transfer operators on a quadrature grid, in interval arithmetic. To make $\beta=1/\hbar$ a third variable we use the following scheme, written out in the authors' working records.
+At a single $\hbar$ the computation used at the six nodes (the \emph{box bound}) tilts the bridge measure at the centre of a box of end values and controls the whole box by the second-order Taylor expansion of the cumulant generating function, with a Hölder remainder; the integrals are computed by transfer operators on a quadrature grid, in interval arithmetic. To make $\beta=1/\hbar$ a third variable we use the following scheme.
 \begin{itemize}[leftmargin=2em]
 \item \emph{Three-point interpolation (Lemma TI).} For each non-negative weight $X$ (products of end observables) the unnormalised integral $J_X(\beta)=\int Xe^{-\beta H}dx$ is computed at $\beta_{\rm lo},\beta_c,\beta_{\rm hi}$; the quadratic interpolant $p_X$ satisfies $|J_X-p_X|\le(|\omega(\tau)|/6)\sup|J_X'''|$, $\omega=(\tau+\Delta)\tau(\tau-\Delta)$, $\max|\omega|=2\Delta^3/(3\sqrt3)$, by the standard Lagrange remainder.
 \item \emph{Third-order remainder (Lemma EM).} $|y|^3\le c_3(\lambda_+)e^{\lambda_+y}+c_3(\lambda_-)e^{-\lambda_-y}$ with $c_3(\lambda)=(3/(e\lambda))^3$, so $\sup|J_X'''|$ is bounded by $J_X$ at four shifted values of $\beta$; log-convexity of $J_X$ puts the supremum at an endpoint.
@@ -88,11 +108,11 @@ At a single $\hbar$ the earlier machine (Lemma K2) tilts the bridge measure at t
 \end{itemize}
 This gives an upper bound on $\hk$ for every end value in a box and every $\hbar$ in $I_k$. The square $[0,2.5]^2$ of end values is covered by $N\times N$ boxes, with $N=720$ on $I_1$ and $N\propto1/\hbar$ (to keep the box width relative to the thermal width fixed), and quadrature step $h_q\propto\hbar^{3/4}$ (to keep the relative width of the partition function fixed). Boxes above the threshold after the main pass are recomputed with finer settings: the corner near $(0,0)$ with twice the boxes, and the band at the large end with a finer quadrature step; the final map takes, box by box, the minimum of all upper bounds obtained, and the symmetry $\hk(a,b)=\hk(b,a)$ fills the other half.
 
-\subsection{The \texorpdfstring{$\hbar\rho$}{hbar rho} side: an interval version of the banded Muckenhoupt estimate}
+\subsection{The \texorpdfstring{$\hbar\rho$}{hbar rho} side: an interval version of the banded Muckenhoupt estimate}\label{sec:hr}
 
 \begin{enumerate}[leftmargin=2em]
-\item \emph{The band of $e$.} $e(c,t)$ is enclosed for all $\hbar\in I_k$ by the same TAU scheme (three nodes, Lemma TI with the four shifted values of $\beta$, $32$ pieces), applied to the raw integrals of the weights $1$, $P_+$, $P_-$; the centring constant is fixed on the grid of $\beta_c$ and used for all $\beta$. As a positive control, at $\hbar=0.0046$ (a point inside $I_1$, computed with a different step) all $315126$ point bands lie inside the interval band.
-\item \emph{Exponents compared at the two ends.} Every exponent appearing in the upper bounds $B_\pm$ of Muckenhoupt's functional is a difference of forward sums $\sum_{\rm cells}U'\cdot h_t/\hbar$, that is, a sum over the cells lying between two points, so it can be bounded cell by cell. For each cell we replace $U_{\rm lo}/\hbar$ by $\min(U_{\rm lo}/\hbar_1,U_{\rm lo}/\hbar_2)$ in $B_+$ and $U_{\rm hi}/\hbar$ by $\max(U_{\rm hi}/\hbar_1,U_{\rm hi}/\hbar_2)$ in $B_-$; this is correct whatever the sign of $U$ (Lemma~\ref{lem:cell}). The within-cell corrections are taken at $\hbar_1$ and the tail term $\log(\hbar/g)$ at $\hbar_2$, the ends at which each is largest (derived by hand); the conditions of the tail lemma are monotone in the thermal width $\propto\sqrt\hbar$ and are checked once at $\hbar_2$.
+\item \emph{The band of $e$.} $e(c,t)$ is enclosed for all $\hbar\in I_k$ by the same three-point scheme in $\beta$ as in \S\ref{sec:hk} (three nodes, Lemma TI with the four shifted values of $\beta$, $32$ pieces), applied to the raw integrals of the weights $1$, $P_+$, $P_-$; the centring constant is fixed on the grid of $\beta_c$ and used for all $\beta$. As a positive control, at $\hbar=0.0046$ (a point inside $I_1$, computed with a different step) all $315126$ point bands lie inside the interval band.
+\item \emph{Exponents compared at the two ends.} Every exponent appearing in the upper bounds $B_\pm$ of Muckenhoupt's functional is a difference of forward sums $\sum_{\rm cells}U'\cdot h_t/\hbar$, that is, a sum over the cells lying between two points, so it can be bounded cell by cell. For each cell we replace $U_{\rm lo}/\hbar$ by $\min(U_{\rm lo}/\hbar_1,U_{\rm lo}/\hbar_2)$ in $B_+$ and $U_{\rm hi}/\hbar$ by $\max(U_{\rm hi}/\hbar_1,U_{\rm hi}/\hbar_2)$ in $B_-$; this is correct whatever the sign of $U$ (Lemma~\ref{lem:cell}). The within-cell corrections are taken at $\hbar_1$ and the tail term $\log(\hbar/g)$ at $\hbar_2$, the ends at which each is largest; the conditions of the tail lemma are monotone in the thermal width $\propto\sqrt\hbar$ and are checked once at $\hbar_2$.
 \item \emph{Pieces.} The Muckenhoupt step alone is repeated on $K=8$ subpieces of $I_k$, sharing the band of item~1; the bound for $I_k$ is the minimum over pieces (Lemma~\ref{lem:cell}(iv)). This reduces the loss from the ratio $1.17$ to $1.17^{1/8}$: on $I_1$, $\hr\ge0.74627$ with $K=1$ and $\ge0.84797$ with $K=8$.
 \item $\hr\ge\hbar_1/(4\sup B)$ on the piece $[\hbar_1,\hbar_2]$ (Lemma~\ref{lem:cell}(iii)).
 \end{enumerate}
@@ -107,7 +127,7 @@ Let $0<\hbar_1\le\hbar\le\hbar_2$.
 \end{enumerate}
 \end{lemma}
 
-\subsection{The floating-point premise and the weight scale}
+\subsection{The floating-point premise and the weight scale}\label{sec:fp}
 
 The interval arithmetic is the one used at the six nodes: float64 with outward widths added (relative $10^{-10}$ on sums of non-negative terms, $10^{-12}$ on interval operations), presupposing correctly rounded IEEE arithmetic; it is not arithmetic with a directed rounding mode for each operation, nor a multiprecision interval library. Weights below $e^{-700}$ are replaced by an upper bound, and the region where the weight would underflow is covered by a tail upper bound. Two changes to the settings were needed below $\hbar=0.005$, neither of which changes a formula:
 \begin{itemize}[leftmargin=2em]
@@ -118,7 +138,7 @@ A lazily evaluated version of the transfer kernels (built block by block instead
 
 \section{Results}\label{sec:results}
 
-\begin{table}[ht]\centering\small
+\begin{table}[!htbp]\centering\small
 \caption{The six subintervals $I_k=[0.005/1.17^k,\,0.005/1.17^{k-1}]$ (lower end shown to seven digits; consecutive subintervals share endpoints). Boxes: number of boxes of end values up to the symmetry $(a,b)\leftrightarrow(b,a)$, i.e.\ $N(N+1)/2$. $r_k$: lower bound on $\hr$ (Muckenhoupt on $8$ pieces); $k_k$: upper bound on $\hk$ over all boxes; threshold $(r_k-0.067)/2$; margin $r_k-2k_k$ (computed from unrounded values). Neighbour and end values $[0,2.5]^2$.}\label{tab:results}
 \begin{tabular}{@{}llrllll@{}}\toprule
  & lower end of $I_k$ & boxes & $r_k\ (\hr\ge)$ & $k_k\ (\hk\le)$ & threshold & margin $\ge$\\\midrule
@@ -135,7 +155,7 @@ $I_6$ & $0.0019492$ & 1247410 & 0.85199 & 0.24263 & 0.39250 & 0.36672\\\bottomru
 Under the premises and rows of Table~\ref{tab:status}, for every $\hbar\in[0.005/1.17^6,\,0.005]$ (which contains $[0.00195,\,0.005]$) and all neighbour and end values in $[0,2.5]^2$, the margin satisfies $\lambda\ge0.067$; on $I_k$ it is at least the value in the last column of Table~\ref{tab:results}.
 \end{proposition}
 
-Combined with the six nodes, (T1) is then certified, under the same premises, on $\{0.2,0.1,0.05,0.02,0.01\}\cup[0.005/1.17^6,\,0.005]$. The gaps between the nodes above $0.005$ are a separate matter not treated here.
+Combined with the six nodes, (T1) is then certified, under the same premises, on $\{0.2,0.1,0.05,0.02,0.01\}\cup[0.005/1.17^6,\,0.005]$. By Proposition~\ref{prop:reduction}, the constant $C\le1.6\times10^{10}$ then holds at every such $\hbar$, under the assumptions of that proposition (which include the open row for large neighbour and end values). The gaps between the nodes above $0.005$ are a separate matter not treated here.
 
 \paragraph{Remarks on the numbers.}
 \begin{itemize}[leftmargin=2em]
@@ -158,39 +178,54 @@ Possible remedies (not tried): a quadrature centred at the minimiser of the brid
 
 \section{Status of the rows}\label{sec:statusrows}
 
-Table~\ref{tab:status} lists, for each step of Proposition~\ref{prop:main}, whether it is computed, derived by hand, checked in Lean, cited or assumed.
+Table~\ref{tab:status} lists, for each step of Proposition~\ref{prop:main}, whether it rests on interval arithmetic, on a derivation by the authors, on Lean, on the literature, or on an assumption.
 
-\begin{table}[h]\centering\small
-\caption{What each step rests on. Grades: \emph{computer-assisted} = interval arithmetic under the float64 premise; \emph{by hand} = derived by the authors, not machine-checked; \emph{cited} = theorem from the literature, statement checked in a restatement; \emph{assumption} = taken as given.}\label{tab:status}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.55\linewidth}>{\raggedright\arraybackslash}p{0.37\linewidth}@{}}\toprule
+\begin{table}[!htbp]\centering\footnotesize
+\caption{What each step rests on. Grades: \emph{interval arithmetic} = computed under the float64 premise; \emph{paper} = derived by the authors in the section or appendix named, not machine-checked; \emph{Lean} = passes the Lean check of \S\ref{sec:lean}; \emph{not reproduced} = derived by the authors but not written out in this note; \emph{reference} = theorem from the literature, with the level of checking stated; \emph{assumption} = taken as given.}\label{tab:status}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.49\linewidth}>{\raggedright\arraybackslash}p{0.47\linewidth}@{}}\toprule
 Row & Grade\\\midrule
-$r_k$, $k_k$ and the covering of all boxes, $I_1$--$I_6$ & computer-assisted\\
+\multicolumn{2}{@{}l}{\emph{The margin on $[0.005/1.17^6,\,0.005]$ (\S\S\ref{sec:scheme}--\ref{sec:results})}}\\
+$r_k$, $k_k$ and the covering of all boxes, $I_1$--$I_6$ & interval arithmetic\\
 float64 with outward widths, correct IEEE rounding & assumption (premise of the implementation)\\
-Lemma~\ref{lem:cell} (cellwise comparison, pieces, $\hbar_1/(4\bar B)$, margin on an interval) & by hand and Lean\\
-substitution into $B_\pm$ (exponents as sums over intermediate cells; within-cell corrections at $\hbar_1$, tail term at $\hbar_2$) & by hand\\
+Lemma~\ref{lem:cell} (cellwise comparison, pieces, $\hbar_1/(4\bar B)$, margin on an interval) & paper (\S\ref{sec:hr}) and Lean\\
+substitution into $B_\pm$ (exponents as sums over intermediate cells; within-cell corrections at $\hbar_1$, tail term at $\hbar_2$) & paper (\S\ref{sec:hr}, items 2--4)\\
 final subtraction $r_k-2k_k\ge0.067$ & Lean (\texttt{margin\_I1}--\texttt{margin\_I6})\\
-Lemma TI (Lagrange interpolation remainder) & cited (standard; reference not re-checked)\\
-Lemma EM with the sharp constant $(3/(e\lambda))^3$ & by hand (Lean has the weaker constant $6/\lambda^3$)\\
-Lemma TF (linear-fractional endpoints), Lemma K2 & by hand\\
-Muckenhoupt $B\le C_P\le4B$ & cited~\cite{Mu,BR}\\
-monotonicity of $e$ (MTP$_2$/FKG) & cited~\cite{KR}\\
+Lemma TI (Lagrange interpolation remainder) & reference (standard; not re-checked against a source)\\
+Lemma EM with the sharp constant $(3/(e\lambda))^3$ & paper (\S\ref{sec:hk}; Lean has the weaker constant $6/\lambda^3$)\\
+Lemma TF (linear-fractional endpoints) & paper (\S\ref{sec:hk})\\
+box bound at a single $\hbar$ (tilt at the centre of a box, second-order cumulant expansion, Hölder remainder; \S\ref{sec:hk}) & not reproduced (the same bound as at the six nodes)\\
+Muckenhoupt $B\le C_P\le4B$ & reference~\cite{Mu,BR} (statement checked in the restatement~\cite{BR})\\
+monotonicity of $e$ (MTP$_2$/FKG) & reference~\cite{KR} (statement checked in a restatement)\\
 tail lemma (continuous Holley comparison) & assumption (theorem number not checked~\cite{Ho})\\
-uniform weight scale $e^{C}$, symmetry $(a,b)\leftrightarrow(b,a)$ & by hand\\
-the reduction of (H1-b) to (T1) & by hand (cited chapter)\\
+uniform weight scale $e^{C}$, symmetry $(a,b)\leftrightarrow(b,a)$ & paper (\S\ref{sec:fp}, \S\ref{sec:hk})\\\midrule
+\multicolumn{2}{@{}l}{\emph{The construction of \S\ref{sec:construction} (valid for $\hbar\in(0,0.2]$)}}\\
+\ref{c:var} variance decomposition & paper (Appendix~\ref{app:var})\\
+\ref{c:var} regularity and density of the test functions, differentiation under the integral & assumption\\
+\ref{c:markov} nearest-neighbour chain of kept sites, formulas for $U'$ and $\hk$ & paper (Appendix~\ref{app:markov})\\
+two-scale lemma (Lemma~\ref{lem:twoscale}) & paper (Appendix~\ref{app:lemma})\\
+\ref{c:nest} curvature bound, $\rho_f=15/4-2\sqrt2$, $\kappa_f\le1.98$, root $\lambda_S\ge2.3\times10^{-5}$ & paper (Appendix~\ref{app:fine})\\
+Bakry--Émery and Brascamp--Lieb on convex domains & reference (convex-domain versions from Theorem~1.2 of~\cite{KM}; \cite{BE,BL} bibliographic entries only)\\
+\ref{c:nest} (T3) $\lambda_c\ge1.3\times10^{-4}$, end values $[0,4]^2$, $\hbar\in(0,0.2]$ & interval arithmetic (multiprecision and float64 with outward widths), with a derivation not reproduced here (Lyapunov-type test, monotonicity in the end values, corner boxes; Bakry--Émery directly for $\hbar\ge0.0355$); its references not re-checked (Appendix~\ref{app:fine})\\
+Poincaré--Miranda theorem in the box covering of (T3) & assumption (statement not checked in~\cite{Ku})\\
+\ref{c:coarse} Poincaré version of Helffer's criterion, Gershgorin form & paper (Appendix~\ref{app:coarse}, after~\cite{He} and Proposition~3.1 of~\cite{Le})\\
+\ref{c:cross} cross term and $v/\hbar\le5888$ & paper (Appendix~\ref{app:cross})\\
+\ref{c:rate} rate condition $\Rightarrow C_P\le\varepsilon/t$ & paper (Appendix~\ref{app:rate})\\
+Proposition~\ref{prop:reduction} (monotonicity, $C\le1.6\times10^{10}$) & paper (Appendix~\ref{app:prop})\\
+neighbour and end values above $2.5$ in (T1), above $4$ in (T3) & not treated (open row)\\\midrule
 $\hbar_0\approx5.5\times10^{-4}$ of (QL) & floating-point estimate; rows of (QL) partly unverified\\\bottomrule
 \end{tabular}
 \end{table}
 
 \section{What is machine-checked}\label{sec:lean}
 
-{\sloppy The file \texttt{LatticeGaugeH1HbarInterval.lean} (namespace \texttt{LatticeGauge.H1HbarInterval}, 15 theorems, sha256 \texttt{42311821\allowbreak{}60d4e472\allowbreak{}1de2aa29\allowbreak{}9f819e24\allowbreak{}634121d7\allowbreak{}b2293e4c\allowbreak{}f0fb0b2a\allowbreak{}c5561530}) is a single file beginning with \texttt{import Mathlib}. It is distributed as a bundle of its own (ledger and build instructions: \url{https://computoergosum.com/en/principia/lean/index.html}; bundle: \url{https://computoergosum.com/principia/lean/principia-ym-h1b-margin-interval-2026-10-29.tar.gz}, checksum file \url{https://computoergosum.com/principia/lean/principia-ym-h1b-margin-interval-2026-10-29.tar.gz.sha256}; axiom log: \url{https://computoergosum.com/principia/lean/axioms-ym-h1b-margin-interval-2026-10-29.txt}). In the repository named in \S\ref{sec:ai} the file is kept, byte for byte the same, under \texttt{lean/\allowbreak{}ym-h1b-margin-interval} as the module \texttt{H1bMarginInterval.\allowbreak{}LatticeGaugeH1HbarInterval} of a lake project pinned to the same versions; verify there with \texttt{lake exe cache get} and \texttt{LEAN\_NUM\_THREADS=1 lake env lean H1bMarginInterval/\allowbreak{}LatticeGaugeH1HbarInterval.lean}. The bundle fixes the Lean and Mathlib versions (Lean v4.33.1, Mathlib v4.33.1, commit \texttt{0df444a3}). To verify: extract the bundle, run \texttt{lake exe cache get} in the extracted directory, then run \texttt{LEAN\_NUM\_THREADS=1 lake env lean LatticeGaugeH1HbarInterval.lean}; each of the fifteen \texttt{\#print axioms} lines at the end must print \texttt{[propext, Classical.choice, Quot.sound]}. There is no \texttt{sorry}, no \texttt{axiom} declaration and no \texttt{native\_decide}.\par}
+{\raggedright The file \texttt{LatticeGaugeH1HbarInterval.lean} (namespace \texttt{LatticeGauge.H1HbarInterval}, 15 theorems, sha256 \texttt{42311821\allowbreak{}60d4e472\allowbreak{}1de2aa29\allowbreak{}9f819e24\allowbreak{}634121d7\allowbreak{}b2293e4c\allowbreak{}f0fb0b2a\allowbreak{}c5561530}) is a single file beginning with \texttt{import Mathlib}. It is distributed as a bundle of its own (index of the Lean files and build instructions: \url{https://computoergosum.com/en/principia/lean/index.html}; bundle: \url{https://computoergosum.com/principia/lean/principia-ym-h1b-margin-interval-2026-10-29.tar.gz}, checksum file \url{https://computoergosum.com/principia/lean/principia-ym-h1b-margin-interval-2026-10-29.tar.gz.sha256}; axiom log: \url{https://computoergosum.com/principia/lean/axioms-ym-h1b-margin-interval-2026-10-29.txt}). In the repository named in \S\ref{sec:ai} the file is kept, byte for byte the same, under \texttt{lean/\allowbreak{}ym-h1b-margin-interval} as the module \texttt{H1bMarginInterval.\allowbreak{}LatticeGaugeH1HbarInterval} of a lake project pinned to the same versions; verify there with \texttt{lake exe cache get} and \texttt{LEAN\_NUM\_THREADS=1 lake env lean H1bMarginInterval/\allowbreak{}LatticeGaugeH1HbarInterval.lean}. The bundle fixes the Lean and Mathlib versions (Lean v4.33.1, Mathlib v4.33.1, commit \texttt{0df444a3}). To verify: extract the bundle, run \texttt{lake exe cache get} in the extracted directory, then run \texttt{LEAN\_NUM\_THREADS=1 lake env lean LatticeGaugeH1HbarInterval.lean}; each of the fifteen \texttt{\#print axioms} lines at the end must print \texttt{[propext, Classical.choice, Quot.sound]}. There is no \texttt{sorry}, no \texttt{axiom} declaration and no \texttt{native\_decide}.\par}
 
-What Lean checks: Lemma~\ref{lem:cell}; the threshold arithmetic; the margins $r_k-2k_k\ge0.067$ of $I_1,\dots,I_6$ (theorems \texttt{margin\_I1}--\texttt{margin\_I6}, each a \texttt{norm\_num} check of the literal numbers of Table~\ref{tab:results}, which does not certify those numbers themselves); and that the unrefined value $4.33884$ would not give a margin. What Lean does not check: the interval outputs $r_k$, $k_k$ (they enter as hypotheses), the transfer-operator integrals, Muckenhoupt, FKG, the tail lemma, Lemmas TI, EM (sharp constant), TF and K2, and the floating-point premise. Some elementary steps of Lemmas TI, EM and TF (the Lagrange basis, its Lebesgue constant, $|y|^3$ against exponentials with the constant $6/\lambda^3$, the linear-fractional endpoint lemma) are in a separate earlier file, \texttt{LatticeGaugeH1TaylorStage.lean}, and are not used by this note's Lean file.
+What Lean checks: Lemma~\ref{lem:cell}; the threshold arithmetic; the margins $r_k-2k_k\ge0.067$ of $I_1,\dots,I_6$ (theorems \texttt{margin\_I1}--\texttt{margin\_I6}, each a \texttt{norm\_num} check of the literal numbers of Table~\ref{tab:results}, which does not certify those numbers themselves); and that the unrefined value $4.33884$ would not give a margin. What Lean does not check: the interval outputs $r_k$, $k_k$ (they enter as hypotheses), the transfer-operator integrals, Muckenhoupt, FKG, the tail lemma, Lemmas TI, EM (sharp constant) and TF, the box bound at a single $\hbar$, and the floating-point premise. Some elementary steps of Lemmas TI, EM and TF (the Lagrange basis, its Lebesgue constant, $|y|^3$ against exponentials with the constant $6/\lambda^3$, the linear-fractional endpoint lemma) are in a separate earlier file, \texttt{LatticeGaugeH1TaylorStage.lean}, and are not used by this note's Lean file.
 
 \section{What is not claimed}\label{sec:notclaimed}
 \begin{itemize}[leftmargin=2em]
 \item \textbf{$[\hbar_0,\,0.005/1.17^6]$ is not covered} ($0.005/1.17^6\approx0.0019492$; where the covered range is written with a rounded end, it is rounded up to $0.00195$), and (H1) is not established as $\hbar\to0$: the computed range and the range of (QL) do not meet, and $\hbar_0$ itself is a floating-point estimate.
-\item The gaps between the nodes above $0.005$, neighbour and end values above $2.5$, and the version with free ends used inside a box are not treated.
+\item The gaps between the nodes above $0.005$, neighbour and end values above $2.5$ in (T1) and above $4$ in (T3), and the version of condition (H1) for a segment of the chain with given end values (only the ring version of \S\ref{sec:model} is considered) are not treated.
 \item The interval arithmetic is float64 with added outward widths and presupposes correct IEEE rounding; it is not directed rounding and not a multiprecision interval library. Underflowed terms are treated as in the node computations.
 
 \item The relative cost figures were measured on one shared machine and are indicative; the extrapolation to further subintervals is a model.
@@ -199,7 +234,7 @@ What Lean checks: Lemma~\ref{lem:cell}; the threshold arithmetic; the margins $r
 
 \section{Correspondence table}\label{sec:corr}
 
-\begin{table}[ht]\centering\small
+\begin{table}[!htbp]\centering\small
 \caption{Statements and Lean declarations (namespace \texttt{LatticeGauge.H1HbarInterval}, file \texttt{LatticeGaugeH1HbarInterval.lean}).}\label{tab:corr}
 \begin{tabular}{@{}lll@{}}\toprule
 Statement & Lean declaration & Line\\\midrule
@@ -223,12 +258,91 @@ negative control on $I_1$ & \texttt{margin\_I1\_coarse\_fails} & 80\\\bottomrule
 \section{Disclosure of AI use}\label{sec:ai}
 This note was produced with the assistance of AI agents. The reduction, the interval scheme, its implementation and runs, the Lean~4 file including the formalised statements, the reports on which this note is based, and the text itself were written by instances of Claude (Anthropic) run as the coding agent Claude Code on a laptop, across many separate sessions, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for checking the Lean file on a separate machine, for checking the numerical claims of this note against the reports, and for preparing the distributed version; for this note that group also prepared the web edition (typesetting, the site page and the placement of the files). The independent check of the Lean file was completed on 2026-10-29 (checked with \texttt{lake env lean} on a separate machine, rc=0, standard axioms only). The human author set the task, chose the problem, fixed the working rules and load limits, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. In particular the interval outputs $r_k$, $k_k$, the transfer-operator integrals, the analytic lemmas and the floating-point premise are not machine-checked. This edition and the Lean file it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-h1b-margin-interval}, the Lean file under \texttt{lean/\allowbreak{}ym-h1b-margin-interval}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section and in one sentence of \S\ref{sec:lean} giving the location of the Lean file in the repository.
 
-\begin{thebibliography}{9}
+\appendix
+\section{The two-scale construction}\label{app:construction}
+
+Throughout, $H=S/\hbar$, all measures live on orthants $[0,\infty)^m$, and \emph{gap} means the largest $g$ with $g\Var(f)\le\hbar\int|\nabla f|^2d\mu$ (so that $\lambda$, $\lambda_S$, $\lambda_c$, $\rho_f$, $\hr$ are all in these units). For test functions we take a class of smooth functions satisfying the Neumann condition on the faces of the orthant, assumed dense in the form domain; differentiation under the integral sign is used without further comment. These two points are the regularity assumption of row \ref{c:var} in Table~\ref{tab:status}. Since $\mathcal E(f)=(\hbar/\varepsilon)\sum_i\E|\partial_if|^2$, a gap $t$ for the whole measure gives $C_P(\mu^{(+)})\le\varepsilon/t$ in the units of $\mathcal E$.
+
+\subsection{Variance decomposition (C1)}\label{app:var}
+For $f\in L^2(\mu^{(+)})$ and the $\sigma$-algebra generated by $y=(y_j)$, $\E[(f-\E f)^2]=\E[(f-\E[f\mid y])^2]+\E[(\E[f\mid y]-\E f)^2]$, the cross term vanishing because $f-\E[f\mid y]$ is orthogonal to functions of $y$. This is \ref{c:var}.
+
+\subsection{Markov structure and the coarse chain (C2)}\label{app:markov}
+$S$ is a sum of terms each of which involves one site or two neighbouring sites, and the orthant is a product. Hence, given $y$, the density of the remaining sites factorises over the $n$ bridges, the bridge between $y_j$ and $y_{j+1}$ having density $\propto e^{-S_{y_j,y_{j+1}}/\hbar}$, i.e.\ law $\mu_{y_j,y_{j+1}}$. Integrating out the bridges, the marginal density of $y$ is
+\[
+p(y)\propto\prod_j e^{-\varepsilon V(y_j)/\hbar}\,Z(y_j,y_{j+1}),\qquad Z(a,b)=\int_{[0,\infty)^{11}}e^{-S_{a,b}/\hbar}\,dx,
+\]
+a nearest-neighbour chain on the ring. Its one-site conditional law with neighbours $c,d$ is $\propto e^{-U(t)/\hbar}$ with $U(t)=\varepsilon V(t)-\hbar\log Z(c,t)-\hbar\log Z(t,d)$. Since $\partial_bS_{a,b}=(b-x_{11})/\varepsilon$, $-\hbar\,\partial_b\log Z(a,b)=(b-e(a,b))/\varepsilon$; by the reflection $i\mapsto12-i$ of the bridge, $\E_{t,d}x_1=e(d,t)$, so $-\hbar\,\partial_t\log Z(t,d)=(t-e(d,t))/\varepsilon$. Adding gives the formula for $U'$ in Definition~\ref{def:margin}, so the conditional law is $\nu_{c,d}$. Differentiating once more, $\partial_a\partial_b\bigl(-\log Z(a,b)\bigr)=-\hbar^{-2}\Cov_{a,b}(\partial_aS,\partial_bS)=-\Cov_{a,b}(x_1,x_{11})/(\varepsilon^2\hbar^2)=-\hk(a,b)/\hbar$, and similarly $\partial_ae(a,b)=\Cov_{a,b}(x_1,x_{11})/(\varepsilon\hbar)$, which are the two expressions for $\hk$ in Definition~\ref{def:margin}(ii). This is \ref{c:markov}.
+
+\subsection{A two-scale lemma}\label{app:lemma}
+Let $\mu\propto e^{-H}$ live on a product of orthants in coarse variables $y\in\mathbb R^m$ and fine variables $x$, and let $\partial_uH$ ($u$ a coarse coordinate) depend on $x$ only through a function $X_u(x)$ that does not involve $y$, i.e.\ $\partial_uH(y,x)=\phi_u(y)+X_u(x)/\hbar$.
+
+\begin{lemma}\label{lem:twoscale}
+Suppose that (a) the conditional laws $\mu(\cdot\mid y)$ have gap $\ge\rho>0$; (b) the marginal of $y$ has gap $\ge\lambda>0$; (c) for every test function $f$, $\hbar^{-2}\sum_u\Cov(f,X_u\mid y)^2\le(\kappa/\rho)^2\,\E[|\nabla_xf|^2\mid y]$ with $\kappa\ge0$. Put $a^2=\hbar\E|\nabla_xf|^2$, $b^2=\hbar\E|\nabla_yf|^2$. Then
+\[
+\Var f\le\frac{a^2}{\rho}+\frac{(b+\kappa a/\rho)^2}{\lambda},
+\]
+and if $0\le t<\lambda$ and $t\kappa^2\le\rho(\rho-t)(\lambda-t)$, then $t\Var f\le a^2+b^2$, i.e.\ $\mu$ has gap $\ge t$.
+\end{lemma}
+
+\begin{proof}
+By the decomposition of \S\ref{app:var} and (a), $\E\Var(f\mid y)\le(\hbar/\rho)\E|\nabla_xf|^2=a^2/\rho$. For $g(y)=\E[f\mid y]$, differentiating the conditional density gives $\partial_ug=\E[\partial_uf\mid y]-\hbar^{-1}\Cov(f,X_u\mid y)$ (the term $\phi_u(y)$ has zero covariance, and the fine domain does not depend on $y$). By Minkowski's inequality in $L^2(\mu;\mathbb R^m)$, Jensen's inequality for the first term and (c) for the second, $(\E|\nabla_yg|^2)^{1/2}\le(\E|\nabla_yf|^2)^{1/2}+(\kappa/\rho)(\E|\nabla_xf|^2)^{1/2}$, and (b) gives $\Var g\le(\hbar/\lambda)\E|\nabla_yg|^2\le(b+\kappa a/\rho)^2/\lambda$. Thus $\Var f\le Q/(\rho^2\lambda)$ with $Q=\rho\lambda a^2+(\rho b+\kappa a)^2$. The polynomial identity
+\[
+\rho^2(\lambda-t)\bigl[\rho^2\lambda(a^2+b^2)-tQ\bigr]=\bigl(\rho^2(\lambda-t)b-t\rho\kappa a\bigr)^2+\rho^2\lambda\bigl(\rho(\rho-t)(\lambda-t)-t\kappa^2\bigr)a^2
+\]
+has a non-negative right side under the rate condition, and $\rho^2(\lambda-t)>0$; hence $tQ\le\rho^2\lambda(a^2+b^2)$ and $t\Var f\le a^2+b^2$.
+\end{proof}
+
+\subsection{The fine side (C3)}\label{app:fine}
+Fix ends $a,b$ of the bridge and put $z=(x_4,x_8)$; the fine variables are the three sub-bridges $\{1,2,3\}$, $\{5,6,7\}$, $\{9,10,11\}$.
+
+\emph{Convexity.} Since $V''(x)=(3x^2-1)/2\ge-1/2$, the Hessian of $S$ restricted to a sub-bridge with fixed ends is $T_3/\varepsilon+\varepsilon\operatorname{diag}V''(x_i)\ge A_3$,
+\[
+A_3=\begin{pmatrix}15/4&-2&0\\-2&15/4&-2\\0&-2&15/4\end{pmatrix},
+\]
+with $\lambda_{\min}(A_3)=15/4-2\sqrt2=\rho_f$, $\det A_3=1455/64$, and $(A_3^{-1})_{11}=(A_3^{-1})_{33}=644/1455$, $(A_3^{-1})_{13}=256/1455$, $(A_3^{-1})_{22}=900/1455$. The same bound for the $11$-site bridge is $T_{11}/\varepsilon-(\varepsilon/2)I$, with smallest eigenvalue $2(2-2\cos(\pi/12))-1/4\approx-0.114$, so the bridge itself is not covered by a convexity argument. Given $z$, the three sub-bridges are independent with log-concave laws on the convex set $[0,\infty)^3$, so the Bakry--Émery criterion on convex domains~\cite{BE,KM} gives (a) of Lemma~\ref{lem:twoscale} with $\rho=\rho_f$, and the Brascamp--Lieb inequality on convex domains~\cite{BL,KM} gives $\Var(\langle w,x_F\rangle\mid z)\le\hbar\langle A_3^{-1}w,w\rangle$ blockwise.
+
+\emph{Coupling.} $\partial_{x_4}S$ depends on the fine variables through $-(x_3+x_5)/\varepsilon$ and $\partial_{x_8}S$ through $-(x_7+x_9)/\varepsilon$. For a unit vector $\theta\in\mathbb R^2$, $\sum_u\Cov(f,X_u\mid z)^2=\sup_\theta\Cov(f,\theta\cdot X\mid z)^2\le\Var(f\mid z)\sup_\theta\Var(\theta\cdot X\mid z)$, and by Brascamp--Lieb $\sup_\theta\Var(\theta\cdot X\mid z)\le\hbar q/\varepsilon^2$ with $q=\lambda_{\max}(M)/1455=1544/1455$, $M=\bigl(\begin{smallmatrix}1288&256\\256&1288\end{smallmatrix}\bigr)$ (the diagonal entries are $(A_3^{-1})_{33}+(A_3^{-1})_{11}$ and the off-diagonal entry is $(A_3^{-1})_{13}$ of the middle sub-bridge). With $\Var(f\mid z)\le(\hbar/\rho_f)\E[|\nabla_xf|^2\mid z]$ this is (c) of Lemma~\ref{lem:twoscale} with $\kappa_f=\sqrt{q\rho_f}/\varepsilon\approx1.978\le1.98$.
+
+\emph{Two-site marginal (T3).} (b) of Lemma~\ref{lem:twoscale} with $\lambda=\lambda_c\ge1.3\times10^{-4}$, for end values in $[0,4]^2$ and $\hbar\in(0,0.2]$, is the input of this row. It is obtained by interval arithmetic together with a derivation by the authors that is not reproduced in this note: a Lyapunov-type argument with Bakry--Émery on a convex ball, a monotonicity in the end values, and an interval check of boxes near the corner $(0,0)$ that uses the Poincaré--Miranda theorem~\cite{Ku}; for $\hbar\in[0.0355,0.2]$ the Bakry--Émery criterion is applied directly, with the Hessian of the marginal bounded by interval arithmetic. The references used in that derivation (Brascamp--Lieb, a Lyapunov criterion, FKG/Holley) were not re-checked against their sources (Table~\ref{tab:status}).
+
+\emph{The root.} Let $t$ be the smaller root of $t^2-(\rho+\lambda+\kappa^2/\rho)t+\rho\lambda=0$ with $\rho=\rho_f$, $\lambda=\lambda_c$, $\kappa=\kappa_f$. Then $(\rho-t)(\lambda-t)=\kappa^2t/\rho$, so the rate condition of Lemma~\ref{lem:twoscale} holds with equality; at $t=0$ the left side exceeds the right and at $t=\min(\rho,\lambda)$ it is smaller, so $0<t<\min(\rho,\lambda)$. Replacing $\lambda_c$ by its lower bound and $\kappa_f$ by $1.98$ only weakens (b) and (c), and the root with $\rho_f=15/4-2\sqrt2$, $\lambda_c=1.3\times10^{-4}$, $\kappa_f=1.98$ is $2.31\times10^{-5}$. Hence the bridge has gap $\lambda_S\ge2.3\times10^{-5}$ for all ends in $[0,4]^2$ and all $\hbar\in(0,0.2]$.
+
+\subsection{The coarse side (C4)}\label{app:coarse}
+Let $H_c=-\log p$ on $[0,\infty)^n$, $L=\Delta-\nabla H_c\cdot\nabla$ with Neumann condition, so that $\int f(-Lf)\,dp=\int|\nabla f|^2dp$. We show $\int(Lf)^2dp\ge(\lambda/\hbar)\int|\nabla f|^2dp$ for test functions; by the spectral theorem this gives the gap $\ge\lambda$ (in our units) for the coarse marginal. This is the Poincaré version of Helffer's criterion (\cite{He}; Proposition~3.1 of~\cite{Le}); we write the argument for the case at hand.
+
+Integration by parts (Bochner's formula) gives \[\int(Lf)^2dp=\int\Bigl(\sum_{i,k}(\partial_{ik}f)^2+\langle\nabla f,\operatorname{Hess}H_c\nabla f\rangle\Bigr)dp;\] on the flat faces of the orthant the Neumann condition makes the boundary term vanish. Drop the terms $(\partial_{ik}f)^2$ with $i\ne k$. For fixed $i$ and fixed other coordinates, $h=f(\dots,y_i,\dots)$ as a function of $y_i$ satisfies the one-dimensional formula $\int(L_ih)^2d\nu=\int\bigl((h'')^2+\partial_{ii}H_c\,(h')^2\bigr)d\nu$ for the conditional law $\nu=\nu_{c,d}$ and its generator $L_i$; since $\nu_{c,d}$ has gap $\hr(c,d)$, $\int(L_ih)^2d\nu\ge(\hr(c,d)/\hbar)\int(h')^2d\nu$. Integrating over the other coordinates,
+\[
+\int(Lf)^2dp\ \ge\ \frac1\hbar\int\Bigl(\sum_j\hr_j(\partial_jf)^2-2\sum_j\hbar|\partial_{j,j+1}H_c|\,|\partial_jf\,\partial_{j+1}f|\Bigr)dp .
+\]
+By \S\ref{app:markov}, $\hbar|\partial_{j,j+1}H_c|=\hk(y_j,y_{j+1})$, which is non-negative by the MTP$_2$ inequality~\cite{KR} and at most $\max\hk$. On a ring with $n\ge3$ sites, $|x_jx_{j+1}|\le(x_j^2+x_{j+1}^2)/2$ and a shift of the index give $\sum_j\rho x_j^2-2\kappa\sum_j|x_jx_{j+1}|\ge(\rho-2\kappa)\sum_jx_j^2$ for $\kappa\ge0$ (Gershgorin form). With $\rho=\min\hr$, $\kappa=\max\hk$ this is $\int(Lf)^2dp\ge(\lambda/\hbar)\int|\nabla f|^2dp$. This is \ref{c:coarse}, with the extrema over $[0,2.5]^2$ as in Definition~\ref{def:margin}; neighbour and end values above $2.5$ are the open row of Table~\ref{tab:status}.
+
+\subsection{The cross term (C5)}\label{app:cross}
+On the ring, $\partial_{y_j}S$ depends on the fine variables through $X_j=-(x_{12j-1}+x_{12j+1})/\varepsilon$, which involves only the two bridges $B_{j-1},B_j$ adjacent to $y_j$. Let $f_j=\E[f\mid y,B_{j-1},B_j]$. Since the bridges are independent given $y$, $\Cov(f,X_j\mid y)=\Cov(f_j,X_j\mid y)$, and the law of $(B_{j-1},B_j)$ given $y$ is a product with gap $\ge\lambda_S$, so with Jensen's inequality $\Var(f_j\mid y)\le(\hbar/\lambda_S)\E[|\nabla_{B_{j-1}}f|^2+|\nabla_{B_j}f|^2\mid y]$. Also $\Var(X_j\mid y)=(\Var x_{12j-1}+\Var x_{12j+1})/\varepsilon^2\le v/\varepsilon^2$ with $v=\sup_{a,b}\Var_{a,b}x_{11}+\sup_{a,b}\Var_{a,b}x_1$, the suprema over $(a,b)\in[0,4]^2$ (larger end values are the open row of Table~\ref{tab:status}). By Cauchy--Schwarz and since each bridge is adjacent to two kept sites,
+\[
+\hbar^{-2}\sum_j\Cov(f,X_j\mid y)^2\le\frac{v}{\hbar^2\varepsilon^2}\cdot\frac{2\hbar}{\lambda_S}\E[|\nabla_xf|^2\mid y]=\Bigl(\frac{\kappa_\times}{\lambda_S}\Bigr)^2\E[|\nabla_xf|^2\mid y],\qquad\kappa_\times^2=\frac{2(v/\hbar)\lambda_S}{\varepsilon^2},
+\]
+which is (c) of Lemma~\ref{lem:twoscale} on the ring.
+
+\emph{The bound on $v/\hbar$.} By reflection, $\sup\Var x_{11}=\sup\Var x_1$. In a bridge, $x_1$ lies in the sub-bridge $\{1,2,3\}$ with ends $a$ and $x_4$. By \S\ref{app:var}, $\Var x_1=\E\Var(x_1\mid z)+\Var g$ with $g=\E[x_1\mid z]$, a function of $x_4$ only. Brascamp--Lieb gives $\Var(x_1\mid z)\le\hbar(A_3^{-1})_{11}=\hbar\cdot644/1455$. Next, $g'=\Cov(x_1,x_3\mid z)/(\varepsilon\hbar)$, because $\partial_{x_4}S$ involves this sub-bridge only through $-x_3/\varepsilon$; from $4\Cov(X,Y)=\Var(X+Y)-\Var(X-Y)$ and Brascamp--Lieb, $|\Cov(x_1,x_3\mid z)|\le\frac\hbar4\langle A_3^{-1}(e_1\pm e_3),e_1\pm e_3\rangle\le\frac\hbar4\cdot\frac{644+644+2\cdot256}{1455}$, so $|g'|\le1800/(4\cdot1455\,\varepsilon)=60/97$. The gap $\lambda_c$ of the marginal of $z$ gives $\Var g\le(\hbar/\lambda_c)\E g'^2\le\hbar(60/97)^2/\lambda_c$. Hence $v/\hbar\le2\bigl(644/1455+(60/97)^2/\lambda_c\bigr)$, and with $\lambda_c\ge1.3\times10^{-4}$, $v/\hbar\le5887.3\le5888$, for end values in $[0,4]^2$ and $\hbar\in(0,0.2]$.
+
+\subsection{The rate condition (C6)}\label{app:rate}
+On the ring, take the kept sites as coarse variables. By \S\ref{app:markov} and \S\ref{app:fine}, (a) of Lemma~\ref{lem:twoscale} holds with $\rho=\lambda_S$ (a product of bridges); by \S\ref{app:coarse}, (b) holds with the margin $\lambda$; by \S\ref{app:cross}, (c) holds with $\kappa=\kappa_\times$. Lemma~\ref{lem:twoscale} gives gap $\ge t$ for every $t$ with $0\le t<\lambda$ and $t\kappa_\times^2\le\lambda_S(\lambda_S-t)(\lambda-t)$, hence $C_P(\mu^{(+)})\le\varepsilon/t$. Nothing in this depends on $n$.
+
+\subsection{Proof of Proposition~\ref{prop:reduction}}\label{app:prop}
+Divide the rate condition of \ref{c:rate} by $\lambda_S>0$ and insert $\kappa_\times^2\le2(v/\hbar)\lambda_S/\varepsilon^2$: it suffices that $2t(v/\hbar)/\varepsilon^2\le(\lambda_S-t)(\lambda-t)$. The left side is nondecreasing in $v/\hbar$; for $t<\min(\lambda_S,\lambda)$ the right side is nondecreasing in $\lambda_S$ and in $\lambda$. Hence it suffices to check it with the bounds $v/\hbar\le5888$, $\lambda_S\ge2.3\times10^{-5}$ (both independent of $\hbar\in(0,0.2]$) and $\lambda\ge0.067$. For $t=3.2\times10^{-11}$: $2t\cdot5888/\varepsilon^2\approx1.507\times10^{-6}$ and $(2.3\times10^{-5}-t)(0.067-t)\approx1.541\times10^{-6}$, so the condition holds, $t<\min(\lambda_S,\lambda)$, and $C_P(\mu^{(+)})\le\varepsilon/t=1.5625\times10^{10}\le1.6\times10^{10}$. \qed
+
+\begin{thebibliography}{99}
+\bibitem{BE} D.~Bakry, M.~Émery, \emph{Diffusions hypercontractives}, Sém.\ Probab.\ XIX, Lecture Notes in Math.\ 1123 (1985) 177--206 (used through the convex-domain version of~\cite{KM}; bibliographic entry checked, statement not re-checked).
 \bibitem{BR} F.~Barthe, C.~Roberto, \emph{Modified logarithmic Sobolev inequalities on $\mathbb R$}, Potential Anal.\ 29 (2008) 167--193, arXiv:math/0612026 (Theorems 1 and 2, used as the restatement of~\cite{Mu}).
+\bibitem{BL} H.~J.~Brascamp, E.~H.~Lieb, \emph{On extensions of the Brunn--Minkowski and Prékopa--Leindler theorems, including inequalities for log concave functions, and with an application to the diffusion equation}, J.\ Funct.\ Anal.\ 22 (1976) 366--389 (Theorem 4.1; the convex-domain version is taken from~\cite{KM}).
+\bibitem{He} B.~Helffer, \emph{Remarks on decay of correlations and Witten Laplacians III. Application to logarithmic Sobolev inequalities}, Ann.\ Inst.\ H.~Poincaré Probab.\ Statist.\ 35 (1999) 483--508 (bibliographic entry only; the criterion is used in the form of~\cite{Le}).
 \bibitem{Ho} R.~Holley, \emph{Remarks on the FKG inequalities}, Comm.\ Math.\ Phys.\ 36 (1974) 227--231 (not consulted directly).
 \bibitem{JW} A.~Jaffe, E.~Witten, \emph{Quantum Yang--Mills theory}, in: The Millennium Prize Problems, Clay Mathematics Institute, 2006, 129--152 (not consulted directly).
 \bibitem{KR} S.~Karlin, Y.~Rinott, \emph{Classes of orderings of measures and related correlation inequalities. I.~Multivariate totally positive distributions}, J.\ Multivariate Anal.\ 10 (1980) 467--498 (statement checked in the restatement as Proposition 3.5 of S.~Fallat et al., Ann.\ Statist.\ 45 (2017), arXiv:1510.01290).
-\bibitem{Le} M.~Ledoux, \emph{Logarithmic Sobolev inequalities for unbounded spin systems revisited}, Sém.\ Probab.\ XXXV, Lecture Notes in Math.\ 1755 (2001) 167--194 (Proposition 3.1, used in the construction that the margin feeds).
+\bibitem{KSR} Kiichi, Shiori, Rin, \emph{Yang--Mills and the mass gap} (online textbook, in Japanese), \url{https://computoergosum.com/principia/yang-mills/index.html}.
+\bibitem{KM} A.~V.~Kolesnikov, E.~Milman, \emph{Brascamp--Lieb-type inequalities on weighted Riemannian manifolds with boundary}, J.\ Geom.\ Anal.\ 27 (2017) 1680--1702, arXiv:1310.2526 (Theorem 1.2, for convex domains).
+\bibitem{Ku} W.~Kulpa, \emph{The Poincaré--Miranda theorem}, Amer.\ Math.\ Monthly 104 (1997) 545--550 (bibliographic entry only; statement not checked).
+\bibitem{Le} M.~Ledoux, \emph{Logarithmic Sobolev inequalities for unbounded spin systems revisited}, Sém.\ Probab.\ XXXV, Lecture Notes in Math.\ 1755 (2001) 167--194 (Proposition 3.1, checked in the text).
 \bibitem{Mu} B.~Muckenhoupt, \emph{Hardy's inequality with weights}, Studia Math.\ 44 (1972) 31--38 (not consulted directly).
 \end{thebibliography}
 \end{document}
