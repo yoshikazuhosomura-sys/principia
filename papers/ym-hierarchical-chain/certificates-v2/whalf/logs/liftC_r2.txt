@@ -1,0 +1,12 @@
+cell 0.20452 ok=True boxes=1003
+cell 0.20503 ok=True boxes=1039
+cell 0.20554 ok=True boxes=1067
+cell 0.20606 ok=True boxes=1093
+cell 0.20657 ok=True boxes=1125
+cell 0.20709 ok=True boxes=1175
+cell 0.20761 ok=True boxes=1209
+cell 0.20813 ok=True boxes=1239
+cell 0.20865 ok=True boxes=1275
+cell 0.20917 ok=True boxes=1289
+cell 0.20969 ok=True boxes=699
+LIFTED [0.20452,0.21] cells=11 certified=11 fails=[]

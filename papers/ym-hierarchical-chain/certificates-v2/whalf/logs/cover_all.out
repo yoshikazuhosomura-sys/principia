@@ -1,0 +1,2 @@
+log-lines 556 boxes 49962 max 1491 covered to 0.21 gaps []
+{'liftA_0.0144.txt': 287, 'liftA_0.06.txt': 122, 'liftA_0.11.txt': 61, 'liftA_0.11_r2.txt': 19, 'liftB_0.163.txt': 6, 'liftB_0.163_r2.txt': 15, 'liftB_0.18.txt': 8, 'liftB_0.18_r2.txt': 13, 'liftC_0.198.txt': 14, 'liftC_r2.txt': 11}

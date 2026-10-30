@@ -1,0 +1,1 @@
+cells 531 boxes 25897 max boxes/cell 1491 covered up to 0.198 gaps []
