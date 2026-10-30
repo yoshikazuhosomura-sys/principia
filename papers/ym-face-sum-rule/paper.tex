@@ -1,0 +1,389 @@
+%% ym-face-sum-rule — GitHub edition (pdfTeX / latexmk -pdf)
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+%% Only for the verbatim quotations of Lean statements in Section 7,
+%% which are copied from the source character for character.
+\DeclareUnicodeCharacter{211D}{\ensuremath{\mathbb{R}}}
+\DeclareUnicodeCharacter{2211}{\ensuremath{\textstyle\sum}}
+\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\le}}
+\DeclareUnicodeCharacter{1D40}{\ensuremath{^{\mathsf T}}}
+\DeclareUnicodeCharacter{2080}{\ensuremath{_0}}
+\DeclareUnicodeCharacter{2081}{\ensuremath{_1}}
+\DeclareUnicodeCharacter{2082}{\ensuremath{_2}}
+\DeclareUnicodeCharacter{03B2}{\ensuremath{\beta}}
+\DeclareUnicodeCharacter{03BC}{\ensuremath{\mu}}
+\DeclareUnicodeCharacter{03B8}{\ensuremath{\theta}}
+\DeclareUnicodeCharacter{03B3}{\ensuremath{\gamma}}
+\DeclareUnicodeCharacter{03A6}{\ensuremath{\Phi}}
+\DeclareUnicodeCharacter{03B7}{\ensuremath{\eta}}
+\DeclareUnicodeCharacter{03B9}{\ensuremath{\iota}}
+\DeclareUnicodeCharacter{2227}{\ensuremath{\wedge}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\to}}
+\DeclareUnicodeCharacter{2260}{\ensuremath{\neq}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{claim}[theorem]{Claim}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\emergencystretch=1.5em
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\abar}{\bar a}
+\newcommand{\bbar}{\bar b}
+\newcommand{\Fbar}{\bar F}
+
+\title{A one-plaquette Schwinger--Dyson identity and a multi-level sum rule for the coarse stiffness in SU(2) lattice gauge theory, with machine-checked arithmetic}
+\author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
+\date{2026-10-30}
+
+\begin{document}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
+
+\begin{abstract}
+For SU(2) lattice gauge theory with the Wilson action, the Schwinger--Dyson integration by parts summed over the four links of a plaquette writes the law of $y=\beta(1-\cos\psi)$ in the exact one-dimensional form $\rho(y)\propto\sqrt{y(2-y/\beta)}\exp(-\int_0^y(1+\Gamma))$, with a \emph{stiffness} $\Gamma(y)$ given by a conditional expectation. Summing over all fine links gives the same form for a plaquette of a block-averaged lattice, and the coarse stiffness splits exactly as $1+\Gamma_k=R_k-(B_k-1)h_k+(\ln\abar_k)_y$. In the free field, $d^{\mathsf T}P=d^{\mathsf T}$ for the projection $P$ onto exact plaquette fields gives $R_k=1/P_{pp}=d/2$ at every level and for every linear averaging rule, so $\Gamma_k\equiv1$ in four dimensions. At first order in $1/\beta$, the coefficients of $\Gamma(y)=1-(c_0-c_1y)/\beta$ are fixed by the first-order shifts $w_2,v_2$ of two moments of $y$: $c_1=32w_2/3-64v_2/15$, $c_0=\tfrac14+8w_2/3+5c_1/4$. With the two-loop constant $w_2=0.151383$ and computed constants of one averaging rule, at first order $\Gamma_k\ge1-C/\beta_k$ with $C\le2.259$ on the first two levels. The Schwinger--Dyson equations are classical; what this note adds is the multi-level form and a machine check of its algebra (Lean~4, six files, 64 theorems); the integration by parts, Gaussian conditioning, the first-order expansion and the numerical constants are outside Lean.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+The question behind this note is the Yang--Mills mass-gap problem~\cite{JW}, which nothing here addresses directly. In a block-spin (multi-level) approach one wants to know how the law of a single plaquette changes from level to level. On the fine lattice the plaquette variable $y=\beta(1-\tfrac12\operatorname{tr}U_p)$ is close to a Gamma$(3/2,\tfrac12)$ variable for large $\beta$; a coarse lattice has no exact action, so it is not obvious how to say that a coarse plaquette ``returns to the same shape''.
+
+The tool is the Schwinger--Dyson (integration by parts) identity for the Haar measure, classical in lattice gauge theory, summed over the four links of one plaquette or, for a coarse plaquette, over all fine links. It turns the law of one angle into the invariant law of a one-dimensional diffusion. We do not know whether this form, or the multi-level sum rule of \S\ref{sec:gauss}, has been noted before.
+
+Numbers quoted without a citation are taken from the authors' working records (programs, outputs and reports), which are not published.
+
+\paragraph{Status of the results.} The one-plaquette and multi-level densities (Propositions~\ref{prop:one}, \ref{prop:multi}) are derived by hand under stated regularity hypotheses; their algebraic split is in Lean. The free-field statement (Proposition~\ref{prop:free}) is derived by hand at Gaussian order, with the matrix identities and the arithmetic in Lean. The moment inversion (Proposition~\ref{prop:moments}) is in Lean; the first-order form it inverts is a sketch by hand. The bound $\Gamma_{\min}\ge1-C/\beta_k$ (\S\ref{sec:constants}) is first-order perturbation theory with cited and computed inputs, uncontrolled $O(\beta_k^{-2})$ remainder, and only its arithmetic in Lean. Grades: \emph{Lean} (theorem named), \emph{by hand} (not machine-checked), \emph{computed} (floating point), \emph{cited}, \emph{assumption}.
+
+\section{Setting}\label{sec:setting}
+
+Let $\Lambda$ be a finite periodic hypercubic lattice in $d=4$ dimensions, with links $\ell$ and plaquettes $p$. The fine measure is
+\[
+\mu(dU)\propto e^{-S(U)}\prod_\ell dU_\ell,\qquad S(U)=-\beta\sum_p\cos\psi_p,\qquad \cos\psi_p=\tfrac12\operatorname{tr}U_p,\ \psi_p\in[0,\pi],
+\]
+with $dU_\ell$ the Haar measure on SU(2) and $U_p$ the ordered product around $p$. The plaquette variable is $y_p=\beta(1-\cos\psi_p)\in[0,2\beta]$. On the link $\ell$ we use the left-invariant fields $X^a_\ell$ ($a=1,2,3$) generated by $\tfrac{i}{2}\sigma_a$; we write $\nabla_\ell f=(X^a_\ell f)_a$ and $\Delta_\ell=\sum_aX^a_\ell X^a_\ell$. Each $X^a_\ell$ has zero divergence for the Haar measure, so for smooth $f,g$
+\begin{equation}\label{eq:ibp}
+\E[X^a_\ell(g)\,]=\E[g\,X^a_\ell S].
+\end{equation}
+
+\paragraph{Averaging rules and coarse plaquettes.} A coarse link $L$ of a lattice with spacing $2$ is assigned $V_L=Q_L/|Q_L|$, where $Q_L=\sum_iw_iP_i$ is a weighted sum (as quaternions) of ordered products $P_i$ of fine links along paths $i$ from the start to the end of $L$, with real weights $w_i$, $\sum_iw_i=1$ (negative weights are allowed; the rule of Appendix~\ref{app:rule} has some), on the configurations where $Q_L\ne0$; this is gauge covariant. The coarse plaquette angle $\psi_P$ is defined from the $V_L$ as above, and so are further levels. Writing $U_\ell=e^{iA_\ell\cdot\sigma/2}$ and keeping terms linear in $A$, every such rule, and every composition of such rules, gives a coarse plaquette angle vector $\theta_P=(K\,dA)_P$ with $K$ linear. Numerical constants below refer to one rule, with 83 weighted paths per coarse link, listed in Appendix~\ref{app:rule} together with the recipe for the constants $r_k$ and $\gamma_P$.
+
+On level $k$ the coupling $\beta_k$ is defined by matching the mean, $\beta_k\langle1-\cos\psi_P\rangle=\beta\langle1-\cos\psi_p\rangle$, and $y=\beta_k(1-\cos\psi_P)$.
+
+\section{The one-dimensional form}\label{sec:sd}
+
+\subsection{One plaquette}
+
+Fix $p$ and a link $\ell\in p$. Put $g_\ell(p'):=\nabla_\ell\cos\psi_{p'}$ for every plaquette $p'\ni\ell$. A direct computation in SU(2) gives $|g_\ell(p)|^2=\tfrac14\sin^2\psi_p$ and $\sum_{\ell\in p}\Delta_\ell f(\psi_p)=f''(\psi_p)+2\cot\psi_p\,f'(\psi_p)$ for a class function $f$. Define
+\[
+C_p:=\sum_{\ell\in p}\ \sum_{p'\ni\ell,\ p'\ne p}g_\ell(p)\cdot g_\ell(p'),\qquad \Gamma(\psi):=\frac{\E[C_p\mid\psi_p=\psi]}{\sin^2\psi}.
+\]
+$\Gamma$ measures how much the forces on the $2(d-1)-1=5$ other plaquettes through each link of $p$ line up with the force on $p$.
+
+\begin{proposition}[one plaquette; by hand]\label{prop:one}
+Assume that $\psi_p$ has a density on $(0,\pi)$ and that $\Gamma$ is continuous there. Then for every $\beta>0$ and every finite periodic lattice
+\[
+\rho(\psi)\propto\sin^2\psi\,\exp\Bigl(-\beta\int_0^\psi(1+\Gamma(\phi))\sin\phi\,d\phi\Bigr),\]\[
+\rho(y)\propto\sqrt{y(2-y/\beta)}\,\exp\Bigl(-\int_0^y(1+\Gamma(t))\,dt\Bigr),
+\]
+with $\Gamma$ read as a function of $y$ in the second form. If $\Gamma\equiv1$, $y$ is distributed as for a single plaquette at coupling $2\beta$; as $\beta\to\infty$ this tends to Gamma$(3/2,\tfrac12)$, whose density is $\propto\sqrt y\,e^{-2y}$.
+\end{proposition}
+
+\begin{proof}
+Apply \eqref{eq:ibp} with $g=X^a_\ell f(\psi_p)$, sum over $a$ and over the four links of $p$. The left side is $\E[f''+2\cot\psi_p f']$. On the right, $X^a_\ell S=-\beta\sum_{p'\ni\ell}g^a_\ell(p')$ and $\nabla_\ell f(\psi_p)=-f'(\psi_p)g_\ell(p)/\sin\psi_p$, so the sum is $\beta\,\E[f'(\psi_p)(\sin^2\psi_p+C_p)/\sin\psi_p]$. Conditioning on $\psi_p$ and integrating by parts in $\psi$ against all $f\in C_c^\infty(0,\pi)$ gives $\rho'=(2\cot\psi-\beta\sin\psi(1+\Gamma))\rho$ (the constant of integration vanishes as $\psi\to0$). Integrate, and substitute $\sin\psi=\sqrt{y(2-y/\beta)}/\beta$, $dy=\beta\sin\psi\,d\psi$.
+\end{proof}
+
+\subsection{Coarse plaquettes}
+
+For a coarse plaquette angle $\psi_P$ (a function of the fine links) and weights $c_\ell\ge0$ put
+\[
+a:=\sum_\ell c_\ell|\nabla_\ell\psi_P|^2,\qquad b:=\sum_\ell c_\ell\Delta_\ell\psi_P,\qquad F:=\sum_\ell c_\ell\,\nabla_\ell\psi_P\cdot\nabla_\ell S,
+\]
+and let $\abar,\bbar,\Fbar$ be their conditional expectations given $\psi_P=\psi$. Below $c_\ell\equiv1$.
+
+\begin{proposition}[multi-level form; by hand]\label{prop:multi}
+Assume that $\psi_P$ is smooth on $\{0<\psi_P<\pi\}$ and has a density $\rho_k$ there, that $\abar,\bbar,\Fbar$ are continuous with $\abar>0$, and that $\abar\rho_k\to0$ at both ends. Then
+\[
+\rho_k(\psi)=\frac{C}{\abar(\psi)}\exp\int^\psi\frac{\bbar-\Fbar}{\abar},
+\]
+and, defining the coarse stiffness $\Gamma_k$ by $\rho_k(y)\propto\sqrt{y(2-y/\beta_k)}\exp(-\int_0^y(1+\Gamma_k))$,
+\begin{equation}\label{eq:gk}
+1+\Gamma_k(\psi)=\frac{(\Fbar-\bbar)/\abar+(\ln\abar)'+2\cot\psi}{\beta_k\sin\psi}.
+\end{equation}
+For a fine plaquette ($k=0$) one has $\abar=1$, $\bbar=2\cot\psi$, $\Fbar=\beta\sin\psi(1+\Gamma)$, and \eqref{eq:gk} is Proposition~\ref{prop:one}.
+\end{proposition}
+
+\begin{proof}
+As before, \eqref{eq:ibp} with $g=c_\ell X^a_\ell f(\psi_P)$ summed over $a$ and $\ell$ gives $\E[af''(\psi_P)+bf'(\psi_P)]=\E[f'(\psi_P)F]$, hence $\int\rho_k(\abar f''+(\bbar-\Fbar)f')=0$ for all test functions, so $(\abar\rho_k)'=(\bbar-\Fbar)\rho_k+c$ for a constant $c$. To see $c=0$, apply the same identity to $f=\cos$, for which $af''+bf'=\sum_\ell c_\ell\Delta_\ell\cos\psi_P$ is smooth on the configuration space: multiplying the equation by $f'=-\sin$, integrating over $(0,\pi)$ and integrating by parts (the boundary terms vanish by the hypothesis on $\abar\rho_k$) gives $c\,(f(\pi)-f(0))=-2c=0$. Solve for $\abar\rho_k$, and compare $(\ln\rho_k)'$ with $2\cot\psi-\beta_k\sin\psi(1+\Gamma_k)$.
+\end{proof}
+
+The coarse lattice has no exact action, but \eqref{eq:gk} is an identity on the fine lattice: the coarse stiffness is expressed through how the fine forces $\nabla_\ell S$ line up with the gradient of the coarse angle ($\Fbar$) and through the diffusion coefficients $\abar,\bbar$ of the coarse angle.
+
+\begin{lemma}[exact split; Lean]\label{lem:split}
+Write $\bbar=2\abar B_k\cot\psi$. Then
+\[
+1+\Gamma_k=R_k-(B_k-1)\,h_k(y)+(\ln\abar_k)_y,\qquad R_k:=\frac{\Fbar}{\abar\beta_k\sin\psi},\]\[h_k(y)=\frac{2\cos\psi}{\beta_k\sin^2\psi}=\frac{2(1-y/\beta_k)}{y(2-y/\beta_k)},
+\]
+and $0\le h_k(y)\le1/y$ for $0<y\le\beta_k$. (Lean: \code{decomposition}, \code{h\_from\_angle}, \code{h\_nonneg}, \code{h\_le\_inv}.)
+\end{lemma}
+
+($B_k=1$: the coarse angle diffuses like Brownian motion on SU(2) with coefficient $\abar$.)
+
+\begin{lemma}[band bound; Lean]\label{lem:band}
+If on $y\in[y_0,y_1]$, $y_1\le\beta_k$, one has $R_k\ge r_0$, $B_k-1\le\eta$ with $\eta\ge0$ (or directly $(B_k-1)h_k\le\delta$), and $(\ln\abar_k)_y\ge-\lambda$, then $\Gamma_k\ge r_0-1-\eta/y_0-\lambda$ (resp.\ $\ge r_0-1-\delta-\lambda$). (Lean: \code{gamma\_lower}, \code{gamma\_lower\_direct}.)
+\end{lemma}
+
+\begin{lemma}[tail; by hand]\label{lem:tail}
+If $\Gamma_k(y)\ge\Gamma_{\min}>-1$ for all $y\ge y_0>0$, then with $\alpha=1+\Gamma_{\min}$ and $C_0=\rho_k(y_0)e^{\alpha y_0}\sqrt{2/(y_0(2-y_0/\beta_k))}$,
+\[
+P(y>t)\le C_0\,\frac{\sqrt t\,e^{-\alpha t}}{\alpha}\Bigl(1+\frac{1}{2\alpha t}\Bigr)\qquad(t\ge y_0).
+\]
+\end{lemma}
+
+\begin{proof}
+By the density formula, $\rho_k(y)=\rho_k(y_0)\sqrt{y(2-y/\beta_k)/(y_0(2-y_0/\beta_k))}\,e^{-\int_{y_0}^y(1+\Gamma_k)}\le C_0\sqrt y\,e^{-\alpha y}$, and $\int_t^\infty\sqrt y\,e^{-\alpha y}dy\le\sqrt te^{-\alpha t}/\alpha+(2\alpha)^{-1}t^{-1/2}e^{-\alpha t}/\alpha$ by one integration by parts.
+\end{proof}
+
+So ``the coarse tail is not heavier than the fine one'' reduces to a lower bound on $\Gamma_k$. In Monte Carlo runs the force ratio $R_k$ stayed close to its free value $2$ and the other two parts were small (computed).
+
+\section{Gaussian order: the sum rule at every level}\label{sec:gauss}
+
+Let $d$ also denote the plaquette--link incidence (coboundary) matrix, and $P$ a matrix with $Pd=d$; for the orthogonal projection onto $\operatorname{im}d$ this holds, and $P=dGd^{\mathsf T}$ with $G(d^{\mathsf T}d)=1$ on the gauge-fixed space is one such matrix (Lean: \code{proj\_fixes}).
+
+\begin{theorem}[sum rule; Lean]\label{thm:sumrule}
+If $Pd=d$ and $d_{p\ell}^2=1$ then $\sum_qd_{p\ell}d_{q\ell}P_{pq}=1$; equivalently, if $P_{pp}>0$,
+\[
+1+\sum_{q\ne p}d_{p\ell}d_{q\ell}\,\frac{P_{pq}}{P_{pp}}=\frac1{P_{pp}}.
+\]
+(Lean: \code{sum\_rule}, \code{sum\_rule\_split}, \code{normalized}.)
+\end{theorem}
+
+The sum runs over the plaquettes $q\ni\ell$. For the free field, with plaquette covariance $P/\beta$ ($P$ the projection onto exact plaquette fields), $P_{pq}/P_{pp}$ is the correlation $\rho_{pq}$, and on $\mathbb Z^d$ translation and lattice symmetry make all diagonal entries equal, so $P_{pp}=\operatorname{rank}d/\#\{\text{plaquettes}\}$; on the torus $(\mathbb Z/L)^d$, $L\ge3$, the rank is $(d-1)(|\Lambda|-1)$ (closed 1-forms are exact plus $d$ harmonic ones) and $P_{pp}=\frac{(d-1)(|\Lambda|-1)}{\binom d2|\Lambda|}=\frac2d\bigl(1-\frac1{|\Lambda|}\bigr)$, which is $2/d$ on $\mathbb Z^d$ (by hand; the rank and the diagonal were also checked numerically on $3^4$ and $4^4$). Hence the oriented correlations of the plaquettes through one link sum to $d/2-1$, which is $1$ in four dimensions (Lean: \code{dimension\_value}, \code{four\_dim}). A momentum sum on $24^4$ gives $P_{pp}=0.499998$ and correlations $-0.1378$ (same plane, one plaquette) and $0.2156$ (other planes, four), so $0.1378+4\cdot0.2156=1.0002$ (computed). In the language of Proposition~\ref{prop:one}, at Gaussian order $\Gamma\equiv1$, i.e.\ the variance of a plaquette is half of its value for independent plaquettes (Lean: \code{variance\_halved}).
+
+The same identity controls every level.
+
+\begin{proposition}[free field, every level, every linear rule; by hand, with Lean steps]\label{prop:free}
+Consider one colour component of the free field: $A\in\mathbb R^{\text{links}}$ on the gauge-fixed space with density $\propto\exp(-\tfrac\beta2|dA|^2)$, so that $dA$ has covariance $P/\beta$ (here $A$ is normalised so that the quadratic part of $S$ is $\frac\beta2|dA|^2$, i.e.\ it is half the $A$ of \S\ref{sec:setting}; the ratio $R_k$ does not depend on this choice). Let $\theta_P=(K\,dA)_P$ for a linear $K$, and define $\abar,\Fbar$ as in \S\ref{sec:sd} with $\psi_P$ replaced by $\theta_P$. Then
+\[
+\abar=(Kdd^{\mathsf T}K^{\mathsf T})_{PP},\qquad \Fbar=\frac{\abar\,\theta_P}{\operatorname{Var}\theta_P},\qquad R_k:=\frac{\Fbar}{\abar\beta_k\theta_P}=\frac1{P_{pp}}=\frac d2,
+\]
+where $\beta_k$ is fixed by $\beta_k\operatorname{Var}\theta_P=\beta\operatorname{Var}\theta_p=P_{pp}$ (matching the mean of $y$). With three colour components $\abar$ is constant and $B_k=1$, so $1+\Gamma_k=R_k$ and $\Gamma_k\equiv d/2-1=1$ for every level $k$ and every linear rule $K$ (in particular every composition of averaging rules).
+\end{proposition}
+
+\begin{proof}
+$\nabla\theta_P$ is the row $(Kd)_P$, so $\abar=(Kdd^{\mathsf T}K^{\mathsf T})_{PP}$, and $\nabla S=\beta d^{\mathsf T}dA$, so $F=\beta(Kdd^{\mathsf T}dA)_P$. Gaussian conditioning gives
+\[
+\E[dA\mid\theta_P]=\frac{PK^{\mathsf T}e_P\,\theta_P}{(KPK^{\mathsf T})_{PP}},\qquad\text{hence}\qquad \Fbar=\frac{\beta(Kdd^{\mathsf T}PK^{\mathsf T})_{PP}\,\theta_P}{(KPK^{\mathsf T})_{PP}}.
+\] Since $P$ is symmetric and $Pd=d$, $d^{\mathsf T}P=d^{\mathsf T}$ (Lean: \code{transpose\_fix}), so $Kdd^{\mathsf T}PK^{\mathsf T}=Kdd^{\mathsf T}K^{\mathsf T}$ (Lean: \code{free\_force\_pairing}) and $\Fbar=\abar\theta_P/\operatorname{Var}\theta_P$ with $\operatorname{Var}\theta_P=(KPK^{\mathsf T})_{PP}/\beta$. The ratio is then $1/(\beta_k\operatorname{Var}\theta_P)=1/P_{pp}$ (Lean: \code{free\_ratio}), and $1/P_{pp}-1=1$ for $d=4$ (Lean: \code{four\_dim\_ratio}). For the three-component vector $\theta_P$ with $\psi=|\theta_P|$ the Laplacian of the radius is $2/\psi$, so $\bbar=2\abar/\psi$, the linearisation of $2\abar\cot\psi$, i.e.\ $B_k=1$.
+\end{proof}
+
+\begin{claim}[Gaussian order]\label{claim:gauss}
+To Gaussian order the coarse stiffness equals the fine one, $\Gamma_k\equiv\Gamma_0\equiv d/2-1$, at every level and for every linear averaging rule. \emph{Grade:} by hand (Gaussian conditioning and the identification of $\beta_k$), with the matrix identities and the final arithmetic in Lean.
+\end{claim}
+
+\paragraph{The star.} For a set $X$ of plaquettes let $\mu_i$ be the eigenvalues of the principal submatrix $P_X$. If each colour component of the plaquette variables has covariance $P/2$ and $y_p$ is the squared length of the three-component vector, then $\E e^{t\sum_{p\in X}y_p}=\prod_i(1-t\mu_i)^{-3/2}$ (by hand). With $\mu_i\in[0,\mu_{\max}]$ and $\operatorname{tr}P_X=|X|/2$ the log-moment per plaquette is at most $\frac{3}{4\mu_{\max}}(-\log(1-t\mu_{\max}))$, increasing in $\mu_{\max}$ and finite only for $t<1/\mu_{\max}$ (Lean: \code{logMoment\_le\_per\_face}, \code{chord\_slope\_mono}, \code{tilt\_range}). Always $\mu_{\max}\le1$, with equality exactly when an exact field $dA\ne0$ is supported in $X$; the smallest such $X$ is the star of the six plaquettes through one link, with eigenvector $dA_\ell$, and its Rayleigh quotient $\tfrac12(1+\sum_{q\ne p}d_{p\ell}d_{q\ell}\rho_{pq})=1$ is Theorem~\ref{thm:sumrule} again (by hand). So the critical tilt $t^*=1$ of sets containing a star is the sum rule.
+
+\section{First order: the stiffness from two moments}\label{sec:first}
+
+\subsection{The inversion}
+
+At first order in $1/\beta$ we write $\Gamma(y)=1-(c_0-c_1y)/\beta+O(\beta^{-2})$. Inserting this into Proposition~\ref{prop:one} and expanding $\sqrt{2-y/\beta}$,
+\[
+\rho(y)\propto\sqrt y\,e^{-2y}\Bigl(1+\frac{(c_0-\frac14)y-\frac12c_1y^2}{\beta}\Bigr)+O(\beta^{-2});
+\]
+the $-\tfrac14$ is the Haar factor. Why the first-order correction to $\Gamma$ is affine in $y$ (equivalently, why the correction to the density is a quadratic polynomial): the first-order (Edgeworth) correction of the law of the isotropic three-component plaquette vector is fixed by its variance and its fourth cumulant, because the only invariant third-rank tensor, $\varepsilon_{abc}$, vanishes on symmetrisation; the same holds for a coarse plaquette (by hand, sketch). Define $w_2,v_2$ by $\langle y\rangle=\tfrac34+w_2/\beta+\dots$, $\langle y^2\rangle=\tfrac{15}{16}+v_2/\beta+\dots$
+
+\begin{proposition}[moments determine the stiffness; Lean]\label{prop:moments}
+With the Gamma$(3/2,\frac12)$ moments $\E y^n=\frac34,\frac{15}{16},\frac{105}{64},\frac{945}{256}$ ($n=1,\dots,4$),
+\[
+w_2=\tfrac38(c_0-\tfrac14)-\tfrac{15}{32}c_1,\qquad v_2=\tfrac{15}{16}(c_0-\tfrac14)-\tfrac{45}{32}c_1,
+\]
+and conversely
+\[
+c_1=\frac{32w_2}{3}-\frac{64v_2}{15},\qquad c_0=\frac14+\frac{8w_2}{3}+\frac{5c_1}{4}.
+\]
+The first-order excess kurtosis is $\beta K=\frac{16}9(v_2-\frac52w_2)=-\frac5{12}c_1$; a pure rescaling of the variance ($\delta v_2=\frac52\delta w_2$) does not move $c_1$; and if $y=u-\kappa u^2/\beta$ with $u$ exactly Gamma$(3/2,\frac12)$ then $c_1=4\kappa$, in particular $c_1=\frac23$ for the expansion of the cosine alone ($\kappa=\frac16$).
+{\sloppy (Lean: \code{gamma\_moments}, \code{gamma\_covariances}, \code{forward}, \code{inverse}, \code{kurtosis}, \code{rescaling\_keeps\_slope}, \code{slope\_of\_kappa}, \code{cosine\_only}.)\par}
+\end{proposition}
+
+(The forward map is $\langle f\rangle=\langle f\rangle_0+\operatorname{Cov}_0(f,\delta)$, $\delta$ the bracket above.)
+
+\subsection{The fine plaquette and the constant \texorpdfstring{$w_2$}{w2}}
+
+$w_2$ is the two-loop coefficient of the plaquette, $\langle1-\frac12\operatorname{tr}U_p\rangle=\frac3{4\beta}+\frac{w_2}{\beta^2}+\dots$ For SU($N$) with $\beta=2N/g^2$ the expansion $\langle1-\frac1N\operatorname{Re}\operatorname{tr}U_p\rangle=c_1g^2+c_2g^4+\dots$ has~\cite{AFP}
+\[
+c_2=(N^2-1)\Bigl(\tfrac1{384}+\tfrac{P_1}{24}-\tfrac{P_1^2}{12}-\tfrac{Q_1}{24}-\tfrac{Q_2}{288}-\tfrac1{128N^2}\Bigr),
+\]
+with lattice integrals $P_1=\int\frac{d^4k}{(2\pi)^4}\frac1{\hat k^2}$, $Q_1$, $Q_2$. For SU(2), $w_2=16c_2=48(\tfrac1{384}+\dots)-\tfrac3{32}$. We have three values:
+\begin{itemize}[leftmargin=1.5em,itemsep=1pt,topsep=2pt]
+\item \emph{literature} (cited): $w_2=0.151383$, from the formula of~\cite{AFP} with the values $Q_1=0.0423063684$, $Q_2=0.054623978180$ of~\cite{LW} and the standard $P_1$;
+\item \emph{our own evaluation} (computed, with cited inputs): $P_1=\int_0^\infty(e^{-2t}I_0(2t))^4\,dt$ $=0.154933390231$ by our own numerical integration; with the cited $Q_1,Q_2$ this gives $w_2=0.151383$ again (Lean: \code{w2\_value} gives $0.15138\le w_2\le0.15139$ for $P_1$ in $[0.1549333902,0.1549333903]$). We have not evaluated $Q_1,Q_2$ ourselves;
+\item \emph{measured} (computed): linear extrapolation in $1/\beta$ of Monte Carlo values of $\beta(\beta\langle1-\cos\psi\rangle-\frac34)$ on a $16^4$ lattice at $\beta=28$ and $54$ gives $0.151\pm0.006$.
+\end{itemize}
+The distance of $w_2$ from $\frac18$ is $(2P_1-4P_1^2-2Q_1-Q_2/6)-\frac3{32}\in[0.0263,0.0264]$ (Lean: \code{w2\_split}, \code{w2\_gap}).
+
+The fine slope is not derived here. Through Proposition~\ref{prop:moments}, the Monte Carlo moments of $y$ on $16^4$ give $c_1=0.311\pm0.006$ ($\beta=28$) and $0.331\pm0.018$ ($\beta=54$) (computed). The expansion of the cosine alone gives $\frac23$ (Proposition~\ref{prop:moments}), and a Gaussian computation that also keeps the commutator terms of the plaquette product stays at $0.65$--$0.67$ (computed); the remaining difference, about $-0.34$, comes from the interaction, and we give no derivation of it. Below we \emph{assume} $c_1=\frac13$, a value close to the measured ones but not derived. Then $c_0=\frac23+\frac{8w_2}3$, so $c_0=1$ exactly when $w_2=\frac18$ (Lean: \code{fine\_intercept}, \code{fine\_intercept\_one}), and $w_2\le0.15139$ gives $c_0\le1.0704$ (Lean: \code{fine\_constants}). The intercept of $\beta(1-\Gamma)$ is therefore not exactly $1$.
+
+\subsection{The coarse slope}
+
+On a coarse plaquette there is no exact self-term, so we take the slope from the aligned (abelian) part of the averaging map (by hand, sketch). Condition the free field on the coarse flux $\Phi$ through $P$; the conditional mean of the fine field is linear in $\Phi$, and path $i$ of coarse link $L$ carries the share $u_i\Phi$ of it. Averaging rotations by angles $u_i\Phi$ about a common axis with weights $w_i$ and normalising gives the coarse link angle $\langle u\rangle\Phi+g_L\Phi^3+O(\Phi^5)$ with $g_L=-\frac1{24}\langle u^3\rangle+\frac18\langle u\rangle\langle u^2\rangle-\frac1{12}\langle u\rangle^3$, $\langle\cdot\rangle$ the weighted path average; $g_L=0$ if all shares are equal (Lean: \code{equal\_paths}). The coarse plaquette angle is $\xi=\Phi+\gamma_P\Phi^3$ with $\gamma_P=\sum_L\varepsilon_Lg_L$ (orientations $\varepsilon_L$; $\sum_L\varepsilon_L\langle u\rangle_L=1$ is checked numerically). With $u=\beta_k\Phi^2/8$ and $\frac12\operatorname{tr}=\cos(\xi/2)$, $y=u-(\frac16-16\gamma_P)u^2/\beta_k+\dots$ (Lean: \code{cubic\_to\_y}), hence by Proposition~\ref{prop:moments} $c_1^{(k)}=4(\frac16-16\gamma_P)=\frac23-64\gamma_P$ (Lean: \code{slope\_of\_kappa}, \code{slope\_of\_gamma}).
+Fluctuations around the conditional mean and the commutator terms only rescale the variance at this order and leave $c_1$ unchanged (by hand, sketch; consistent with a Gaussian-integral computation). Since $\beta_k$ matches $\langle y\rangle$, $w_2^{(k)}=r_kw_2$ with $r_k=\beta_k/\beta$ to this order, and Proposition~\ref{prop:moments} gives $c_0^{(k)}=\frac14+\frac{8r_kw_2}3+\frac{5c_1^{(k)}}4$.
+
+\subsection{The constants and the bound \texorpdfstring{$\Gamma_{\min}\ge1-C/\beta_k$}{Gamma min}}\label{sec:constants}
+
+For the rule of Appendix~\ref{app:rule}, momentum sums of the free propagator on $32^4$ give $r_1=1.1237$, $r_2=1.2327$ and $\gamma_P=-0.007916$ (level~1), $-0.008465$ (level~2), so $c_1^{(1)}=1.1733$, $c_1^{(2)}=1.2084$ (computed). On $16^4$ the level-1 values agree with these to $0.03\%$; at level~2 they differ by up to $0.5\%$ ($r_2=1.2389$, $\gamma_P=-0.008485$, $c_1^{(2)}=1.2097$), and the $32^4$ values are used. Since $c_1\ge0$, the worst point of $y\ge y_0$ is $y_0$ (Lean: \code{band\_lower}); at first order
+\[
+\Gamma_k(y)\ge1-\frac{C}{\beta_k},\qquad C=c_0^{(k)}\ (y\ge0),\qquad C=c_0^{(k)}-\tfrac12c_1^{(k)}\ (y\ge\tfrac12),
+\]
+and $\Gamma_{\min}\ge0.9$ as soon as $\beta_k\ge10C$ (Lean: \code{threshold}, \code{thresholds}).
+
+\begin{table}[ht]\centering\small
+\caption{First-order constants; the last column gives the thresholds for $\Gamma_{\min}\ge0.9$. Except for the Monte Carlo row (fine intercept from the moments of $y$, $16^4$, $\beta=54$), entries are upper bounds from $w_2\le0.15139$ and the computed $r_k,c_1^{(k)}$, by arithmetic in Lean (\code{fine\_constants}, \code{coarse\_constants}, \code{thresholds}).}\label{tab:const}
+\begin{tabular}{@{}llllll@{}}\toprule
+plaquette & $c_1$ & $c_0=C$ ($y\ge0$) & $C$ ($y\ge\frac12$) & $\beta_k\ge10C$ & grade of $c_1$\\\midrule
+fine & $1/3$ & $1.0704$ & $0.9038$ & $10.7$ / $9.04$ & assumption\\
+level 1 & $1.1733$ & $2.171$ & $1.584$ & $21.7$ / $15.8$ & by hand + computed\\
+level 2 & $1.2084$ & $2.259$ & $1.654$ & $22.6$ / $16.5$ & by hand + computed\\\midrule
+fine, Monte Carlo & & $1.08\pm0.03$ & & & computed\\\bottomrule
+\end{tabular}
+\end{table}
+
+The level-2 values are the larger, so $C=2.259$ ($y\ge0$) covers the first two levels. The $O(\beta_k^{-2})$ remainder is not bounded (the $\beta$-dependence of the fitted fine intercept suggests about $0.7/\beta^2$, computed).
+
+
+
+\section{What is machine-checked}\label{sec:lean}
+
+{\raggedright The six Lean files \code{FaceCorrelationSumRule.lean} (namespace \code{FaceSumRule}, 8 theorems), \code{CoarseFaceStiffness.lean} (\code{CoarseStiffness}, 18), \code{CoarseStiffnessFirstOrder.lean} (\code{CoarseFirstOrder}, 7), \code{FaceMomentStiffness.lean} (\code{FaceMoment}, 12), \code{StiffnessLevelConstants.lean} (\code{LevelConstants}, 11) and \code{SpectralFaceMoment.lean} (\code{FaceSpectrum}, 8) are single files beginning with \code{import Mathlib}. They are distributed as one bundle (ledger and build instructions: \url{https://computoergosum.com/en/principia/lean/index.html}; bundle: \url{https://computoergosum.com/principia/lean/principia-ym-face-sum-rule-2026-10-30.tar.gz}, checksum file \url{https://computoergosum.com/principia/lean/principia-ym-face-sum-rule-2026-10-30.tar.gz.sha256}; axiom log: \url{https://computoergosum.com/principia/lean/axioms-ym-face-sum-rule-2026-10-30.txt}). In the repository named in \S\ref{sec:ai} the 6 files are kept, byte for byte the same, under \code{lean/\allowbreak{}ym-face-sum-rule} as the modules \code{FaceSum.<name>} of a lake project pinned to the same versions; verify there with \code{lake exe cache get} and \code{LEAN\_NUM\_THREADS=1 lake env lean FaceSum/\allowbreak{}<name>.lean} for each file. To verify: extract the bundle; place the files in a Lake project pinned to Lean v4.33.1 and Mathlib v4.33.1 (commit \code{0df444a3}); run \code{lake exe cache get}; then run \code{LEAN\_NUM\_THREADS=1 lake env lean <file>.lean} for each file and compare the \code{\#print axioms} lines at its end with \code{axioms-<file>.txt}. Every theorem depends on at most \code{[propext, Classical.choice, Quot.sound]} (\code{flux\_link\_count} on \code{propext} only). There is no \code{sorry}, no \code{axiom} declaration and no \code{native\_decide}. The file with the main split and the free-field identities, \code{CoarseFaceStiffness.lean}, has sha256 \code{0a1735ff\allowbreak 878b97c7\allowbreak 979cb274\allowbreak e6b1f278\allowbreak f5c687b4\allowbreak fe31d343\allowbreak a39b88f1\allowbreak 2e80f159}; the checksums of all six files are in the file \code{SHA256SUMS} of the bundle.\par}
+
+\paragraph{The main statements, quoted from the source.}
+\begingroup\scriptsize
+\begin{verbatim}
+theorem sum_rule (d : Matrix F E ℝ) (P : Matrix F F ℝ) (hP : P * d = d) (p : F) (l : E)
+    (hsq : d p l * d p l = 1) :
+    ∑ q, d p l * d q l * P p q = 1 := by
+
+theorem decomposition (a s c β F B l : ℝ) (ha : 0 < a) (hs : 0 < s) (hβ : 0 < β) :
+    ((F - 2 * a * B * c / s) / a + l + 2 * c / s) / (β * s)
+      = F / (a * β * s) - (B - 1) * (2 * c / (β * s ^ 2)) + l / (β * s) := by
+
+theorem inverse (c₀ c₁ w₂ v₂ : ℝ) (hw : w₂ = (3/8) * (c₀ - 1/4) - (15/32) * c₁)
+    (hv : v₂ = (15/16) * (c₀ - 1/4) - (45/32) * c₁) :
+    c₁ = 32 * w₂ / 3 - 64 * v₂ / 15 ∧ c₀ = 1/4 + 8 * w₂ / 3 + 5 * c₁ / 4 := by
+
+theorem coarse_constants (w₂ : ℝ) (h2 : w₂ ≤ 0.15139) :
+    1/4 + 8*(1.1237*w₂)/3 + 5*1.1733/4 ≤ 2.171 ∧
+    1/4 + 8*(1.1237*w₂)/3 + 5*1.1733/4 - 1.1733/2 ≤ 1.584 ∧
+    1/4 + 8*(1.2327*w₂)/3 + 5*1.2084/4 ≤ 2.259 ∧
+    1/4 + 8*(1.2327*w₂)/3 + 5*1.2084/4 - 1.2084/2 ≤ 1.654 := by
+\end{verbatim}
+\endgroup
+
+\paragraph{Inside and outside Lean.} Lean checks the steps named in the text and in Table~\ref{tab:corr}; it does not check the integration by parts, Lemma~\ref{lem:tail}, Gaussian conditioning, $P_{pp}=2/d$, the Gaussian moment generating function and $\mu_{\max}\le1$, the first-order expansion, the cubic term of the averaged angle, the integrals $P_1,Q_1,Q_2$, the momentum sums giving $r_k,\gamma_P$, and the Monte Carlo numbers. Literal constants in Lean (such as $1.1733$) are hypotheses about computed values, not certificates of them.
+
+\section{What is not claimed}\label{sec:notclaimed}
+\begin{itemize}[leftmargin=1.5em,itemsep=1pt,topsep=2pt]
+\item No bound on the interacting theory is proved. $\Gamma_{\min}\ge1-C/\beta_k$ is a first-order statement with uncontrolled $O(\beta_k^{-2})$ remainder; the affine form of the first-order correction is a sketch, and the fine slope $c_1=\frac13$ is an assumption (the measured values are $0.31$--$0.33$; no derivation is given).
+\item The constants $r_k$, $\gamma_P$, $c_1^{(k)}$ are floating-point momentum sums for one averaging rule (Appendix~\ref{app:rule}), on the first two levels only; boundedness in $k$ is not shown.
+\item $w_2$ rests on the cited $Q_1,Q_2$. Monte Carlo numbers are consistency checks only.
+\item The Schwinger--Dyson identities are standard in substance; we claim neither them nor the sum rule as new, and we do not know whether the multi-level form has been noted before.
+\end{itemize}
+
+\section{Correspondence table}\label{sec:corr}
+
+{\footnotesize\setlength{\LTpre}{2pt}\setlength{\LTpost}{0pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}p{0.52\linewidth}>{\raggedright\arraybackslash}p{0.12\linewidth}@{}}
+\caption{Statements, Lean declarations and their lines.}\label{tab:corr}\\\toprule
+Statement & Lean declaration & Lines\\\midrule\endfirsthead
+\toprule Statement & Lean declaration & Lines\\\midrule\endhead
+\bottomrule\endfoot
+\multicolumn{3}{@{}l}{\code{FaceCorrelationSumRule.lean} (namespace \code{FaceSumRule})}\\
+Theorem~\ref{thm:sumrule}; $P=dGd^{\mathsf T}$ & \code{row\_identity}, \code{sum\_rule}, \code{sum\_rule\_split}, \code{normalized}; \code{proj\_fixes} & 26, 33, 44, 54; 69\\
+$d/2-1$; $d=4$; variance halved & \code{dimension\_value}, \code{four\_dim}, \code{variance\_halved} & 75, 81, 87\\\midrule
+\multicolumn{3}{@{}l}{\code{CoarseFaceStiffness.lean} (namespace \code{CoarseStiffness})}\\
+Lemma~\ref{lem:split} & \code{h\_from\_angle}, \code{h\_nonneg}, \code{h\_le\_inv}, \code{decomposition} & 27, 34, 42, 51\\
+Lemma~\ref{lem:band} & \code{gamma\_lower}, \code{gamma\_lower\_direct} & 58, 111\\
+Proposition~\ref{prop:free} & \code{transpose\_fix}, \code{free\_force\_pairing}, \code{free\_ratio}, \code{four\_dim\_ratio} & 75, 82, 88, 93\\
+tree coefficients of the rule (App.~\ref{app:rule}); auxiliary & \code{flux\_tree\_value}, \code{flux\_link\_count}; \code{ratio\_lower}, \code{cs\_four} & 97, 102; 68, 105\\
+not used (measured inputs) & \code{gamma\_min\_level1\_b28}, \code{gamma\_min\_level2\_b28}, \code{gamma\_min\_level1\_b54}, \code{rate\_gap} & 116--118, 121\\\midrule
+\multicolumn{3}{@{}l}{\code{CoarseStiffnessFirstOrder.lean} (namespace \code{CoarseFirstOrder})}\\
+earlier bookkeeping, not used & \code{ratio\_lower}, \code{gamma\_min\_lower}, \code{first\_order}, \code{threshold}, \code{ledger\_c}, \code{ledger\_threshold}, \code{ledger\_at\_28} & 15, 29, 36, 47, 53, 55, 58\\\midrule
+\multicolumn{3}{@{}l}{\code{FaceMomentStiffness.lean} (namespace \code{FaceMoment})}\\
+Proposition~\ref{prop:moments} & \code{gamma\_moments}, \code{gamma\_covariances}, \code{forward}, \code{inverse}, \code{kurtosis}, \code{rescaling\_keeps\_slope}, \code{cosine\_only} & 18, 23, 28, 33, 41, 45, 48\\
+fine $c_0=\frac23+\frac83w_2$; $c_0=1\iff w_2=\frac18$ & \code{fine\_intercept}, \code{fine\_intercept\_one} & 52, 54\\
+threshold; worst point; not used & \code{threshold}, \code{band\_lower}; \code{coarse\_values} & 63, 68; 59\\\midrule
+\multicolumn{3}{@{}l}{\code{StiffnessLevelConstants.lean} (namespace \code{LevelConstants})}\\
+$w_2$: split, interval, gap to $\frac18$ & \code{w2\_split}, \code{w2\_value}, \code{w2\_gap} & 16, 20, 28\\
+coarse slope & \code{cubic\_to\_y}, \code{slope\_of\_kappa}, \code{slope\_of\_gamma}, \code{equal\_paths} & 35, 41, 44, 47\\
+Table~\ref{tab:const} & \code{fine\_constants}, \code{coarse\_constants}, \code{threshold}, \code{thresholds} & 49, 53, 60, 64\\\midrule
+\multicolumn{3}{@{}l}{\code{SpectralFaceMoment.lean} (namespace \code{FaceSpectrum})}\\
+star paragraph & \code{smul\_log\_le\_log}, \code{neg\_log\_le\_chord}, \code{sum\_neg\_log\_le}, \code{logMoment\_le\_per\_face}, \code{chord\_slope\_mono}, \code{single\_face\_case}, \code{chernoff\_glue}, \code{tilt\_range} & 24, 37, 48, 59, 75, 85, 91, 103\\
+\end{longtable}}
+
+\section{Disclosure of AI use}\label{sec:ai}
+This note was produced with the assistance of AI agents. The identities, the computations, the Lean~4 files including the formalised statements, and the reports on which this note is based were written by instances of Claude (Anthropic) run as the coding agent Claude Code on a laptop, across many separate sessions, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for re-running the Lean check of the distributed files, for checking the numerical claims of this note against the reports, and for preparing the distributed version; for this note that group also wrote the text from the reports and the Lean files and prepared the web edition (typesetting, the site page and the placement of the files). The human author set the task, fixed the working rules and load limits, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. This edition and the Lean files it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-face-sum-rule}, the Lean files under \texttt{lean/\allowbreak{}ym-face-sum-rule}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section and in one sentence of \S\ref{sec:lean} giving the location of the Lean files in the repository.
+
+
+\appendix
+\section{The averaging rule}\label{app:rule}
+
+\paragraph{Paths.} Fix a direction $\mu$ and write an offset as $o=(o_\mu,o_\perp)$ with $o_\mu\in\{0,1\}$ and $o_\perp\in\mathbb Z^3$ (the three directions $\nu\ne\mu$). The coarse link $L$ from the fine site $2x$ to $2x+2e_\mu$ is built from the paths $\pi(o,\sigma)$: starting at $2x$, take $|o_\nu|$ steps in direction $\operatorname{sign}(o_\nu)e_\nu$ for each $\nu$ with $o_\nu\ne0$ (including $\nu=\mu$ when $o_\mu=1$), the directions taken in the order $\sigma$, a permutation of the directions with $o_\nu\ne0$ (each run of $|o_\nu|$ steps is kept together); then two steps $+e_\mu$; then retrace the first part backwards. The path ends at $2x+2e_\mu$ and has length $2+2|o|_1$. Some paths with $o_\mu=1$ backtrack along one link; their products are still taken step by step.
+
+\paragraph{Weights.} With $\varepsilon=0.2$ the lateral profile is
+\[
+q(o_\perp)=\tfrac18\,\mathbf 1[o_\perp\in\{0,1\}^3]+\varepsilon\,\mathbf 1[o_\perp=0]-\tfrac{\varepsilon}{6}\,\mathbf 1[o_\perp\in\{\pm2e_\nu\}],
+\]
+so $\sum q=1$ and six of the fourteen lateral offsets have negative weight. The path $\pi(o,\sigma)$ gets the weight $w=\frac12\,q(o_\perp)/n(o)$, where $n(o)$ is the number of orderings $\sigma$ (the factor $\frac12$ averages over $o_\mu\in\{0,1\}$). The result is $22+61=83$ paths per coarse link with $\sum w=1$:
+
+\begin{center}\small
+\begin{tabular}{@{}cllcccr@{}}\toprule
+$o_\mu$ & $o_\perp$ & offsets & orderings each & paths & length & weight per path\\\midrule
+0 & $0$ & 1 & 1 & 1 & 2 & $13/80$\\
+0 & one unit vector & 3 & 1 & 3 & 4 & $1/16$\\
+0 & sum of two unit vectors & 3 & 2 & 6 & 6 & $1/32$\\
+0 & $(1,1,1)$ & 1 & 6 & 6 & 8 & $1/96$\\
+0 & $\pm2e_\nu$ & 6 & 1 & 6 & 6 & $-1/60$\\\midrule
+1 & $0$ & 1 & 1 & 1 & 4 & $13/80$\\
+1 & one unit vector & 3 & 2 & 6 & 6 & $1/32$\\
+1 & sum of two unit vectors & 3 & 6 & 18 & 8 & $1/96$\\
+1 & $(1,1,1)$ & 1 & 24 & 24 & 10 & $1/384$\\
+1 & $\pm2e_\nu$ & 6 & 2 & 12 & 8 & $-1/120$\\\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The unit vectors here are $e_\nu$, $\nu\ne\mu$, with positive sign. Then $V_L=Q_L/|Q_L|$ with $Q_L=\sum w\,P_{\pi}$ as in \S\ref{sec:setting}. Level $2$ applies the same rule to the level-1 links (paths of level-1 links on the lattice of spacing $2$).
+
+\paragraph{Tree-level check.} Linearising, the angle of the level-1 plaquette in one colour is $\sum_\ell g_\ell A_\ell$ with $244$ nonzero coefficients $g_\ell$ and $\sum_\ell g_\ell^2=3173/1800$; with the half-angle of \S\ref{sec:sd} this gives $\abar_{\rm tree}=3173/7200$ (Lean: \code{flux\_tree\_value}, \code{flux\_link\_count}, which record the multiset of $|g_\ell|$).
+
+\paragraph{The constants.} Let $G=(-\Delta)^{-1}$ be the free propagator on links in Feynman gauge (momentum space $1/\hat p^2$ on each component) and $g$ the coefficient vector of the coarse plaquette above (for level $2$, composed through the level-1 links). Since $g$ is gauge invariant, $g^{\mathsf T}Gg=(KPK^{\mathsf T})_{PP}$, and
+\[
+r_k=\frac{\beta_k}{\beta}=\frac{P_{pp}}{g^{\mathsf T}Gg}=\frac1{2\,g^{\mathsf T}Gg},\qquad g^{\mathsf T}Gg=0.444951\ (k=1),\ 0.405626\ (k=2)\quad(32^4).
+\]
+Conditioning on the coarse flux $\Phi$, the mean fine field is $Gg\,\Phi/(g^{\mathsf T}Gg)$; the share $u_i$ of path $i$ is the signed sum of $Gg/(g^{\mathsf T}Gg)$ along the path. With $\langle\cdot\rangle_L$ the weighted average over the 83 paths of $L$, $g_L=-\frac1{24}\langle u^3\rangle_L+\frac18\langle u\rangle_L\langle u^2\rangle_L-\frac1{12}\langle u\rangle_L^3$ and $\gamma_P=\sum_L\varepsilon_Lg_L$ over the four links of $P$. At level $2$ the share of a path $j$ of a level-2 link $L$ is the signed sum $u_j=\sum_{L'\in j}\pm\langle u\rangle_{L'}$ over its level-1 links $L'$, and each level-1 link also contributes its own cubic term, linearly through the level-2 average: $\gamma_P=\sum_L\varepsilon_L\bigl(g_L+\sum_jw_j\sum_{L'\in j}\pm g_{L'}\bigr)$. The checks $\sum_L\varepsilon_L\langle u\rangle_L=1$ hold to six digits at both levels.
+
+{\small
+\begin{thebibliography}{9}
+\bibitem{AFP} B.~Allès, A.~Feo, H.~Panagopoulos, \emph{Asymptotic scaling corrections in QCD with Wilson fermions from the 3-loop average plaquette}, Phys.\ Lett.\ B 426 (1998) 361--366, arXiv:hep-lat/9801003 (formula for $c_2$, read from the arXiv version).
+\bibitem{JW} A.~Jaffe, E.~Witten, \emph{Quantum Yang--Mills theory}, in: The Millennium Prize Problems, Clay Math.\ Inst., 2006, 129--152 (not consulted directly).
+\bibitem{LW} M.~Lüscher, P.~Weisz, \emph{Computation of the relation between the bare lattice coupling and the $\overline{\rm MS}$ coupling in SU($N$) gauge theories to two loops}, Nucl.\ Phys.\ B 452 (1995) 234, arXiv:hep-lat/9505011 (values of $Q_1$, $Q_2$; their definitions are in M.~Lüscher, P.~Weisz, \emph{Coordinate space methods for the evaluation of Feynman diagrams in lattice field theory}, arXiv:hep-lat/9502017, not consulted).
+\end{thebibliography}}
+\end{document}
