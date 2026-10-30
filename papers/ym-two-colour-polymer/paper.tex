@@ -1,0 +1,514 @@
+%% ym-two-colour-polymer — GitHub edition (pdfTeX / latexmk -pdf)
+\documentclass[11pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,top=27mm,bottom=27mm,left=28mm,right=28mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+%% Unicode characters that occur only inside the verbatim Lean quotations
+\DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+\DeclareUnicodeCharacter{0393}{\ensuremath{\Gamma}}
+\DeclareUnicodeCharacter{039B}{\ensuremath{\Lambda}}
+\DeclareUnicodeCharacter{03B3}{\ensuremath{\gamma}}
+\DeclareUnicodeCharacter{03B5}{\ensuremath{\varepsilon}}
+\DeclareUnicodeCharacter{03B7}{\ensuremath{\eta}}
+\DeclareUnicodeCharacter{03B8}{\ensuremath{\theta}}
+\DeclareUnicodeCharacter{03BC}{\ensuremath{\mu}}
+\DeclareUnicodeCharacter{2080}{\ensuremath{{}_0}}
+\DeclareUnicodeCharacter{2113}{\ensuremath{\ell}}
+\DeclareUnicodeCharacter{2115}{\ensuremath{\mathbb{N}}}
+\DeclareUnicodeCharacter{211D}{\ensuremath{\mathbb{R}}}
+\DeclareUnicodeCharacter{2124}{\ensuremath{\mathbb{Z}}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\to}}
+\DeclareUnicodeCharacter{2200}{\ensuremath{\forall}}
+\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}
+\DeclareUnicodeCharacter{220F}{\ensuremath{\prod}}
+\DeclareUnicodeCharacter{2211}{\ensuremath{\sum}}
+\DeclareUnicodeCharacter{2227}{\ensuremath{\wedge}}
+\DeclareUnicodeCharacter{2229}{\ensuremath{\cap}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\le}}
+\DeclareUnicodeCharacter{2286}{\ensuremath{\subseteq}}
+\DeclareUnicodeCharacter{1D4B3}{\ensuremath{\mathcal{X}}}
+
+\DeclareRobustCommand{\lean}[1]{{\ttfamily\renewcommand{\_}{\textunderscore\allowbreak}#1}}
+\emergencystretch=2em
+\newenvironment{leanquote}{\par\smallskip\footnotesize}{\par\smallskip}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\thin}{\operatorname{thin}}
+\newcommand{\dfc}{\operatorname{def}}
+\newcommand{\enc}{\operatorname{enc}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\blk}{\operatorname{blk}}
+
+\title{A machine-checked two-colour polymer gas on $\mathbb{Z}^4$: encoding, adjacency degrees, the box stage, and the Kotecký--Preiss condition down to Dobrushin}
+\author{Yoshikazu Hosomura\\[.3em]\normalsize with the assistance of Claude (Claude Code, Anthropic)}
+\date{2026-10-30}
+
+\begin{document}
+\maketitle
+\begin{center}\small wvbks0 [at] gmail.com · \url{https://computoergosum.com/en/index.html}\end{center}
+\begin{center}\small AI use is disclosed in \S\ref{sec:ai}; what is not claimed is in \S\ref{sec:notclaimed}.\end{center}
+
+\begin{abstract}
+We describe a Lean~4 formalisation of the combinatorial half of a cluster-expansion argument for a gas of connected clusters of plaquettes on $\mathbb{Z}^4$. A cluster $X$ is encoded as a two-colour set: its \emph{thin} plaquettes and its \emph{defect} links (links of which $X$ contains at least $m$ of the six plaquettes), each defect labelled by $X\cap D_\ell$. Lean proves that the encoding preserves connectedness, that a cluster is recovered from its code and labels, and that the label sum factorises over links. On concrete types (points $\mathtt{Fin}\,4\to\mathbb{Z}$, plaquettes $=$ point $\times\,\mathtt{Fin}\,6$, links $=$ point $\times\,\mathtt{Fin}\,4$) the kernel decides the two-colour degrees $20$, $44$, $66$, $122$ and the $20$ box shifts between link-sharing plaquettes (boxes of $16$ points, $96$ plaquettes). The Kotecký--Preiss per-point sum is then bounded on the plaquette and box stages and carried down to Dobrushin's condition and to $Z>0$, $\log Z\ge-\sum a$. Activities enter only through hypotheses, a product bound or the activity-sum hypothesis (H-sum) $\sum_{X\ni x}|z(X)|e^{2|X|}\le1$; no value or estimate of any activity is given. An identity rewrites the per-box sum of the box gas as a sum over plaquette clusters, so that (H-sum) yields Dobrushin's condition and the bounds on $Z$ for the box gas in one composed theorem; a bridge bounds the activity of the clusters meeting a box by plaquette-stage sums. Thirteen files contain $518$ theorem declarations, $163$ distinct statements after removing copies; $16$ are finite counts closed by \texttt{decide +kernel}, the rest are proofs.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+Cluster expansions for lattice gauge theories at weak coupling separate the configuration into a region where every plaquette variable is small and a set of \emph{large-field} plaquettes, and then treat the connected components of the large-field set as polymers of a gas whose activities are small (for the setting of the Yang--Mills problem see~\cite{JW}). The analytic work lies in bounding the activities. A second, purely combinatorial, half is needed as well: one has to count connected clusters on the lattice with enough precision that a smallness condition on a single plaquette (or a single block) turns into the Kotecký--Preiss condition~\cite{KP} for the whole gas, and this condition in turn into Dobrushin's condition~\cite{Do} and lower bounds on the partition function. This note is about that combinatorial half, written in Lean~4 against Mathlib~\cite{Mathlib}, for one concrete organisation of the clusters that arose in the authors' work on a lattice $SU(2)$ model in four dimensions. Background on that programme is collected at \url{https://computoergosum.com/en/principia/yang-mills/index.html}; nothing below depends on it.
+
+The organisation is \emph{two-colour}. Plaquettes that sit around a common link are strongly correlated, so a cluster that contains many of the six plaquettes of one link is better counted as a single object, a \emph{defect link}, than as many independent plaquettes. A cluster is therefore encoded as a set of thin plaquettes together with a set of defect links, each defect link labelled by the subset of its six plaquettes that the cluster contains. The KP sum is then a sum over connected sets of a two-colour graph with colour-dependent weights and degrees. The note records what is formalised (\S\S\ref{sec:setting}--\ref{sec:dobrushin}), how the lattice objects are represented (\S\ref{sec:lattice}), which statements are decided by the kernel and which are proved (\S\ref{sec:decided}), and which inputs remain assumptions (\S\ref{sec:assumptions}). The authors' working records (unpublished) contain the numerical exploration that motivated the choices; none of it is used here.
+
+\paragraph{Status of the results.} Every implication stated as a theorem below is a Lean~4 theorem that passes its check (no \texttt{sorry}, no \texttt{axiom} declaration, no \texttt{native\_decide}; axioms \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}). The finite counts on $\Z^4$ are decided by \texttt{decide +kernel}. The activities of a gauge model are \emph{not} treated: the bound on the activities is a hypothesis of every theorem, either in product form (H-2col) or in summed form (H-sum) (\S\ref{sec:setting}). That the large-field clusters of a gauge model form a polymer gas of the kind considered here, with compatibility given by disjoint supports, is an assumption stated in \S\ref{sec:assumptions} and is not formalised. Where we say ``proved'' we mean ``proved in Lean''; the rest of the text is explanation.
+
+\section{The setting: clusters, activities, and the two conditions}\label{sec:setting}
+
+\paragraph{Graphs and connected sets.} Let $P$ be a type with decidable equality and $\mathrm{adj}$ a relation on $P$ (symmetry is never used). For a finite $X\subseteq P$, $\mathrm{Conn}_X$ is the reflexive--transitive closure of $\{(a,b):a,b\in X,\ \mathrm{adj}(a,b)\}$; $X$ is \emph{connected} if $\mathrm{Conn}_X(a,b)$ for all $a,b\in X$. A finite $C$ is \emph{rooted} at $R$ if $R\subseteq C$ and every $c\in C$ is reached from some $\rho\in R$ inside $C$. For weights $x:P\to[0,\infty)$ put
+\[
+W_g(U,R)=\sum_{C\subseteq U,\ C\text{ rooted at }R}\ \prod_{c\in C}x(c)
+\]
+(\lean{Wg}).
+
+\paragraph{The gas.} A \emph{cluster} is a finite connected set $X$ of plaquettes (adjacent $=$ distinct and sharing a link) inside a finite region $\Lambda_F$; $\mathcal X$ is a finite family of clusters, and $z:\mathcal X\to\R$ is the activity. Two clusters are incompatible when their supports meet. With $\supp$ the support map (the identity on the plaquette stage, the set of boxes on the box stage, \S\ref{sec:box}) and $\mu(X)=|z(X)|e^{2|\supp X|}$ we use:
+\begin{itemize}[leftmargin=2em]
+\item the \emph{Kotecký--Preiss per-point condition} (the hypothesis \lean{hsite} of \lean{KPToDobrushin}):
+\[
+\forall x:\quad \sum_{X\in\mathcal X,\ x\in\supp X}|z(X)|\,e^{2|\supp X|}\ \le\ 1;\tag{KP}
+\]
+\item \emph{Dobrushin's condition} with $a(X)=\log(1+\mu(X))$:
+\[
+|z(X)|\ \le\ \bigl(1-e^{-a(X)}\bigr)\exp\Bigl(-\sum_{X'\ne X,\ \supp X'\cap\supp X\neq\emptyset}a(X')\Bigr).\tag{D}
+\]
+\end{itemize}
+
+\paragraph{The two activity hypotheses.} Fix a set $\Lambda_L$ of links and a threshold $m\ge1$. For a link $\ell$ let $D_\ell$ be the set of its six plaquettes. For a cluster $X$,
+\[
+\dfc(X)=\{\ell\in\Lambda_L:\ |X\cap D_\ell|\ge m\},\qquad \thin(X)=\{p\in X:\ p\notin D_\ell\ \text{for all }\ell\in\dfc(X)\}.
+\]
+\begin{itemize}[leftmargin=2em]
+\item \textbf{(H-2col)} (product form; the hypothesis \lean{hz}): $|z(X)|\le\varepsilon_0^{|\thin X|}\prod_{\ell\in\dfc X}\eta(\ell,X\cap D_\ell)$ for numbers $\varepsilon_0\ge0$ and $\eta\ge0$, together with a bound on the \emph{label sum} of each link (the hypothesis \lean{hlink}), $\sum_{S\subseteq D_\ell}\eta(\ell,S)e^{2|S|}\le c_L$ on the plaquette stage, $\sum_{S\subseteq D_\ell}\eta(\ell,S)\le\varepsilon_L$ on the box stage.
+\item \textbf{(H-sum)} (summed form): the inequality (KP) itself, assumed for the gas, either with $\supp=\mathrm{id}$ (plaquette stage) or with $\supp$ the box support of \S\ref{sec:box} (box stage).
+\end{itemize}
+(H-2col) is the form needed to \emph{derive} (KP) from per-object smallness; (H-sum) is the form in which (KP) is taken as the assumption and only the passage to the box gas and to (D) is formalised. Where a theorem quoted below contains numerical constants in its hypotheses (for instance $\varepsilon_0\le2.5\cdot10^{-3}$), these are the thresholds of a sufficient condition proved in Lean; they are not estimates of any activity.
+
+\section{Two-colour connected sets and the per-point sum}\label{sec:twocolour}
+
+The counting rests on a weighted form of the classical tree-graph/generating-function bound for connected sets.
+
+\begin{lemma}[Lean: \lean{Wg\_le}]\label{lem:Wg}
+Let $\mathrm{nb}(p)$ be finite sets with $p\neq q\wedge\mathrm{adj}(p,q)\Rightarrow q\in\mathrm{nb}(p)$, and let $x,\tau\ge0$ satisfy $x(p)\prod_{q\in\mathrm{nb}(p)}(1+\tau(q))\le\tau(p)$ for all $p$. Then $W_g(U,R)\le\prod_{r\in R}\tau(r)$ for all finite $U,R$.
+\end{lemma}
+The proof is a strong induction on $|U|$: removing one root $r$ replaces it by a subset $Q$ of its neighbours outside $R$ (\lean{rooted\_erase}, \lean{Wg\_step}). The hypothesis on $\mathrm{nb}$ excludes $q=p$; this weakening (relative to the first version of the file) lets a defect link be adjacent to itself in the two-colour graph without entering its own neighbourhood. For a single colour and constant weights the same induction gives the count $\#\{C\ni p\text{ connected},|C|=n\}\le e^n d^{\,n-1}$ when every point has at most $d\ge1$ neighbours (\lean{connected\_count\_le}), and the one-colour KP sum $\sum_{C\ni p}|z(C)|e^{2|C|}\le1/d$ under $e^3d\varepsilon\le1$ (\lean{point\_kp\_sum\_le}).
+
+Now colour the points, $\mathrm{col}:P\to\{0,1\}$ (in Lean \lean{Bool}; \lean{false} $=$ thin plaquette, \lean{true} $=$ defect link), and let $d_{ab}$ bound the number of colour-$b$ neighbours of a colour-$a$ point.
+
+\begin{proposition}[Lean]\label{prop:twocol}
+Let $\varepsilon_b,\theta_b\ge0$ and $a_b\in\R$. If $|z(C)|\le\prod_{q\in C}\varepsilon_{\mathrm{col}(q)}$ for every finite $C$ and
+\[
+\varepsilon_b\,e^{a_b}(1+\theta_0)^{d_{b0}}(1+\theta_1)^{d_{b1}}\le\theta_b\qquad(b=0,1),
+\]
+then for every finite $U$, every point $p$ and every finite root set $S$, with $C$ ranging over the connected subsets of $U$,
+\[
+\sum_{C\ni p\text{ conn.}}|z(C)|\prod_{q\in C}e^{a_{\mathrm{col}(q)}}\le\theta_{\mathrm{col}(p)},\qquad
+\sum_{C\cap S\ne\emptyset\text{ conn.}}|z(C)|\prod_{q\in C}e^{a_{\mathrm{col}(q)}}\le\sum_{r\in S}\theta_{\mathrm{col}(r)}.
+\]
+(\lean{two\_color\_point\_sum}, \lean{two\_color\_root\_set\_sum}; the version with point weights $x\le\xi_{\mathrm{col}}$ in place of $z$ is \lean{two\_color\_root\_gf}.)
+\end{proposition}
+
+\begin{lemma}[Lean]\label{lem:fix}
+With $(d_{00},d_{01},d_{10},d_{11})=(20,48,72,122)$, $(a_0,a_1)=(2,12)$ and $(\theta_0,\theta_1)=(1/20,10^{-4})$, the two inequalities of Proposition~\ref{prop:twocol} hold whenever $\varepsilon_0\le2.5\cdot10^{-3}$ and $\varepsilon_1\le1.5\cdot10^{-11}$; moreover $\theta_0+4\theta_1\le1$ (\lean{lattice\_fix}, \lean{lattice\_face\_total}).
+\end{lemma}
+The proof uses $e\le2.7182818286$ (\lean{exp\_one\_le}) and \lean{norm\_num}. The degrees $48$ and $72$ are upper bounds; the exact degrees $44$ and $66$ are decided in \S\ref{sec:lattice} and enter through ``$\le$''. The weight $e^{a_1}=e^{12}=(e^{2})^{6}$ is the KP weight of the at most six plaquettes of a defect.
+
+\section{The encoding}\label{sec:encoding}
+
+Let $F$ (plaquettes) and $L$ (links) be types with decidable equality, $D:L\to\mathrm{Finset}\,F$, $\mathrm{adj}_F$ a relation on $F$, $\Lambda_L$ a finite set of links and $m\ge1$. The code of $X$ is
+\[
+\enc(X)=\thin(X)\sqcup\dfc(X)\ \subseteq\ F\oplus L ,
+\]
+and the two-colour adjacency \lean{cadj} on $F\oplus L$ is
+\begin{align*}
+p\sim q &\iff \mathrm{adj}_F(p,q),\\
+p\sim\ell &\iff p\notin D_\ell\ \wedge\ \exists q\in D_\ell,\ \mathrm{adj}_F(p,q),\qquad
+\ell\sim p \iff p\notin D_\ell\ \wedge\ \exists q\in D_\ell,\ \mathrm{adj}_F(q,p),\\
+\ell\sim\ell' &\iff \exists p\in D_\ell,\ \exists q\in D_{\ell'},\ p=q\ \vee\ \mathrm{adj}_F(p,q).
+\end{align*}
+
+\begin{lemma}[Lean, \lean{LatticeTwoColorKP}]\label{lem:enc}
+For every finite $X\subseteq F$:
+\begin{enumerate}[label=(\roman*),leftmargin=2em]
+\item (\emph{connectedness}, \lean{enc\_connected}) if $X$ is connected for $\mathrm{adj}_F$ and $m\ge1$, then $\enc(X)$ is connected for \lean{cadj};
+\item (\emph{recovery}, \lean{decode}, \lean{enc\_eq}, \lean{thin\_disjoint}) $X=\thin(X)\cup\bigl(X\cap\bigcup_{\ell\in\dfc X}D_\ell\bigr)$; equal codes have equal thin parts and equal defect sets; and $\thin(X)$ is disjoint from $\bigcup_{\ell\in\dfc X}D_\ell$;
+\item (\emph{size}, \lean{card\_le\_enc}) $|X|\le|\thin X|+\sum_{\ell\in\dfc X}|X\cap D_\ell|$;
+\item (\emph{label sum}, \lean{label\_sum\_le}) for $g\ge0$ and any finite $R\subseteq L$,
+\[
+\sum_{T\subseteq\bigcup_{\ell\in R}D_\ell}\ \prod_{\ell\in R}g(\ell,T\cap D_\ell)\ \le\ \prod_{\ell\in R}\ \sum_{S\subseteq D_\ell}g(\ell,S),
+\]
+even when the $D_\ell$ overlap.
+\end{enumerate}
+\end{lemma}
+
+The connectedness proof maps each plaquette $f\in X$ to its image $\mathrm{img}(f)$, a defect link containing it (chosen with \lean{Classical.choose}) or $f$ itself (\lean{img\_spec}); adjacent plaquettes have adjacent or equal images (\lean{img\_adj}), so paths in $X$ map to paths in $\enc(X)$, and every point of $\enc(X)$ is the image of, or adjacent to the image of, a plaquette of $X$. Injectivity is used in the following form: on the fibre $\{X:\enc(X)=C\}$ all clusters share $\thin(X)$ and $\dfc(X)$, so by (ii) the map $X\mapsto X\cap\bigcup_{\ell\in\dfc}D_\ell$ is injective there; this is the step \lean{hinj} inside the proof of the next proposition, combined with (iv).
+
+\begin{proposition}[Lean: \lean{encoded\_sum\_le}]\label{prop:encsum}
+Under (H-2col), for any predicate $Q$ satisfied by all codes $\enc(X)$, $X\in\mathcal X$,
+\[
+\sum_{X\in\mathcal X}|z(X)|e^{2|X|}\ \le \sum_{\substack{C\subseteq\Lambda_F\sqcup\Lambda_L\\ Q(C),\ C\ \text{connected}}}\ \prod_{q\in C}x_w(q),
+\]
+with connectedness for \lean{cadj}, $x_w(p)=\varepsilon_0e^2$ and $x_w(\ell)=\sum_{S\subseteq D_\ell}\eta(\ell,S)e^{2|S|}$.
+\end{proposition}
+The version with weight $e^{c|X|}$ for any $c\ge0$ is \lean{encoded\_sum\_le\_c}; it is used with $c=0$ on the box stage.
+
+\section{The lattice \texorpdfstring{$\mathbb{Z}^4$}{Z4} and the adjacency degrees}\label{sec:lattice}
+
+\paragraph{Representation.} Points, plaquettes and links are
+\begin{leanquote}
+\begin{verbatim}
+abbrev Pt := Fin 4 → ℤ
+abbrev Face := Pt × Fin 6
+abbrev Link := Pt × Fin 4
+\end{verbatim}
+\end{leanquote}
+The plaquette index $k=0,\dots,5$ stands for the plane $(0,1),(0,2),(0,3),(1,2),(1,3),(2,3)$ and the first component is the base point. Two tables at the origin, \lean{links0} (the four links of the plaquette $(0,k)$; for the plane $(\mu,\nu)$ these are $(0,\mu),(e_\mu,\nu),(e_\nu,\mu),(0,\nu)$) and \lean{faces0} (the six plaquettes containing the link $(0,\mu)$, namely $(0,\{\mu,\nu\})$ and $(-e_\nu,\{\mu,\nu\})$ for $\nu\neq\mu$), are translated by the embeddings \lean{tF}, \lean{tL} to give \lean{linksOf} and \lean{facesOf}~$=D$. Their consistency, $f\in D_\ell\iff\ell\in\mathrm{linksOf}(f)$, is \lean{mem\_facesOf\_iff}, reduced by translation to the origin and proved there by case analysis (\lean{key0}). Plaquette adjacency \lean{faceAdj} means: distinct, and both in some $D_\ell$.
+
+\paragraph{Neighbourhoods and degrees.} The two-colour neighbourhoods are translates of finite sets at the origin (writing $\partial f$ for the links of $f$ and $N_{FF}(f)$ for the translate of $N_{FF}^0$):
+\begin{align*}
+N_{FF}^0(k)&=\Bigl(\bigcup_{\ell\in\partial(0,k)}D_\ell\Bigr)\setminus\{(0,k)\},\\
+N_{FL}^0(k)&=\Bigl\{\ell\in\bigcup_{g\in N_{FF}^0(k)}\partial g:\ (0,k)\notin D_\ell\Bigr\},\\
+N_{LF}^0(\mu)&=\Bigl(\bigcup_{f\in D_{(0,\mu)}}N_{FF}(f)\Bigr)\setminus D_{(0,\mu)},\\
+N_{LL}^0(\mu)&=\Bigl(\bigcup_{f\in E_\mu}\partial f\Bigr)\setminus\{(0,\mu)\},
+\end{align*}
+with $E_\mu=D_{(0,\mu)}\cup\bigcup_{f\in D_{(0,\mu)}}N_{FF}(f)$.
+Lean shows that every \lean{cadj}-neighbour (other than the point itself) lies in the translated set (\lean{adj\_mem\_nbFF}, \lean{fl\_mem}, \lean{lf\_mem}, \lean{ll\_mem}, assembled in \lean{lattice\_hnb}) and decides the sizes:
+\begin{leanquote}
+\begin{verbatim}
+theorem card_nbFF0 : ∀ k, (nbFF0 k).card = 20 := by decide +kernel
+theorem card_nbFL0 : ∀ k, (nbFL0 k).card = 44 := by decide +kernel
+theorem card_nbLF0 : ∀ μ, (nbLF0 μ).card = 66 := by decide +kernel
+theorem card_nbLL0 : ∀ μ, (nbLL0 μ).card = 122 := by decide +kernel
+theorem card_links0 : ∀ k, (links0 k).card = 4 := by decide +kernel
+\end{verbatim}
+\end{leanquote}
+So a plaquette has $20$ plaquette neighbours and $44$ defect-link neighbours, and a defect link has $66$ plaquette neighbours and $122$ defect-link neighbours; every plaquette has $4$ links (\lean{lattice\_hfour}: at most $4$ links of $\Lambda_L$ contain a given plaquette). These close the hypotheses \lean{hnb}, \lean{hdeg} (\lean{lattice\_hdeg}, against the upper bounds $(20,48,72,122)$ of Lemma~\ref{lem:fix}) and \lean{hfour} of the abstract theorem, leaving only the activity hypotheses:
+
+\begin{theorem}[Lean: \lean{lattice\_kp\_site}, \lean{lattice\_dobrushin}]\label{thm:face}
+On $\Z^4$, under (H-2col) with $\varepsilon_0\le2.5\cdot10^{-3}$ and label sums $\le1.5\cdot10^{-11}e^{12}$, (KP) holds on the plaquette stage; if moreover $|X|\ge1$ and $|z(X)|e^{2|X|}\le e-1$ for all $X\in\mathcal X$, then (D) holds for every $X\in\mathcal X$.
+\end{theorem}
+\begin{leanquote}
+\begin{verbatim}
+theorem lattice_kp_site (ΛF : Finset Face) (ΛL : Finset Link) (m : ℕ) (hm : 1 ≤ m)
+    (𝒳 : Finset (Finset Face)) (h𝒳 : ∀ X ∈ 𝒳, X ⊆ ΛF ∧ IsConnectedSet faceAdj X)
+    (z : Finset Face → ℝ) (ε₀ : ℝ) (hε₀ : 0 ≤ ε₀) (hε₀' : ε₀ ≤ 2.5e-3)
+    (η : Link → Finset Face → ℝ) (hη : ∀ ℓ S, 0 ≤ η ℓ S)
+    (hlink : ∀ ℓ, ∑ S ∈ (facesOf ℓ).powerset, η ℓ S * Real.exp (2 * S.card) ≤ 1.5e-11
+      * Real.exp 12)
+    (hz : ∀ X ∈ 𝒳, |z X| ≤ (∏ _p ∈ thin facesOf ΛL m X, ε₀) *
+      ∏ ℓ ∈ defects facesOf ΛL m X, η ℓ (X ∩ facesOf ℓ)) :
+    ∀ x : Face, ∑ X ∈ 𝒳.filter (fun s => x ∈ id s), |z X| * Real.exp (2 * (id
+      X).card) ≤ 1 :=
+\end{verbatim}
+\end{leanquote}
+The proof is \lean{encoded\_kp\_site}: Proposition~\ref{prop:encsum} with $Q(C)=$ ``$C$ meets the root set of $x$'', where the root set of a plaquette $x$ is $\{x\}\sqcup\{\ell\in\Lambda_L:x\in D_\ell\}$ (\lean{rootSet}, \lean{enc\_meets\_root}); Proposition~\ref{prop:twocol} with Lemma~\ref{lem:fix} bounds the result by $\theta_0+4\theta_1\le1$.
+
+\paragraph{A wider adjacency.} The file \lean{Lattice24KP} repeats the construction with plaquette adjacency enlarged by the four parallel plaquettes across an elementary cube (\lean{cubeOpp0}, \lean{faceAdj24}). The decided degrees are $24$, $44$, $66$, $122$ (\lean{card\_nbFF24\_0}, \dots, \lean{card\_nbLL24\_0}), the arithmetic condition holds for $\varepsilon_0\le2.1\cdot10^{-3}$, $\varepsilon_1\le1.5\cdot10^{-11}$ with $\theta=(1/23,10^{-4})$ (\lean{lattice24\_fix}), and the analogue of Theorem~\ref{thm:face} is \lean{lattice\_kp\_site24}. At $\varepsilon_0\ge2.5\cdot10^{-3}$ no $\theta\ge0$ satisfies the thin inequality with degrees $(24,48)$ (\lean{face24\_fails}).
+
+\section{The box stage}\label{sec:box}
+
+\paragraph{Boxes and shifts.} Let $\blk(x)=(\lfloor x_i/2\rfloor)_i$ (\lean{blk}, integer division). The box of $b\in\Z^4$ is $\{x:\blk(x)=b\}=2b+\{0,1\}^4$, with $16$ points (\lean{card\_corners}), $96$ plaquettes based in it (\lean{boxFaces}, \lean{card\_boxFaces}: $\le96$) and $64$ links (\lean{card\_boxLinks}: $\le64$). A plaquette belongs to the box of its base point. The set of box shifts between plaquettes that share a link is computed at the origin, over the $16$ positions of a base point in its box, and decided:
+\begin{leanquote}
+\begin{verbatim}
+theorem card_boxOff : (boxOff.erase 0).card = 20 := by decide +kernel
+\end{verbatim}
+\end{leanquote}
+\lean{box\_offset} shows that every link-sharing pair of plaquettes has its box shift in \lean{boxOff}; hence the box adjacency has degree $\le20$ (\lean{box\_degree}) and the box image of a connected cluster is connected (\lean{box\_image\_connected}). The $20$ shifts are not the $8$ nearest-neighbour shifts alone: \lean{box\_diag} exhibits two plaquettes sharing the link $((2,0,0,0),2)$ whose boxes differ by $(1,-1,0,0)$. (Enumerating \lean{boxOff} outside Lean gives the $8$ shifts $\pm e_\mu$ and the $12$ shifts $e_\mu-e_\nu$; only the total $20$ is decided in Lean.)
+
+\paragraph{The two-colour box gas.} Points of the box gas are pairs (box, colour). Thin--thin shifts are the $20$ above (\lean{card\_offFF}); for pairs involving a defect, Lean decides that all point shifts in $N_{FL}^0,N_{LF}^0,N_{LL}^0$ have coordinates in $[-2,2]$ (\lean{nbFL0\_bdd}, \lean{nbLF0\_bdd}, \lean{nbLL0\_bdd}), hence box shifts in $\{-1,0,1\}^4$ (\lean{blk\_sub\_mem\_cube}, \lean{card\_cube81}), and uses the degrees $(20,81,81,80)$ (\lean{card\_offc}, \lean{box\_hdeg}). These are upper bounds; the exact values $39,39,56$ found by enumeration outside Lean are not used. The box image $\mathrm{bimg}$ of a \lean{cadj}-connected set is connected for the box adjacency (\lean{bimg\_connected}). With the product hypothesis $|z_B(\Gamma)|\le\prod_{q\in\Gamma}\varepsilon_{\mathrm{col}(q)}$ over boxes, the arithmetic condition holds for $\varepsilon_{\rm thin}\le2.55\cdot10^{-3}$, $\varepsilon_{\rm def}\le10^{-9}$, $\theta=(1/20,10^{-6})$ (\lean{box\_fix}), giving (KP) with $\supp\Gamma$ the set of boxes (\lean{box\_kp\_site}, \lean{box\_hsite}) and (D) (\lean{box\_dobrushin}); \lean{box\_fails} shows that at $\varepsilon_{\rm thin}\ge3.068\cdot10^{-3}$ no $\theta\ge0$ satisfies the thin inequality.
+
+\paragraph{From the plaquette stage to the box gas.} Let $\mathrm{boxImage}(X)=\mathrm{bimg}(\enc X)$ and define the box activity as the sum over the fibre,
+\[
+z_B(\Gamma)=\sum_{X\in\mathcal X,\ \mathrm{boxImage}(X)=\Gamma}|z(X)|
+\]
+(\lean{zBox}). Under (H-2col) with $\sum_{S\subseteq D_\ell}\eta(\ell,S)\le\varepsilon_L$, the fibre sum is bounded by a product over boxes with $\varepsilon_{\rm box}(\text{thin})=(1+\varepsilon_0)^{96}-1$ and $\varepsilon_{\rm box}(\text{def})=(1+\varepsilon_L)^{64}-1$ (\lean{fiber\_box\_le}, \lean{cell\_prod\_le}, \lean{box\_hz\_from\_face}), and \lean{face\_to\_box\_dobrushin} carries this to (D) for the box gas when $\varepsilon_0\le2.6\cdot10^{-5}$, $\varepsilon_L\le1.5\cdot10^{-11}$ (\lean{epsBox\_numbers}). This route needs the product form over boxes; we keep it as a formal statement but do not rely on it (\S\ref{sec:assumptions}).
+
+The route used instead takes (H-sum) as the assumption. The box-stage sum of the box gas is \emph{equal} to a sum over plaquette clusters:
+
+\begin{theorem}[Lean: \lean{box\_hsite\_eq\_face\_sum}, \lean{box\_hsite\_of\_face\_sum}]\label{thm:eq}
+For every box $b$,
+\[
+\sum_{\Gamma\in\mathrm{boxImage}(\mathcal X),\ b\in\supp\Gamma}|z_B(\Gamma)|\,e^{2|\supp\Gamma|}
+=\sum_{X\in\mathcal X,\ b\in\supp\mathrm{boxImage}(X)}|z(X)|\,e^{2|\supp\mathrm{boxImage}(X)|},
+\]
+where $\supp\Gamma$ is the set of boxes of $\Gamma$. Consequently (H-sum) in the box form, ``the right-hand side is $\le1$ for every $b$'', is exactly (KP) for the box gas, with no product hypothesis.
+\end{theorem}
+\begin{leanquote}
+\begin{verbatim}
+theorem box_hsite_eq_face_sum (ΛL : Finset Link) (m : ℕ) (𝒳 : Finset (Finset Face))
+      (z : Finset Face → ℝ)
+    (b : Pt) :
+    ∑ Γ ∈ (𝒳.image (boxImage ΛL m)).filter (fun s => b ∈ boxSupp s),
+        |zBox ΛL m 𝒳 z Γ| * Real.exp (2 * (boxSupp Γ).card) =
+      ∑ X ∈ 𝒳.filter (fun X => b ∈ boxSupp (boxImage ΛL m X)),
+        |z X| * Real.exp (2 * (boxSupp (boxImage ΛL m X)).card) := by
+\end{verbatim}
+\end{leanquote}
+The proof uses only $|z_B|=z_B$ (a sum of absolute values) and regrouping by fibres (\lean{sum\_fiberwise\_of\_maps\_to}). Feeding \lean{box\_hsite\_of\_face\_sum} into \lean{dobrushin\_cond\_of\_kp} with $\supp=$ \lean{boxSupp} gives (D) for the box gas, and Theorem~\ref{thm:Z} then gives the partition function; this composition is stated as one theorem, Theorem~\ref{thm:comp} in \S\ref{sec:dobrushin}.
+
+\paragraph{The bridge.} The second use of the plaquette stage is to bound, box by box, the total activity of the clusters that touch a box. The root set of a box $b$ is its $96$ plaquettes together with the links of $\Lambda_L$ having a plaquette in the box, at most $96\cdot4=384$ of them (\lean{boxRoot}, \lean{card\_boxRoot\_links}); the code of a cluster that meets the box meets this root set (\lean{enc\_meets\_boxRoot}).
+
+\begin{theorem}[Lean: \lean{box\_event\_bridge}]\label{thm:bridge}
+Under (H-2col) without KP weights, with label sums $\sum_{S\subseteq D_\ell}\eta(\ell,S)\le\varepsilon_L$, and if $\theta_0,\theta_1\ge0$ satisfy $\varepsilon_0(1+\theta_0)^{20}(1+\theta_1)^{48}\le\theta_0$ and $\varepsilon_L(1+\theta_0)^{72}(1+\theta_1)^{122}\le\theta_1$, then for every box $b$
+\[
+\sum_{X\in\mathcal X,\ X\cap\mathrm{boxFaces}(b)\ne\emptyset}|z(X)|\ \le\ 96\,\theta_0+384\,\theta_1 .
+\]
+\end{theorem}
+\begin{leanquote}
+\begin{verbatim}
+theorem box_event_bridge (ΛF : Finset Face) (ΛL : Finset Link) (m : ℕ) (hm : 1 ≤ m)
+    (𝒳 : Finset (Finset Face)) (h𝒳 : ∀ X ∈ 𝒳, X ⊆ ΛF ∧ IsConnectedSet faceAdj X)
+    (z : Finset Face → ℝ) (ε₀ εL : ℝ) (hε₀ : 0 ≤ ε₀) (η : Link → Finset Face → ℝ) (hη
+      : ∀ ℓ S, 0 ≤ η ℓ S)
+    (hlink : ∀ ℓ, ∑ S ∈ (facesOf ℓ).powerset, η ℓ S ≤ εL)
+    (hz : ∀ X ∈ 𝒳, |z X| ≤ (∏ _p ∈ thin facesOf ΛL m X, ε₀) *
+      ∏ ℓ ∈ defects facesOf ΛL m X, η ℓ (X ∩ facesOf ℓ))
+    (θ : Bool → ℝ) (hθ : ∀ c, 0 ≤ θ c)
+    (hfix : ∀ a, (fun c => if c then εL else ε₀) a * (1 + θ false) ^ latticeDeg a
+      false *
+      (1 + θ true) ^ latticeDeg a true ≤ θ a) (b : Pt) :
+    ∑ X ∈ 𝒳.filter (fun X => (X ∩ boxFaces b).Nonempty), |z X| ≤ 96 * θ false + 384 *
+      θ true := by
+\end{verbatim}
+\end{leanquote}
+The proof is \lean{encoded\_sum\_le\_c} with $c=0$ and $Q(C)=$ ``$C$ meets the root set of $b$'', followed by \lean{two\_color\_root\_gf} on $\Z^4$. In words: the total activity of the clusters that meet box $b$ is controlled by the two-colour sums of the plaquette stage, without passing through a product over boxes. Turning this into a bound on the probability that a box contains a large plaquette requires a Peierls-type inequality $\mu(\text{box $b$ bad})\le\sum_{X\cap b\ne\emptyset}\rho^*(X)$ for the measure, which is not formalised (\S\ref{sec:assumptions}). The file also contains two arithmetic instances of the hypotheses of Theorem~\ref{thm:bridge} with literal inputs (\lean{bridge\_numbers\_gamma}, \lean{bridge\_numbers\_chernoff}); their inputs are not discussed in this note.
+
+\section{From the Kotecký--Preiss sum to Dobrushin and to the partition function}\label{sec:dobrushin}
+
+\begin{theorem}[Lean: \lean{KPToDobrushin.dobrushin\_cond\_of\_kp}]\label{thm:kpd}
+Let $\supp:P\to\mathrm{Finset}\,S$, $U$ finite, $|\supp\gamma|\ge1$, (KP) for $U$, and $|z(\gamma)|e^{2|\supp\gamma|}\le e-1$ for $\gamma\in U$. Then (D) holds for every $\gamma\in U$.
+\end{theorem}
+\begin{leanquote}
+\begin{verbatim}
+theorem dobrushin_cond_of_kp (supp : P → Finset S) (z : P → ℝ) (U : Finset P)
+    (hsize : ∀ γ ∈ U, 1 ≤ (supp γ).card)
+    (hsite : ∀ x, ∑ γ' ∈ U.filter (fun s => x ∈ supp s),
+      |z γ'| * Real.exp (2 * (supp γ').card) ≤ 1)
+    (hsmall : ∀ γ ∈ U, |z γ| * Real.exp (2 * (supp γ).card) ≤ Real.exp 1 - 1) :
+    ∀ γ ∈ U, |z γ| ≤
+      (1 - Real.exp (-Real.log (1 + |z γ| * Real.exp (2 * (supp γ).card)))) *
+        Real.exp (-∑ γ' ∈ (U.erase γ).filter (fun s => (supp γ ∩ supp s).Nonempty),
+          Real.log (1 + |z γ'| * Real.exp (2 * (supp γ').card))) := by
+\end{verbatim}
+\end{leanquote}
+The proof bounds $a\le\mu$ (from $\log(1+t)\le t$), the sum over polymers meeting $\supp\gamma$ by the sum over points of $\supp\gamma$ (\lean{intersect\_sum\_le}), hence by $|\supp\gamma|$ by (KP); the remaining inequality $|z|\le(1-e^{-a})e^{-n}$ is closed using $|z|e^{2n}\le e-1$ and $n\ge1$.
+
+\begin{theorem}[Lean: \lean{PolymerGasDobrushin.dobrushin}, \lean{Z\_ge\_exp}, \lean{log\_Z\_ge}]\label{thm:Z}
+For a finite gas with symmetric incompatibility relation, real activities of any sign, and $Z(\Gamma)=\sum_{t\subseteq\Gamma\text{ compatible}}\prod_{s\in t}z(s)$: if $a\ge0$ is any function and (D) holds with this $a$ in place of $\log(1+\mu)$ and ``incompatible'' in place of ``supports meet'', then for every $\Gamma\subseteq U$, $Z(\Gamma)>0$, $e^{-a(\gamma)}Z(\Gamma\setminus\gamma)\le Z(\Gamma)$ for $\gamma\in\Gamma$, $Z(\Gamma)\ge\exp(-\sum_{\gamma\in\Gamma}a(\gamma))$ and $\log Z(\Gamma)\ge-\sum_{\gamma\in\Gamma}a(\gamma)$.
+\end{theorem}
+With the incompatibility relation ``supports meet'' the hypothesis of Theorem~\ref{thm:Z} is literally the conclusion of Theorem~\ref{thm:kpd}. For the box gas the three steps are composed in one file:
+
+\begin{theorem}[Lean: \lean{BoxGasFromFaceSum.box\_dobrushin\_of\_face\_sum}, \lean{box\_gas\_partition\_of\_face\_sum}]\label{thm:comp}
+Let $\mathcal X$ be a finite family of plaquette sets, $z$ real, and suppose that every box image $\Gamma=\mathrm{boxImage}(X)$, $X\in\mathcal X$, has $|\supp\Gamma|\ge1$, and that (H-sum) holds in the box form, $\sum_{X\in\mathcal X,\ b\in\supp\mathrm{boxImage}(X)}|z(X)|e^{2|\supp\mathrm{boxImage}(X)|}\le1$ for every box $b$. Then the box gas (polymers $\mathrm{boxImage}(\mathcal X)$, activity $z_B$, incompatibility ``box supports meet'') satisfies (D) with $a(\Gamma)=\log(1+|z_B(\Gamma)|e^{2|\supp\Gamma|})$, and for every $\Gamma_s\subseteq\mathrm{boxImage}(\mathcal X)$: $Z(\Gamma_s)>0$, $Z(\Gamma_s)\ge\exp(-\sum_{\Gamma\in\Gamma_s}a(\Gamma))$ and $\log Z(\Gamma_s)\ge-\sum_{\Gamma\in\Gamma_s}a(\Gamma)$.
+\end{theorem}
+\begin{leanquote}
+\begin{verbatim}
+theorem box_gas_partition_of_face_sum (ΛL : Finset Link) (m : ℕ) (𝒳 : Finset (Finset
+      Face))
+    (z : Finset Face → ℝ)
+    (hsize : ∀ Γ ∈ 𝒳.image (boxImage ΛL m), 1 ≤ (boxSupp Γ).card)
+    (hsum : ∀ b : Pt, ∑ X ∈ 𝒳.filter (fun X => b ∈ boxSupp (boxImage ΛL m X)),
+      |z X| * Real.exp (2 * (boxSupp (boxImage ΛL m X)).card) ≤ 1) :
+    ∀ Γs ⊆ 𝒳.image (boxImage ΛL m),
+      0 < PolymerGasDobrushin.Z boxInc (zBox ΛL m 𝒳 z) Γs ∧
+      Real.exp (-∑ Γ ∈ Γs, boxA ΛL m 𝒳 z Γ) ≤ PolymerGasDobrushin.Z boxInc (zBox ΛL m
+      𝒳 z) Γs ∧
+      -∑ Γ ∈ Γs, boxA ΛL m 𝒳 z Γ ≤ Real.log (PolymerGasDobrushin.Z boxInc (zBox ΛL m
+      𝒳 z) Γs) := by
+  have hcond := box_dobrushin_of_face_sum ΛL m 𝒳 z hsize hsum
+\end{verbatim}
+\end{leanquote}
+The smallness hypothesis $|z_B(\Gamma)|e^{2|\supp\Gamma|}\le e-1$ of Theorem~\ref{thm:kpd} is not assumed: by Theorem~\ref{thm:eq} the term of $\Gamma$ in the box-stage sum at a box $b\in\supp\Gamma$ is at most $1\le e-1$. The file \lean{BoxGasFromFaceSum.lean} consists of verbatim copies of \lean{BoxFromFace.lean} and \lean{PolymerGasDobrushin.lean} (each in its own namespace) followed by the two composed theorems and two auxiliary lemmas (symmetry of the incompatibility, $a\ge0$).
+
+\paragraph{Tools for checking (H-sum).} \lean{ClassSiteSum.hsite\_of\_class\_sum} derives (KP) from $|z(\gamma)|\le c\,\varepsilon_{\mathrm{cls}\gamma}^{|\supp\gamma|}$ and counts $N(k,n)$ of clusters through a point by class and size, when $c\sum_k\sum_{n\le M}N(k,n)\varepsilon_k^ne^{2n}\le1$; \lean{SizeSplitKP.size\_split\_site\_sum} bounds the clusters above a size $n_0$ by a geometric series when the counts are $\le cK^{n-1}$ and $K\eta<1$.
+
+\section{What is decided and what is proved}\label{sec:decided}
+
+A statement is \emph{decided} when its whole proof is \lean{by decide +kernel}: the kernel evaluates the finite sets (built from \lean{Finset} operations on \lean{Fin}, $\mathbb{Z}$ and the tables \lean{links0}, \lean{faces0}) and checks the claim. All other statements have tactic proofs. Table~\ref{tab:count} counts theorem declarations per file (one per \texttt{\#print axioms} line; the two \lean{@[simp]} lemmas \lean{tF\_apply}, \lean{tL\_apply}, proved by \lean{rfl}, are not printed and not counted) and separates verbatim copies from new statements.
+
+\begin{table}[ht]\centering\small
+\caption{Theorem declarations. ``Copied'': same name and statement as in the earlier file named; ``decided'': whole proof \lean{by decide +kernel}.}\label{tab:count}
+\begin{tabular}{@{}lrrrl@{}}\toprule
+File & theorems & copied & new & decided (new)\\\midrule
+\lean{ConnectedSetCounting} & 14 & -- & 14 & --\\
+\lean{TwoColorPolymerSum} & 18 & 3 & 15 & --\\
+\lean{KPToDobrushin} & 2 & -- & 2 & --\\
+\lean{TwoColorEncoding} & 37 & 20 & 17 & --\\
+\lean{LatticeTwoColorKP} & 68 & 37 & 31 & 6\\
+\lean{BoxTwoColorKP} & 71 & 51 & 20 & 5\\
+\lean{Lattice24KP} & 73 & 53 & 20$^{*}$ & 4\\
+\lean{BoxFromFace} & 100 & 81 & 19 & 1\\
+\lean{PolymerGasDobrushin} & 8 & -- & 8 & --\\
+\lean{ClassSiteSum} & 4 & -- & 4 & --\\
+\lean{SizeSplitKP} & 6 & -- & 6 & --\\
+\lean{BoxConnectivity} & 5 & -- & 5 & --\\
+\lean{BoxGasFromFaceSum} & 112 & 108 & 4 & --\\\midrule
+total & 518 & 353 & 165 & 16\\\bottomrule
+\end{tabular}
+\par\smallskip\raggedright\footnotesize $^{*}$ Includes \lean{quad\_le\_pow} and \lean{exp\_two\_gt}, which also occur in \lean{BoxTwoColorKP}; counted once among the $159$ distinct statements. Copies: \lean{TwoColorPolymerSum} \S1 from \lean{ConnectedSetCounting}; \lean{TwoColorEncoding} \S\S1--6 from \lean{TwoColorPolymerSum} and \S10 from \lean{KPToDobrushin}; \lean{LatticeTwoColorKP} \S\S1--10 from \lean{TwoColorEncoding} with the neighbourhood hypothesis weakened to $p\ne q$; \lean{BoxTwoColorKP} and \lean{Lattice24KP} \S\S1--11 from \lean{LatticeTwoColorKP}; \lean{BoxFromFace} \S\S1--12 from \lean{BoxTwoColorKP}, and its \S15 repeats the five decided degree counts of \lean{LatticeTwoColorKP}; \lean{BoxGasFromFaceSum} contains \lean{BoxFromFace} and \lean{PolymerGasDobrushin} whole.
+\end{table}
+
+Counting each decided fact once, $16$ distinct statements are decided: the face degrees $20,44,66,122$ and the four links of a plaquette; the $20$ box shifts (twice, as \lean{card\_boxOff} and \lean{card\_offFF}, built differently); $|\{-1,0,1\}^4|=81$; the three coordinate bounds $|\cdot|\le2$; $|\{0,1\}^4|=16$; and the degrees $24,44,66,122$ of the wider adjacency. One further statement, \lean{box\_diag}, uses \lean{decide} on concrete memberships inside a short proof. The remaining $147$ distinct statements, including every inequality on sums, all statements about connectedness and the encoding, and all arithmetic with $e$ (by \lean{norm\_num} after $e\le2.7182818286$ or $7.389<e^2$), are proofs. A decided count says that a set \emph{defined in Lean} has the stated size; that the definition matches the intended geometric neighbourhood is checked by the membership lemmas (\lean{adj\_mem\_nbFF}, \lean{fl\_mem}, \lean{lf\_mem}, \lean{ll\_mem}, \lean{box\_offset}), which are proofs, in one direction only: every true neighbour lies in the set. Sets that are too large would only weaken the bounds.
+
+\section{What remains an assumption}\label{sec:assumptions}
+
+\begin{table}[ht]\centering\small
+\caption{Status of each ingredient.}\label{tab:status}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.64\linewidth}>{\raggedright\arraybackslash}p{0.32\linewidth}@{}}\toprule
+Ingredient & Grade\\\midrule
+encoding: connectedness, recovery, size, label and fibre sums & Lean\\
+two-colour KP sum (Lemma~\ref{lem:Wg}, Proposition~\ref{prop:twocol}) & Lean\\
+degrees $20,44,66,122$; $4$ links; $20$ box shifts; $16$ points & Lean (\lean{decide +kernel})\\
+arithmetic sufficient conditions (Lemma~\ref{lem:fix}, \lean{box\_fix}, \lean{lattice24\_fix}) & Lean (\lean{norm\_num})\\
+(KP) $\Rightarrow$ (D) $\Rightarrow$ $Z>0$, $\log Z\ge-\sum a$ & Lean\\
+(H-sum) $\Rightarrow$ (D) and $Z$ bounds for the box gas, Theorem~\ref{thm:comp} & Lean\\
+identity of Theorem~\ref{thm:eq}; bridge, Theorem~\ref{thm:bridge} & Lean\\
+(H-2col) on the plaquette stage, label-sum bounds & assumption (hypotheses \lean{hz}, \lean{hlink})\\
+(H-sum) & assumption\\
+product form over boxes (\lean{box\_hz\_from\_face}, \lean{box\_kp\_site}) & assumption, not relied on\\
+clusters form a gas, incompatibility $=$ meeting supports & assumption, not formalised\\
+Peierls-type bound $\mu(\text{box bad})\le\sum_{X\cap b\ne\emptyset}\rho^*(X)$ & by hand, not formalised\\
+box degrees $39,39,56$; split $8+12$ of the shifts & computed outside Lean, unused\\\bottomrule
+\end{tabular}
+\end{table}
+
+The product form over boxes asks that the activity of a box configuration be bounded by a product of per-box factors; the authors' numerical exploration indicates that correlations between plaquettes selected in different boxes make it unsuitable for the model they have in mind, so the identity of Theorem~\ref{thm:eq}, with (H-sum) as the assumption, is the route kept here. Whether (H-sum) holds for a particular gauge model is not addressed.
+
+\section{What is machine-checked}\label{sec:lean}
+
+{\sloppy The thirteen files of Table~\ref{tab:count} each begin with \texttt{import Mathlib} and are checked as single files. They are distributed as one bundle (ledger and build instructions: \url{https://computoergosum.com/en/principia/lean/index.html}; bundle: \url{https://computoergosum.com/principia/lean/principia-ym-two-colour-polymer-2026-10-30.tar.gz}, checksum file \url{https://computoergosum.com/principia/lean/principia-ym-two-colour-polymer-2026-10-30.tar.gz.sha256}; axiom log: \url{https://computoergosum.com/principia/lean/axioms-ym-two-colour-polymer-2026-10-30.txt}). In the repository named in \S\ref{sec:ai} the 13 files are kept, byte for byte the same, under \texttt{lean/\allowbreak{}ym-two-colour-polymer} as the modules \texttt{TwoColourPolymer.<name>} of a lake project pinned to the same versions; verify there with \texttt{lake exe cache get} and \texttt{LEAN\_NUM\_THREADS=1 lake env lean TwoColourPolymer/\allowbreak{}<name>.lean} for each file. To verify: extract the bundle; place the files in a Lake project pinned to Lean v4.33.1 and Mathlib v4.33.1 (commit \texttt{0df444a3}); run \texttt{lake exe cache get}; then run \texttt{LEAN\_NUM\_THREADS=1 lake env lean <file>.lean} for each file and compare the \texttt{\#print axioms} lines at its end with \texttt{axioms-<file>.txt}. There is no \texttt{sorry}, no \texttt{axiom} declaration and no \texttt{native\_decide}. The file carrying the main statements of \S\ref{sec:box}, \texttt{BoxFromFace.lean} (namespace \texttt{BoxFromFace}, 100 theorems), has sha256 \texttt{fbab4754\allowbreak{}f910061a\allowbreak{}4581d78c\allowbreak{}80dd35f0\allowbreak{}5335e3c8\allowbreak{}2abc0a29\allowbreak{}6e6d027f\allowbreak{}12016f69}; \texttt{LatticeTwoColorKP.lean} (Theorem~\ref{thm:face}) has \texttt{0f24fff2\allowbreak{}e02976f5\allowbreak{}0574d549\allowbreak{}31cef829\allowbreak{}a1314fc5\allowbreak{}4e2983b7\allowbreak{}e0931396\allowbreak{}dd6fa049}; \texttt{BoxGasFromFaceSum.lean} (Theorem~\ref{thm:comp}) has \texttt{f659c624\allowbreak{}ac9f43d2\allowbreak{}a5a2a5e4\allowbreak{}e751cb63\allowbreak{}99a10c34\allowbreak{}96781dca\allowbreak{}f2258f78\allowbreak{}fbb12b3c}. The checksums of all thirteen files are in the file \texttt{SHA256SUMS} of the bundle.\par}
+
+Every theorem depends on at most \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}; the only exception in form is \lean{blk\_add} (in each file that contains it), which depends on \texttt{propext} and \texttt{Quot.sound} only. In the logs of \texttt{BoxFromFace}, \texttt{BoxGasFromFaceSum}, \texttt{Lattice24KP}, \texttt{LatticeTwoColorKP}, \texttt{BoxTwoColorKP}, \texttt{TwoColorEncoding}, \texttt{TwoColorPolymerSum} and \texttt{ConnectedSetCounting} the axiom is printed as \texttt{choice} rather than \texttt{Classical.choice}: these files contain \texttt{open Classical}, under which \texttt{\#print axioms} shows the short name of the same constant. It is not a different axiom.
+
+Lean checks the rows marked ``Lean'' in Table~\ref{tab:status}, in the generality of the hypotheses quoted; it does not check that \lean{hz}, \lean{hlink} or (H-sum) hold for any model, nor the polymer form of a gauge model's large-field expansion.
+
+\section{What is not claimed}\label{sec:notclaimed}
+\begin{itemize}[leftmargin=2em]
+\item No bound on the activities of any lattice gauge model is claimed or derived. The numerical constants in the hypotheses ($2.5\cdot10^{-3}$, $1.5\cdot10^{-11}$, $2.55\cdot10^{-3}$, $10^{-9}$, $2.6\cdot10^{-5}$, $2.1\cdot10^{-3}$) are thresholds of sufficient conditions, not estimates.
+\item (H-2col), the label-sum bounds and (H-sum) are assumptions. We do not claim that they hold for the $SU(2)$ model that motivated this work; the product form over boxes is kept only as a formal statement.
+\item That the large-field expansion of a gauge theory yields a polymer gas of the kind of \S\ref{sec:setting} (compatibility by disjoint supports, activities attached to clusters) is not formalised.
+\item The degrees used for pairs involving a defect on the box stage are upper bounds ($81,81,80$), not exact counts; the degrees $48$, $72$ in Lemma~\ref{lem:fix} are upper bounds for the decided $44$, $66$.
+\item The cluster-counting bounds are of standard type~\cite{KP,Do,Ue}; we do not know whether the particular two-colour encoding with labelled defect links has been noted before.
+\end{itemize}
+
+\section{Correspondence table}\label{sec:corr}
+
+{\footnotesize
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.33\linewidth}>{\raggedright\arraybackslash}p{0.42\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}@{}}
+\caption{Statements of this note and Lean declarations. Where a declaration is copied into later files, the line of the file named is given.}\label{tab:corr}\\
+\toprule
+Statement & Lean declaration & File:line\\\midrule
+\endfirsthead
+\toprule
+Statement & Lean declaration & File:line\\\midrule
+\endhead
+\bottomrule
+\endfoot
+Lemma~\ref{lem:Wg} & \lean{Wg\_le} & LTK:148\\
+count $\le e^nd^{\,n-1}$ & \lean{connected\_count\_le} & CSC:249\\
+one-colour KP sum $\le1/d$ & \lean{point\_kp\_sum\_le} & CSC:420\\
+Proposition~\ref{prop:twocol}, generating function & \lean{two\_color\_Wg\_le} & LTK:243\\
+Proposition~\ref{prop:twocol}, point & \lean{two\_color\_point\_sum} & LTK:274\\
+Proposition~\ref{prop:twocol}, root set & \lean{two\_color\_root\_set\_sum} & LTK:311\\
+Proposition~\ref{prop:twocol}, point weights & \lean{two\_color\_root\_gf} & LTK:833\\
+Lemma~\ref{lem:fix} & \lean{lattice\_fix} & LTK:397\\
+Lemma~\ref{lem:fix}, $\theta_0+4\theta_1\le1$ & \lean{lattice\_face\_total} & LTK:427\\
+abstract face KP sum (first version) & \lean{lattice\_two\_color\_kp} & TPS:435\\
+$\dfc$, $\thin$, $\enc$, \lean{cadj} & \lean{defects}, \lean{thin}, \lean{enc}, \lean{cadj} & LTK:539\\
+Lemma~\ref{lem:enc}(i) & \lean{enc\_connected} & LTK:582\\
+Lemma~\ref{lem:enc}(ii) & \lean{decode}, \lean{enc\_eq}, \lean{thin\_disjoint} & LTK:629\\
+Lemma~\ref{lem:enc}(iii) & \lean{card\_le\_enc} & LTK:663\\
+Lemma~\ref{lem:enc}(iv) & \lean{label\_sum\_le} & LTK:490\\
+Proposition~\ref{prop:encsum} & \lean{encoded\_sum\_le} & LTK:715\\
+Proposition~\ref{prop:encsum}, weight $e^{c|X|}$ & \lean{encoded\_sum\_le\_c} & BFF:1523\\
+abstract (KP), plaquette stage & \lean{encoded\_kp\_site} & LTK:876\\
+abstract (D), plaquette stage & \lean{encoded\_dobrushin} & LTK:1030\\
+$f\in D_\ell\iff\ell\in\partial f$ & \lean{mem\_facesOf\_iff} & LTK:1107\\
+plaquette adjacency & \lean{faceAdj} & LTK:1111\\
+membership in $N_{FF},N_{FL},N_{LF},N_{LL}$ & \lean{adj\_mem\_nbFF}, \lean{fl\_mem}, \lean{lf\_mem}, \lean{ll\_mem} & LTK:1116\\
+degrees $20,44,66,122$; $4$ links (decided) & \lean{card\_nbFF0}, \lean{card\_nbFL0}, \lean{card\_nbLF0}, \lean{card\_nbLL0}, \lean{card\_links0} & LTK:1171\\
+\lean{hnb} on $\Z^4$ & \lean{lattice\_hnb} & LTK:1187\\
+\lean{hdeg} on $\Z^4$ & \lean{lattice\_hdeg} & LTK:1211\\
+\lean{hfour} on $\Z^4$ & \lean{lattice\_hfour} & LTK:1220\\
+Theorem~\ref{thm:face}, (KP) & \lean{lattice\_kp\_site} & LTK:1228\\
+Theorem~\ref{thm:face}, (D) & \lean{lattice\_dobrushin} & LTK:1240\\
+shift of adjacent plaquettes & \lean{box\_offset} & LTK:1280\\
+$20$ box shifts (decided) & \lean{card\_boxOff} & LTK:1291\\
+box degree $\le20$ & \lean{box\_degree} & LTK:1299\\
+box image connected & \lean{box\_image\_connected} & LTK:1310\\
+diagonal shift $(1,-1,0,0)$ & \lean{box\_diag} & LTK:1328\\
+wider adjacency & \lean{cubeOpp0}, \lean{faceAdj24} & L24:1172\\
+degrees $24,44,66,122$ (decided) & \lean{card\_nbFF24\_0} \dots\ \lean{card\_nbLL24\_0} & L24:1237\\
+wider adjacency, arithmetic & \lean{lattice24\_fix} & L24:1300\\
+wider adjacency, (KP) & \lean{lattice\_kp\_site24} & L24:1390\\
+wider adjacency, sharpness & \lean{face24\_fails} & L24:1432\\
+$20$ thin box shifts (decided) & \lean{card\_offFF} & BTK:1207\\
+$|\{-1,0,1\}^4|=81$ (decided) & \lean{card\_cube81} & BTK:1212\\
+coordinate bounds (decided) & \lean{nbFL0\_bdd}, \lean{nbLF0\_bdd}, \lean{nbLL0\_bdd} & BTK:1215\\
+box degrees $(20,81,81,80)$ & \lean{card\_offc} & BTK:1243\\
+box \lean{hnb}, \lean{hdeg} & \lean{box\_hnb}, \lean{box\_hdeg} & BTK:1258\\
+box image of a two-colour set & \lean{bimg\_connected} & BTK:1310\\
+box arithmetic & \lean{box\_fix} & BTK:1334\\
+box (KP), root box & \lean{box\_kp\_site} & BTK:1361\\
+box sharpness & \lean{box\_fails} & BTK:1402\\
+box (KP), $\supp=$ boxes & \lean{box\_hsite} & BTK:1432\\
+box (D) & \lean{box\_dobrushin} & BTK:1464\\
+$16$ points (decided) & \lean{card\_corners} & BFF:1662\\
+fibre over a box set & \lean{fiber\_box\_le} & BFF:1610\\
+product form from (H-2col) & \lean{box\_hz\_from\_face} & BFF:1744\\
+$\varepsilon_{\rm box}$ arithmetic & \lean{epsBox\_numbers} & BFF:1785\\
+plaquette stage $\Rightarrow$ box (D) & \lean{face\_to\_box\_dobrushin} & BFF:1842\\
+Theorem~\ref{thm:eq}, identity & \lean{box\_hsite\_eq\_face\_sum} & BFF:1807\\
+Theorem~\ref{thm:eq}, (H-sum) $\Rightarrow$ box (KP) & \lean{box\_hsite\_of\_face\_sum} & BFF:1833\\
+root set of a box, $\le384$ links & \lean{boxRoot}, \lean{card\_boxRoot\_links} & BFF:1940\\
+Theorem~\ref{thm:bridge} & \lean{box\_event\_bridge} & BFF:1970\\
+arithmetic instances (inputs not discussed) & \lean{bridge\_numbers\_gamma}, \lean{bridge\_numbers\_chernoff} & BFF:2009\\
+sum over meeting polymers & \lean{intersect\_sum\_le} & KPD:27\\
+Theorem~\ref{thm:kpd} & \lean{dobrushin\_cond\_of\_kp} & KPD:46\\
+Theorem~\ref{thm:Z}, $Z>0$ & \lean{dobrushin} & PGD:118\\
+Theorem~\ref{thm:Z}, lower bounds & \lean{Z\_ge\_exp}, \lean{log\_Z\_ge} & PGD:194\\
+class sum $\Rightarrow$ (KP) & \lean{hsite\_of\_class\_sum} & CSS:74\\
+size split & \lean{size\_split\_site\_sum} & SSK:80\\
+Theorem~\ref{thm:comp}, (D) for the box gas & \lean{box\_dobrushin\_of\_face\_sum} & BGF:2396\\
+Theorem~\ref{thm:comp}, $Z$ bounds & \lean{box\_gas\_partition\_of\_face\_sum} & BGF:2428\\
+incompatibility, $a\ge0$ (auxiliary) & \lean{boxInc\_symm}, \lean{boxA\_nonneg} & BGF:2384\\
+\end{longtable}}
+
+{\sloppy\noindent File abbreviations: CSC \lean{ConnectedSetCounting}, TPS \lean{TwoColorPolymerSum}, TCE \lean{TwoColorEncoding}, LTK \lean{LatticeTwoColorKP}, BTK \lean{BoxTwoColorKP}, L24 \lean{Lattice24KP}, BFF \lean{BoxFromFace}, KPD \lean{KPToDobrushin}, PGD \lean{PolymerGasDobrushin}, CSS \lean{ClassSiteSum}, SSK \lean{SizeSplitKP}, BCN \lean{BoxConnectivity}, BGF \lean{BoxGasFromFaceSum}. Namespaces equal file names. BCN (blocks of side $L$ are boxes; a box with points in and out of $A$ has an edge leaving $A$) is in the bundle but not used above.\par}
+
+\section{Disclosure of AI use}\label{sec:ai}
+This note was produced with the assistance of AI agents. The encoding, the Lean~4 files including the formalised statements, and the reports on which this note is based were written by instances of Claude (Anthropic) run as the coding agent Claude Code on a laptop, across many separate sessions, each of which began without memory of the previous ones and read the written record instead. A second group of instances, running on the server of the website named on the title page, is responsible for re-running the Lean files, for checking the statements of this note against the files and the reports, and for preparing the distributed version; the text of this note was prepared by that group from the files and reports. The human author set the task, chose the problem, fixed the working rules and load limits, and decides whether and where the result is reported; he is responsible for this note. Adversarial review was carried out only by further instances of the same model family, which share the same blind spots. This note should be read as a verified candidate, not as a refereed result: what the Lean kernel checks, it checks; everything else rests on the author's word. This edition and the Lean files it cites are kept in the repository \url{https://github.com/yoshikazuhosomura-sys/principia} (the note under \texttt{papers/\allowbreak{}ym-two-colour-polymer}, the Lean files under \texttt{lean/\allowbreak{}ym-two-colour-polymer}). The web edition of this note, published on the site named on the title page, lists the same work under the names Kiichi, Shiori and Rin, the human author and the two groups of AI agents; the two editions differ only in the title page, in this section and in one sentence of \S\ref{sec:lean} giving the location of the Lean files in the repository.
+
+\begin{thebibliography}{9}
+\bibitem{Do} R.~L.~Dobrushin, \emph{Estimates of semi-invariants for the Ising model at low temperatures}, in: Topics in Statistical and Theoretical Physics, Amer.\ Math.\ Soc.\ Transl.\ (2) 177 (1996) 59--81 (not consulted directly).
+\bibitem{JW} A.~Jaffe, E.~Witten, \emph{Quantum Yang--Mills theory}, in: The Millennium Prize Problems, Clay Mathematics Institute, 2006, 129--152 (not consulted directly).
+\bibitem{KP} R.~Kotecký, D.~Preiss, \emph{Cluster expansion for abstract polymer models}, Comm.\ Math.\ Phys.\ 103 (1986) 491--498 (not consulted directly).
+\bibitem{Mathlib} The mathlib Community, \emph{The Lean mathematical library}, in: Proc.\ 9th ACM SIGPLAN Int.\ Conf.\ on Certified Programs and Proofs (CPP 2020), 367--381.
+\bibitem{Ue} D.~Ueltschi, \emph{Cluster expansions and correlation functions}, Moscow Math.\ J.\ 4 (2004) 511--522 (not consulted directly).
+\end{thebibliography}
+\end{document}
