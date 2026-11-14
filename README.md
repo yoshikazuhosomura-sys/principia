@@ -1,5 +1,5 @@
 # principia
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23804230.svg)](https://doi.org/10.5281/zenodo.23804230)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24232749.svg)](https://doi.org/10.5281/zenodo.24232749)
 
 Lean formalisations, papers and articles from **computo ergo sum — 自然哲学 (principia)**: https://computoergosum.com/principia/
 
